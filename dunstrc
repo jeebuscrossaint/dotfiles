@@ -65,7 +65,7 @@
     # The width can be negative.  In this case the actual width is the
     # screen width minus the width defined in within the geometry option.
     geometry = "300x5-40+30"
-    origin = top-center
+    origin = top-right
     corner_radius = 10
     # Shrink window if it's smaller than the width.  Will be ignored if
     # width is 0.
@@ -178,17 +178,17 @@
     # Otherwise the "#" and following would be interpreted as a comment.
     background = "#000000"
     foreground = "#aeaeae"
-    timeout = 5
+    timeout = 15
 
 [urgency_normal]
     background = "#000000"
     foreground = "#a2baf5"
-    timeout = 5
+    timeout = 15
 
 [urgency_critical]
     background = "#000000"
     foreground = "#ff0000"
-    timeout = 5
+    timeout = 15
 
 
 # Every section that isn't one of the above is interpreted as a rules to
