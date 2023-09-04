@@ -30,7 +30,7 @@ uptime=$(uptime -p)
 storage_info=$(df -h / | awk 'NR==2 {print $3"/"$2" ("$5")"}')
 
 # Current Time
-current_time=$(date "+%H:%M:%S")
+current_time=$(date "+%Y-%m-%d %H:%M:%S")
 
 # Network Information
 network_info=$(iwgetid -r)
