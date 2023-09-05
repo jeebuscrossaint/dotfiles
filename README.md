@@ -17,7 +17,6 @@ and i use vencord
 TODO
 ```
 Upload Hyprland Config File
-Do Swaylock
 Do swww (currently running hyprpaper)
 Do a fricking bar
 Rice firefox
