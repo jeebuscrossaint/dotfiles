@@ -21,5 +21,19 @@ Do swww (currently running hyprpaper)
 Do a fricking bar
 Rice firefox
 ```
-
+```
+helpful utilities and packages that are epic:
+firefox
+discord/vencord
+minecraft/prismlauncher lol
+obsidian
+visual studio code insiders
+blueberry
+guvcview
+ytdlp - ytdlg
+gimp
+gparted
+grubcustomizer + minegrub
+gammastep
+```
 theshlawg
