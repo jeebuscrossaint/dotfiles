@@ -2,7 +2,8 @@
 ____
 ## these are my dotfiles i hope the github repo name 'theshlawg' did not dissuade any potential employers
 
-yet to do a bar lol barless rice rn
+Bar: You can change with the css like colors and stuff, and its really simple to configure literally 1 json file.
+![HybridBar](https://imgflip.com/gif/7ynqfy)
 
 ```
 FILENAME    | DIR
