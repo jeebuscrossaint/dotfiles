@@ -35,7 +35,7 @@
     "left-label_date": {
         "text": " ",
         "command": "bash exacttime.sh",
-        "tooltip": "Exact: ",
+        "tooltip": "",
         "tooltip_command": "bash caltime.sh"
     },
     "left-label_leftinfo": {
