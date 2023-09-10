@@ -36,7 +36,7 @@
         "text": " ",
         "command": "bash exacttime.sh",
         "tooltip": "Exact: ",
-        "tooltip_command": "date '+%H:%M:%S %m-%d-%Y'"
+        "tooltip_command": "bash caltime.sh"
     },
     "left-label_leftinfo": {
         "text": " ",
