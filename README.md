@@ -2,8 +2,7 @@
 ____
 ## these are my dotfiles i hope the github repo name 'theshlawg' did not dissuade any potential employers
 
-Bar: You can change with the css like colors and stuff, and its really simple to configure literally 1 json file.
-![HybridBar](https://github.com/jeebuscrossaint/theshlawg/blob/main/recording.gif)
+
 
 ```
 FILENAME    | DIR
@@ -19,22 +18,5 @@ and i use vencord
 TODO
 ```
 Upload Hyprland Config File
-Do swww (currently running hyprpaper)
-Rice firefox
-```
-```
-helpful utilities and packages that are epic:
-firefox
-discord/vencord
-minecraft/prismlauncher lol
-obsidian
-visual studio code insiders
-blueberry
-guvcview
-ytdlp - ytdlg
-gimp
-gparted
-grubcustomizer + minegrub
-gammastep
 ```
 theshlawg
