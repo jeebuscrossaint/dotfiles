@@ -4,6 +4,9 @@ printf "\n"
 echo "Welcome to the shlawg config! Would you like to (Re)install all your configurations? This installer is meant for Arch/Arch based distributions. Specifically EndeavorOS in mind. Please do not send issues if this repository doesn't work for your distro. Also this whole script may take a while depending on your hardware and internet connection. Yeah. Pplease have an internet connection."
 printf "\n"
 echo "*==============================================================*"
+echo "This script will install a bunch of packages as well!!! This script is an all in one script for me to install basically everything I need to get up and running with just 1 command. So only try this on like a fresh installation of your distro."
+printf "\n"
+echo "*==============================================================*"
 confirm=""
 read -p "Continue? (Y/N): " confirm && [[ $confirm == [yY] || $confirm == [yY][eE][sS] ]] || exit 1
 
