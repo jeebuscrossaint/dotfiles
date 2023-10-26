@@ -5,6 +5,7 @@ read -p "Continue? (Y/N): " confirm && [[ $confirm == [yY] || $confirm == [yY][e
 # Check if paru is already installed
 if ! which paru &> /dev/null; then
   echo "I am installing paru. A goated rust-written AUR helper."
+  cd ..
   sudo pacman -S --needed base-devel
   git clone https://aur.archlinux.org/paru.git
   cd paru
