@@ -40,10 +40,21 @@ else
   echo "It's a yes or no question, you bum."
 fi
 
+echo "All packages should be installed. Please say Y if you are still here strictly."
+confirm=""
+read -p "Am I here? (Y/N) " confirm && [[ $confirm == [yY] || $confirm == [yY][eE][sS] ]] || exit 1
+if [ $confirm = Y ]; then
+  echo "Continuing."
+elif [ $confirm = N ]; then
+  echo "Exiting."
+  exit 1
+else
+  echo "It's a yes or no question, you bum."
+fi
+
 chsh -s /usr/bin/fish
 fish_config theme choose oldschool
-echo "Made default shell fish for this user."
-
+echo "Made default shell fish for this user fish."
 echo "Now installing theshlawg's dotfiles."
 echo "Installing .config files."
 
