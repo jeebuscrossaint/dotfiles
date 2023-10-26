@@ -62,6 +62,9 @@ cd ..
 cd swaylock
 cp -r * ~/.config/swaylock/
 cd ..
+cd waybar
+cp -r * ~/.config/waybar
+cd ..
 cd ~
 git clone https://github.com/jeebuscrossaint/neovimplugins
 cd neovimplugins
