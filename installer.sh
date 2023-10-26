@@ -1,7 +1,7 @@
 #!/bin/bash
 echo "*==============================================================*"
 printf "\n"
-echo "Welcome to the shlawg config! Would you like to (Re)install all your configurations? This installer is meant for Arch/Arch based distributions. Specifically EndeavorOS in mind. Please do not send issues if this repository doesn't work for your distro."
+echo "Welcome to the shlawg config! Would you like to (Re)install all your configurations? This installer is meant for Arch/Arch based distributions. Specifically EndeavorOS in mind. Please do not send issues if this repository doesn't work for your distro. Also this whole script may take a while depending on your hardware and internet connection. Yeah. Pplease have an internet connection."
 printf "\n"
 echo "*==============================================================*"
 confirm=""
