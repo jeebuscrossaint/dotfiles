@@ -46,4 +46,7 @@ cd ..
 cd fuzzel
 cp -r * ~/.config/fuzzel
 cd ..
-cd hyp
+cd fish
+cp -r * ~/.config/fish
+cd ..
+cd
