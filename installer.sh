@@ -12,6 +12,7 @@ if ! which paru &> /dev/null; then
   cd paru
   makepkg -si
   cd ..
+  cd theshlawg/
 else
   echo "Paru is already installed. Continuing."
 fi
@@ -31,3 +32,18 @@ elif [ $gpuconfirm = N ]; then
 else
   echo "It's a yes or no question, you bum."
 fi
+
+chsh -s /usr/bin/fish
+fish_config theme choose oldschool
+echo "Made default shell fish for this user."
+
+echo "Now installing theshlawg's dotfiles."
+echo "Installing .config files."
+
+cd dunst
+cp -r * ~/.config/dunst
+cd ..
+cd fuzzel
+cp -r * ~/.config/fuzzel
+cd ..
+cd hyp
