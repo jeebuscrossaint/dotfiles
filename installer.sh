@@ -1,5 +1,9 @@
-# Created by Amarnath Patel. Dotfile installer for Arch/Arch based distros.
-echo "Welcome to the shlawg config! Would you like to (Re)install all your configurations? This installer is meant for Arch/Arch based distributions."
+#!/bin/bash
+echo "*==============================================================*"
+printf "\n"
+echo "Welcome to the shlawg config! Would you like to (Re)install all your configurations? This installer is meant for Arch/Arch based distributions. Specifically EndeavorOS in mind. Please do not send issues if this repository doesn't work for your distro."
+printf "\n"
+echo "*==============================================================*"
 confirm=""
 read -p "Continue? (Y/N): " confirm && [[ $confirm == [yY] || $confirm == [yY][eE][sS] ]] || exit 1
 
@@ -49,4 +53,23 @@ cd ..
 cd fish
 cp -r * ~/.config/fish
 cd ..
-cd
+cd hyprland
+cp -r * ~/.config/hypr
+cd ..
+cd kitty
+cp -r * ~/.config/kitty
+cd ..
+cd swaylock
+cp -r * ~/.config/swaylock/
+cd ..
+cd ~
+git clone https://github.com/jeebuscrossaint/neovimplugins
+cd neovimplugins
+mv init.lua ~/.config/nvim
+cd ~/neovimplugins/
+cp -r * ~/.config/nvim/lua
+cd ..
+git clone --depth 1 https://github.com/AstroNvim/AstroNvim ~/.config/nvim
+
+echo "Everything should be complete. Be sure to report any issues to the issues tab on this repository. https://github.com/jeebuscrossaint/theshlawg"
+echo "Also star and fork if u like it."
