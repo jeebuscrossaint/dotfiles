@@ -1,22 +1,13 @@
 # theshlawg
-____
-## these are my dotfiles i hope the github repo name 'theshlawg' did not dissuade any potential employers
+---
+## Welcome to the shlawg!
 
+These are my dotfiles. I hope the name the shlawg did not dissuade any employers as that would be unfortunate.
+All you need to do is clone the repo and run the installer. So basically the only dependency is git.
+```
+git clone https://www.github.com/jeebuscrossaint/theshlawg
+./installer.sh
+```
+If you encounter any difficulty please make an issue request here and if the script does something unexpected, just hit Ctrl+C to exit it. Follow the instructions the script says  ***strictly***.
 
-
-```
-FILENAME    | DIR
-dunstrc     | .config/dunst
-fuzzel.ini  | .config/fuzzel
-kitty.conf  | .config/kitty
-baseinfo.sh | basically anywhere depends on ur binds
-those bar scripts stay in home directory | ~
-```
-i use nighttab for my firefox homepage
-and i use vencord 
-
-TODO
-```
-Upload Hyprland Config File
-```
-theshlawg
+Thanks!
