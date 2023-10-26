@@ -31,10 +31,10 @@ gpuconfirm=""
 read -p "Explicitly answer Y or N to the above inquiry.
 " gpuconfirm
 
-if [ $gpuconfirm = Y ]; then
+if [ $gpuconfirm == Y ]; then
   echo "Installing NVIDIA pkgs."
   paru -S --needed - < nvidiapkglist.txt
-elif [ $gpuconfirm = N ]; then
+elif [ $gpuconfirm == N ]; then
   echo "Installing normal pkgs."
   paru -S --needed - < pkglist.txt
 else
