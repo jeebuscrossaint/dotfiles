@@ -1,10 +1,8 @@
 #!/bin/bash
-#killall hyprpaper
-#killall mpvpaper
-#killall swww init
-#killall swww-daemon
-WALLPAPER_DIR="$HOME/wallpaper"
-WALLPAPER=$(ls $WALLPAPER_DIR | rofi -dmenu)
+WALLPAPER_DIR="$HOME/wallpapers/wallpaper"
 export SWWW_TRANSITION=random
-swww img "$WALLPAPER_DIR/$WALLPAPER"
+export SWWW_TRANSITION_FPS=120
+export SWWW_TRANSITION_DURATION=5
 
+WALLPAPER=$(ls $WALLPAPER_DIR | rofi -dmenu)
+swww img "$WALLPAPER_DIR/$WALLPAPER"
