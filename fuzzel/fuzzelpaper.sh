@@ -1,10 +1,9 @@
 #!/bin/bash
-#killall hyprpaper
-#killall mpvpaper
 
-WALLPAPER_DIR="$HOME/wallpaper"
-WALLPAPER=$(ls $WALLPAPER_DIR | fuzzel -d -R)
-killall hyprpaper
+WALLPAPER_DIR="$HOME/wallpapers/"
 export SWWW_TRANSITION=random
-swww img "$WALLPAPER_DIR/$WALLPAPER"
+export SWWW_TRANSITION_FPS=120
+export SWWW_TRANSITION_DURATION=5
 
+WALLPAPER=$(ls $WALLPAPER_DIR | fuzzel -d -R)
+swww img "$WALLPAPER_DIR/$WALLPAPER"

@@ -5,7 +5,7 @@
 # Check if the entered password is correct
 if [[ $entered_password == $password ]]; then
     # Prompt for action using Rofi
-    action=$(rofi -dmenu -p "Select action" <<< "Reboot
+    action=$(fuzzel -d -R "Select action" <<< "Reboot
 Shutdown
 Logout
 Lock")
