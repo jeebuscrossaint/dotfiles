@@ -337,26 +337,111 @@ require("lazy").setup({
 
 	{
 		"CopilotC-Nvim/CopilotChat.nvim",
-   		 branch = "canary",
-    	dependencies = {
-      	{ "zbirenbaum/copilot.lua" }, -- or github/copilot.vim
-     	 { "nvim-lua/plenary.nvim" }, -- for curl, log wrapper
-    	},
-    	opts = {
-      	debug = true, -- Enable debugging
-		lazy = false,
-      -- See Configuration section for rest
-    },
-    -- See Commands section for default commands if you want to lazy load on them
+		branch = "canary",
+		dependencies = {
+			{ "zbirenbaum/copilot.lua" },
+			{ "nvim-lua/plenary.nvim" },
+		},
+		config = function()
+			require("CopilotChat").setup({
+				debug = true,
+				model = 'gpt-4',
+				temperature = 0.1,
+				question_header = '## User ',
+				answer_header = '## Copilot ',
+				separator = '───',
+				show_folds = true,
+				show_help = true,
+				auto_follow_cursor = true,
+				auto_insert_mode = false,
+				clear_chat_on_new_prompt = false,
+				highlight_selection = true,
+				context = 'buffer', -- Default context set to 'buffer'
+				history_path = vim.fn.stdpath('data') .. '/copilotchat_history',
+				window = {
+					layout = 'vertical',
+					relative = 'editor',
+					border = 'single',
+				},
+				mappings = {
+					complete = {
+						insert ='<Tab>',
+					},
+					close = {
+						normal = 'q',
+						insert = '<C-c>'
+					},
+					reset = {
+						normal ='<C-l>',
+						insert = '<C-l>'
+					},
+					submit_prompt = {
+						normal = '<CR>',
+						insert = '<C-m>'
+					},
+				},
+				prompts = {
+					MyCustomPrompt = {
+						prompt = 'Explain how it works.',
+						mapping = '<leader>ccmc',
+						description = 'My custom prompt description',
+						selection = require('CopilotChat.select').visual,
+					},
+				},
+			})
+		end,
 	},
+
 
 	{
 		"zbirenbaum/copilot.lua",
 		cmd = "Copilot",
 		event = InsertEnter,
 		config = function()
-			require("copilot").setup({ suggestion = { enabled = false },
-			panel = { enabled = false },})
+			require("copilot").setup({ 
+			panel = {
+				enabled = true,
+				auto_refresh = true,
+				keymap = {
+					jump_prev = "[[",
+					jump_next = "]]",
+					accept = "<CR>",
+					refresh = "gr",
+					open = "<M-CR>"
+				  },
+				  layout = {
+					position = "bottom", -- | top | left | right
+					ratio = 0.4
+				  },
+			},
+			
+			suggestion = {
+				enabled = true,
+				auto_trigger = true,
+				debounce = 75,
+				keymap = {
+				  accept = "<M-l>",
+				  accept_word = false,
+				  accept_line = false,
+				  next = "<M-]>",
+				  prev = "<M-[>",
+				  dismiss = "<C-]>",
+				},
+			  },
+			  filetypes = {
+				yaml = false,
+				markdown = false,
+				help = false,
+				gitcommit = false,
+				gitrebase = false,
+				hgcommit = false,
+				svn = false,
+				cvs = false,
+				["."] = false,
+			  },
+			  copilot_node_command = 'node', -- Node.js version must be > 18.x
+			  server_opts_overrides = {},
+			})
 		end
 	},
 
@@ -496,12 +581,13 @@ require("lazy").setup({
 		end
 	},
 
-	{
-		"zbirenbaum/copilot-cmp",
-		config = function ()
-		  require("copilot_cmp").setup()
-		end
-	},
+	--{
+	--	"zbirenbaum/copilot-cmp",
+	--	config = function ()
+	--	  require("copilot_cmp").setup()
+	--	end
+	--}, 
+	  
 
 	{ 'AndreM222/copilot-lualine' },
 
