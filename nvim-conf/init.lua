@@ -442,18 +442,7 @@ require("lazy").setup({
 					lualine_y = {},
 					lualine_z = {}
 				},
-				tabline = {
-					lualine_a = {
-						{
-							"buffers",
-							mode = 2, -- Show buffers only in this tabline
-							symbols = {
-								alternate_file = "", -- Displayed when there's an alternate file for the current buffer
-								modified = "  ", -- Displayed when the buffer has been modified
-							},
-						},
-					},
-				},
+				tabline = {},
 				extensions = {}
 			})
 		end
@@ -534,6 +523,35 @@ require("lazy").setup({
 		end
 	},
 	  
+
+  {
+    "romgrk/barbar.nvim",
+    dependencies = {
+        "lewis6991/gitsigns.nvim",
+        "nvim-tree/nvim-web-devicons",
+      },
+
+      init = function() vim.g.barbar_auto_setup = false end,
+      opts = {
+        animation = true
+      },
+      version = "*",
+      lazy = false,
+  },
+
+  {
+    "L3MON4D3/LuaSnip",
+    version = "*",
+    build = "make install_jsregexp"
+    dependencies = {
+      "rafamadriz/friendly-snippets"
+    },
+    lazy = false,
+  },
+
+  {
+    "rafamadriz/friendly-snippets",
+  },
 	-- NOTE: Plugins can also be configured to run Lua code when they are loaded.
 	--
 	-- This is often very useful to both group configuration, as well as handle
