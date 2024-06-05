@@ -100,6 +100,9 @@ vim.opt.termguicolors = true
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
 
+-- keep cursor in current position
+vim.g.netrw_nvim_rsp = "Xn"
+
 -- [[ Setting options ]]
 -- See `:help vim.opt`
 -- NOTE: You can change these options as you wish!
@@ -405,42 +408,54 @@ require("lazy").setup({
 
 	{
 		"nvim-lualine/lualine.nvim",
-		dependencies = { "nvim-tree/nvim-web-devicons"},
+		dependencies = { "nvim-tree/nvim-web-devicons" },
 		lazy = false,
 		config = function()
-			require("lualine").setup({ options = {
-				icons_enabled = true,
-				theme = cozynight,
-				component_separators = { left = '', right = '' },
-				section_separators = { left = '', right = '' },
-				disabled_filetypes = {},
-				always_divide_middle = true
-			},
-			sections = {
-				lualine_a = { 'mode' },
-				lualine_b = { 'branch', 'diff',
-					{
-						'diagnostics',
-						sources = { "nvim_diagnostic" },
-						symbols = { error = ' ', warn = ' ', info = ' ', hint = ' ' }
-					}
+			require("lualine").setup({
+				options = {
+					icons_enabled = true,
+					theme = cozynight,
+					component_separators = { left = "", right = "" },
+					section_separators = { left = "", right = "" },
+					disabled_filetypes = {},
+					always_divide_middle = true,
 				},
-				lualine_c = { 'filename' },
-				lualine_x = { 'copilot' ,'encoding', 'fileformat', 'filetype' }, -- I added copilot here
-				lualine_y = { 'progress' },
-				lualine_z = { 'location' }
-			},
-			inactive_sections = {
-				lualine_a = {},
-				lualine_b = {},
-				lualine_c = { 'filename' },
-				lualine_x = { 'location' },
-				lualine_y = {},
-				lualine_z = {}
-			},
-			tabline = {},
-			extensions = {}
-		})
+				sections = {
+					lualine_a = { "mode" },
+					lualine_b = { "branch", "diff",
+						{
+							"diagnostics",
+							sources = { "nvim_diagnostic" },
+							symbols = { error = " ", warn = " ", info = " ", hint = " " }
+						}
+					},
+					lualine_c = { "filename" },
+					lualine_x = { "copilot", "encoding", "fileformat", "filetype" },
+					lualine_y = { "progress" },
+					lualine_z = { "location" }
+				},
+				inactive_sections = {
+					lualine_a = {},
+					lualine_b = {},
+					lualine_c = { "filename" },
+					lualine_x = { "location" },
+					lualine_y = {},
+					lualine_z = {}
+				},
+				tabline = {
+					lualine_a = {
+						{
+							"buffers",
+							mode = 2, -- Show buffers only in this tabline
+							symbols = {
+								alternate_file = "", -- Displayed when there's an alternate file for the current buffer
+								modified = "  ", -- Displayed when the buffer has been modified
+							},
+						},
+					},
+				},
+				extensions = {}
+			})
 		end
 	},
 
