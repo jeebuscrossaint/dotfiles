@@ -636,6 +636,11 @@ require("lazy").setup({
   },
 
   {
+    "wakatime/vim-wakatime",
+    lazy = false,
+  },
+
+  {
     "rafamadriz/friendly-snippets",
   },
 	-- NOTE: Plugins can also be configured to run Lua code when they are loaded.
