@@ -171,7 +171,7 @@ else
 	vim.opt.shell = "fish"
 end
 
-vim.keymap.set('n', '<leader>r', ':Neotree<CR>', { noremap = true, silent = true })
+vim.keymap.set("n", "<leader>r", ":Neotree<CR>", { noremap = true, silent = true })
 
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
@@ -231,7 +231,6 @@ if not vim.loop.fs_stat(lazypath) then
 	vim.fn.system({ "git", "clone", "--filter=blob:none", "--branch=stable", lazyrepo, lazypath })
 end ---@diagnostic disable-next-line: undefined-field
 vim.opt.rtp:prepend(lazypath)
-
 
 -- [[ Configure and install plugins ]]
 --
@@ -300,40 +299,37 @@ require("lazy").setup({
 		"nvim-neo-tree/neo-tree.nvim",
 		branch = "v3.x",
 		dependencies = {
-		  "nvim-lua/plenary.nvim",
-		  "nvim-tree/nvim-web-devicons", -- not strictly required, but recommended
-		  "MunifTanjim/nui.nvim",
-		  "3rd/image.nvim", -- Optional image support in preview window: See `# Preview Mode` for more information
+			"nvim-lua/plenary.nvim",
+			"nvim-tree/nvim-web-devicons", -- not strictly required, but recommended
+			"MunifTanjim/nui.nvim",
+			"3rd/image.nvim", -- Optional image support in preview window: See `# Preview Mode` for more information
 		},
 		config = function()
-		  require('neo-tree').setup {
-			filesystem = {
-			  filtered_items = {
-				visible = true,
-			  },
-			},
-		  }
-		end
-	  },
-
-	{
-		'windwp/nvim-autopairs',
-    event = "InsertEnter",
-    config = true
-    -- use opts = {} for passing setup options
-    -- this is equalent to setup({}) function
+			require("neo-tree").setup({
+				filesystem = {
+					filtered_items = {
+						visible = true,
+					},
+				},
+			})
+		end,
 	},
 
-
+	{
+		"windwp/nvim-autopairs",
+		event = "InsertEnter",
+		config = true,
+		-- use opts = {} for passing setup options
+		-- this is equalent to setup({}) function
+	},
 
 	{
 		"lervag/vimtex",
 		lazy = false,
 		init = function()
 			vim.g.vimtex_view_method = "zathura"
-		end
+		end,
 	},
-
 
 	{
 		"CopilotC-Nvim/CopilotChat.nvim",
@@ -345,104 +341,103 @@ require("lazy").setup({
 		config = function()
 			require("CopilotChat").setup({
 				debug = true,
-				model = 'gpt-4',
+				model = "gpt-4",
 				temperature = 0.1,
-				question_header = '## User ',
-				answer_header = '## Copilot ',
-				separator = '───',
+				question_header = "## User ",
+				answer_header = "## Copilot ",
+				separator = "───",
 				show_folds = true,
 				show_help = true,
 				auto_follow_cursor = true,
 				auto_insert_mode = false,
 				clear_chat_on_new_prompt = false,
 				highlight_selection = true,
-				context = 'buffer', -- Default context set to 'buffer'
-				history_path = vim.fn.stdpath('data') .. '/copilotchat_history',
+				context = "buffer", -- Default context set to 'buffer'
+				history_path = vim.fn.stdpath("data") .. "/copilotchat_history",
 				window = {
-					layout = 'vertical',
-					relative = 'editor',
-					border = 'single',
+					layout = "vertical",
+					relative = "editor",
+					border = "single",
 				},
 				mappings = {
 					complete = {
-						insert ='<Tab>',
+						insert = "<Tab>",
 					},
 					close = {
-						normal = 'q',
-						insert = '<C-c>'
+						normal = "q",
+						insert = "<C-c>",
 					},
 					reset = {
-						normal ='<C-l>',
-						insert = '<C-l>'
+						normal = "<C-l>",
+						insert = "<C-l>",
 					},
 					submit_prompt = {
-						normal = '<CR>',
-						insert = '<C-m>'
+						normal = "<CR>",
+						insert = "<C-m>",
 					},
 				},
 				prompts = {
 					MyCustomPrompt = {
-						prompt = 'Explain how it works.',
-						mapping = '<leader>ccmc',
-						description = 'My custom prompt description',
-						selection = require('CopilotChat.select').visual,
+						prompt = "Explain how it works.",
+						mapping = "<leader>ccmc",
+						description = "My custom prompt description",
+						selection = require("CopilotChat.select").visual,
 					},
 				},
 			})
 		end,
 	},
 
-
 	{
 		"zbirenbaum/copilot.lua",
 		cmd = "Copilot",
 		event = InsertEnter,
 		config = function()
-			require("copilot").setup({ 
-			panel = {
-				enabled = true,
-				auto_refresh = true,
-				keymap = {
-					jump_prev = "[[",
-					jump_next = "]]",
-					accept = "<CR>",
-					refresh = "gr",
-					open = "<M-CR>"
-				  },
-				  layout = {
-					position = "bottom", -- | top | left | right
-					ratio = 0.4
-				  },
-			},
-			
-			suggestion = {
-				enabled = true,
-				auto_trigger = true,
-				debounce = 75,
-				keymap = {
-				  accept = "<M-l>",
-				  accept_word = false,
-				  accept_line = false,
-				  next = "<M-]>",
-				  prev = "<M-[>",
-				  dismiss = "<C-]>",
+			require("copilot").setup({
+				panel = {
+					enabled = true,
+					auto_refresh = true,
+					keymap = {
+						jump_prev = "[[",
+						jump_next = "]]",
+						accept = "<CR>",
+						refresh = "gr",
+						open = "<M-CR>",
+					},
+					layout = {
+						position = "bottom", -- | top | left | right
+						ratio = 0.4,
+					},
 				},
-			  },
-			  filetypes = {
-				yaml = false,
-				markdown = false,
-				help = false,
-				gitcommit = false,
-				gitrebase = false,
-				hgcommit = false,
-				svn = false,
-				cvs = false,
-				["."] = false,
-			  },
-			  copilot_node_command = 'node', -- Node.js version must be > 18.x
-			  server_opts_overrides = {},
+
+				suggestion = {
+					enabled = true,
+					auto_trigger = true,
+					debounce = 75,
+					keymap = {
+						accept = "<M-l>",
+						accept_word = false,
+						accept_line = false,
+						next = "<M-]>",
+						prev = "<M-[>",
+						dismiss = "<C-]>",
+					},
+				},
+				filetypes = {
+					yaml = false,
+					markdown = false,
+					help = false,
+					gitcommit = false,
+					gitrebase = false,
+					hgcommit = false,
+					svn = false,
+					cvs = false,
+					["."] = false,
+				},
+				copilot_node_command = "node", -- Node.js version must be > 18.x
+				server_opts_overrides = {},
 			})
-		end
+		end,
 	},
 
 	{
@@ -451,28 +446,15 @@ require("lazy").setup({
 		config = function()
 			require("crates").setup()
 		end,
-		lazy = false
+		lazy = false,
 	},
 
 	{
-		"kdheepak/lazygit.nvim",
+		"aspeddro/gitui.nvim",
 		lazy = false,
-  cmd = {
-    "LazyGit",
-    "LazyGitConfig",
-    "LazyGitCurrentFile",
-    "LazyGitFilter",
-    "LazyGitFilterCurrentFile",
-  },
-  -- optional for floating window border decoration
-  dependencies = {
-    "nvim-lua/plenary.nvim",
-  },
-  -- setting the keybinding for LazyGit with 'keys' is recommended in
-  -- order to load the plugin when the command is run for the first time
-  keys = {
-    { "<leader>lg", "<cmd>LazyGit<cr>", desc = "LazyGit" }
-  }
+		config = function()
+			require("gitui").setup()
+		end,
 	},
 
 	{
@@ -483,12 +465,10 @@ require("lazy").setup({
 			"nvim-telescope/telescope.nvim",
 		},
 		config = function()
-			require("startup").setup(
-			{
-					theme = "evil",
-			}
-			)
-		end
+			require("startup").setup({
+				theme = "evil",
+			})
+		end,
 	},
 
 	{
@@ -507,17 +487,19 @@ require("lazy").setup({
 				},
 				sections = {
 					lualine_a = { "mode" },
-					lualine_b = { "branch", "diff",
+					lualine_b = {
+						"branch",
+						"diff",
 						{
 							"diagnostics",
 							sources = { "nvim_diagnostic" },
-							symbols = { error = " ", warn = " ", info = " ", hint = " " }
-						}
+							symbols = { error = " ", warn = " ", info = " ", hint = " " },
+						},
 					},
 					lualine_c = { "filename" },
 					lualine_x = { "copilot", "encoding", "fileformat", "filetype" },
 					lualine_y = { "progress" },
-					lualine_z = { "location" }
+					lualine_z = { "location" },
 				},
 				inactive_sections = {
 					lualine_a = {},
@@ -525,44 +507,44 @@ require("lazy").setup({
 					lualine_c = { "filename" },
 					lualine_x = { "location" },
 					lualine_y = {},
-					lualine_z = {}
+					lualine_z = {},
 				},
 				tabline = {},
-				extensions = {}
+				extensions = {},
 			})
-		end
+		end,
 	},
 
 	{
 		"hrsh7th/nvim-compe",
-  event = 'InsertEnter',
-  config = function()
-    require'compe'.setup {
-      enabled = true,
-      autocomplete = true,
-      debug = false,
-      min_length = 1,
-      preselect = 'enable',
-      throttle_time = 80,
-      source_timeout = 200,
-      incomplete_delay = 400,
-      max_abbr_width = 100,
-      max_kind_width = 100,
-      max_menu_width = 100,
-      documentation = true,
-      source = {
-        path = true,
-        buffer = true,
-        calc = true,
-        nvim_lsp = true,
-        nvim_lua = true,
-        spell = true,
-        tags = true,
-        snippets_nvim = true,
-        treesitter = true,
-      }
-    }
-  end,
+		event = "InsertEnter",
+		config = function()
+			require("compe").setup({
+				enabled = true,
+				autocomplete = true,
+				debug = false,
+				min_length = 1,
+				preselect = "enable",
+				throttle_time = 80,
+				source_timeout = 200,
+				incomplete_delay = 400,
+				max_abbr_width = 100,
+				max_kind_width = 100,
+				max_menu_width = 100,
+				documentation = true,
+				source = {
+					path = true,
+					buffer = true,
+					calc = true,
+					nvim_lsp = true,
+					nvim_lua = true,
+					spell = true,
+					tags = true,
+					snippets_nvim = true,
+					treesitter = true,
+				},
+			})
+		end,
 	},
 
 	{
@@ -570,7 +552,7 @@ require("lazy").setup({
 		lazy = false,
 		config = function()
 			require("hlargs").setup()
-		end
+		end,
 	},
 
 	{
@@ -578,7 +560,7 @@ require("lazy").setup({
 		lazy = false,
 		config = function()
 			require("mini.animate").setup()
-		end
+		end,
 	},
 
 	--{
@@ -586,10 +568,9 @@ require("lazy").setup({
 	--	config = function ()
 	--	  require("copilot_cmp").setup()
 	--	end
-	--}, 
-	  
+	--},
 
-	{ 'AndreM222/copilot-lualine' },
+	{ "AndreM222/copilot-lualine" },
 
 	{
 		"rebelot/terminal.nvim",
@@ -599,50 +580,51 @@ require("lazy").setup({
 				cmd = { vim.o.shell },
 				autoclose = false,
 			})
-		end
+		end,
 	},
-	
+
 	{
 		"CRAG666/code_runner.nvim",
 		config = function()
-			require("code_runner").setup({config = true})
-		end
+			require("code_runner").setup({ config = true })
+		end,
 	},
-	  
 
-  {
-    "romgrk/barbar.nvim",
-    dependencies = {
-        "lewis6991/gitsigns.nvim",
-        "nvim-tree/nvim-web-devicons",
-      },
+	{
+		"romgrk/barbar.nvim",
+		dependencies = {
+			"lewis6991/gitsigns.nvim",
+			"nvim-tree/nvim-web-devicons",
+		},
 
-      init = function() vim.g.barbar_auto_setup = false end,
-      opts = {
-        animation = true
-      },
-      version = "*",
-      lazy = false,
-  },
+		init = function()
+			vim.g.barbar_auto_setup = false
+		end,
+		opts = {
+			animation = true,
+		},
+		version = "*",
+		lazy = false,
+	},
 
-  {
-    "L3MON4D3/LuaSnip",
-    version = "*",
-    build = "make install_jsregexp",
-    dependencies = {
-      "rafamadriz/friendly-snippets",
-    },
-    lazy = false,
-  },
+	{
+		"L3MON4D3/LuaSnip",
+		version = "*",
+		build = "make install_jsregexp",
+		dependencies = {
+			"rafamadriz/friendly-snippets",
+		},
+		lazy = false,
+	},
 
-  {
-    "wakatime/vim-wakatime",
-    lazy = false,
-  },
+	{
+		"wakatime/vim-wakatime",
+		lazy = false,
+	},
 
-  {
-    "rafamadriz/friendly-snippets",
-  },
+	{
+		"rafamadriz/friendly-snippets",
+	},
 	-- NOTE: Plugins can also be configured to run Lua code when they are loaded.
 	--
 	-- This is often very useful to both group configuration, as well as handle
