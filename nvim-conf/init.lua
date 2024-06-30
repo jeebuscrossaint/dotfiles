@@ -171,7 +171,7 @@ else
 	vim.opt.shell = "fish"
 end
 
-vim.keymap.set("n", "<leader>r", ":Neotree<CR>", { noremap = true, silent = true })
+vim.keymap.set("n", "<leader>r", ":NvimTreeToggle<CR>", { noremap = true, silent = true })
 
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
@@ -295,24 +295,18 @@ require("lazy").setup({
 		lazy = false,
 	},
 
+
 	{
-		"nvim-neo-tree/neo-tree.nvim",
-		branch = "v3.x",
-		dependencies = {
-			"nvim-lua/plenary.nvim",
-			"nvim-tree/nvim-web-devicons", -- not strictly required, but recommended
-			"MunifTanjim/nui.nvim",
-			"3rd/image.nvim", -- Optional image support in preview window: See `# Preview Mode` for more information
-		},
+		"nvim-tree/nvim-tree.lua",
 		config = function()
-			require("neo-tree").setup({
-				filesystem = {
-					filtered_items = {
-						visible = true,
-					},
-				},
-			})
+			require("nvim-tree").setup({
+		filters = {
+			dotfiles = true,
+		},
+		})
 		end,
+		lazy = false,
+		
 	},
 
 	{
