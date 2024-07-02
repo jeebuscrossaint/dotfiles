@@ -295,18 +295,32 @@ require("lazy").setup({
 		lazy = false,
 	},
 
-
 	{
 		"nvim-tree/nvim-tree.lua",
 		config = function()
 			require("nvim-tree").setup({
-		filters = {
-			dotfiles = true,
-		},
-		})
+				filters = {
+					dotfiles = true,
+				},
+			})
 		end,
 		lazy = false,
-		
+	},
+
+	{
+		"mistricky/codesnap.nvim",
+		build = "make",
+		config = function()
+			require("codesnap").setup({
+				save_path = "~/Pictures/Code/",
+				has_breadcrumbs = true,
+				show_workspace = true,
+				has_line_number = true,
+				bg_color = "#000000",
+				watermark = "",
+				title = "amarnath p",
+			})
+		end,
 	},
 
 	{
