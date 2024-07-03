@@ -1,1 +1,1 @@
-hyprshot --mode region --output-folder ~/Pictures/Screenshots
+~/Hyprshot/hyprshot --mode region --output-folder ~/Pictures/Screenshots
