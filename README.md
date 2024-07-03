@@ -1,14 +1,15 @@
-# theshlawg
----
-## Welcome to the shlawg!
+# [jeebuscrossaint] (https://github.com/jeebuscrossaint)'s dotfiles
 
-These are my dotfiles. I hope the name the shlawg did not dissuade any employers as that would be unfortunate.
-All you need to do is clone the repo and run the installer. So basically the only dependency is git.
-```
-git clone https://www.github.com/jeebuscrossaint/theshlawg
-cd theshlawg/
-./installer.sh
-```
-If you encounter any difficulty please make an issue request here and if the script does something unexpected, just hit Ctrl+C to exit it. Follow the instructions the script says  ***strictly***.
+## Welcome to ~/dotfiles 
 
-Thanks!
+** These are my dotfiles which are configuration files for many different applications. I spent some time on them. They may not be for everyone. **
+
+## Tree
+
+** The windows folder will contain Microsoft Windows related configuration files and a powershell script at some point to do stuff. The Macos folder has nothing yet because I don't have a Mac (thankfully). The linux-bsd folder has you guessed it linux and bsd related configuration files, which are more unix friendly. **
+
+## Install
+
+** I will write an install script soon which will contain stuff related to linux-bsd configuration installation. **
+
+Do note that the configuration files were made for either Arch Linux, Void Linux, FreeBSD, and OpenBSD. Usually I'm on Void Linux though which by the way doesn't use systemd but rather runit.
