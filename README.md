@@ -1,4 +1,4 @@
-# [jeebuscrossaint] (https://github.com/jeebuscrossaint) 's dotfiles
+# [jeebuscrossaint](https://github.com/jeebuscrossaint)'s dotfiles
 
 ## Welcome to ~/dotfiles 
 
