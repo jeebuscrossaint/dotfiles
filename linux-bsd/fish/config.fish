@@ -1,16 +1,26 @@
 if status is-interactive
     # Commands to run in interactive sessions can go here
 
-    pfetch
     set -g fish_greeting
 end
 fish_config theme choose Old\ School
-thefuck --alias | source
 starship init fish | source
 alias drake='neovide'
 alias jit='git'
-alias hx='helix'
+#alias hx='helix'
 alias ls='eza'
+alias sudo='doas'
+alias cl='clear'
+alias htop='btop'
+alias 11='ping 1.1.1.1'
+alias 11gnu='ping gnu.org'
+
+# add .cargo/bin to path
+set -x PATH $HOME/.cargo/bin $PATH
+set -x XDG_DATA_DIRS $XDG_DATA_DIRS:/var/lib/flatpak/exports/share:/home/amarnath/.local/share/flatpak/exports/share
+set -x PATH $HOME/go/bin $PATH
+set -x TERMINAL kitty
+pfetch
 
 # zoxide stuff
 # =============================================================================

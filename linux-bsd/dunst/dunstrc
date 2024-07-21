@@ -1,5 +1,5 @@
 [global]
-    font = Roboto Mono Medium 9
+    font = Caskaydia Cove Nerd Font 10
 
     # Allow a small subset of html markup:
     #   <b>bold</b>
@@ -176,13 +176,13 @@
 [urgency_low]
     # IMPORTANT: colors have to be defined in quotation marks.
     # Otherwise the "#" and following would be interpreted as a comment.
-    background = "#000000"
-    foreground = "#aeaeae"
+    background = "#101010"
+    foreground = "#b9b9b9"
     timeout = 15
 
 [urgency_normal]
-    background = "#000000"
-    foreground = "#a2baf5"
+    background = "#101010"
+    foreground = "#b9b9b9"
     timeout = 15
 
 [urgency_critical]

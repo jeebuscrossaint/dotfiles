@@ -14,19 +14,19 @@ Lock")
     case $action in
         Reboot)
             # Add code to reboot the system
-            systemctl reboot
+            loginctl reboot
             ;;
         Shutdown)
             # Add code to shutdown the system
-            systemctl poweroff
+            loginctl poweroff
             ;;
         Logout)
             # Add code to logout the user
-            wayland-logout
+            pkill Hyprland
             ;;
         Lock)
             # Add code to lock the screen
-            swaylock --config ~/.config/swaylock/swaylockconf
+            hyprlock
             ;;
         *)
             echo "Invalid action. Exiting..."
