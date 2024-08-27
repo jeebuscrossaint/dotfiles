@@ -21,25 +21,31 @@ input {
     // Next sections include libinput settings.
     // Omitting settings disables them, or leaves them at their default values.
     touchpad {
+        // off
         tap
         // dwt
         // dwtp
         natural-scroll
         // accel-speed 0.2
         // accel-profile "flat"
+         scroll-method "two-finger"
+        // disabled-on-external-mouse
     }
 
     mouse {
+        // off
         // natural-scroll
         // accel-speed 0.2
         // accel-profile "flat"
+        // scroll-method "no-scroll"
     }
 
     // Uncomment this to make the mouse warp to the center of newly focused windows.
     warp-mouse-to-focus
 
     // Focus windows and outputs automatically when moving the mouse into them.
-    focus-follows-mouse
+    // Setting max-scroll-amount="0%" makes it work only on windows already fully on screen.
+    // focus-follows-mouse max-scroll-amount="0%"
 }
 
 // You can configure outputs by their name, which you can find
@@ -58,10 +64,10 @@ input {
     // for the resolution.
     // If the mode is omitted altogether or is invalid, niri will pick one automatically.
     // Run `niri msg outputs` while inside a niri instance to list all outputs and their modes.
-    mode "1920x1080@120.030"
+    mode "1920x1200@165.015"
 
-    // Scale is a floating-point number, but at the moment only integer values work.
-    scale 1.0
+    // You can use integer or fractional scale, for example use 1.5 for 150% scale.
+    scale 1
 
     // Transform allows to rotate the output counter-clockwise, valid values are:
     // normal, 90, 180, 270, flipped, flipped-90, flipped-180 and flipped-270.
@@ -84,7 +90,7 @@ input {
 // https://github.com/YaLTeR/niri/wiki/Configuration:-Layout
 layout {
     // Set gaps around windows in logical pixels.
-    gaps 16
+    gaps 15
 
     // When to center a column when changing focus, options are:
     // - "never", default behavior, focusing an off-screen column will keep at the left
@@ -126,7 +132,7 @@ layout {
     // You can change how the focus ring looks.
     focus-ring {
         // Uncomment this line to disable the focus ring.
-        // off
+        off
 
         // How many logical pixels the ring extends out from the windows.
         width 4
@@ -137,16 +143,17 @@ layout {
         // - CSS-like notation: "rgb(255, 127, 0)", rgba(), hsl() and a few others.
 
         // Color of the ring on the active monitor.
-        active-color "#7fc8ff"
+        active-color "#b9b9b9"
 
         // Color of the ring on inactive monitors.
-        inactive-color "#505050"
+        inactive-color "#101010"
 
         // You can also use gradients. They take precedence over solid colors.
         // Gradients are rendered the same as CSS linear-gradient(angle, from, to).
         // The angle is the same as in linear-gradient, and is optional,
         // defaulting to 180 (top-to-bottom gradient).
         // You can use any CSS linear-gradient tool on the web to set these up.
+        // Changing the color space is also supported, check the wiki for more info.
         //
         // active-gradient from="#80c8ff" to="#bbddff" angle=45
 
@@ -161,11 +168,11 @@ layout {
     border {
         // The settings are the same as for the focus ring.
         // If you enable the border, you probably want to disable the focus ring.
-        off
+        
 
         width 4
-        active-color "#ffc87f"
-        inactive-color "#505050"
+        active-color "#b9b9b9"
+        inactive-color "#101010"
 
         // active-gradient from="#ffbb66" to="#ffc880" angle=45 relative-to="workspace-view"
         // inactive-gradient from="#505050" to="#808080" angle=45 relative-to="workspace-view"
@@ -187,6 +194,7 @@ layout {
 // Add lines like this to spawn processes at startup.
 // Note that running niri as a session supports xdg-desktop-autostart,
 // which may be more convenient to use.
+// See the binds section below for more spawn examples.
 // spawn-at-startup "alacritty" "-e" "fish"
 
 // Uncomment this line to ask the clients to omit their client-side decorations if possible.
@@ -255,11 +263,12 @@ binds {
     Mod+Shift+Slash { show-hotkey-overlay; }
 
     // Suggested binds for running programs: terminal, app launcher, screen locker.
-    Mod+Q { spawn "kitty"; }
+    Mod+T { spawn "kitty"; }
     Mod+D { spawn "fuzzel"; }
-    Super+L { spawn "swaylock"; }
+    Super+Alt+L { spawn "swaylock"; }
 
-    // You can also use a shell:
+    // You can also use a shell. Do this if you need pipes, multiple commands, etc.
+    // Note: the entire command goes as a single argument in the end.
     // Mod+T { spawn "bash" "-c" "notify-send hello && exec alacritty"; }
 
     // Example volume keys mappings for PipeWire & WirePlumber.
@@ -269,7 +278,7 @@ binds {
     XF86AudioMute        allow-when-locked=true { spawn "wpctl" "set-mute" "@DEFAULT_AUDIO_SINK@" "toggle"; }
     XF86AudioMicMute     allow-when-locked=true { spawn "wpctl" "set-mute" "@DEFAULT_AUDIO_SOURCE@" "toggle"; }
 
-    Mod+C { close-window; }
+    Mod+Q { close-window; }
 
     Mod+Left  { focus-column-left; }
     Mod+Down  { focus-window-down; }
@@ -418,9 +427,10 @@ binds {
     // Mod+BracketRight { consume-or-expel-window-right; }
 
     Mod+R { switch-preset-column-width; }
+    Mod+Shift+R { reset-window-height; }
     Mod+F { maximize-column; }
     Mod+Shift+F { fullscreen-window; }
-    Mod+Shift+C { center-column; }
+    Mod+C { center-column; }
 
     // Finer width adjustments.
     // This command can also:
