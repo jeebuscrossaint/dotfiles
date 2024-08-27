@@ -1,0 +1,33 @@
+sys-apps/systemd boot
+sys-apps/systemd-utils boot
+# required by gnome-base/gnome-shell-45.5::gentoo
+# required by gnome-base/gdm-45.0.1-r1::gentoo
+>=gnome-base/gnome-control-center-45.3 networkmanager
+# required by gnome-base/gnome-control-center-45.3::gentoo
+# required by gnome-base/gnome-shell-45.5::gentoo
+# required by gnome-base/gdm-45.0.1-r1::gentoo
+>=media-libs/libcanberra-0.30-r7 pulseaudio
+# required by gnome-base/gdm-45.0.1-r1::gentoo
+# required by gnome-base/gnome-shell-45.5::gentoo
+# required by gnome-base/gnome-shell (argument)
+>=x11-base/xorg-server-21.1.13-r1 -minimal
+# required by x11-wm/mutter-45.5::gentoo[wayland]
+# required by gnome-base/gnome-shell-45.5::gentoo
+# required by gnome-base/gdm-45.0.1-r1::gentoo
+>=x11-base/xwayland-23.2.6 libei
+# required by media-sound/pulseaudio-daemon-17.0-r1::gentoo[alsa,alsa-plugin]
+# required by media-libs/libpulse-17.0::gentoo
+# required by gnome-base/gnome-settings-daemon-45.1::gentoo
+# required by x11-wm/mutter-45.5::gentoo
+# required by gnome-base/gnome-shell-45.5::gentoo
+# required by gnome-base/gdm-45.0.1-r1::gentoo
+>=media-plugins/alsa-plugins-1.2.7.1-r1 pulseaudio
+# required by www-client/firefox-115.14.0::gentoo[system-libvpx]
+# required by firefox (argument)
+>=media-libs/libvpx-1.13.1-r1 postproc
+# required by www-client/chromium-127.0.6533.99::gentoo
+# required by chromium (argument)
+>=sys-libs/zlib-1.3.1-r1 minizip
+# required by www-client/chromium-127.0.6533.99::gentoo
+# required by chromium (argument)
+>=net-libs/nodejs-22.4.1-r1 inspector

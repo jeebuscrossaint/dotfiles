@@ -1,0 +1,19 @@
+# required by zoxide (argument)
+=app-shells/zoxide-9.4 ~amd64
+# required by vesktop
+net-im/vesktop-bin ~amd64
+# required by tty-clock
+app-misc/tty-clock ~amd64
+virtual/libintl ~amd64
+# zelling ( tmux but modern )
+app-misc/zellij ~amd64
+# fuzzel app launcher
+gui-apps/fuzzel ~amd64
+# ventoy
+sys-boot/ventoy-bin ~amd64
+# neovide (nvim gui)
+app-editors/neovide ~amd64
+# github-cli (gh utilitiy)
+dev-util/github-cli ~amd64
+# quick emu qemu helper
+app-emulation/quickemu ~amd64

@@ -1,0 +1,20 @@
+sys-libs/zlib minizip
+# required by www-client/chromium-127.0.6533.99::gentoo
+# required by chromium (argument)
+>=net-libs/nodejs-22.4.1-r1 inspector
+# required by app-emulation/virt-manager-4.1.0-r1::gentoo[-test,gui]
+# required by virt-manager (argument)
+>=net-misc/spice-gtk-0.42-r4 usbredir
+# required by media-video/obs-studio-30.2.1::gentoo
+# required by obs-studio (argument)
+>=media-video/ffmpeg-6.1.1-r8 opus
+# required by app-containers/lxc-6.0.0-r2::gentoo[caps,tools]
+# required by app-containers/waydroid-1.4.2-r2::guru
+# required by waydroid (argument)
+>=sys-libs/libcap-2.70 static-libs
+# required by x11-drivers/xf86-video-ati-22.0.0::gentoo
+# required by x11-base/xorg-drivers-21.1-r2::gentoo[video_cards_radeonsi,-video_cards_radeon]
+# required by x11-base/xorg-server-21.1.13-r1::gentoo
+# required by @selected
+# required by @world (argument)
+>=x11-libs/libdrm-2.4.122 video_cards_radeon
