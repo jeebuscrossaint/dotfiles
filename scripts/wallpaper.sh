@@ -23,7 +23,7 @@ set_wallpaper_wayland() {
 }
 
 # Get list of wallpapers
-wallpapers=$(find "$WALLPAPER_DIR" -type f \( -name "*.jpg" -o -name "*.png" -o -name "*.gif" -o -name "*.mp4" \))
+wallpapers=$(find "$WALLPAPER_DIR" -type f \( -name "*.jpg" -o -name "*.png" -o -name "*.webp" -o -name "*.gif" -o -name "*.mp4" \))
 
 # Use Rofi to select wallpaper
 selected=$(echo "$wallpapers" | sed "s|$WALLPAPER_DIR/||g" | rofi -dmenu -i -p "Select Wallpaper")
