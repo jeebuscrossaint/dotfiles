@@ -1,6 +1,6 @@
 #!/bin/bash
 
-WALLPAPER_DIR="$HOME/wallpapers"
+WALLPAPER_DIR="$HOME/dotfiles/wallpapers"
 
 # Function to set static wallpaper using feh (X11)
 set_static_wallpaper_x11() {
