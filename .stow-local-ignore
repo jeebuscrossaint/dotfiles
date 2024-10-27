@@ -1,0 +1,13 @@
+# basically the default one but i wanna ignore a few directories here
+
+\.git
+\.gitignore
+
+^/README.*
+^/LICENSE.*
+
+# RCS
+.+,v
+
+\old
+
