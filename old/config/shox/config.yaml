@@ -1,7 +1,0 @@
-shell: /usr/bin/fish
-bar:
-    format: "{time} ||CPU: {cpu} MEM: {memory}"
-    colours: 
-      bg: black
-      fg: green
-    padding: 1

@@ -9,5 +9,12 @@
 # RCS
 .+,v
 
-^old$
+# other directories
 
+^windows$
+
+^pkgs$
+
+^macos$
+
+^linux-bsd$
