@@ -16,7 +16,7 @@ set_animated_wallpaper_x11() {
 
 # Function to set wallpaper for Wayland
 set_wallpaper_wayland() {
-    export SWWW_TRANSITION=simple # should be random
+    export SWWW_TRANSITION=random # should be random
     export SWWW_TRANSITION_FPS=120
     export SWWW_TRANSITION_DURATION=5
     swww img "$1"
