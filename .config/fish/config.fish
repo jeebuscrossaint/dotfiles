@@ -20,6 +20,7 @@ alias pavucontrol='pavucontrol-qt'
 set -x PATH $HOME/.cargo/bin $PATH
 set -x XDG_DATA_DIRS $XDG_DATA_DIRS:/var/lib/flatpak/exports/share:/home/amarnath/.local/share/flatpak/exports/share
 set -x PATH $HOME/go/bin $PATH
+set -x PATH $HOME/.local/bin $PATH
 set -x TERMINAL kitty
 set -x XDG_DATA_DIRS "$HOME/.local/share/flatpak/exports/share:/var/lib/flatpak/exports/share:/usr/local/share:/usr/share"
 pfetch
