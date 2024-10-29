@@ -1,3 +1,4 @@
+sxhkd -c ~/.config/sxhkd/sxhkdrc
 berryc focus_color ffffff
 berryc unfocus_color 000000
 berryc border_width 2

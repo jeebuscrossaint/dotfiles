@@ -16,7 +16,7 @@ nitrogen --restore &
 dunst &
 
 # dock
-plank &
+#plank &
 
 # xkbd
 setxkbmap -layout "us" &
