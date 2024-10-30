@@ -91,7 +91,7 @@ output * bg /usr/share/backgrounds/sway/Sway_Wallpaper_Blue_1920x1080.png fill
 # Basics:
 #
     # Start a terminal
-    bindsym $mod+y exec $term
+    bindsym $mod+t exec $term
 
     # Kill focused window
     bindsym $mod+c kill
@@ -234,7 +234,7 @@ bar {
     # When the status_command prints a new line to stdout, swaybar updates.
     # The default just shows the current date and time.
     status_command while date +'%Y-%m-%d %X'; do sleep 1; done
-
+	mode hide
     colors {
         statusline #ffffff
         background #323232
