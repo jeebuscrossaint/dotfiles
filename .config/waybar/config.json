@@ -5,26 +5,26 @@
     // "width": 1280, // Waybar width
     "spacing": 4, // Gaps between modules (4px)
     // Choose the order of the modules
-    "modules-left": ["custom/media", "clock", "hyprland/workspaces", "tray", "custom/weather", "custom/pacman", "cava",],
-    "modules-center": ["hyprland/window"],
+    "modules-left": ["custom/media", "clock", "hyprland/workspaces", "tray", "custom/weather", "custom/pacman", "cava", "custom/protonmail"],
+    "modules-center": ["hyprland/window", "sway/workspaces", "sway/mode", "sway/scratchpad"],
     "modules-right": ["privacy", "pulseaudio", "bluetooth", "network", "cpu", "memory", "temperature", "backlight", "keyboard-state", "battery", "battery#bat2"],
     // Modules configuration
-    // "sway/workspaces": {
-    //     "disable-scroll": true,
-    //     "all-outputs": true,
-    //     "warp-on-scroll": false,
-    //     "format": "{name}: {icon}",
-    //     "format-icons": {
-    //         "1": "",
-    //         "2": "",
-    //         "3": "",
-    //         "4": "",
-    //         "5": "",
-    //         "urgent": "",
-    //         "focused": "",
-    //         "default": ""
-    //     }
-    // },
+     "sway/workspaces": {
+         "disable-scroll": true,
+         "all-outputs": true,
+         "warp-on-scroll": false,
+         "format": "{name}: {icon}",
+         "format-icons": {
+             "1": "",
+             "2": "",
+             "3": "",
+             "4": "",
+             "5": "",
+             "urgent": "",
+             "focused": "",
+             "default": ""
+         }
+     },
     "keyboard-state": {
         "numlock": true,
         "capslock": true,
@@ -242,5 +242,12 @@
         "escape": true,
         "exec": "$HOME/.config/waybar/mediaplayer.py 2> /dev/null" // Script in resources folder
         // "exec": "$HOME/.config/waybar/mediaplayer.py --player spotify 2> /dev/null" // Filter player based on name
+    },
+    "custom/protonmail": {
+    	"exec": "bar-protonmail",
+    	"return-type": "json",
+    	"interval": 10,
+    	"tooltip": false,
+    	"on-click": "xdg-open https://mail.proton.me/u/0/inbox"
     }
 }
