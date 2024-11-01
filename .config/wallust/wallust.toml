@@ -1,7 +1,0 @@
-backend = "full"
-palette = "dark"
-check_contrast = "true"
-
-[templates]
-kitty.template = 'kitty.conf'
-kitty.target = '~/.config/kitty/kitty.conf'
