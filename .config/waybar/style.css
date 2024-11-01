@@ -1,3 +1,5 @@
+@import "/home/amarnath/.cache/wal/colors-waybar.css";
+
 * {
     /* `otf-font-awesome` is required to be installed for icons */
     font-family: FontAwesome, JetBrainsMono Nerd Font Mono, Source Code Pro, Roboto, Helvetica, Arial, sans-serif;
@@ -8,10 +10,10 @@
 }
 
 window#waybar {
-    /*background-color: #000000; */
-    background-color: #000000;
+    /*background-color: @background; */
+    background-color: @background;
     border-bottom: 0px solid white;
-    color: #ffffff;
+    color: @foreground;
     /* transition-property: background-color;
     transition-duration: .5s; */
     border-radius: 0px;
@@ -36,7 +38,7 @@ window#waybar.termite {
 }
 
 window#waybar.chromium {
-    background-color: #000000;
+    background-color: @background;
     border: none;
 }
 
@@ -51,13 +53,13 @@ button {
 /* https://github.com/Alexays/Waybar/wiki/FAQ#the-workspace-buttons-have-a-strange-hover-effect */
 button:hover {
     background: inherit;
-    box-shadow: inset 0 -3px #ffffff;
+    box-shadow: inset 0 -3px @foreground;
 }
 
 #workspaces button {
     padding: 0 5px;
     background: transparent;
-    color: #ffffff;
+    color: @foreground;
     border: 0px solid powderblue;
 }
 
@@ -67,7 +69,7 @@ button:hover {
 
 #workspaces button.focused {
     background-color: #64727D;
-    box-shadow: inset 0 -3px #ffffff;
+    box-shadow: inset 0 -3px @foreground;
 }
 
 #workspaces button.urgent {
@@ -76,7 +78,7 @@ button:hover {
 
 #mode {
     background-color: #64727D;
-    border-bottom: 3px solid #ffffff;
+    border-bottom: 3px solid @foreground;
 }
 
 #clock,
@@ -96,13 +98,13 @@ button:hover {
 #scratchpad,
 #mpd {
     padding: 0 10px;
-    color: #ffffff;
+    color: @foreground;
 }
 
 #window,
 #workspaces {
     margin: 0 1px;
-    background-color: #000000;
+    background-color: @background;
     /* border: 3px solid white; */
     border-radius: 0px;
     padding: 0px 5px 0px 5px;
@@ -119,114 +121,114 @@ button:hover {
 }
 
 #clock {
-    background-color: #000000;
+    background-color: @background;
     /*border: 3px solid white;*/
-    color: #ffffff;
+    color: @foreground;
     border-radius: 0px;
 }
 
 #battery {
-    background-color: #000000;
-    color: #ffffff;
+    background-color: @background;
+    color: @foreground;
 }
 
 #battery.charging, #battery.plugged {
-    color: #ffffff;
-    background-color: #000000;
+    color: @foreground;
+    background-color: @background;
 }
 
 @keyframes blink {
     to {
-        background-color: #ffffff;
-        color: #000000;
+        background-color: @foreground;
+        color: @background;
     }
 }
 
 #battery.critical:not(.charging) {
-    background-color: #000000;
-    color: #ffffff;
+    background-color: @background;
+    color: @foreground;
     animation-name: blink;
     animation-duration: 0.5s;
     animation-timing-function: linear;
     animation-iteration-count: infinite;
     animation-direction: alternate;
-    border: 3px solid #ffffff;
+    border: 3px solid @foreground;
 }
 
 label:focus {
-    background-color: #000000;
+    background-color: @background;
 }
 
 #cpu {
-    background-color: #000000;
-    color: #ffffff;
+    background-color: @background;
+    color: @foreground;
     /*border: 3px solid white; */
     border-radius: 0px;
 }
 
 #memory {
-    background-color: #000000;
+    background-color: @background;
    /* border: 3px solid white; */
-    color: #ffffff;
+    color: @foreground;
     border-radius: 0px;
 }
 
 #disk {
-    background-color: #000000;
-    border: 3px solid #ffffff;
-    color: #ffffff;
+    background-color: @background;
+    border: 3px solid @foreground;
+    color: @foreground;
     border-radius: 0px;
 }
 
 #backlight {
-    background-color: #000000;
-    color: #ffffff;
+    background-color: @background;
+    color: @foreground;
 }
 
 #network {
-    background-color: #000000;
+    background-color: @background;
    /* border: 3px solid white; */
-    color: #ffffff;
+    color: @foreground;
     border-radius: 0px;
 }
 
 #network.disconnected {
-    background-color: #000000;
-    border: 3px solid #ffffff;
-    color: #ffffff;
+    background-color: @background;
+    border: 3px solid @foreground;
+    color: @foreground;
     border-radius: 0px;
 }
 
 #pulseaudio {
-    background-color: #000000;
-    color: #ffffff;
+    background-color: @background;
+    color: @foreground;
   /*  border: 3px solid white; */
     border-radius: 0px;
 }
 
 #pulseaudio.muted {
-    background-color: #000000;
-    color: #ffffff;
+    background-color: @background;
+    color: @foreground;
   /*  border: 3px solid white; */
     border-radius: 0px;
 }
 
 #wireplumber {
-    background-color: #000000;
-    color: #ffffff;
+    background-color: @background;
+    color: @foreground;
   /*  border: 3px solid white; */
     border-radius: 0px;
 }
 
 #wireplumber.muted {
-    background-color: #000000;
-    border: 3px solid #ffffff;
+    background-color: @background;
+    border: 3px solid @foreground;
     border-radius: 0px;
-    color: #ffffff;
+    color: @foreground;
 }
 
 #custom-media {
-    background-color: #000000;
+    background-color: @background;
     color: white;
     min-width: 100px;
     border: 3px solid white;
@@ -234,7 +236,7 @@ label:focus {
 }
 
 #custom-media.custom-spotify {
-    background-color: #000000;
+    background-color: @background;
     border-bottom: 3px solid powderblue;
 }
 
@@ -244,21 +246,21 @@ label:focus {
 }
 
 #temperature {
-    background-color: #000000;
+    background-color: @background;
    /* border: 3px solid white; */
-    color: #ffffff;
+    color: @foreground;
     border-radius: 0px;
 }
 
 #temperature.critical {
-    background-color: #000000;
-    border-bottom: 3px solid #ffffff;
-    color: #ffffff;
+    background-color: @background;
+    border-bottom: 3px solid @foreground;
+    color: @foreground;
 }
 
 #tray {
-    background-color: #000000;
-    color: #ffffff;
+    background-color: @background;
+    color: @foreground;
 }
 
 #tray > .passive {
@@ -305,8 +307,8 @@ label:focus {
 }
 
 #keyboard-state {
-    background: #000000;
-    color: #ffffff;
+    background: @background;
+    color: @foreground;
     padding: 0 0px;
     margin: 0 5px;
     min-width: 16px;

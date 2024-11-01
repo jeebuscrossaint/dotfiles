@@ -37,6 +37,7 @@ if [ -n "$selected" ]; then
 	# run pywal and pywal fox
 	wal -i "$full_path"
 	pywalfox update
+	killall -SIGUSR2 waybar
     
     if [[ $XDG_SESSION_TYPE == "wayland" ]]; then
         set_wallpaper_wayland "$full_path"
