@@ -1,5 +1,7 @@
 backend = "full"
+palette = "dark"
+check_contrast = "true"
 
 [templates]
-kitty.template = 'templates/colors-kitty.conf'
-kitty.target = '~/.config/kitty/colors-kitty.conf'
+kitty.template = 'kitty.conf'
+kitty.target = '~/.config/kitty/kitty.conf'
