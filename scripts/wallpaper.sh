@@ -21,8 +21,6 @@ set_wallpaper_wayland() {
     export SWWW_TRANSITION_DURATION=5
     swww img "$1"
 
-#    wallpaper_filename=$(basename "$1")
- #       wallust run "$HOME/wallpapers/$wallpaper_filename" -C "$HOME/.config/wallust/wallust.toml"
 }
 
 # Get list of wallpapers
@@ -35,6 +33,10 @@ selected=$(echo "$wallpapers" | sed "s|$WALLPAPER_DIR/||g" | rofi -dmenu -i -p "
 if [ -n "$selected" ]; then
     full_path="$WALLPAPER_DIR/$selected"
     extension="${selected##*.}"
+
+	# run pywal and pywal fox
+	wal -i "$full_path"
+	pywalfox update
     
     if [[ $XDG_SESSION_TYPE == "wayland" ]]; then
         set_wallpaper_wayland "$full_path"
