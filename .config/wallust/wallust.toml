@@ -1,0 +1,5 @@
+backend = "full"
+
+[templates]
+kitty.template = 'templates/colors-kitty.conf'
+kitty.target = '~/.config/kitty/colors-kitty.conf'
