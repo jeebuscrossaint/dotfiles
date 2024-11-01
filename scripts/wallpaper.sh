@@ -20,6 +20,9 @@ set_wallpaper_wayland() {
     export SWWW_TRANSITION_FPS=120
     export SWWW_TRANSITION_DURATION=5
     swww img "$1"
+
+#    wallpaper_filename=$(basename "$1")
+ #       wallust run "$HOME/wallpapers/$wallpaper_filename" -C "$HOME/.config/wallust/wallust.toml"
 }
 
 # Get list of wallpapers
@@ -49,3 +52,4 @@ if [ -n "$selected" ]; then
         exit 1
     fi
 fi
+
