@@ -26,7 +26,8 @@ set -x PATH $HOME/go/bin $PATH
 set -x PATH $HOME/.local/bin $PATH
 set -x TERMINAL kitty
 set -x XDG_DATA_DIRS "$HOME/.local/share/flatpak/exports/share:/var/lib/flatpak/exports/share:/usr/local/share:/usr/share"
-pfetch
+#pfetch
+nerdfetch
 set -x GSK_RENDERER ngl
 
 # zoxide stuff
