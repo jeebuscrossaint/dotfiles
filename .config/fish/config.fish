@@ -3,7 +3,10 @@ if status is-interactive
 
     set -g fish_greeting
 end
-fish_config theme choose Old\ School
+#fish_config theme choose Old\ School
+
+source ~/.cache/wal/colors.fish
+
 starship init fish | source
 alias drake='neovide'
 alias jit='git'
