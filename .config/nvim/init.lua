@@ -556,6 +556,13 @@ require("lazy").setup({
 	},
 
 	{
+		'uZer/pywal16.nvim',
+		config = function()
+			require('pywal16').setup()
+		end,
+	},
+
+	{
 		"m-demare/hlargs.nvim",
 		lazy = false,
 		config = function()
