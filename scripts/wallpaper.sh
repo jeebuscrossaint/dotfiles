@@ -35,9 +35,13 @@ if [ -n "$selected" ]; then
     extension="${selected##*.}"
 
 	# run pywal and pywal fox
-	wal -i "$full_path"
+	wal -i "$full_path" -n
 	pywalfox update
 	killall -SIGUSR2 waybar
+	pkill dunst
+	ln -sf "${HOME}/.cache/wal/dunstrc" "${HOME}/.config/dunst/dunstrc"
+	dunst &
+
     
     if [[ $XDG_SESSION_TYPE == "wayland" ]]; then
         set_wallpaper_wayland "$full_path"
