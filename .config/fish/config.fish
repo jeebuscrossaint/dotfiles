@@ -31,7 +31,7 @@ set -x QT_QPA_PLATFORMTHEME qt5ct
 nerdfetch
 set -x GSK_RENDERER ngl
 
-xrdb -merge ~/.cache/wal/colors.Xresources >> /dev/null 2>&1
+cat ~/.cache/wal/colors.Xresources > ~/.Xresources
 
 ~/.cache/wal/./colors-tty.sh 
 
