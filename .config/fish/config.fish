@@ -18,6 +18,7 @@ alias htop='btop'
 alias 11='ping 1.1.1.1'
 alias 11gnu='ping gnu.org'
 alias pavucontrol='pavucontrol-qt'
+alias pearai='PearAI'
 
 # add .cargo/bin to path
 set -x PATH $HOME/.cargo/bin $PATH
