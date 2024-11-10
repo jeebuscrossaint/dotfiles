@@ -2,7 +2,7 @@
 
 * {
     /* `otf-font-awesome` is required to be installed for icons */
-    font-family: FontAwesome, JetBrainsMono Nerd Font Mono, Source Code Pro, Roboto, Helvetica, Arial, sans-serif;
+    font-family: FontAwesome, Terminus, JetBrainsMono Nerd Font Mono, Source Code Pro, Roboto, Helvetica, Arial, sans-serif;
     font-size: 13px;
     border: none;
     border-radius: 0;
