@@ -41,7 +41,7 @@ if [ -n "$selected" ]; then
 	pkill dunst
 	ln -sf "${HOME}/.cache/wal/dunstrc" "${HOME}/.config/dunst/dunstrc"
 	dunst &
-
+	i3-msg reload
     
     if [[ $XDG_SESSION_TYPE == "wayland" ]]; then
         set_wallpaper_wayland "$full_path"

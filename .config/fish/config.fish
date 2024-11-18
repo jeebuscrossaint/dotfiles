@@ -20,6 +20,7 @@ alias 11gnu='ping gnu.org'
 alias pavucontrol='pavucontrol-qt'
 alias pearai='PearAI'
 
+
 # add .cargo/bin to path
 set -x PATH $HOME/.cargo/bin $PATH
 set -x XDG_DATA_DIRS $XDG_DATA_DIRS:/var/lib/flatpak/exports/share:/home/amarnath/.local/share/flatpak/exports/share

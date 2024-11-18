@@ -3,6 +3,9 @@
 #
 # Please see https://i3wm.org/docs/userguide.html for a complete reference!
 
+include "~/.cache/wal/colors-i3"
+
+
 set $mod Mod4
 
 # Font for window titles. Will also be used by the bar unless a different font
@@ -45,7 +48,6 @@ exec --no-startup-id set CLUTTER_BACKEND x11
 exec --no-startup-id set QT_QPA_PLATFORM x11
 exec --no-startup-id gamescope &
 bindsym $mod+shift+s exec flameshot gui
-bindsym $mod+m exec bun ~/Projects/SATBypass/crackhaed.mjs
 
 
 # Use pactl to adjust volume in PulseAudio.
@@ -64,7 +66,7 @@ floating_modifier $mod
 # or left-clicking anywhere into the window while holding the floating modifier.
 tiling_drag modifier titlebar
 
-bindsym $mod+Q exec kitty
+bindsym $mod+Q exec alacritty
 bindsym $mod+C kill
 bindsym $mod+P floating toggle
 
@@ -73,29 +75,24 @@ for_window [class="zoom"] floating enable
 
 exec --no-startup-id picom --config ~/.config/picom/picom.conf
 #exec --no-startup-id compiz --replace ccp
-exec --no-startup-id nitrogen --restore
+#exec --no-startup-id nitrogen --restore
 exec --no-startup-id dunst
 
 #bindsym XF86AudioRaiseVolume exec amixer set Master 5%+
 #bindsym XF86AudioLowerVolume exec amixer set Master 5%-
 #bindsym XF86AudioMute exec amixer set Master toggle     
 
-bindsym $mod+d exec ./launcher.sh
-bindsym $mod+g exec ./wallpaper.sh
-
+bindsym $mod+d exec ./scripts/launcher.sh
+bindsym $mod+g exec ./scripts/wallpaper.sh
+bindsym $mod+l exec ./scripts/control.sh
 
 # colors n borders
-set $wm_color_border_active_bg       #ffffff
-set $wm_color_border_active_fg       #ffffff
-set $wm_color_border_inactive_bg     #000000
-set $wm_color_border_inactive_fg     #000000
-set $wm_color_background             #000000
 set $wm_setting_gap_width            0 # should be 15
 set $wm_setting_gap_heigth           0 # should be 15
 
-smart_gaps off
+smart_gaps on
 
-#smart_borders off
+smart_borders on
 # class                 border                       background                   text                         indicator                    child_border
 client.focused          $wm_color_border_active_bg   $wm_color_border_active_bg   $wm_color_border_active_fg   $wm_color_border_active_bg   $wm_color_border_active_bg
 client.focused_inactive $wm_color_border_inactive_bg $wm_color_border_inactive_bg $wm_color_border_inactive_fg $wm_color_border_inactive_bg $wm_color_border_inactive_bg
@@ -104,8 +101,8 @@ client.urgent           $wm_color_border_inactive_bg $wm_color_border_inactive_b
 client.placeholder      $wm_color_border_inactive_bg $wm_color_border_inactive_bg $wm_color_border_inactive_fg $wm_color_border_inactive_bg $wm_color_border_inactive_bg
 client.background       $wm_color_background
 
-gaps inner 15
-gaps outer 15
+gaps inner 12
+gaps outer 20
 for_window [class=".*"] border pixel 2
 set $wm_setting_border_size 2
 default_border pixel $wm_setting_border_size
