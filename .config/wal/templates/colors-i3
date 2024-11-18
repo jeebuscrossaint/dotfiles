@@ -1,0 +1,7 @@
+# include this file jit for i3 colors
+
+set $wm_color_border_active_bg       {foreground}
+set $wm_color_border_active_fg       {foreground}
+set $wm_color_border_inactive_bg     {foreground}
+set $wm_color_border_inactive_fg     {background}
+set $wm_color_background             {background}

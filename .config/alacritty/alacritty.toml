@@ -5,14 +5,13 @@ import = ["~/.cache/wal/colors-alacritty.toml"]
 
 [window]
 padding = { x = 40 , y = 40 }
-#dynamic_padding = true
 decorations = "full"
 dynamic_title = true
 
 [font]
 normal = { family = "Terminus", style = "Regular"}
 size = 10.0
-offset = { y = 2}
+offset = { y = 4}
 
 [selection]
 save_to_clipboard = true
