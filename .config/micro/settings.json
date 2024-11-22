@@ -1,3 +1,6 @@
 {
-    "colorscheme": "material-tc"
+    "autosave": 1,
+    "autosu": true,
+    "colorscheme": "material-tc",
+    "tabsize": 8
 }

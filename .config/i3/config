@@ -3,7 +3,7 @@
 #
 # Please see https://i3wm.org/docs/userguide.html for a complete reference!
 
-include "~/.cache/wal/colors-i3"
+#include ~/.cache/wal/colors-i3
 
 set $mod Mod4
 
@@ -85,6 +85,8 @@ bindsym $mod+d exec ./scripts/launcher.sh
 bindsym $mod+g exec ./scripts/wallpaper.sh
 bindsym $mod+l exec ./scripts/control.sh
 
+bindsym $mod+b exec firefox-developer-edition
+
 # colors n borders
 set $wm_setting_gap_width            0 # should be 15
 set $wm_setting_gap_heigth           0 # should be 15
@@ -92,15 +94,20 @@ set $wm_setting_gap_heigth           0 # should be 15
 smart_gaps on
 
 smart_borders on
-# class                 border                       background                   text                         indicator                    child_border
-client.focused          $wm_color_border_active_bg   $wm_color_border_active_bg   $wm_color_border_active_fg   $wm_color_border_active_bg   $wm_color_border_active_bg
-client.focused_inactive $wm_color_border_inactive_bg $wm_color_border_inactive_bg $wm_color_border_inactive_fg $wm_color_border_inactive_bg $wm_color_border_inactive_bg
-client.unfocused        $wm_color_border_inactive_bg $wm_color_border_inactive_bg $wm_color_border_inactive_fg $wm_color_border_inactive_bg $wm_color_border_inactive_bg
-client.urgent           $wm_color_border_inactive_bg $wm_color_border_inactive_bg $wm_color_border_inactive_fg $wm_color_border_inactive_bg $wm_color_border_inactive_bg
-client.placeholder      $wm_color_border_inactive_bg $wm_color_border_inactive_bg $wm_color_border_inactive_fg $wm_color_border_inactive_bg $wm_color_border_inactive_bg
-client.background       $wm_color_background
 
-gaps inner 12
+set_from_resource $fg i3wm.color7 
+set_from_resource $bg i3wm.color2 
+
+# class                 border  backgr. text indicator child_border
+client.focused          $bg     $bg     $fg  $bg       $bg
+client.focused_inactive $bg     $bg     $fg  $bg       $bg
+client.unfocused        $bg     $bg     $fg  $bg       $bg
+client.urgent           $bg     $bg     $fg  $bg       $bg
+client.placeholder      $bg     $bg     $fg  $bg       $bg
+
+client.background       $bg
+
+gaps inner 20
 gaps outer 20
 for_window [class=".*"] border pixel 2
 set $wm_setting_border_size 2
@@ -108,10 +115,10 @@ default_border pixel $wm_setting_border_size
 default_floating_border pixel $wm_setting_border_size
 
 # change focus
-bindsym $mod+j focus left
-bindsym $mod+k focus down
-bindsym $mod+l focus up
-bindsym $mod+semicolon focus right
+#bindsym $mod+j focus left
+#bindsym $mod+k focus down
+#bindsym $mod+l focus up
+#bindsym $mod+semicolon focus right
 
 # alternatively, you can use the cursor keys:
 bindsym $mod+Left focus left
