@@ -340,6 +340,10 @@ require("lazy").setup({
 	},
 
 	{
+		"nyoom-engineering/oxocarbon.nvim",
+	},
+
+	{
 		"CopilotC-Nvim/CopilotChat.nvim",
 		branch = "canary",
 		dependencies = {
@@ -556,9 +560,9 @@ require("lazy").setup({
 	},
 
 	{
-		'uZer/pywal16.nvim',
+		"uZer/pywal16.nvim",
 		config = function()
-			require('pywal16').setup()
+			require("pywal16").setup()
 		end,
 	},
 
