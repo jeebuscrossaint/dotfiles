@@ -509,7 +509,7 @@ require("lazy").setup({
 						},
 					},
 					lualine_c = { "filename" },
-					lualine_x = { "copilot", "encoding", "fileformat", "filetype" },
+					lualine_x = { "copilot", "encoding", "fileformat", "filetype", "require'wttr'.text" },
 					lualine_y = { "progress" },
 					lualine_z = { "location" },
 				},
@@ -565,16 +565,45 @@ require("lazy").setup({
 
 	{
 		  "okuuva/auto-save.nvim",
-		    version = '^1.0.0', -- see https://devhints.io/semver, alternatively use '*' to use the latest tagged release
-		      cmd = "ASToggle", -- optional for lazy loading on command
-		        event = { "InsertLeave", "TextChanged" }, -- optional for lazy loading on trigger events
-		          opts = {
-		          	    -- your config goes here
-		          	        -- or just leave it empty :)
-		          	          },
-		          	          },
+		   version = '^1.0.0', -- see https://devhints.io/semver, alternatively use '*' to use the latest tagged release
+		   cmd = "ASToggle", -- optional for lazy loading on command
+		   event = { "InsertLeave", "TextChanged" }, -- optional for lazy loading on trigger events
+		   opts = {
+		    -- your config goes here
+		    -- or just leave it empty :)
+		        },
+	},
 		     
-	
+	{
+		"lazymaniac/wttr.nvim",
+		dependencies = {
+			'nvim-lua/plenary.nvim',
+			'MunifTanjim/nui.nvim',
+		},
+		opts = {
+			location = '',
+			format = 1,
+			--custom_format = '%C+%c+T:%t+F:%f+%w+%m+%P+UV:%u+Hum:%h',
+			custom_format = '%C+%c+Time:%T+Humidity:%h+Temperature:%t+Feels:%f+Wind:%w+Location:%l+Precipitation:%p+Sunrise:%S+Sunset:%s',
+			units = "USCS"
+		},
+		keys = {
+		      {
+		        '<leader>W',
+		        function()
+		          require('wttr').get_forecast() -- show forecast for my location
+		        end,
+		        desc = 'Weather Forecast',
+		      },
+		      {
+		        '<leader>w',
+		        function()
+		          require('wttr').get_forecast("London") -- show forecast for London
+		        end,
+		        desc = 'Weather Forecast - London',
+		      },
+		},
+	},
 
 	{
 		"uZer/pywal16.nvim",
@@ -857,6 +886,10 @@ require("lazy").setup({
 			--    That is to say, every time a new file is opened that is associated with
 			--    an lsp (for example, opening `main.rs` is associated with `rust_analyzer`) this
 			--    function will be executed to configure the current buffer
+			vim.api.nvim_create_user_command('Weather', function()
+			    require('wttr').get_forecast()
+			end, {})
+			
 			vim.api.nvim_create_autocmd("LspAttach", {
 				group = vim.api.nvim_create_augroup("kickstart-lsp-attach", { clear = true }),
 				callback = function(event)

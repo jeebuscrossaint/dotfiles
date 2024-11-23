@@ -5,7 +5,7 @@ if status is-interactive
 end
 #fish_config theme choose Old\ School
 
-source ~/.cache/wal/colors.fish
+#source ~/.cache/wal/colors.fish
 
 starship init fish | source
 alias drake='neovide'
@@ -33,9 +33,9 @@ set -x QT_QPA_PLATFORMTHEME qt5ct
 nerdfetch
 set -x GSK_RENDERER ngl
 
-cat ~/.cache/wal/colors.Xresources > ~/.Xresources
+#cat ~/.cache/wal/colors.Xresources > ~/.Xresources
 
-~/.cache/wal/./colors-tty.sh 
+#~/.cache/wal/./colors-tty.sh 
 
 # zoxide stuff
 # =============================================================================
