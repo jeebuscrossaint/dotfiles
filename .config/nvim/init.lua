@@ -584,7 +584,7 @@ require("lazy").setup({
 			location = '',
 			format = 1,
 			--custom_format = '%C+%c+T:%t+F:%f+%w+%m+%P+UV:%u+Hum:%h',
-			custom_format = '%C+%c+Time:%T+Humidity:%h+Temperature:%t+Feels:%f+Wind:%w+Location:%l+Precipitation:%p+Sunrise:%S+Sunset:%s',
+			custom_format = '%C+%c+Time:%T+Humidity:%h+Temp:%t+Feels:%f+Wind:%w+%l+Rain:%p+Rise:%S+Set:%s',
 			units = "USCS"
 		},
 		keys = {
