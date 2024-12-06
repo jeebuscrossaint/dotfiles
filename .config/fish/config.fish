@@ -29,8 +29,7 @@ set -x PATH $HOME/.local/bin $PATH
 set -x TERMINAL kitty
 set -x XDG_DATA_DIRS "$HOME/.local/share/flatpak/exports/share:/var/lib/flatpak/exports/share:/usr/local/share:/usr/share"
 set -x QT_QPA_PLATFORMTHEME qt5ct
-#pfetch
-nerdfetch
+pfetch
 set -x GSK_RENDERER ngl
 
 #cat ~/.cache/wal/colors.Xresources > ~/.Xresources
