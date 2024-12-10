@@ -20,6 +20,7 @@ alias 11gnu='ping gnu.org'
 alias pavucontrol='pavucontrol-qt'
 alias pearai='PearAI'
 
+#pay-respects fish --alias | source
 
 # add .cargo/bin to path
 set -x PATH $HOME/.cargo/bin $PATH
