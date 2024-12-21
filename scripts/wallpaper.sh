@@ -38,6 +38,7 @@ if [ -n "$selected" ]; then
 	# run pywal and pywal fox
 	wal -i "$full_path" -n
 	pywalfox update
+	walcord
 	killall -SIGUSR2 waybar
 	pkill dunst
 	ln -sf "${HOME}/.cache/wal/dunstrc" "${HOME}/.config/dunst/dunstrc"
