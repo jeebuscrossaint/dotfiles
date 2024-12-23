@@ -34,9 +34,9 @@ set -x PATH $HOME/bin $PATH
 pfetch
 set -x GSK_RENDERER ngl
 
-#cat ~/.cache/wal/colors.Xresources > ~/.Xresources
+cat ~/.cache/wal/colors.Xresources > ~/.Xresources
 
-#~/.cache/wal/./colors-tty.sh 
+~/.cache/wal/./colors-tty.sh 
 
 # zoxide stuff
 # =============================================================================
