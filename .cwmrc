@@ -1,0 +1,75 @@
+# Border width in pixels
+borderwidth 1
+
+# Border colors
+color activeborder white
+color inactiveborder black
+
+# No gaps around screen edges
+gap 0 0 0 0
+
+# Focus follows mouse settings
+#mousefocus yes
+snapdist 25
+
+# Terminal (Super + Q)
+command alacritty alacritty
+bind-key 4-q alacritty
+
+# Custom scripts (Super + D, G, L)
+command launcher ~/scripts/launcher.sh
+command wallpaper ~/scripts/wallpaper.sh
+command control ~/scripts/control.sh
+bind-key 4-d launcher
+bind-key 4-g wallpaper
+bind-key 4-l control
+
+# Firefox (Super + B)
+command firefox firefox
+bind-key 4-b firefox
+
+# Workspace/Group bindings (Super + 1-0)
+bind-key 4-1 group-only-1
+bind-key 4-2 group-only-2
+bind-key 4-3 group-only-3
+bind-key 4-4 group-only-4
+bind-key 4-5 group-only-5
+bind-key 4-6 group-only-6
+bind-key 4-7 group-only-7
+bind-key 4-8 group-only-8
+bind-key 4-9 group-only-9
+bind-key 4-0 group-only-10
+
+# Move focused window to workspace (Super + Shift + 1-0)
+bind-key 4S-1 window-movetogroup-1
+bind-key 4S-2 window-movetogroup-2
+bind-key 4S-3 window-movetogroup-3
+bind-key 4S-4 window-movetogroup-4
+bind-key 4S-5 window-movetogroup-5
+bind-key 4S-6 window-movetogroup-6
+bind-key 4S-7 window-movetogroup-7
+bind-key 4S-8 window-movetogroup-8
+bind-key 4S-9 window-movetogroup-9
+bind-key 4S-0 window-movetogroup-10
+
+# Window focus with Super + Arrow keys
+bind-key 4-Right window-cycle
+bind-key 4-Left window-rcycle
+bind-key 4-Up window-cycle
+bind-key 4-Down window-rcycle
+
+# Fullscreen and window resize bindings
+bind-key 4-f window-fullscreen
+bind-key 4C-Up window-resize-up
+bind-key 4C-Down window-resize-down
+bind-key 4C-Right window-resize-right
+bind-key 4C-Left window-resize-left
+
+# Mouse bindings
+bind-mouse M-1 window-move    # Alt + Left click to drag windows
+bind-mouse M-3 window-resize  # Alt + Right click to resize windows
+
+# Autostart program definitions
+command lemonbar "lemonbar"
+command udiskie "udiskie"
+command dunst "dunst"
