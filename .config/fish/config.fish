@@ -38,6 +38,10 @@ cat ~/.cache/wal/colors.Xresources > ~/.Xresources
 
 ~/.cache/wal/./colors-tty.sh 
 
+function findheader
+	find /usr/include /usr/local/include -name "$argv[1]" 2>/dev/null
+end
+
 # zoxide stuff
 # =============================================================================
 #

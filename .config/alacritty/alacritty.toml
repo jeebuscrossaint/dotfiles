@@ -9,7 +9,7 @@ decorations = "full"
 dynamic_title = true
 
 [font]
-normal = { family = "SF Mono Nerd Font Mono", style = "Regular"}
+normal = { family = "Terminess Nerd Font Mono", style = "Regular"}
 size = 10.0
 offset = { y = 4}
 
