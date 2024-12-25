@@ -38,12 +38,14 @@ if [ -n "$selected" ]; then
 	# run pywal and pywal fox
 	wal -i "$full_path" -n
 	pywalfox update
-	walcord
 	killall -SIGUSR2 waybar
 	pkill dunst
 	ln -sf "${HOME}/.cache/wal/dunstrc" "${HOME}/.config/dunst/dunstrc"
 	dunst &
 	i3-msg reload
+	walcord
+	pkill lemon.sh
+	~/.config/lemonbar/lemon.sh
     
     if [[ $XDG_SESSION_TYPE == "wayland" ]]; then
         set_wallpaper_wayland "$full_path"
