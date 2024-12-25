@@ -17,7 +17,6 @@ alias cl='clear'
 alias htop='btop'
 alias 11='ping 1.1.1.1'
 alias 11gnu='ping gnu.org'
-alias pavucontrol='pavucontrol-qt'
 alias pearai='PearAI'
 alias xcopy='xclip -sel clip'
 
