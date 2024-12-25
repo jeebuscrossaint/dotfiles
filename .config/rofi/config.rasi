@@ -1,5 +1,5 @@
 configuration {
-    font: "SF Mono Nerd Font Mono 12";
+    font: "Terminess Nerd Font Mono 12";
     show-icons: true;
     display-drun: "";
     drun-display-format: "{name}";
