@@ -139,4 +139,4 @@ while :; do
     volume=$(get_volume)
 
     echo -e "  %{l}$workspaces| $date_time %{c}$window_title %{r}$volume | $bluetooth | $cpu_usage | $memory | $cpu_temp | $backlight | $keyboard_state |$battery "
-done | lemonbar -g 1920x30 -B "$color0" -F "$color7" -f "monospace-10" &
+done | lemonbar -g 1920x30 -B "$color0" -F "$color8" &
