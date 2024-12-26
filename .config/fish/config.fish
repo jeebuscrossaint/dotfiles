@@ -17,7 +17,6 @@ alias cl='clear'
 alias htop='btop'
 alias 11='ping 1.1.1.1'
 alias 11gnu='ping gnu.org'
-alias pearai='PearAI'
 alias xcopy='xclip -sel clip'
 
 #source /usr/share/doc/find-the-command/ftc.fish
@@ -40,6 +39,21 @@ set -x GSK_RENDERER ngl
 
 function findheader
 	find /usr/include /usr/local/include -name "$argv[1]" 2>/dev/null
+end
+
+function colorview --argument hex
+    # Remove # if present
+    set hex (string replace -r '^#?' '' -- $hex)
+    
+    set -l r (echo $hex | cut -c 1-2)
+    set -l g (echo $hex | cut -c 3-4)
+    set -l b (echo $hex | cut -c 5-6)
+    
+    printf "\033[48;2;%d;%d;%dm     \033[0m %s\n" \
+        (printf "%d" "0x$r") \
+        (printf "%d" "0x$g") \
+        (printf "%d" "0x$b") \
+        $hex
 end
 
 # zoxide stuff
