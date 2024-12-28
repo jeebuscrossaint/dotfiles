@@ -3,9 +3,9 @@ if status is-interactive
 
     set -g fish_greeting
 end
-#fish_config theme choose Old\ School
+fish_config theme choose Old\ School
 
-source ~/.cache/wal/colors.fish
+#source ~/.cache/wal/colors.fish
 
 starship init fish | source
 alias drake='neovide'
@@ -32,8 +32,6 @@ set -x QT_QPA_PLATFORMTHEME qt5ct
 set -x PATH $HOME/bin $PATH
 pfetch
 set -x GSK_RENDERER ngl
-
-#cat ~/.cache/wal/colors.Xresources > ~/.Xresources
 
 ~/.cache/wal/./colors-tty.sh 
 
