@@ -4,54 +4,53 @@
 #
 # Read `man 5 sway` for a complete reference.
 
-# execs
-
-exec --no-startup-id nm-applet
-exec --no-startup-id timedatectl set-local-rtc 1 --adjust-system-clock
-exec --no-startup-id udiskie &
-exec --no-startup-id /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
-exec --no-startup-id waybar --config .config/waybar/config.json --style .config/waybar/style.css
-exec --no-startup-id dunst
-exec --no-startup-id copyq --start-server
-exec --no-startup-id wl-paste --type text --watch cliphist store #Stores only text data
-exec --no-startup-id wl-paste --type image --watch cliphist store #Stores only image data
-exec --no-startup-id swww-daemon
-exec --no-startup-id dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP
-exec --no-startup-id gamemoded
-exec --no-startup-id wlsunset -l 26.51046058922482 -L -80.06492526325684
-exec --no-startup-id swayosd-server
-exec --no-startup-id rog-control-center
-exec --no-startup-id autotiling &
-
-bindsym XF86AudioRaisevolume exec swayosd-client --output-volume +2
-bindsym XF86AudioLowerVolume exec swayosd-client --output-volume -2
-bindsym XF86AudioMute exec swayosd-client --output-volume mute-toggle
-bindsym XF86MonBrightnessUp exec  swayosd-client --brightness +2
-bindsym XF86MonBrightnessDown exec swayosd-client --brightness -2
-bindsym XF86AudioMicMute exec swayosd-client --input-volume mute-toggle
+include ~/.cache/wal/colors-sway
 
 ### Variables
 #
 # Logo key. Use Mod1 for Alt.
 set $mod Mod4
 # Home row direction keys, like vim
-set $left h
-set $down j
-set $up k
-set $right l
+#set $left h
+#set $down j
+#set $up k
+#set $right l
 # Your preferred terminal emulator
-set $term kitty
+set $term alacritty
 # Your preferred application launcher
 # Note: pass the final command to swaymsg so that the resulting window can be opened
 # on the original workspace that the command was run on.
-set $menu ~/scripts/./launcher.sh
+set $menu ~/scripts/launcher.sh
+set $wallpaper ~/scripts/wallpaper.sh
+set $control ~/scripts/control.sh
 
-bindsym $mod+g ~/scripts/./wallpaper.sh
+### Appearance
+# window corner radius in px
+corner_radius 10
+
+# Window background blur
+blur on
+blur_xray on
+blur_passes 2
+blur_radius 5
+
+shadows on
+shadows_on_csd off
+shadow_blur_radius 20
+shadow_color $background
+
+# inactive window fade amount. 0.0 = no dimming, 1.0 = fully dimmed
+default_dim_inactive 0.0
+dim_inactive_colors.unfocused #000000FF
+dim_inactive_colors.urgent #900000FF
+
+# Move minimized windows into Scratchpad (enable|disable)
+scratchpad_minimize disable
 
 ### Output configuration
 #
-# Default wallpaper (more resolutions are available in /usr/share/backgrounds/sway/)
-output * bg /usr/share/backgrounds/sway/Sway_Wallpaper_Blue_1920x1080.png fill
+# Default wallpaper (more resolutions are available in @datadir@/backgrounds/sway/)
+output * bg ~/wallpapers/gnudarkwallpaper.png fill
 #
 # Example configuration:
 #
@@ -91,13 +90,16 @@ output * bg /usr/share/backgrounds/sway/Sway_Wallpaper_Blue_1920x1080.png fill
 # Basics:
 #
     # Start a terminal
-    bindsym $mod+t exec $term
+    bindsym $mod+q exec $term
 
     # Kill focused window
     bindsym $mod+c kill
 
     # Start your launcher
     bindsym $mod+d exec $menu
+
+    bindsym $mod+g exec $wallpaper
+    bindsym $mod+l exec $control
 
     # Drag floating windows by holding down $mod and left mouse button.
     # Resize them with right mouse button + $mod.
@@ -115,10 +117,10 @@ output * bg /usr/share/backgrounds/sway/Sway_Wallpaper_Blue_1920x1080.png fill
 # Moving around:
 #
     # Move your focus around
-    bindsym $mod+$left focus left
-    bindsym $mod+$down focus down
-    bindsym $mod+$up focus up
-    bindsym $mod+$right focus right
+    #bindsym $mod+left focus left
+    #bindsym $mod+down focus down
+    #bindsym $mod+up focus up
+    #bindsym $mod+right focus right
     # Or use $mod+[up|down|left|right]
     bindsym $mod+Left focus left
     bindsym $mod+Down focus down
@@ -126,10 +128,10 @@ output * bg /usr/share/backgrounds/sway/Sway_Wallpaper_Blue_1920x1080.png fill
     bindsym $mod+Right focus right
 
     # Move the focused window with the same, but add Shift
-    bindsym $mod+Shift+$left move left
-    bindsym $mod+Shift+$down move down
-    bindsym $mod+Shift+$up move up
-    bindsym $mod+Shift+$right move right
+    #bindsym $mod+Shift+$left move left
+    #bindsym $mod+Shift+$down move down
+    #bindsym $mod+Shift+$up move up
+    #bindsym $mod+Shift+$right move right
     # Ditto, with arrow keys
     bindsym $mod+Shift+Left move left
     bindsym $mod+Shift+Down move down
@@ -168,7 +170,7 @@ output * bg /usr/share/backgrounds/sway/Sway_Wallpaper_Blue_1920x1080.png fill
     # You can "split" the current object of your focus with
     # $mod+b or $mod+v, for horizontal and vertical splits
     # respectively.
-    bindsym $mod+b splith
+    bindsym $mod+h splith
     bindsym $mod+v splitv
 
     # Switch the current container between different layout styles
@@ -207,10 +209,10 @@ mode "resize" {
     # right will grow the containers width
     # up will shrink the containers height
     # down will grow the containers height
-    bindsym $left resize shrink width 10px
-    bindsym $down resize grow height 10px
-    bindsym $up resize shrink height 10px
-    bindsym $right resize grow width 10px
+    #bindsym $left resize shrink width 10px
+    #bindsym $down resize grow height 10px
+    #bindsym $up resize shrink height 10px
+    #bindsym $right resize grow width 10px
 
     # Ditto, with arrow keys
     bindsym Left resize shrink width 10px
@@ -228,18 +230,18 @@ bindsym $mod+r mode "resize"
 # Status Bar:
 #
 # Read `man 5 sway-bar` for more information about this section.
-#bar {
-#    position top
+bar {
+    position top
 
     # When the status_command prints a new line to stdout, swaybar updates.
     # The default just shows the current date and time.
-    #status_command while date +'%Y-%m-%d %X'; do sleep 1; done
-	#mode hide
-    #colors {
-    #    statusline #ffffff
-    #    background #323232
-    #    inactive_workspace #32323200 #32323200 #5c5c5c
-    #}
-#}
+    status_command while date +'%Y-%m-%d %X'; do sleep 1; done
 
-include /etc/sway/config.d/*
+    colors {
+        statusline #ffffff
+        background #323232
+        inactive_workspace #32323200 #32323200 #5c5c5c
+    }
+}
+
+include @sysconfdir@/sway/config.d/*

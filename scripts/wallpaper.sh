@@ -43,8 +43,6 @@ if [ -n "$selected" ]; then
 	ln -sf "${HOME}/.cache/wal/dunstrc" "${HOME}/.config/dunst/dunstrc"
 	dunst &
 	i3-msg reload
-	pkill lemon.sh
-	~/.config/lemonbar/lemon.sh
 	walcord
     
     if [[ $XDG_SESSION_TYPE == "wayland" ]]; then
@@ -56,6 +54,8 @@ if [ -n "$selected" ]; then
                 ;;
             *)
                 set_static_wallpaper_x11 "$full_path"
+		pkill lemon.sh
+		~/.config/lemonbar/lemon.sh
                 ;;
         esac
     else
