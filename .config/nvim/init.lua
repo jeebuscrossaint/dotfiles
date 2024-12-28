@@ -283,11 +283,6 @@ require("lazy").setup({
 		lazy = false,
 	},
 
-	{
-		"RRethy/base16-nvim",
-		version = "*",
-		lazy = false,
-	},
 
 	{
 		"ziglang/zig.vim",
@@ -307,21 +302,6 @@ require("lazy").setup({
 		lazy = false,
 	},
 
-	{
-		"mistricky/codesnap.nvim",
-		build = "make",
-		config = function()
-			require("codesnap").setup({
-				save_path = "~/Pictures/Code/",
-				has_breadcrumbs = true,
-				show_workspace = true,
-				has_line_number = true,
-				bg_color = "#000000",
-				watermark = "",
-				title = "amarnath p",
-			})
-		end,
-	},
 
 	{
 		"windwp/nvim-autopairs",
@@ -332,15 +312,86 @@ require("lazy").setup({
 	},
 
 	{
-		"lervag/vimtex",
-		lazy = false,
-		init = function()
-			vim.g.vimtex_view_method = "zathura"
-		end,
+		"norcalli/nvim-colorizer.lua"
+	},
+
+	{
+	    "lervag/vimtex",
+	    lazy = false,
+	    init = function()
+	        if vim.loop.os_uname().sysname == "Windows_NT" then
+	            vim.g.vimtex_view_method = "sumatrapdf"
+        	    vim.g.vimtex_view_general_viewer = "SumatraPDF.exe"
+	        else
+        	    vim.g.vimtex_view_method = "zathura"
+	        end
+	    end,
 	},
 
 	{
 		"nyoom-engineering/oxocarbon.nvim",
+	},
+
+	{
+		"folke/tokyonight.nvim",
+	},
+
+	{
+		"ellisonleao/gruvbox.nvim",
+	},
+	
+	{
+		"catppuccin/nvim",
+		name = "catppuccin",
+	},
+
+	{
+		"Mofiqul/vscode.nvim",
+	},
+
+	{
+		"aktersnurra/no-clown-fiesta.nvim",
+	},
+
+	{	
+		"paulo-granthon/hyper.nvim",
+	},
+
+	{
+		"jaredgorski/fogbell.vim",
+	},
+
+	{
+		"nacq/better-default",
+	},
+
+	{
+		"jaredgorski/Mies.vim",
+	},
+
+	{
+		"LuRsT/austere.vim",
+	},
+
+	{
+		"wolandark/NotePad-Vim",
+	},
+
+	{
+		"AlessandroYorba/Despacio"
+	},
+
+	{
+		"vim-scripts/rdark-terminal2.vim"
+	},
+
+	{
+		"EdenEast/nightfox.nvim",
+	},
+
+	{
+ 		'stevearc/dressing.nvim',
+		opts = {},
 	},
 
 	{
@@ -353,7 +404,7 @@ require("lazy").setup({
 		config = function()
 			require("CopilotChat").setup({
 				debug = true,
-				model = "gpt-4",
+				model = "claude-3.5-sonnet",
 				temperature = 0.1,
 				question_header = "## User ",
 				answer_header = "## Copilot ",
@@ -563,16 +614,6 @@ require("lazy").setup({
 		"hrsh7th/nvim-cmp"	
 	},
 
-	{
-		  "okuuva/auto-save.nvim",
-		   version = '^1.0.0', -- see https://devhints.io/semver, alternatively use '*' to use the latest tagged release
-		   cmd = "ASToggle", -- optional for lazy loading on command
-		   event = { "InsertLeave", "TextChanged" }, -- optional for lazy loading on trigger events
-		   opts = {
-		    -- your config goes here
-		    -- or just leave it empty :)
-		        },
-	},
 		     
 	{
 		"lazymaniac/wttr.nvim",
@@ -607,8 +648,12 @@ require("lazy").setup({
 
 	{
 		"uZer/pywal16.nvim",
+			cond = function()
+		        -- Only load on non-Windows systems
+	        	return vim.loop.os_uname().sysname ~= "Windows_NT"
+			end,
 		config = function()
-			require("pywal16").setup()
+		require("pywal16").setup()
 		end,
 	},
 
@@ -617,14 +662,6 @@ require("lazy").setup({
 		lazy = false,
 		config = function()
 			require("hlargs").setup()
-		end,
-	},
-
-	{
-		"echasnovski/mini.animate",
-		lazy = false,
-		config = function()
-			require("mini.animate").setup()
 		end,
 	},
 
@@ -648,12 +685,6 @@ require("lazy").setup({
 		end,
 	},
 
-	{
-		"CRAG666/code_runner.nvim",
-		config = function()
-			require("code_runner").setup({ config = true })
-		end,
-	},
 
 	{
 		"romgrk/barbar.nvim",
@@ -790,7 +821,11 @@ require("lazy").setup({
 				--     i = { ['<c-enter>'] = 'to_fuzzy_refine' },
 				--   },
 				-- },
-				-- pickers = {}
+				pickers = {
+					colorscheme = {
+						enable_preview = true
+						}
+				},
 				extensions = {
 					["ui-select"] = {
 						require("telescope.themes").get_dropdown(),
