@@ -5,7 +5,7 @@ if status is-interactive
 end
 fish_config theme choose Old\ School
 
-#source ~/.cache/wal/colors.fish
+source ~/.cache/wal/colors.fish
 
 starship init fish | source
 alias drake='neovide'
@@ -18,8 +18,6 @@ alias htop='btop'
 alias 11='ping 1.1.1.1'
 alias 11gnu='ping gnu.org'
 alias xcopy='xclip -sel clip'
-
-#source /usr/share/doc/find-the-command/ftc.fish
 
 # add .cargo/bin to path
 set -x PATH $HOME/.cargo/bin $PATH
