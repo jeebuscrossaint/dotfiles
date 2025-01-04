@@ -171,8 +171,6 @@ else
 	vim.opt.shell = "fish"
 end
 
-vim.keymap.set("n", "<leader>r", ":NvimTreeToggle<CR>", { noremap = true, silent = true })
-
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
 
@@ -283,7 +281,6 @@ require("lazy").setup({
 		lazy = false,
 	},
 
-
 	{
 		"ziglang/zig.vim",
 		version = "*",
@@ -291,18 +288,15 @@ require("lazy").setup({
 	},
 
 	{
-		"nvim-tree/nvim-tree.lua",
-		config = function()
-			require("nvim-tree").setup({
-				filters = {
-					dotfiles = true,
-				},
-			})
-		end,
-		lazy = false,
+		"nvim-neo-tree/neo-tree.nvim",
+		branch = "v3.x",
+		dependencies = {
+			"nvim-lua/plenary.nvim",
+			"nvim-tree/nvim-web-devicons", -- not strictly required, but recommended
+			"MunifTanjim/nui.nvim",
+			"3rd/image.nvim", -- Optional image support in preview window: See `# Preview Mode` for more information
+		},
 	},
-
-
 	{
 		"windwp/nvim-autopairs",
 		event = "InsertEnter",
@@ -312,20 +306,20 @@ require("lazy").setup({
 	},
 
 	{
-		"norcalli/nvim-colorizer.lua"
+		"norcalli/nvim-colorizer.lua",
 	},
 
 	{
-	    "lervag/vimtex",
-	    lazy = false,
-	    init = function()
-	        if vim.loop.os_uname().sysname == "Windows_NT" then
-	            vim.g.vimtex_view_method = "sumatrapdf"
-        	    vim.g.vimtex_view_general_viewer = "SumatraPDF.exe"
-	        else
-        	    vim.g.vimtex_view_method = "zathura"
-	        end
-	    end,
+		"lervag/vimtex",
+		lazy = false,
+		init = function()
+			if vim.loop.os_uname().sysname == "Windows_NT" then
+				vim.g.vimtex_view_method = "sumatrapdf"
+				vim.g.vimtex_view_general_viewer = "SumatraPDF.exe"
+			else
+				vim.g.vimtex_view_method = "zathura"
+			end
+		end,
 	},
 
 	{
@@ -339,7 +333,7 @@ require("lazy").setup({
 	{
 		"ellisonleao/gruvbox.nvim",
 	},
-	
+
 	{
 		"catppuccin/nvim",
 		name = "catppuccin",
@@ -353,7 +347,7 @@ require("lazy").setup({
 		"aktersnurra/no-clown-fiesta.nvim",
 	},
 
-	{	
+	{
 		"paulo-granthon/hyper.nvim",
 	},
 
@@ -378,11 +372,11 @@ require("lazy").setup({
 	},
 
 	{
-		"AlessandroYorba/Despacio"
+		"AlessandroYorba/Despacio",
 	},
 
 	{
-		"vim-scripts/rdark-terminal2.vim"
+		"vim-scripts/rdark-terminal2.vim",
 	},
 
 	{
@@ -390,7 +384,7 @@ require("lazy").setup({
 	},
 
 	{
- 		'stevearc/dressing.nvim',
+		"stevearc/dressing.nvim",
 		opts = {},
 	},
 
@@ -611,49 +605,48 @@ require("lazy").setup({
 	}, ]]
 
 	{
-		"hrsh7th/nvim-cmp"	
+		"hrsh7th/nvim-cmp",
 	},
 
-		     
 	{
 		"lazymaniac/wttr.nvim",
 		dependencies = {
-			'nvim-lua/plenary.nvim',
-			'MunifTanjim/nui.nvim',
+			"nvim-lua/plenary.nvim",
+			"MunifTanjim/nui.nvim",
 		},
 		opts = {
-			location = '',
+			location = "",
 			format = 1,
 			--custom_format = '%C+%c+T:%t+F:%f+%w+%m+%P+UV:%u+Hum:%h',
-			custom_format = '%C+%c+Time:%T+Humidity:%h+Temp:%t+Feels:%f+Wind:%w+%l+Rain:%p+Rise:%S+Set:%s',
-			units = "USCS"
+			custom_format = "%C+%c+Time:%T+Humidity:%h+Temp:%t+Feels:%f+Wind:%w+%l+Rain:%p+Rise:%S+Set:%s",
+			units = "USCS",
 		},
 		keys = {
-		      {
-		        '<leader>W',
-		        function()
-		          require('wttr').get_forecast() -- show forecast for my location
-		        end,
-		        desc = 'Weather Forecast',
-		      },
-		      {
-		        '<leader>w',
-		        function()
-		          require('wttr').get_forecast("London") -- show forecast for London
-		        end,
-		        desc = 'Weather Forecast - London',
-		      },
+			{
+				"<leader>W",
+				function()
+					require("wttr").get_forecast() -- show forecast for my location
+				end,
+				desc = "Weather Forecast",
+			},
+			{
+				"<leader>w",
+				function()
+					require("wttr").get_forecast("London") -- show forecast for London
+				end,
+				desc = "Weather Forecast - London",
+			},
 		},
 	},
 
 	{
 		"uZer/pywal16.nvim",
-			cond = function()
-		        -- Only load on non-Windows systems
-	        	return vim.loop.os_uname().sysname ~= "Windows_NT"
-			end,
+		cond = function()
+			-- Only load on non-Windows systems
+			return vim.loop.os_uname().sysname ~= "Windows_NT"
+		end,
 		config = function()
-		require("pywal16").setup()
+			require("pywal16").setup()
 		end,
 	},
 
@@ -684,7 +677,6 @@ require("lazy").setup({
 			})
 		end,
 	},
-
 
 	{
 		"romgrk/barbar.nvim",
@@ -823,8 +815,8 @@ require("lazy").setup({
 				-- },
 				pickers = {
 					colorscheme = {
-						enable_preview = true
-						}
+						enable_preview = true,
+					},
 				},
 				extensions = {
 					["ui-select"] = {
@@ -921,10 +913,10 @@ require("lazy").setup({
 			--    That is to say, every time a new file is opened that is associated with
 			--    an lsp (for example, opening `main.rs` is associated with `rust_analyzer`) this
 			--    function will be executed to configure the current buffer
-			vim.api.nvim_create_user_command('Weather', function()
-			    require('wttr').get_forecast()
+			vim.api.nvim_create_user_command("Weather", function()
+				require("wttr").get_forecast()
 			end, {})
-			
+
 			vim.api.nvim_create_autocmd("LspAttach", {
 				group = vim.api.nvim_create_augroup("kickstart-lsp-attach", { clear = true }),
 				callback = function(event)
@@ -1194,18 +1186,18 @@ require("lazy").setup({
 				-- No, but seriously. Please read `:help ins-completion`, it is really good!
 				mapping = cmp.mapping.preset.insert({
 					-- Select the [n]ext item
-					["<C-n>"] = cmp.mapping.select_next_item(),
+					["<Tab>"] = cmp.mapping.select_next_item(),
 					-- Select the [p]revious item
-					["<C-p>"] = cmp.mapping.select_prev_item(),
+					["<S-Tab>"] = cmp.mapping.select_prev_item(),
 
 					-- Scroll the documentation window [b]ack / [f]orward
-					["<C-b>"] = cmp.mapping.scroll_docs(-4),
-					["<C-f>"] = cmp.mapping.scroll_docs(4),
+					["<Up>"] = cmp.mapping.scroll_docs(-4),
+					["<Down>"] = cmp.mapping.scroll_docs(4),
 
 					-- Accept ([y]es) the completion.
 					--  This will auto-import if your LSP supports it.
 					--  This will expand snippets if the LSP sent a snippet.
-					["<C-y>"] = cmp.mapping.confirm({ select = true }),
+					["<CR>"] = cmp.mapping.confirm({ select = true }),
 
 					-- If you prefer more traditional completion keymaps,
 					-- you can uncomment the following lines

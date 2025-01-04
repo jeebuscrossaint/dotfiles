@@ -31,7 +31,7 @@ set -x PATH $HOME/bin $PATH
 pfetch
 set -x GSK_RENDERER ngl
 
-~/.cache/wal/./colors-tty.sh 
+~/.cache/wal/colors-tty.sh 
 
 function findheader
 	find /usr/include /usr/local/include -name "$argv[1]" 2>/dev/null
