@@ -9,8 +9,8 @@ decorations = "full"
 dynamic_title = true
 
 [font]
-normal = { family = "Commit Mono Nerd Font", style = "Regular"}
-size = 10.0
+normal = { family = "Comic Mono Nerd Font", style = "Regular"}
+size = 12.0
 offset = { y = 4}
 
 [selection]
