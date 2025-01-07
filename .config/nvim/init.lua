@@ -384,6 +384,15 @@ require("lazy").setup({
 	},
 
 	{
+		"gbprod/nord.nvim",
+	},
+
+	{
+		"rcarriga/nvim-notify",
+		lazy = false,
+	},
+
+	{
 		"stevearc/dressing.nvim",
 		opts = {},
 	},
