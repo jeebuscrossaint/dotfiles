@@ -2,7 +2,7 @@
 
 * {
     /* `otf-font-awesome` is required to be installed for icons */
-    font-family: FontAwesome, SF Mono Nerd Font Mono, JetBrainsMono Nerd Font Mono, Source Code Pro, Roboto, Helvetica, Arial, sans-serif;
+    font-family: FontAwesome, Commit Mono Nerd Font, JetBrainsMono Nerd Font Mono, Source Code Pro, Roboto, Helvetica, Arial, sans-serif;
     font-size: 13px;
     border: none;
     border-radius: 0;
@@ -12,11 +12,12 @@
 window#waybar {
     /*background-color: @background; */
     background-color: @background;
-    border-bottom: 0px solid white;
+    border-bottom: 2px @foreground;
     color: @foreground;
     /* transition-property: background-color;
     transition-duration: .5s; */
     border-radius: 0px;
+    opacity: 0.9;
 }
 
 window#waybar.hidden {

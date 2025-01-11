@@ -276,18 +276,6 @@ require("lazy").setup({
 	},
 
 	{
-		"xiyaowong/transparent.nvim",
-		version = "*",
-		lazy = false,
-	},
-
-	{
-		"ziglang/zig.vim",
-		version = "*",
-		lazy = false,
-	},
-
-	{
 		"nvim-neo-tree/neo-tree.nvim",
 		branch = "v3.x",
 		dependencies = {
@@ -297,6 +285,7 @@ require("lazy").setup({
 			"3rd/image.nvim", -- Optional image support in preview window: See `# Preview Mode` for more information
 		},
 	},
+
 	{
 		"windwp/nvim-autopairs",
 		event = "InsertEnter",
@@ -667,12 +656,12 @@ require("lazy").setup({
 		end,
 	},
 
-	--{
-	--	"zbirenbaum/copilot-cmp",
-	--	config = function ()
-	--	  require("copilot_cmp").setup()
-	--	end
-	--},
+	{
+		"zbirenbaum/copilot-cmp",
+		config = function ()
+		  require("copilot_cmp").setup()
+		end
+	},
 
 	{ "AndreM222/copilot-lualine" },
 
