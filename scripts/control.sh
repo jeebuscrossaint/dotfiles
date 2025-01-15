@@ -23,7 +23,7 @@ case $action in
         ;;
     Lock)
         if [[ $XDG_SESSION_TYPE == "wayland" ]]; then
-            swaylock --config ~/.config/swaylock/swaylockconf
+	    hyprlock
         elif [[ $XDG_SESSION_TYPE == "x11" ]]; then
             xsecurelock
         else

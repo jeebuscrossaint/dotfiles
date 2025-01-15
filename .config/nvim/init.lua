@@ -1,3 +1,13 @@
+-- Add these performance improvements
+vim.opt.shadafile = "NONE" -- Don't load shada file on startup
+vim.opt.history = 100 -- Reduce history size
+vim.g.python3_host_prog = '/usr/bin/python3' -- Specify Python path explicitly
+vim.opt.updatetime = 250 -- Faster completion
+vim.opt.timeout = true
+vim.opt.timeoutlen = 300
+vim.opt.ttimeoutlen = 10
+
+
 --[[
 
 =====================================================================
@@ -287,15 +297,13 @@ require("lazy").setup({
 	},
 
 	{
-		"windwp/nvim-autopairs",
-		event = "InsertEnter",
-		config = true,
-		-- use opts = {} for passing setup options
-		-- this is equalent to setup({}) function
+		'echasnovski/mini.pairs', 
+		version = '*',
 	},
 
 	{
 		"norcalli/nvim-colorizer.lua",
+		event = "BufRead",
 	},
 
 	{
@@ -345,10 +353,6 @@ require("lazy").setup({
 	},
 
 	{
-		"nacq/better-default",
-	},
-
-	{
 		"jaredgorski/Mies.vim",
 	},
 
@@ -365,20 +369,11 @@ require("lazy").setup({
 	},
 
 	{
-		"vim-scripts/rdark-terminal2.vim",
-	},
-
-	{
 		"EdenEast/nightfox.nvim",
 	},
 
 	{
 		"gbprod/nord.nvim",
-	},
-
-	{
-		"rcarriga/nvim-notify",
-		lazy = false,
 	},
 
 	{
@@ -513,20 +508,6 @@ require("lazy").setup({
 	},
 
 	{
-		"startup-nvim/startup.nvim",
-		lazy = false,
-		requires = {
-			"nvim-lua/plenary.nvim",
-			"nvim-telescope/telescope.nvim",
-		},
-		config = function()
-			require("startup").setup({
-				theme = "evil",
-			})
-		end,
-	},
-
-	{
 		"nvim-lualine/lualine.nvim",
 		dependencies = { "nvim-tree/nvim-web-devicons" },
 		lazy = false,
@@ -570,73 +551,11 @@ require("lazy").setup({
 		end,
 	},
 
-	--[[{
-		"hrsh7th/nvim-compe",
-		event = "InsertEnter",
-		config = function()
-			require("compe").setup({
-				enabled = true,
-				autocomplete = true,
-				debug = false,
-				min_length = 1,
-				preselect = "enable",
-				throttle_time = 80,
-				source_timeout = 200,
-				incomplete_delay = 400,
-				max_abbr_width = 100,
-				max_kind_width = 100,
-				max_menu_width = 100,
-				documentation = true,
-				source = {
-					path = true,
-					buffer = true,
-					calc = true,
-					nvim_lsp = true,
-					nvim_lua = true,
-					spell = true,
-					tags = true,
-					snippets_nvim = true,
-					treesitter = true,
-				},
-			})
-		end,
-	}, ]]
-
 	{
 		"hrsh7th/nvim-cmp",
 	},
 
-	{
-		"lazymaniac/wttr.nvim",
-		dependencies = {
-			"nvim-lua/plenary.nvim",
-			"MunifTanjim/nui.nvim",
-		},
-		opts = {
-			location = "",
-			format = 1,
-			--custom_format = '%C+%c+T:%t+F:%f+%w+%m+%P+UV:%u+Hum:%h',
-			custom_format = "%C+%c+Time:%T+Humidity:%h+Temp:%t+Feels:%f+Wind:%w+%l+Rain:%p+Rise:%S+Set:%s",
-			units = "USCS",
-		},
-		keys = {
-			{
-				"<leader>W",
-				function()
-					require("wttr").get_forecast() -- show forecast for my location
-				end,
-				desc = "Weather Forecast",
-			},
-			{
-				"<leader>w",
-				function()
-					require("wttr").get_forecast("London") -- show forecast for London
-				end,
-				desc = "Weather Forecast - London",
-			},
-		},
-	},
-
+	--[[
 	{
 		"uZer/pywal16.nvim",
 		cond = function()
@@ -646,11 +565,12 @@ require("lazy").setup({
 		config = function()
 			require("pywal16").setup()
 		end,
-	},
+	}, ]]--
 
 	{
 		"m-demare/hlargs.nvim",
 		lazy = false,
+		event = "BufRead",
 		config = function()
 			require("hlargs").setup()
 		end,
@@ -911,9 +831,6 @@ require("lazy").setup({
 			--    That is to say, every time a new file is opened that is associated with
 			--    an lsp (for example, opening `main.rs` is associated with `rust_analyzer`) this
 			--    function will be executed to configure the current buffer
-			vim.api.nvim_create_user_command("Weather", function()
-				require("wttr").get_forecast()
-			end, {})
 
 			vim.api.nvim_create_autocmd("LspAttach", {
 				group = vim.api.nvim_create_augroup("kickstart-lsp-attach", { clear = true }),

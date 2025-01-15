@@ -4,12 +4,12 @@ ipc_socket = true
 import = ["~/.cache/wal/colors-alacritty.toml"]
 
 [window]
-padding = { x = 20 , y = 20 }
+padding = { x = 5 , y = 5 }
 decorations = "full"
 dynamic_title = true
 
 [font]
-normal = { family = "Commit Mono Nerd Font", style = "Regular"}
+normal = { family = "Monaspice Ne Nerd Font", style = "Regular"}
 size = 10.0
 offset = { y = 4}
 
