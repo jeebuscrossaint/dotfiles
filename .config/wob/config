@@ -1,0 +1,9 @@
+anchor = bottom
+margin = 10
+width = 300
+height = 30
+bar_color = #FFFFFF
+background_color = #000000
+border_color = #FFFFF
+border_size = 2
+overflow = hidden
