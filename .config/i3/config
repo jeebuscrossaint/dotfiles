@@ -46,6 +46,7 @@ exec --no-startup-id set MOZ_ENABLE_WAYLAND 0
 exec --no-startup-id set CLUTTER_BACKEND x11
 exec --no-startup-id set QT_QPA_PLATFORM x11
 exec --no-startup-id gamescope &
+exec --no-startup-id /usr/bin/pipewire & /usr/bin/pipewire-pulse & /usr/bin/wireplumber &
 bindsym $mod+shift+s exec flameshot gui
 
 
@@ -107,8 +108,10 @@ client.placeholder      $bg     $bg     $fg  $bg       $bg
 
 client.background       $bg
 
-gaps inner 20 # should be 20
-gaps outer 0 # should be 20
+gaps inner 20 
+# should be 20
+gaps outer 0 
+# should be 20
 for_window [class=".*"] border pixel 2
 set $wm_setting_border_size 2
 default_border pixel $wm_setting_border_size

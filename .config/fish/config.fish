@@ -18,6 +18,7 @@ alias htop='btop'
 alias 11='ping 1.1.1.1'
 alias 11gnu='ping gnu.org'
 alias xcopy='xclip -sel clip'
+alias ppctl='powerprofilesctl'
 
 # add .cargo/bin to path
 set -x PATH $HOME/.cargo/bin $PATH
@@ -28,6 +29,7 @@ set -x TERMINAL kitty
 set -x XDG_DATA_DIRS "$HOME/.local/share/flatpak/exports/share:/var/lib/flatpak/exports/share:/usr/local/share:/usr/share"
 set -x QT_QPA_PLATFORMTHEME qt5ct
 set -x PATH $HOME/bin $PATH
+set -x PATH /usr/local/bin $PATH
 pfetch
 set -x GSK_RENDERER ngl
 
