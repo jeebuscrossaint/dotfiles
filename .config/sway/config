@@ -15,14 +15,14 @@ exec --no-startup-id udiskie &
 exec --no-startup-id nm-applet &
 exec --no-startup-id autotiling &
 exec --no-startup-id copyq --start-server &
-exec --no-startup-id timedatectl set-local-rtc 1 --adjust-system-clock
 exec --no-startup-id /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
 exec --no-startup-id wl-paste --type text --watch cliphist store
 exec --no-startup-id wl-paste --type image --watch cliphist store
 exec --no-startup-id swww init
-exec --no-startup-id dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP
-exec --no-startup-id gamemoded
-exec --no-startup-id swayosd-server
+exec --no-startup-id dbus-update-activation-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP
+exec --no-startup-id gamemoded 
+exec --no-startup-id avizo-service
+exec --no-startup-id /usr/bin/pipewire & /usr/bin/pipewire-pulse & /usr/bin/wirepllumber
 
 # class					 border  backgr. text    indicator child_border
 client.focused           		$foreground $foreground $foreground $foreground   $foreground
@@ -32,13 +32,13 @@ client.urgent			 	$background $background $background $background   $background
 client.placeholder		 	$background $background $background $background   $background
 
 ###### Configurable for SwayFX users ######
-blur enable
-blur_xray enable
-blur_passes 1
-blur_radius 5
-shadows enable
-shadow_blur_radius 10 
-corner_radius 10
+#blur enable
+#blur_xray enable
+#blur_passes 1
+#blur_radius 5
+#shadows enable
+#shadow_blur_radius 10 
+#corner_radius 10
 #layer_effects "waybar" shadows enable; corner_radius 0; blur disable
 
 #for_window [micro] saturation set 2.0
@@ -53,7 +53,7 @@ set $mod Mod4
 #set $down j
 #set $up k
 #set $right l
-set $term alacritty
+set $term foot
 set $menu ~/./scripts/launcher.sh
 set $control ~/./scripts/control.sh
 set $wallpaper ~/./scripts/wallpaper.sh
