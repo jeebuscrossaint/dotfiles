@@ -5,15 +5,15 @@
     // "width": 1280, // Waybar width
     "spacing": 4, // Gaps between modules (4px)
     // Choose the order of the modules
-    "modules-left": ["custom/media", "clock", "hyprland/workspaces", "tray", "custom/weather", "custom/pacman", "cava", "custom/protonmail"],
-    "modules-center": ["hyprland/window", "sway/workspaces", "sway/mode", "sway/scratchpad"],
+    "modules-left": ["custom/media", "clock", "hyprland/workspaces", "sway/workspaces", "sway/mode", "sway/scratchpad", "tray", "custom/weather", "custom/pacman", "cava", "custom/protonmail"],
+    "modules-center": ["hyprland/window", "sway/window"],
     "modules-right": ["privacy", "pulseaudio", "bluetooth", "network", "cpu", "memory", "temperature", "backlight", "keyboard-state", "battery", "battery#bat2"],
     // Modules configuration
      "sway/workspaces": {
          "disable-scroll": true,
          "all-outputs": true,
          "warp-on-scroll": false,
-         "format": "{name}: {icon}",
+         "format": "{name}",
          "format-icons": {
              "1": "",
              "2": "",
