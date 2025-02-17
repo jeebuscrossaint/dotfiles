@@ -1,5 +1,6 @@
 @import "/home/amarnath/.cache/wal/colors-waybar.css";
 
+
 * {
     /* `otf-font-awesome` is required to be installed for icons */
     font-family: FontAwesome, Monaspice Ne Nerd Font, Commit Mono Nerd Font, JetBrainsMono Nerd Font Mono, Source Code Pro, Roboto, Helvetica, Arial, sans-serif;
@@ -10,14 +11,12 @@
 }
 
 window#waybar {
-    /*background-color: @background; */
     background-color: @background;
-    border-bottom: 2px @foreground;
+    border: 2px solid @background;
     color: @foreground;
-    /* transition-property: background-color;
-    transition-duration: .5s; */
-    border-radius: 7px;
-    margin: 5px;
+    border-radius: 50px;
+    margin: 5px 5px;
+    padding: 3px 10px;
     opacity: 1.0;
 }
 

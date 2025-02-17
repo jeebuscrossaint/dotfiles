@@ -12,7 +12,7 @@ log_and_exec() {
 	echo "$1 exited with status $?" >> ~/xinit_log.txt
 }
 
-#log_and_exec i3
+log_and_exec i3
 
 
 #echo "All window managers failed, starting xterm"

@@ -19,7 +19,7 @@ set_wallpaper_wayland() {
     swww-daemon
     export SWWW_TRANSITION=fade # should be random
     export SWWW_TRANSITION_FPS=120
-    export SWWW_TRANSITION_DURATION=5
+    export SWWW_TRANSITION_DURATION=0
     swww img "$1"
 
 }
