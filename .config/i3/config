@@ -24,7 +24,7 @@ exec --no-startup-id dex --autostart --environment i3
 
 # xss-lock grabs a logind suspend inhibit lock and will use i3lock to lock the
 # screen before suspend. Use loginctl lock-session to lock your screen.
-exec --no-startup-id xss-lock --transfer-sleep-lock -- i3lock --nofork
+exec --no-startup-id xss-lock --transfer-sleep-lock -- xsecurelock
 
 # NetworkManager is the most popular way to manage wireless networks on Linux,
 # and nm-applet is a desktop environment-independent system tray GUI for it.
@@ -37,7 +37,8 @@ exec --no-startup-id xclip
 exec --no-startup-id xdotool key --clearmodifiers Num_Lock
 exec --no-startup-id .config/lemonbar/lemon.sh &
 #exec --no-startup-id ~/.config/lemonbar/./lemonbar.sh
-exec --no-startup-id autotiling &
+exec autotiling &
+#exec oneko 
 exec --no-startup-id rog-control-center
 # environment variables to get correct theming
 exec --no-startup-id set QT_QPA_PLATFORMTHEME qt6ct
@@ -73,7 +74,7 @@ bindsym $mod+P floating toggle
 for_window [class="rofi"] floating enable
 for_window [class="zoom"] floating enable
 
-exec --no-startup-id picom --config ~/.config/picom/picom.conf
+#exec --no-startup-id picom --config ~/.config/picom/picom.conf
 #exec --no-startup-id compiz --replace ccp
 #exec --no-startup-id nitrogen --restore
 exec --no-startup-id dunst
@@ -84,13 +85,13 @@ exec --no-startup-id dunst
 
 bindsym $mod+d exec ./scripts/launcher.sh
 bindsym $mod+g exec ./scripts/wallpaper.sh
-bindsym $mod+l exec ./scripts/control.sh
+bindsym $mod+l exec xsecurelock
 
 bindsym $mod+b exec firefox-developer-edition
 
 # colors n borders
-set $wm_setting_gap_width            0 # should be 15
-set $wm_setting_gap_heigth           0 # should be 15
+#set $wm_setting_gap_width            0 # should be 15
+#set $wm_setting_gap_heigth           0 # should be 15
 
 #smart_gaps on
 
@@ -108,7 +109,7 @@ client.placeholder      $bg     $bg     $fg  $bg       $bg
 
 client.background       $bg
 
-gaps inner 20 
+#gaps inner 20 
 # should be 20
 gaps outer 0 
 # should be 20
@@ -240,7 +241,7 @@ bindsym $mod+r mode "resize"
 
 # Start i3bar to display a workspace bar (plus the system information i3status
 # finds out, if available)
-#bar {
- #       status_command i3status
-#}
+bar {
+       status_command i3status
+}
 

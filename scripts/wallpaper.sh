@@ -35,7 +35,7 @@ if [ -n "$selected" ]; then
     extension="${selected##*.}"
 
 	# run pywal and pywal fox
-	wal -i "$full_path" -n
+	wal -i "$full_path"
 	pywalfox update
 	killall -SIGUSR2 waybar
 	pkill dunst
