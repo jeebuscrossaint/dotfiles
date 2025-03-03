@@ -10,7 +10,7 @@ source ~/.cache/wal/colors.fish
 starship init fish | source
 alias drake='neovide'
 alias jit='git'
-alias hx='helix'
+#alias hx='helix'
 alias ls='lsd'
 #alias sudo='doas'
 alias cl='clear'

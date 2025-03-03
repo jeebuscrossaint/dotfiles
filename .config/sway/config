@@ -1,9 +1,10 @@
-font pango:iosevka nerd font regular 12
+font pango:Monaspice Ne Nerd Font 9
 include ~/.cache/wal/colors-sway
 output * bg #000000 solid_color
 
-gaps inner 5
-gaps outer 5
+smart_gaps on
+gaps inner 0
+gaps outer 0
 
 # these two lines removes the titlebar
 default_border pixel 2
@@ -12,13 +13,14 @@ default_floating_border pixel 2
 focus_follows_mouse yes
 exec wlrctl keyboard numlock enable
 
+exec --no-startup-id numlockwl
 exec --no-startup-id fnott &
-exec --no-startup-id waybar --config ~/.config/waybar/config.json --style ~/.config/waybar/style.css &
+#exec --no-startup-id waybar --config ~/.config/waybar/config.json --style ~/.config/waybar/style.css &
 exec --no-startup-id udiskie &
 exec --no-startup-id nm-applet &
 exec --no-startup-id autotiling &
 exec --no-startup-id copyq --start-server &
-exec --no-startup-id /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
+exec --no-startup-id /usr/libexec/polkit-gnome-authentication-agent-1
 exec --no-startup-id wl-paste --type text --watch cliphist store
 exec --no-startup-id wl-paste --type image --watch cliphist store
 exec --no-startup-id swww init
@@ -28,6 +30,8 @@ exec --no-startup-id avizo-service
 exec --no-startup-id /usr/bin/pipewire & 
 exec --no-startup-id /usr/bin/pipewire-pulse & 
 exec --no-startup-id /usr/bin/wireplumber &
+exec --no-startup-id swayidle
+exec --no-startup-id /usr/libexec/xdg-desktop-portal-gtk
 input type:touchpad {
 	natural_scroll disabled
 }
@@ -49,9 +53,18 @@ client.placeholder		 	$background $background $foreground $background   $backgro
 
 #for_window [micro] saturation set 2.0
 
-#bar {
-	#swaybar_command waybar --config ~/.config/waybar/config.json --style ~/.config/waybar/style.css &
-#}
+bar {
+	swaybar_command swaybar
+	status_command env RUST_BACKTRACE=1 RUST_LOG=swayr=debug swayrbar 2> /tmp/swayrbar.log
+	position bottom
+	font pango:Monaspice Ne Nerd Font 8
+	height 20
+
+	colors {
+		statusline $foreground
+		background $background
+	}
+}
 
 # variables
 set $mod Mod4
@@ -59,7 +72,7 @@ set $mod Mod4
 #set $down j
 #set $up k
 #set $right l
-set $term foot
+set $term alacritty
 set $menu ~/scripts/launcher.sh
 set $control ~/scripts/control.sh
 set $wallpaper ~/scripts/wallpaper.sh
@@ -121,8 +134,8 @@ bindsym $mod+space focus mode_toggle
 bindsym $mod+a focus parent
 bindsym $mod+r mode "resize"
 
-bindsym XF86AudioRaiseVolume exec volumectl -u up
-bindsym XF86AudioLowerVolume exec volumectl -u down
+bindsym XF86AudioRaiseVolume exec volumectl  up
+bindsym XF86AudioLowerVolume exec volumectl  down
 bindsym XF86AudioMute exec volumectl toggle-mute
 bindsym XF86AudioMicMute exec volumectl -m toggle-mute
 bindsym XF86Launch3 exec playerctl play-pause

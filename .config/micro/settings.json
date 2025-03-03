@@ -2,5 +2,6 @@
     "autosave": 1,
     "autosu": true,
     "colorscheme": "atom-dark",
-    "tabsize": 8
+    "tabsize": 8,
+    "tabstospaces": true
 }

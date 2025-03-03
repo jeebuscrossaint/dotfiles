@@ -9,9 +9,9 @@ decorations = "full"
 dynamic_title = true
 
 [font]
-normal = { family = "Monaspice Ne Nerd Font", style = "Regular"}
+normal = { family = "Fixed", style = "Bold"}
 size = 10.0
-offset = { y = 4}
+offset = {y = 4}
 
 [selection]
 save_to_clipboard = true
