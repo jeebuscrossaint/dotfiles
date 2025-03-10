@@ -18,7 +18,7 @@ exec --no-startup-id fnott &
 #exec --no-startup-id waybar --config ~/.config/waybar/config.json --style ~/.config/waybar/style.css &
 exec --no-startup-id udiskie &
 exec --no-startup-id nm-applet &
-exec --no-startup-id autotiling &
+exec --no-startup-id autotiling-rs &
 exec --no-startup-id copyq --start-server &
 exec --no-startup-id /usr/libexec/polkit-gnome-authentication-agent-1
 exec --no-startup-id wl-paste --type text --watch cliphist store
@@ -72,8 +72,8 @@ set $mod Mod4
 #set $down j
 #set $up k
 #set $right l
-set $term alacritty
-set $menu ~/scripts/launcher.sh
+set $term foot
+set $menu rofi -show drun
 set $control ~/scripts/control.sh
 set $wallpaper ~/scripts/wallpaper.sh
 
