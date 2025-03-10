@@ -19,7 +19,7 @@ alias 11='ping 1.1.1.1'
 alias 11gnu='ping gnu.org'
 alias xcopy='xclip -sel clip'
 alias ppctl='powerprofilesctl'
-alias sysup='sudo nixos-rebuild switch --recreate-lock-file --flake .'
+alias update-nixos='pushd $HOME/dotfiles && nix flake update --commit-lock-file && sudo nixos-rebuild switch --flake . && popd'
 
 # add .cargo/bin to path
 set -x PATH $HOME/.cargo/bin $PATH
