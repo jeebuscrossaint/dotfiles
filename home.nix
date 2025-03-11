@@ -4,6 +4,7 @@
 
         imports = [
                 ./modules/fish.nix
+                ./modules/alacritty.nix
         ];
 
 	home.username = "amarnath";
@@ -25,7 +26,7 @@
 	imagemagick
 	chromium
 	swayrbar
-	pfetch-rs
+#	pfetch-rs
 	autotiling-rs
 	ipfetch
 	micro
@@ -53,6 +54,9 @@
 	flameshot
 	hyprshot
 	swaylock-effects
+
+	# devel
+	qemacs
 	];
 
 	gtk.enable = true;
