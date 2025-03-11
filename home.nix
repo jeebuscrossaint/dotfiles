@@ -1,6 +1,10 @@
 { config, pkgs, ... }:
 
 {
+
+        imports = [
+        ];
+
 	home.username = "amarnath";
 	home.homeDirectory = "/home/amarnath";
 
@@ -57,6 +61,13 @@
         gtk.theme.name = "rose-pine-gtk";
         gtk.iconTheme.name = "rose-pine-icons";
         gtk.cursorTheme.name = "rose-pine-cursor";
+        gtk.font.name = "Monaspice Ne Nerd Font Mono";
+        fonts.fontconfig.enable = true;
+
+        home.sessionVariables = {
+                EDITOR = "micro";
+        };
+
 	programs.git = {
 	enable = true;
 	userName = "jeebuscrossaint";
@@ -80,4 +91,8 @@
 	home.stateVersion = "24.11";
 
 	programs.home-manager.enable = true;
+
+
+	# Fish BS
+	
 }
