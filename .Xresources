@@ -1,4 +1,4 @@
 #include "/home/amarnath/.cache/wal/colors.Xresources"
 
 Xft.dpi: 96
-Xcursor.theme: Whitesur Cursors
+Xcursor.theme: rose-pine-cursor

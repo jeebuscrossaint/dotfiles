@@ -17,7 +17,7 @@
 	which
 	btop
 	pciutils
-	rofi-wayland-unwrapped
+	rofi-wayland
 	vesktop
 	nix-search
 	pywal16
@@ -52,9 +52,6 @@
 	flameshot
 	hyprshot
 	swaylock-effects
-
-	# devel
-	gh
 	];
 
 	gtk.enable = true;
@@ -72,6 +69,15 @@
 	enable = true;
 	userName = "jeebuscrossaint";
 	userEmail = "thediamond270@gmail.com";
+	extraConfig = {
+	        credental.helper = "store";
+	        };
+	};
+
+	programs.gh = {
+	        enable = true;
+	        gitCredentialHelper.enable = true;
+	        gitCredentialHelper.hosts = [ "https://github.com" ];
 	};
 
 	programs.starship = {
@@ -87,7 +93,7 @@
 	enableCompletion = true;
 	};
 
-	programs.rofi.package = builtins.removeAttrs pkgs.rofi-unwrapped ["override"];
+	programs.rofi.package = builtins.removeAttrs pkgs.rofi-wayland ["override"];
 	home.stateVersion = "24.11";
 
 	programs.home-manager.enable = true;
