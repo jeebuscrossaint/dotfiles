@@ -7,6 +7,7 @@
                 ./modules/alacritty.nix
                 ./modules/bat.nix
                 ./modules/foot.nix
+                ./modules/tealdeer.nix
         ];
 
 	home.username = "amarnath";
