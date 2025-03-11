@@ -102,7 +102,7 @@
     lsd
     btop
     xclip
-    pfetch
+    pfetch-rs
     # Add other packages you use
   ];
 }

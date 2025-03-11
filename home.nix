@@ -5,6 +5,8 @@
         imports = [
                 ./modules/fish.nix
                 ./modules/alacritty.nix
+                ./modules/bat.nix
+                ./modules/foot.nix
         ];
 
 	home.username = "amarnath";
@@ -26,7 +28,7 @@
 	imagemagick
 	chromium
 	swayrbar
-#	pfetch-rs
+	pfetch-rs
 	autotiling-rs
 	ipfetch
 	micro
