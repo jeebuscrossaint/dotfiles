@@ -3,6 +3,7 @@
 {
 
         imports = [
+                ./modules/fish.nix
         ];
 
 	home.username = "amarnath";

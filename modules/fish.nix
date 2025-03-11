@@ -53,7 +53,7 @@
         argumentNames = "hex";
         body = ''
           # Remove # if present
-          set hex (string replace -r '^#?' '' -- $hex)
+          set hex (string replace -r "^#?" "" -- $hex)
           
           set -l r (echo $hex | cut -c 1-2)
           set -l g (echo $hex | cut -c 3-4)

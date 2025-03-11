@@ -60,7 +60,7 @@
 
   # Enable automatic login for the user.
   services.getty.autologinUser = "amarnath";
-
+  services.power-profiles-daemon.enable = true;
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
 
