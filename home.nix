@@ -60,6 +60,8 @@
 
 	# devel
 	qemacs
+
+	wireshark-qt
 	];
 
 	gtk.enable = true;

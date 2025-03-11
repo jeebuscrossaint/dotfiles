@@ -12,7 +12,6 @@
       starship init fish | source
       ~/.cache/wal/colors-tty.sh
       pfetch
-      ls
     '';
     
     shellAliases = {

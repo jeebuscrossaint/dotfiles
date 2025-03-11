@@ -54,7 +54,7 @@
   users.users.amarnath = {
     isNormalUser = true;
     description = "amarnath";
-    extraGroups = [ "networkmanager" "wheel" "input" ];
+    extraGroups = [ "networkmanager" "wheel" "input" "wireshark" ];
     packages = with pkgs; [];
   };
 
@@ -122,6 +122,32 @@
 
   # Some random BS
   home-manager.backupFileExtension = "backup";
+
+  services.xserver = {
+  	enable = true;
+  	displayManager.gdm.enable = true;
+  	desktopManager.gnome.enable = true;
+  };
+
+  environment.gnome.excludePackages = (with pkgs; [
+  	  atomix # puzzle game
+  	  cheese # webcam tool
+  	  evince # document viewer
+  	  geary # email reader
+  	  gedit # text editor
+  	  gnome-characters
+  	  gnome-music
+  	  gnome-photos
+  	  gnome-terminal
+  	  gnome-tour
+  	  hitori # sudoku game
+  	  iagno # go game
+  	  tali # poker game
+  	  totem # video player
+  	  
+  ]);
+
+  services.udev.packages = with pkgs; [ gnome-settings-daemon ];
 
 
   # Some programs need SUID wrappers, can be configured further or are
