@@ -130,11 +130,11 @@
         "rust-overlay": "rust-overlay"
       },
       "locked": {
-        "lastModified": 1741703648,
-        "narHash": "sha256-JR0uyqJPJEbXLSPhlQJZvia3f6Ir7E9kXxXb/N4I45w=",
+        "lastModified": 1741815977,
+        "narHash": "sha256-zRPJMgKBvLBNVlPEMpkjEYtd2jKbHE6AlqT9bL5m/yQ=",
         "owner": "helix-editor",
         "repo": "helix",
-        "rev": "f9360fb27e60b21cfd824c4a68d2b5df4edb745b",
+        "rev": "1bd7a3901cf73a9219470dafc65f3c7119e96cc0",
         "type": "github"
       },
       "original": {
@@ -151,11 +151,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1741701235,
-        "narHash": "sha256-gBlb8R9gnjUAT5XabJeel3C2iEUiBHx3+91651y3Sqo=",
+        "lastModified": 1741791118,
+        "narHash": "sha256-4Y427uj0eql4yRU5rely3EcOlB9q457UDbG9omPtXiA=",
         "owner": "nix-community",
         "repo": "home-manager",
-        "rev": "c630dfa8abcc65984cc1e47fb25d4552c81dd37e",
+        "rev": "18780912345970e5b546b1b085385789b6935a83",
         "type": "github"
       },
       "original": {
@@ -241,11 +241,11 @@
         "xdph": "xdph"
       },
       "locked": {
-        "lastModified": 1741654302,
-        "narHash": "sha256-Y264IB6YrmKesFzmzqJebI9/txWhCI9fknp02wzZ9eM=",
+        "lastModified": 1741788549,
+        "narHash": "sha256-9HAUSb4uxWnYBY259wpVEk18KeCQtmP3R9Qi8HdifSM=",
         "ref": "refs/heads/main",
-        "rev": "b21edb1a9753ba8c236302c1d6dba9ea2418b1d3",
-        "revCount": 5876,
+        "rev": "e86d3a14e46d19d8a47f8ceb6410546715d45f10",
+        "revCount": 5879,
         "submodules": true,
         "type": "git",
         "url": "https://github.com/hyprwm/Hyprland"
@@ -824,11 +824,11 @@
         "rust-overlay": "rust-overlay_2"
       },
       "locked": {
-        "lastModified": 1741677570,
-        "narHash": "sha256-huQexOJPJ+tASUxRw8cAXTPvu6Qh043hatH+PFGBgeg=",
+        "lastModified": 1741760227,
+        "narHash": "sha256-5yZ3FQZFG0DSssr8NRa+JWGOojHLDFG2L+icNVnj+tw=",
         "owner": "sxyazi",
         "repo": "yazi",
-        "rev": "faee35fc44bd6cfe924410f1a3dc3b8b8eb12fa5",
+        "rev": "abfbd1cd9f0dd428d134f257ec89c25dac842b65",
         "type": "github"
       },
       "original": {
