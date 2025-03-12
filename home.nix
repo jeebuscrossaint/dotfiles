@@ -41,10 +41,12 @@
 	fuzzel
 	tofi
 	# gtk styles n stuff
-	rose-pine-cursor
-	rose-pine-icon-theme
-	rose-pine-gtk-theme
-
+	#rose-pine-cursor
+	#rose-pine-icon-theme
+	#rose-pine-gtk-theme
+	#whitesur-cursors
+	#whitesur-icon-theme
+	#whitesur-gtk-theme
 	# hyprland/sway-wayland stuff
 	hypridle
 	dunst
@@ -64,12 +66,29 @@
 	wireshark-qt
 	];
 
-	gtk.enable = true;
-        gtk.theme.name = "rose-pine-gtk";
-        gtk.iconTheme.name = "rose-pine-icons";
-        gtk.cursorTheme.name = "rose-pine-cursor";
-        gtk.font.name = "Monaspice Ne Nerd Font Mono";
-        fonts.fontconfig.enable = true;
+	# Enable GTK configuration
+	  gtk.enable = true;
+	
+	  # Set GTK theme to Rose Pine
+	  gtk.theme = {
+	    name = "Rose-Pine";
+	    package = pkgs.rose-pine-gtk-theme; # You may need to check the exact package name
+	  };
+	
+	  # Set cursor theme to Rose Pine
+	  gtk.cursorTheme = {
+	    name = "Rose-Pine-Cursor"; # Check the exact cursor theme name
+	    package = pkgs.rose-pine-cursor; # You may need to check the exact package name
+	    size = 24; # Adjust size as needed
+	  };
+	
+	  # Set icon theme to Rose Pine
+	  gtk.iconTheme = {
+	    name = "Rose-Pine-Icons"; # Check the exact icon theme name
+	    package = pkgs.rose-pine-icon-theme; # You may need to check the exact package name
+	  };
+    gtk.font.name = "Monaspice Ne Nerd Font Mono";
+    fonts.fontconfig.enable = true;
 
         home.sessionVariables = {
                 EDITOR = "micro";
