@@ -40,13 +40,6 @@
 	avizo
 	fuzzel
 	tofi
-	# gtk styles n stuff
-	#rose-pine-cursor
-	#rose-pine-icon-theme
-	#rose-pine-gtk-theme
-	#whitesur-cursors
-	#whitesur-icon-theme
-	#whitesur-gtk-theme
 	# hyprland/sway-wayland stuff
 	hypridle
 	dunst
@@ -62,6 +55,8 @@
 
 	# devel
 	qemacs
+
+	gnome-tweaks
 
 	wireshark-qt
 	];
