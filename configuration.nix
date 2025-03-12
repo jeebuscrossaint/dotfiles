@@ -70,6 +70,7 @@
   vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
   wget
   git
+  adwaita-icon-theme
   inputs.helix.packages."${pkgs.system}".helix
   inputs.zen-browser.packages."${system}".default
   inputs.rose-pine-hyprcursor.packages.${pkgs.system}.default
