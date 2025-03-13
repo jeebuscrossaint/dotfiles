@@ -53,10 +53,13 @@
 	hyprshot
 	swaylock-effects
 
+	adwaita-icon-theme
+	gnome-tweaks
+	sassc
+	gtk-engine-murrine
+	gnome-themes-extra
 	# devel
 	qemacs
-
-	gnome-tweaks
 
 	wireshark-qt
 	];
