@@ -63,7 +63,7 @@
 
 	wireshark-qt
 	];
-
+/*
 gtk = {
 	      enable = true;
 	      
@@ -90,7 +90,7 @@ gtk = {
 	      XCURSOR_THEME = "rose-pine-cursor";
 	      XCURSOR_SIZE = "24";
 	    };
-    gtk.font.name = "Monaspice Ne Nerd Font Mono";
+    gtk.font.name = "Monaspice Ne Nerd Font Mono"; */
     fonts.fontconfig.enable = true;
 
         home.sessionVariables = {
@@ -131,6 +131,29 @@ gtk = {
 	programs.home-manager.enable = true;
 
 
-	# Fish BS
-	
+	stylix.enable = true;
+	stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/rose-pine.yaml";
+	stylix.polarity = "dark";
+
+	stylix.fonts = {
+		    serif = {
+		      package = pkgs.nerd-fonts.monaspace;
+		      name = "MonaspiceNe Nerd Font";
+		    };
+		
+		    sansSerif = {
+		      package = pkgs.nerd-fonts.monaspace;
+		      name = "MonaspiceNe Nerd Font";
+		    };
+		
+		    monospace = {
+		      package = pkgs.nerd-fonts.monaspace;
+		      name = "MonaspiceNe Nerd Font";
+		    };
+		
+		    emoji = {
+		      package = pkgs.nerd-fonts.monaspace;
+		      name = "Noto Color Emoji";
+		    };
+		  };	
 }

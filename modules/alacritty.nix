@@ -15,8 +15,8 @@
       };
       
       font = {
-        normal = { family = "MonaspiceNe Nerd Font"; style = "Regular"; };
-        size = 10.0;
+        #normal = { family = "MonaspiceNe Nerd Font"; style = "Regular"; };
+        #size = 10.0;
         offset = { y = 4; };
       };
       

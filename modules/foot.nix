@@ -5,8 +5,8 @@
     enable = true;
     settings = {
       main = {
-        include = "~/.cache/wal/colors-foot.ini";
-        font = "Monaspice Ne Nerd Font:size=10";
+#        include = "~/.cache/wal/colors-foot.ini";
+#        font = "Monaspice Ne Nerd Font:size=10";
         letter-spacing = 0;
         horizontal-letter-offset = 1;
         vertical-letter-offset = 1;

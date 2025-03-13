@@ -32,20 +32,24 @@
     # swww wayland wallpaper woes!!
     swww.url = "github:LGFae/swww";
 
+    # stylix (home manager gtk stylign is so incredibly butt)
+    stylix.url = "github:danth/stylix";
+
     home-manager = {
       url = "github:nix-community/home-manager/master";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
 
-  outputs = inputs@{ nixpkgs, nix-ld, home-manager, ... }: {
+  outputs = inputs@{ nixpkgs, nix-ld, home-manager, stylix, ... }: {
     nixosConfigurations = {
       nixos = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
         specialArgs = { inherit inputs; };
         modules = [
+		  stylix.nixosModules.stylix
           ./configuration.nix
-
+		  
           # This will enable nix-ld and add its modules
           nix-ld.nixosModules.nix-ld
           { programs.nix-ld.dev.enable = true; }
