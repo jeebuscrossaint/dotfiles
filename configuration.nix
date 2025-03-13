@@ -70,10 +70,10 @@
   vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
   wget
   git
-  inputs.helix.packages."${pkgs.system}".helix
-  inputs.zen-browser.packages."${system}".default
+  #inputs.helix.packages."${pkgs.system}".helix
+  #inputs.zen-browser.packages."${system}".default
   inputs.rose-pine-hyprcursor.packages.${pkgs.system}.default
-  inputs.yazi.packages.${pkgs.system}.default
+  #inputs.yazi.packages.${pkgs.system}.default
   inputs.zen-browser.packages."${system}".default
   inputs.swww.packages.${pkgs.system}.swww
   ];

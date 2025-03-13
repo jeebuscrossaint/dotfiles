@@ -1,0 +1,78 @@
+configuration {
+    font: "Monaspice Ne Nerd Font 12";
+    show-icons: true;
+    display-drun: "";
+    drun-display-format: "{name}";
+    disable-history: false;
+    fullscreen: false;
+    hide-scrollbar: true;
+    sidebar-mode: false;
+}
+
+@theme "~/.cache/wal/colors-rofi-dark"
+
+window {
+    border: 1;
+    padding: 5;
+    width: 30%;
+    height: 40%;
+}
+
+inputbar {
+    children: [prompt, entry];
+    border: 0 0 1px 0;
+    padding: 5px;
+}
+
+prompt {
+    padding: 5px 5px 0px;
+}
+
+entry {
+    padding: 5px;
+}
+
+listview {
+    lines: 8;
+    columns: 1;
+    fixed-height: 0;
+    border: 1px 0 0 0;
+    spacing: 5px;
+    scrollbar: false;
+    padding: 5px 5px 0px;
+}
+
+element {
+    border: 0;
+    padding: 5px;
+}
+
+element-text {
+    background-color: inherit;
+    text-color: inherit;
+}
+
+/* Styles for Rofi calc */
+textbox-prompt-colon {
+    expand: false;
+    str: ":";
+    margin: 0px 0.3em 0em 0em;
+}
+
+num-filtered-rows, num-rows {
+    text-color: inherit;
+}
+
+textbox-num-sep {
+    expand: false;
+    str: "/";
+}
+
+inputbar {
+    children: [textbox-prompt-colon, entry, num-filtered-rows, textbox-num-sep, num-rows, case-indicator];
+}
+
+/* Style for the result field in Rofi calc */
+textbox {
+    padding: 8px;
+}

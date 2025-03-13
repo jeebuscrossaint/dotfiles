@@ -7,10 +7,8 @@
     # Remove greeting
     interactiveShellInit = ''
       set -g fish_greeting
-      fish_config theme choose "Old School"
-      source ~/.cache/wal/colors.fish
+      #fish_config theme choose "Old School"
       starship init fish | source
-      ~/.cache/wal/colors-tty.sh
       pfetch
     '';
     

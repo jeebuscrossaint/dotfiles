@@ -5,7 +5,7 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
 
     # example using helix
-    helix.url = "github:helix-editor/helix/master";
+    #helix-url = "github:helix-editor/helix/master";
 
     # hyprlan
     hyprland = {
@@ -24,7 +24,7 @@
     zen-browser.url = "github:0xc000022070/zen-browser-flake";
 
     # yazi
-    yazi.url = "github:sxyazi/yazi";
+    #yazi.url = "github:sxyazi/yazi";
 
     # run random binaries please!
     nix-ld.url = "github:Mic92/nix-ld";

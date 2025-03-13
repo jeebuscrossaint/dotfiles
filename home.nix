@@ -22,7 +22,6 @@
 	which
 	btop
 	pciutils
-	rofi-wayland
 	vesktop
 	nix-search
 	pywal16
@@ -60,17 +59,22 @@
 	gnome-themes-extra
 	# devel
 	qemacs
+	helix
+	yazi
 
 	wireshark-qt
+
+	# cool irc client
+	halloy
 	];
-/*
+
 gtk = {
 	      enable = true;
 	      
-	      theme = {
-	        name = "rose-pine-gtk";  # This is the internal theme name
-	        package = pkgs.rose-pine-gtk-theme;
-	      };
+	    #  theme = {
+	    #    name = "rose-pine-gtk";  # This is the internal theme name
+	    #    package = pkgs.rose-pine-gtk-theme;
+	    #  };
 	      
 	      cursorTheme = {
 	        name = "rose-pine-cursor";  # This is the internal cursor theme name
@@ -90,7 +94,7 @@ gtk = {
 	      XCURSOR_THEME = "rose-pine-cursor";
 	      XCURSOR_SIZE = "24";
 	    };
-    gtk.font.name = "Monaspice Ne Nerd Font Mono"; */
+    #gtk.font.name = "Monaspice Ne Nerd Font Mono";
     fonts.fontconfig.enable = true;
 
         home.sessionVariables = {
@@ -112,6 +116,8 @@ gtk = {
 	        gitCredentialHelper.hosts = [ "https://github.com" ];
 	};
 
+	programs.gitui.enable = true;
+
 	programs.starship = {
 	enable = true;
 	};
@@ -125,14 +131,22 @@ gtk = {
 	enableCompletion = true;
 	};
 
-	programs.rofi.package = builtins.removeAttrs pkgs.rofi-wayland ["override"];
+	#programs.rofi.package = builtins.removeAttrs pkgs.rofi-wayland ["override"];
 	home.stateVersion = "24.11";
 
 	programs.home-manager.enable = true;
 
+	programs.rofi.enable = true;
+	programs.btop.enable = true;
+	programs.cava.enable = true;
+	programs.fuzzel.enable = true;
+	programs.qutebrowser.enable = true;
+	programs.mpv.enable = true;
 
+	stylix.autoEnable = true;
+	
 	stylix.enable = true;
-	stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/rose-pine.yaml";
+	stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/oxocarbon-dark.yaml";
 	stylix.polarity = "dark";
 
 	stylix.fonts = {
@@ -155,5 +169,10 @@ gtk = {
 		      package = pkgs.nerd-fonts.monaspace;
 		      name = "Noto Color Emoji";
 		    };
-		  };	
+		  };
+
+	stylix.fonts.sizes = {
+		terminal = 10;
+	};
 }
+
