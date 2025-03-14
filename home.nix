@@ -13,6 +13,7 @@
                 ./modules/hyprlock.nix
                 ./modules/fd.nix
                 ./modules/btop.nix
+                ./modules/rofi.nix
         ];
 
 	home.username = "amarnath";
@@ -117,12 +118,10 @@ gtk = {
 	enableCompletion = true;
 	};
 
-	#programs.rofi.package = builtins.removeAttrs pkgs.rofi-wayland ["override"];
 	home.stateVersion = "24.11";
 
 	programs.home-manager.enable = true;
 
-	programs.rofi.enable = true;
 	programs.cava.enable = true;
 	programs.fuzzel.enable = true;
 	programs.qutebrowser.enable = true;
