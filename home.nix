@@ -175,6 +175,9 @@ gtk = {
 
 	stylix.fonts.sizes = {
 		terminal = 10;
+		desktop = 10;
+		applications = 10;
+		popups = 10;
 	};
 }
 
