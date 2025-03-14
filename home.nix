@@ -14,6 +14,7 @@
                 ./modules/fd.nix
                 ./modules/btop.nix
                 ./modules/rofi.nix
+                ./modules/kitty.nix
         ];
 
 	home.username = "amarnath";
