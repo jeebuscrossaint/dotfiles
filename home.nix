@@ -15,6 +15,10 @@
                 ./modules/btop.nix
                 ./modules/rofi.nix
                 ./modules/kitty.nix
+                #./modules/man.nix
+                ./modules/mangohud.nix
+                ./modules/micro.nix
+                ./modules/mpv.nix
         ];
 
 	home.username = "amarnath";
@@ -57,7 +61,7 @@
 	flameshot
 	hyprshot
 	swaylock-effects
-
+	rose-pine-hyprcursor
 	adwaita-icon-theme
 	gnome-tweaks
 	sassc
@@ -71,6 +75,8 @@
 
 	# cool irc client
 	halloy
+
+	man-db # idk wtf is happening its crapping itself
 	];
 
 gtk = {
@@ -126,7 +132,6 @@ gtk = {
 	programs.cava.enable = true;
 	programs.fuzzel.enable = true;
 	programs.qutebrowser.enable = true;
-	programs.mpv.enable = true;
 	programs.chromium.enable = true;
 	stylix.autoEnable = true;
 	

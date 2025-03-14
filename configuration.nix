@@ -15,7 +15,26 @@
   # Bootloader.
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
-
+  boot = {
+  	
+  	plymouth = {
+  		enable = true;
+  	};
+  	
+  	consoleLogLevel = 0;
+  	initrd.verbose = false;
+  	kernelParams = [
+  		"quiet"
+  		"splash"
+  		"boot.shell_on_fail"
+  		"loglevel=3"
+  		"rd.systemd.show_status=false"
+  		"rd.udev.log_level=3"
+  		"udev.log_priority=3"
+  	];
+  	
+  };
+  
   networking.hostName = "nixos"; # Define your hostname.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
 
@@ -70,10 +89,6 @@
   vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
   wget
   git
-  #inputs.helix.packages."${pkgs.system}".helix
-  #inputs.zen-browser.packages."${system}".default
-  inputs.rose-pine-hyprcursor.packages.${pkgs.system}.default
-  #inputs.yazi.packages.${pkgs.system}.default
   inputs.zen-browser.packages."${system}".default
   inputs.swww.packages.${pkgs.system}.swww
   ];
@@ -86,6 +101,11 @@
 	enable = true;
 	wrapperFeatures.gtk = true;
   	extraPackages = with pkgs; [ brightnessctl foot grim pulseaudio swayidle ];
+  };
+
+  programs.hyprland = {
+  	enable = true;
+  	xwayland.enable = true;
   };
   
   programs.fish.enable = true;
@@ -101,21 +121,11 @@
 	jack.enable = true;
    };
 
-  programs.hyprland = {
-    enable = true;
-    package = inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.hyprland;
-  };
-
   programs.steam = {
                   enable = true;
                   remotePlay.openFirewall = true;
                   dedicatedServer.openFirewall = true;
                   localNetworkGameTransfers.openFirewall = true; # Open ports in the firewall for Steam Local Network Game Transfers
-  };
-
-  nix.settings = {
-    substituters = ["https://hyprland.cachix.org"];
-    trusted-public-keys = ["hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc="];
   };
 
   # Some random BS
