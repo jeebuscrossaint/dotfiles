@@ -8,6 +8,11 @@
                 ./modules/bat.nix
                 ./modules/foot.nix
                 ./modules/tealdeer.nix
+                ./modules/bottom.nix
+                ./modules/helix.nix
+                ./modules/hyprlock.nix
+                ./modules/fd.nix
+                ./modules/btop.nix
         ];
 
 	home.username = "amarnath";
@@ -26,7 +31,6 @@
 	nix-search
 	pywal16
 	imagemagick
-	chromium
 	swayrbar
 	pfetch-rs
 	autotiling-rs
@@ -59,7 +63,6 @@
 	gnome-themes-extra
 	# devel
 	qemacs
-	helix
 	yazi
 
 	wireshark-qt
@@ -137,16 +140,15 @@ gtk = {
 	programs.home-manager.enable = true;
 
 	programs.rofi.enable = true;
-	programs.btop.enable = true;
 	programs.cava.enable = true;
 	programs.fuzzel.enable = true;
 	programs.qutebrowser.enable = true;
 	programs.mpv.enable = true;
-
+	programs.chromium.enable = true;
 	stylix.autoEnable = true;
 	
 	stylix.enable = true;
-	stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/oxocarbon-dark.yaml";
+	stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/da-one-black.yaml";
 	stylix.polarity = "dark";
 
 	stylix.fonts = {

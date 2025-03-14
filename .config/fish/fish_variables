@@ -2,11 +2,11 @@
 # VERSION: 3.0
 SETUVAR __fish_initialized:3800
 SETUVAR _fisher_upgraded_to_4_4:\x1d
-SETUVAR base16_theme:oxocarbon\x2ddark
-SETUVAR fish_color_autosuggestion:393939
+SETUVAR base16_theme:da\x2done\x2dblack
+SETUVAR fish_color_autosuggestion:585858
 SETUVAR fish_color_cancel:\x2dr
 SETUVAR fish_color_command:green
-SETUVAR fish_color_comment:393939
+SETUVAR fish_color_comment:585858
 SETUVAR fish_color_cwd:green
 SETUVAR fish_color_cwd_root:red
 SETUVAR fish_color_end:brblack
@@ -18,11 +18,11 @@ SETUVAR fish_color_host_remote:yellow
 SETUVAR fish_color_match:\x2d\x2dbackground\x3dbrblue
 SETUVAR fish_color_normal:normal
 SETUVAR fish_color_operator:blue
-SETUVAR fish_color_param:dde1e6
+SETUVAR fish_color_param:c8c8c8
 SETUVAR fish_color_quote:yellow
 SETUVAR fish_color_redirection:cyan
-SETUVAR fish_color_search_match:bryellow\x1e\x2d\x2dbackground\x3d393939
-SETUVAR fish_color_selection:white\x1e\x2d\x2dbold\x1e\x2d\x2dbackground\x3d393939
+SETUVAR fish_color_search_match:bryellow\x1e\x2d\x2dbackground\x3d585858
+SETUVAR fish_color_selection:white\x1e\x2d\x2dbold\x1e\x2d\x2dbackground\x3d585858
 SETUVAR fish_color_status:red
 SETUVAR fish_color_user:brgreen
 SETUVAR fish_color_valid_path:\x2d\x2dunderline

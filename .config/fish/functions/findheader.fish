@@ -1,1 +1,1 @@
-/nix/store/rbj1smk7fr55pj0g6f0n55fnbng3cpm6-home-manager-files/.config/fish/functions/findheader.fish
+/nix/store/h816l401g8gnm8jid4kr45p1c9qq55vr-home-manager-files/.config/fish/functions/findheader.fish
