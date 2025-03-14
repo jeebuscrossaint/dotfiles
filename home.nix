@@ -133,6 +133,8 @@ gtk = {
 	programs.fuzzel.enable = true;
 	programs.qutebrowser.enable = true;
 	programs.chromium.enable = true;
+	
+	services.avizo.enable = true;
 	stylix.autoEnable = true;
 	
 	stylix.enable = true;

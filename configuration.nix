@@ -171,7 +171,6 @@
   services.udev.packages = with pkgs; [ gnome-settings-daemon ];
   security.pam.services.hyprlock = {};
 
-
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
   # programs.mtr.enable = true;
