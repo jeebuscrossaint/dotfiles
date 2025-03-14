@@ -174,5 +174,7 @@ gtk = {
 		dark = "Rose-pine-moon";
 		light = "Rose-pine-dawn";
 	};
+
+	stylix.targets.avizo.enable = true;
 }
 
