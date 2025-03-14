@@ -74,30 +74,13 @@
 gtk = {
 	      enable = true;
 	      
-	    #  theme = {
-	    #    name = "rose-pine-gtk";  # This is the internal theme name
-	    #    package = pkgs.rose-pine-gtk-theme;
-	    #  };
-	      
-	      #cursorTheme = {
-	      #  name = "rose-pine-cursor";  # This is the internal cursor theme name
-	      #  package = pkgs.rose-pine-cursor;
-	      #  size = 24;
-	      #};
-	      
-	     # iconTheme = {
-	     #   name = "rose-pine-icon-theme";  # This is the internal icon theme name
-	     #   package = pkgs.rose-pine-icon-theme;
-	     # };
 	    };
 	  
 	    # Add these environment variables to ensure themes are properly applied
-	    #home.sessionVariables = {
-	    #  GTK_THEME = "rose-pine-gtk";
-	    #  XCURSOR_THEME = "rose-pine-cursor";
-	    #  XCURSOR_SIZE = "24";
-	    #};
-    #gtk.font.name = "Monaspice Ne Nerd Font Mono";
+	    home.sessionVariables = {
+	      XCURSOR_THEME = "rose-pine-cursor";
+	      XCURSOR_SIZE = "24";
+	    };
     fonts.fontconfig.enable = true;
 
         home.sessionVariables = {

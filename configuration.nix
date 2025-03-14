@@ -150,10 +150,16 @@
   	  gnome-system-monitor
   	  simple-scan
   	  gnome-clocks
-  	  system-config-printer
+	  gnome-font-viewer
+	  file-roller
+	  epiphany
+	  seahorse
+	  gnome-logs
+	  gnome-connections
   ]);
 
   services.udev.packages = with pkgs; [ gnome-settings-daemon ];
+  security.pam.services.hyprlock = {};
 
 
   # Some programs need SUID wrappers, can be configured further or are
