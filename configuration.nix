@@ -116,8 +116,6 @@
   nix.settings = {
     substituters = ["https://hyprland.cachix.org"];
     trusted-public-keys = ["hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc="];
-    extra-substituters = [ "https://yazi.cachix.org" ];
-    extra-trusted-public-keys = [ "yazi.cachix.org-1:Dcdz63NZKfvUCbDGngQDAZq6kOroIrFoyO064uvLh8k=" ];
   };
 
   # Some random BS
@@ -144,7 +142,15 @@
   	  iagno # go game
   	  tali # poker game
   	  totem # video player
-  	  
+  	  gnome-contacts
+  	  gnome-calendar
+  	  yelp
+  	  gnome-maps
+  	  gnome-calculator
+  	  gnome-system-monitor
+  	  simple-scan
+  	  gnome-clocks
+  	  system-config-printer
   ]);
 
   services.udev.packages = with pkgs; [ gnome-settings-daemon ];

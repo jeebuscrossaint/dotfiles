@@ -85,10 +85,10 @@ gtk = {
 	      #  size = 24;
 	      #};
 	      
-	      iconTheme = {
-	        name = "rose-pine-icon-theme";  # This is the internal icon theme name
-	        package = pkgs.rose-pine-icon-theme;
-	      };
+	     # iconTheme = {
+	     #   name = "rose-pine-icon-theme";  # This is the internal icon theme name
+	     #   package = pkgs.rose-pine-icon-theme;
+	     # };
 	    };
 	  
 	    # Add these environment variables to ensure themes are properly applied
@@ -184,6 +184,13 @@ gtk = {
 		name = "rose-pine-cursor";
 		package = pkgs.rose-pine-cursor;
 		size = 24;
+	};
+
+	stylix.iconTheme = {
+		enable = true;
+		package = pkgs.rose-pine-icon-theme;
+		dark = "Rose-pine-moon";
+		light = "Rose-pine-dawn";
 	};
 }
 

@@ -28,7 +28,7 @@ programs.helix = {
           "w" = ":w";
           "q" = ":q";
           "f" = "file_picker_in_current_directory";
-          "/" = "search_in_buffer";
+          #"/" = "search_in_buffer";
         };
         # Quick buffer navigation
         "C-n" = "goto_next_buffer";
