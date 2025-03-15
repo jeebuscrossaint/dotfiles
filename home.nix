@@ -56,7 +56,6 @@
 	copyq
 	udiskie
 	gamemode
-	waybar
 	cava
 	font-awesome
 	flameshot
