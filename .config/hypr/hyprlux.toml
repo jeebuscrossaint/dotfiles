@@ -1,7 +1,0 @@
-night_light = { enabled = true, start_time = "00:01", end_time = "23:59", temperature = 8000 }
-
-vibrance_configs = [
-  { window_class = ".", window_title = ".", strength = 25 },
-]
-
-hot_reload = true

@@ -78,6 +78,8 @@
 	halloy
 
 	man-db # idk wtf is happening its crapping itself
+	
+	blueberry
 	];
 
 gtk = {
@@ -185,5 +187,8 @@ gtk = {
 	};
 
 	stylix.targets.avizo.enable = true;
+	
+	wayland.windowManager.hyprland.enable = true;	
+	
 }
 
