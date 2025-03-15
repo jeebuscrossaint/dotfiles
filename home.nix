@@ -19,6 +19,7 @@
                 ./modules/mangohud.nix
                 ./modules/micro.nix
                 ./modules/mpv.nix
+                ./modules/waybar.nix
         ];
 
 	home.username = "amarnath";
