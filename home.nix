@@ -50,6 +50,7 @@
 	fuzzel
 	tofi
 	# hyprland/sway-wayland stuff
+	swww
 	hypridle
 	dunst
 	copyq
