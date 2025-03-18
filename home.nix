@@ -15,8 +15,7 @@
                 ./modules/btop.nix
                 ./modules/rofi.nix
                 ./modules/kitty.nix
-                #./modules/man.nix
-                ./modules/mangohud.nix
+                #./modules/mangohud.nix
                 ./modules/micro.nix
                 ./modules/mpv.nix
                 ./modules/waybar.nix
@@ -78,16 +77,16 @@
 	# cool irc client
 	halloy
 
-	man-db # idk wtf is happening its crapping itself
-	
-	blueberry
-	librewolf
-	fnott
-	zed
-	tmux
 	dunst
-	emacs
+	blueberry
 	];
+	
+	programs.librewolf.enable = true;
+	#programs.fnott.enable = true;
+	programs.zed-editor.enable = true;
+	programs.tmux.enable = true;
+	#programs.dunst.enable = true;
+	programs.emacs.enable = true;
 
 gtk = {
 	      enable = true;
