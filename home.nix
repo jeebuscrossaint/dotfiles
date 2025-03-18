@@ -81,6 +81,12 @@
 	man-db # idk wtf is happening its crapping itself
 	
 	blueberry
+	librewolf
+	fnott
+	zed
+	tmux
+	dunst
+	emacs
 	];
 
 gtk = {
