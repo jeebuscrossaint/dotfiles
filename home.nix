@@ -20,6 +20,7 @@
                 ./modules/micro.nix
                 ./modules/mpv.nix
                 ./modules/waybar.nix
+                ./modules/hyprland.nix
         ];
 
 	home.username = "amarnath";
@@ -187,8 +188,6 @@ gtk = {
 	};
 
 	stylix.targets.avizo.enable = true;
-	
-	wayland.windowManager.hyprland.enable = true;	
 	
 }
 

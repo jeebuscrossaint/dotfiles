@@ -13,6 +13,8 @@
     # stylix (home manager gtk stylign is so incredibly butt)
     stylix.url = "github:danth/stylix";
 
+	#vim joyer hyprland home manager tutorial
+	hyprland.url = "github:hyprwm/Hyprland";
 
     home-manager = {
       url = "github:nix-community/home-manager/master";

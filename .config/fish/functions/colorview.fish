@@ -1,1 +1,1 @@
-/nix/store/d549ck8z2y6rrcqssxpgx9ipdpq937b8-home-manager-files/.config/fish/functions/colorview.fish
+/nix/store/q203dmf2x2rwcl29prg1adh554y0q6hg-home-manager-files/.config/fish/functions/colorview.fish

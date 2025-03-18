@@ -1,0 +1,534 @@
+# Hyprland Config
+#
+# See https://wiki.hyprland.org/Configuring/Monitors/
+#monitor=,preferred,auto,auto
+monitor=,preferred,auto,1
+workspace = , special
+# See https://wiki.hyprland.org/Configuring/Keywords/ for more
+
+source = ~/.cache/wal/colors-hyprland.conf
+
+# Execute your favorite apps at launch
+exec-once = hypridle
+exec-once = dunst
+exec-once = copyq --start-server
+exec-once = wl-paste --type text --watch cliphist store #Stores only text data
+exec-once = wl-paste --type image --watch cliphist store #Stores only image data
+exec-once = udiskie &
+exec-once = /usr/libexec/hyprpolkitagent
+exec-once= swww-daemon
+exec-once = hyprpaper
+exec-once = dbus-update-activation-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP
+exec-once = eww daemon
+exec-once = gamemoded
+exec-once = hyprpm reload -n
+exec-once = hyprlux
+#exec-once = gammastep -O 8000 &
+exec-once = avizo-service
+exec-once = rog-control-center
+exec-once = nm-applet
+exec-once = waybar --config ~/.config/waybar/config.json --style ~/.config/waybar/style.css
+exec-once = /usr/bin/pipewire & /usr/bin/pipewire-pulse & /usr/bin/wireplumber
+
+# Source a file (multi-file configs)
+# source = ~/.config/hypr/myColors.conf
+
+# Some default env vars.
+ env = XCURSOR_SIZE,24
+ env = XCURSOR_THEME,WhiteSur-cursor
+
+# For all categories, see https://wiki.hyprland.org/Configuring/Variables/
+input {
+    kb_layout = us
+    kb_variant =
+    kb_model =
+    kb_options =
+    kb_rules =
+    numlock_by_default=true
+    follow_mouse = 1
+
+    touchpad {
+        natural_scroll = true
+	disable_while_typing = true
+	tap-to-click = true
+    }
+
+    sensitivity = 0  # -1.0 - 1.0, 0 means no modification.
+    accel_profile = flat
+}
+
+general {
+    # See https://wiki.hyprland.org/Configuring/Variables/ for more
+
+    gaps_in = 10 #supposed to be 10 each
+    gaps_out = 20 # supposed to be 20
+    border_size = 2 # supposed to be 2
+    col.inactive_border = $background
+    #col.active_border = $color0 $color3 $color6 $color9 $color12 $color15 
+    col.active_border = $color8
+    layout = dwindle
+#    apply_sens_to_raw = 0
+    allow_tearing = 1
+}
+
+debug:disable_logs = false
+debug:enable_stdout_logs = true
+debug:colored_stdout_logs = true 
+
+decoration {
+    # See https://wiki.hyprland.org/Configuring/Variables/ for more
+	shadow {
+		enabled = true
+		range = 11
+		render_power = 10
+		sharp = false
+		ignore_window = true
+		color = $background
+		color_inactive = $background
+		scale = 1.0
+	}
+	
+    rounding = 5 # usually 5 idk choose anything really i usually pick either 0 or 7
+    active_opacity = 1.0
+    inactive_opacity = 0.9 # suppposed to be 0.8 or 0.9-.95
+    dim_strength = 0.15 # i set to 0.2 usually
+    dim_around = 0
+    dim_inactive = false
+    
+
+	blur {
+    enabled = true # suppoesd to be true
+    size = 7
+    passes = 2
+    vibrancy = 0
+    vibrancy_darkness = 1
+    new_optimizations = on
+    noise = 0
+    contrast = 1
+    brightness = 1
+    xray = true
+    ignore_opacity = true
+    special = false
+
+	}
+}
+
+animations {
+    enabled = yes # supposed to be yes
+
+    # Some default animations, see https://wiki.hyprland.org/Configuring/Animations/ for more
+    bezier = main, 0.21, 1, 0.21, 1.05
+    bezier = linear, 0.0, 0.0, 1.0, 1.0
+    # bezier curves from easings.net
+    bezier = easeInSine, 0.12, 0.0, 0.39, 0.0
+    bezier = easeOutSine, 0.61, 1.0, 0.88, 1.0
+    bezier = easeInOutSine, 0.37, 0.0, 0.63, 1.0
+    bezier = easeInQuad, 0.11, 0.0, 0.50, 0.0
+    bezier = easeOutQuad, 0.50, 1.0, 0.89, 1.0
+    bezier = easeInOutQuad, 0.44, 0.0, 0.56, 1.0
+    bezier = easeInCubic, 0.32, 0.0, 0.67, 0.0
+    bezier = easeOutCubic, 0.33, 1.0, 0.68, 1.0
+    bezier = easeInOutCubic, 0.65, 0.0, 0.35, 1.0
+    bezier = easeInQuart, 0.50, 0.0, 0.75, 0.0
+    bezier = easeOutQuart, 0.25, 1.0, 0.50, 1.0
+    bezier = easeInOutQuart, 0.76, 0.0, 0.24, 1.0
+    bezier = easeInQuint, 0.64, 0.0, 0.78, 0.0
+    bezier = easeOutQuint, 0.22, 1.0, 0.36, 1.0
+    bezier = easeInOutQuint, 0.83, 0.0, 0.17, 1.0
+    bezier = easeInExpo, 0.70, 0.0, 0.84, 0.0
+    bezier = easeOutExpo, 0.16, 1.0, 0.30, 1.0
+    bezier = easeInOutExpo, 0.87, 0.0, 0.13, 1.0
+    bezier = easeInCirc, 0.55, 0.0, 1.00, 0.45
+    bezier = easeOutCirc, 0.00, 0.55, 0.45, 1.00
+    bezier = easeInOutCirc, 0.85, 0.0, 0.15, 1.0
+    bezier = easeInBack, 0.36, 0.0, 0.66, -0.56
+    bezier = easeOutBack, 0.34, 1.56, 0.64, 1.0
+    bezier = easeInOutBack, 0.68, -0.6, 0.32, 1.6
+    bezier = slow, 0, 0.85, 0.3, 1
+    bezier = overshot, 0.13, 0.99, 0.29, 1.1
+    bezier = apparate, 0, 1.0, 0, 1.0
+    # animations
+    animation = windows, 1, 2, easeOutExpo, slidefade
+    animation = windowsMove, 1, 3, easeOutExpo, slidefade
+    animation = border, 1, 5, default
+    animation = borderangle, 1, 50, default, loop
+    animation = fade, 1, 3, easeOutExpo
+    animation = workspaces, 1, 3, easeOutExpo, slide
+    animation = specialWorkspace, 1, 6, apparate, slidefade
+}
+
+misc {
+    background_color = rgb(000000)
+    disable_hyprland_logo = true
+    mouse_move_enables_dpms = true
+    key_press_enables_dpms = true
+    enable_swallow = false
+    swallow_regex = ^(kitty)$
+    vrr = 0
+}
+
+dwindle {
+    # See https://wiki.hyprland.org/Configuring/Dwindle-Layout/ for more
+    pseudotile = yes # master switch for pseudotiling. Enabling is bound to mainMod + P in the keybinds section below
+    preserve_split = yes # you probably want this
+}
+
+master {
+    # See https://wiki.hyprland.org/Configuring/Master-Layout/ for more
+    # new_is_master = true
+}
+
+gestures {
+    # See https://wiki.hyprland.org/Configuring/Variables/ for more
+    workspace_swipe = on
+    workspace_swipe_fingers = 3
+    workspace_swipe_forever = true
+}
+
+
+# Window Rules n stuff
+
+rules {
+     # floating for audio mgr and certain few app launchers
+     windowrule = float, *.exe
+#     windowrule = float, rofi
+     windowrule = float, wofi
+     windowrule = float, fuzzel
+     windowrule = float,^(pavucontrol)&
+     # zen-browser related rules
+     windowrulev2 = noblur,title:^(Picture-in-Picture)$
+     windowrulev2 = nodim,title:^(Picture-in-Picture)$
+     windowrulev2 = opacity 1.0 override 1.0 override,title:^(Picture-in-Picture)$
+     # zoom related rules
+     windowrulev2 = noblur,class:^(zoom)$
+     windowrulev2 = nodim,class:^(zoom)$
+     windowrulev2 = opacity 1.0 override 1.0 override,class:^(zoom)$
+     # mpv related rules 
+     windowrulev2 = noblur,class:^(mpv)$
+     windowrulev2 = nodim,class:^(mpv)$
+     windowrulev2 = opacity 1.0 override 1.0 override,class:^(mpv)$
+     # menus
+     windowrulev2 = animation slide, class:Rofi$
+     windowrulev2 = animation slide, class:^(wofi)$
+     windowrulev2 = animation slide, class:^(fuzzel)&
+     # xwayland video bridge
+     windowrulev2 = opacity 0.0 override 0.0 override,class:^(xwaylandvideobridge)$
+     windowrulev2 = noanim,class:^(xwaylandvideobridge)$
+     windowrulev2 = nofocus,class:^(xwaylandvideobridge)$
+     windowrulev2 = noinitialfocus,class:^(xwaylandvideobridge)$
+     #neovim
+     windowrulev2 = opacity 0.9, title:^(neo)?vim\s+~
+     windowrulev2 = opacity 0.9, title:^nvim\s+~
+     windowrulev2 = opacity 0.9, title:^Discord
+     windowrulev2 = opacity 0.9, class:vesktop
+     windowrulev2 = opacity 0.9, class:Code - Insiders
+     windowrulev2 = opacity 0.9, class:jetbrains-*
+     windowrulev2 = opacity 0.9, class:kitty
+     windowrulev2 = opacity 0.9, class:Alacritty
+     windowrulev2 = opacity 0.9, class:foot
+     #windowrulev2 = decoration:shadow:enabled=false, fullscreen = 1
+     # hypr dark window
+#     windowrulev2 = plugin:invertwindow,class:qemu-system-x86_64
+	# smart gaps
+	#workspace = w[tv1], gapsout:0, gapsin:0
+	#workspace = f[1], gapsout:0, gapsin:0
+	#windowrulev2 = bordersize 0, floating:0, onworkspace:w[tv1]
+	#windowrulev2 = rounding 0, floating:0, onworkspace:w[tv1]
+	#windowrulev2 = bordersize 0, floating:0, onworkspace:f[1]
+	#windowrulev2 = rounding 0, floating:0, onworkspace:f[1]
+}
+# Example per-device config
+# See https://wiki.hyprland.org/Configuring/Keywords/#executing for more
+
+
+# Example windowrule v1
+# windowrule = float, ^(kitty)$
+# Example windowrule v2
+# windowrulev2 = float,class:^(kitty)$,title:^(kitty)$
+# See https://wiki.hyprland.org/Configuring/Window-Rules/ for more
+
+
+# --------- BINDS RELATED STUFF ---------
+
+# Application Variables
+$term = foot
+$term_alt = xterm
+$browser = zen-browser
+$browser_pw = zen-browser --private-window
+$editor = kitty nvim
+$explorer = nautilus
+$notepad = gedit
+$clipboard = copyq show
+$discord = discord
+$launcher = rofi -show drun
+
+
+# See https://wiki.hyprland.org/Configuring/Keywords/ for more
+$mainMod = SUPER
+$altMod = SUPERALT
+$shiftMod = SUPERSHIFT
+$ctrlMod = SUPERCTRL
+# Example binds, see https://wiki.hyprland.org/Configuring/Binds/ for more
+bind = $mainMod, Q, exec, $term
+bind = $altMod, Q, exec, $term_alt
+bind = $mainMod, C, killactive, 
+bind = $mainMod, V, togglefloating, 
+bind = $mainMod, P, pseudo, # dwindle
+bind = $mainMod, J, togglesplit, # dwindle
+bind = SUPER, D, exec, $launcher
+bind = SUPER, F, fullscreen, 1
+bind = $shiftMod, F, fullscreen, 0
+#bind = SUPER SHIFT, F, fakefullscreen
+bind = SUPER, E, exec, $explorer
+bind = SUPERSHIFT, S , exec, XDG_CURRENT_DESKTOP=sway flameshot gui
+bind = SUPER, F1, exec, gammastep -O 2750 &
+bind = SUPER, B, exec, $browser
+bind = $shiftMod, K, exec, hyprctl kill
+bind = $altMod, B, exec, $browser_pw
+bind = SHIFT, F1, exec, pkill gammastep
+bind = , XF86AudioRaiseVolume, exec, volumectl -u up
+bind = , XF86AudioLowerVolume, exec, volumectl -u down
+bind = , XF86AudioMute, exec, volumectl toggle-mute
+bind = , XF86AudioMicMute, exec, volumectl -m toggle-mute
+bind = , XF86Launch3, exec, playerctl play-pause
+bind = , XF86AudioPlay, exec, playerctl play-pause
+bind = , XF86MonBrightnessUp, exec, lightctl up
+bind = , XF86MonBrightnessDown, exec, lightctl down
+bind = $mainMod, L, exec, scripts/./control.sh
+bind = $shiftMod, B, exec, cd ~/.config/dunst && bash baseinfo.sh
+bind = SUPER, G, exec, scripts/./wallpaper.sh
+# Move focus with mainMod + arrow keys
+bind = $mainMod, left, movefocus, l
+bind = $mainMod, right, movefocus, r
+bind = $mainMod, up, movefocus, u
+bind = $mainMod, down, movefocus, d
+# Switch workspaces with mainMod + [0-9]
+bind = $mainMod, 1, workspace, 1
+bind = $mainMod, 2, workspace, 2
+bind = $mainMod, 3, workspace, 3
+bind = $mainMod, 4, workspace, 4
+bind = $mainMod, 5, workspace, 5
+bind = $mainMod, 6, workspace, 6
+bind = $mainMod, 7, workspace, 7
+bind = $mainMod, 8, workspace, 8
+bind = $mainMod, 9, workspace, 9
+# Switch Workspaces Silently
+bind = $altMod, 1, movetoworkspacesilent, 1
+bind = $altMod, 2, movetoworkspacesilent, 2
+bind = $altMod, 3, movetoworkspacesilent, 3
+bind = $altMod, 4, movetoworkspacesilent, 4
+bind = $altMod, 5, movetoworkspacesilent, 5
+bind = $altMod, 6, movetoworkspacesilent, 6
+bind = $altMod, 7, movetoworkspacesilent, 7
+bind = $altMod, 8, movetoworkspacesilent, 8
+bind = $altMod, 9, movetoworkspacesilent, 9
+# Force Kill my favorite window manager
+bind = $shiftMod, Delete, exit
+# Move windows around in the workspace with SUPER and arrow keys
+bind = SUPERSHIFT, left, movewindow, l
+bind = SUPERSHIFT, right, movewindow, r
+bind = SUPERSHIFT, up, movewindow, u
+bind = SUPERSHIFT, down, movewindow, d
+# Special Workspace Stuff
+bind = $mainMod, 0,togglespecialworkspace,
+bind = $mainMod, ALT,movetoworkspacesilent, special
+binde =, code:123, exec, wpctl set-volume -1 1.5 @DEFAULT_AUDIO_SINK@ 5%+
+binde =, code:122, exec, wpctl set-volume -1 1.5 @DEFAULT_AUDIO_SINK@ 5%-
+#bindm = ALT, mouse:272, movewindow 
+#bindm = SHIFT, mouse:272, resizewindow 1
+# Move active window to a workspace with mainMod + SHIFT + [0-9]
+bind = $mainMod SHIFT, 1, movetoworkspace, 1
+bind = $mainMod SHIFT, 2, movetoworkspace, 2
+bind = $mainMod SHIFT, 3, movetoworkspace, 3
+bind = $mainMod SHIFT, 4, movetoworkspace, 4
+bind = $mainMod SHIFT, 5, movetoworkspace, 5
+bind = $mainMod SHIFT, 6, movetoworkspace, 6
+bind = $mainMod SHIFT, 7, movetoworkspace, 7
+bind = $mainMod SHIFT, 8, movetoworkspace, 8
+bind = $mainMod SHIFT, 9, movetoworkspace, 9
+bind = $mainMod SHIFT, 0, movetoworkspace, 10
+# Scroll through existing workspaces with mainMod + scroll
+bind = $mainMod, mouse_down, workspace, e+1
+bind = $mainMod, mouse_up, workspace, e-1
+# Move/resize windows with mainMod + LMB/RMB and dragging
+bindm = SUPERSHIFT, mouse:272, movewindow
+bindm = SUPERSHIFT, mouse:273, resizewindow
+bind = $ctrlMod, right, resizeactive, 10 0
+bind = $ctrlMod, left, resizeactive, -10 0
+bind = $ctrlMod, up, resizeactive, 0 -10
+bind = $ctrlMod, down, resizeactive, 0 10
+# Alt tab support
+bind = ALT, Tab, cyclenext,
+bind = ALT, Tab, bringactivetotop,
+# ---- PLUGIN BINDS -----
+#bind = $mainMod, Tab, overview:toggle 
+
+
+plugin:overview:dragAlpha = 0.51
+plugin:overview:panelBorderColor = $foreground
+plugin:overview:panelColor = $background
+plugin:overview:workspaceActiveBorder = $foreground
+plugin:overview:panelHeight = 240
+plugin:overview:exitOnSwitch = true
+plugin:overview:showEmptyWorkspace = true
+plugin:overview:autoScroll = true
+plugin:overview:onBottom = true
+
+plugins {
+    hyprfocus {
+        enabled = yes
+        animate_floating = yes
+        animate_workspacechange = yes
+        focus_animation = shrink
+        # Beziers for focus animations
+        bezier = bezIn, 0.5,0.0,1.0,0.5
+        bezier = bezOut, 0.0,0.5,0.5,1.0
+        bezier = overshot, 0.05, 0.9, 0.1, 1.05
+        bezier = smoothOut, 0.36, 0, 0.66, -0.56
+        bezier = smoothIn, 0.25, 1, 0.5, 1
+        bezier = realsmooth, 0.28,0.29,.69,1.08
+        # Flash settings
+        flash {
+            flash_opacity = 0.95
+            in_bezier = realsmooth
+            in_speed = 0.5
+            out_bezier = realsmooth
+            out_speed = 3
+        }
+        # Shrink settings
+        shrink {
+            shrink_percentage = 0.95
+            in_bezier = realsmooth
+            in_speed = 1
+            out_bezier = realsmooth
+            out_speed = 2
+        }
+     }
+dynamic-cursors {
+
+    # enables the plugin
+    enabled = true
+
+    # sets the cursor behaviour, supports these values:
+    # tilt    - tilt the cursor based on x-velocity
+    # rotate  - rotate the cursor based on movement direction
+    # stretch - stretch the cursor shape based on direction and velocity
+    # none    - do not change the cursors behaviour
+    mode = stretch
+
+    # minimum angle difference in degrees after which the shape is changed
+    # smaller values are smoother, but more expensive for hw cursors
+    threshold = 2
+
+    # override the mode behaviour per shape
+    # this is a keyword and can be repeated many times
+    # by default, there are no rules added
+    # see the dedicated `shape rules` section below!
+#    shaperule = <shape-name>, <mode> (optional), <property>: <value>, ...
+#    shaperule = <shape-name>, <mode> (optional), <property>: <value>, ...
+#    ...
+
+    # for mode = rotate
+    rotate {
+
+        # length in px of the simulated stick used to rotate the cursor
+        # most realistic if this is your actual cursor size
+        length = 20
+
+        # clockwise offset applied to the angle in degrees
+        # this will apply to ALL shapes
+        offset = 0.0
+    }
+
+    # for mode = tilt
+    tilt {
+
+        # controls how powerful the tilt is, the lower, the more power
+        # this value controls at which speed (px/s) the full tilt is reached
+        limit = 5000
+
+        # relationship between speed and tilt, supports these values:
+        # linear             - a linear function is used
+        # quadratic          - a quadratic function is used (most realistic to actual air drag)
+        # negative_quadratic - negative version of the quadratic one, feels more aggressive
+        function = negative_quadratic
+    }
+
+    # for mode = stretch
+    stretch {
+
+        # controls how much the cursor is stretched
+        # this value controls at which speed (px/s) the full stretch is reached
+        limit = 3000
+
+        # relationship between speed and stretch amount, supports these values:
+        # linear             - a linear function is used
+        # quadratic          - a quadratic function is used
+        # negative_quadratic - negative version of the quadratic one, feels more aggressive
+        function = quadratic
+    }
+
+    # configure shake to find
+    # magnifies the cursor if its is being shaken
+    shake {
+
+        # enables shake to find
+        enabled = true
+
+        # use nearest-neighbour (pixelated) scaling when shaking
+        # may look weird when effects are enabled
+        nearest = true
+
+        # controls how soon a shake is detected
+        # lower values mean sooner
+        threshold = 6.0
+
+        # magnification level immediately after shake start
+        base = 4.0
+        # magnification increase per second when continuing to shake
+        speed = 4.0
+        # how much the speed is influenced by the current shake intensitiy
+        influence = 0.0
+
+        # maximal magnification the cursor can reach
+        # values below 1 disable the limit (e.g. 0)
+        limit = 0.0
+
+        # time in millseconds the cursor will stay magnified after a shake has ended
+        timeout = 2000
+
+        # show cursor behaviour `tilt`, `rotate`, etc. while shaking
+        effects = false
+
+        # enable ipc events for shake
+        # see the `ipc` section below
+        ipc = false
+    }
+}
+}
+
+custom {
+    env {
+        # XDG Stuff
+	env = XDG_CURRENT_DESKTOP,Hyprland
+	env = XDG_SESSION_DESKTOP,Hyprland
+	env = XDG_SESSION_TYPE,wayland
+	# QT Stuff
+	env = QT_QPA_PLATFORM,wayland
+	env = QT_QPA_PLATFORMTHEME,qt6ct
+	env = QT_WAYLAND_DISABLE_WINDOWDECORATION,1
+	# Other random Wayland stuff ig
+	env = WLR_BACKEND,vulkan
+	env = GDK_BACKEND,wayland
+	env = MOZ_ENABLE_WAYLAND,1
+	env = _JAVA_AWT_WM_NONREPARENTING,1
+	env = CLUTTER_BACKEND,wayland
+	env = WLR_NO_HARDWARE_CURSORS,1
+	env = AQ_DRM_DEVICES,/dev/dri/card1:/dev/dri/card2
+	# GTK Theme
+#	env = GTK_THEME,WhiteSur-Dark-solid
+	# hyrpcursor
+	env = HYPRCURSOR_THEME,rose-pine-hyprcursor
+        env = HYPRCURSOR_SIZE,24
+    }
+}
