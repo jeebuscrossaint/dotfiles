@@ -90,6 +90,7 @@
   wget
   git
   inputs.zen-browser.packages."${system}".default
+  inputs.ewww.packages."${system}".default
   ];
 
   fonts.packages = with pkgs; [
@@ -171,7 +172,8 @@
   services.udev.packages = with pkgs; [ gnome-settings-daemon ];
   security.pam.services.hyprlock = {};
   services.flatpak.enable = true;
-  
+ security.pam.services.gdm-password.enableGnomeKeyring = true;
+   
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
   # programs.mtr.enable = true;

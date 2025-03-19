@@ -15,6 +15,9 @@
 
 	#vim joyer hyprland home manager tutorial
 	hyprland.url = "github:hyprwm/Hyprland";
+	
+	#ewww input
+	ewww.url = "github:elkowar/eww";
 
     home-manager = {
       url = "github:nix-community/home-manager/master";
