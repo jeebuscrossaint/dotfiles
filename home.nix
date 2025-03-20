@@ -21,6 +21,7 @@
                 ./modules/waybar.nix
                 ./modules/hyprland.nix
 		./modules/spectrwm.nix
+		./modules/swaylock.nix
         ];
 
 	home.username = "amarnath";
@@ -62,7 +63,6 @@
 	font-awesome
 	flameshot
 	hyprshot
-	swaylock-effects
 	rose-pine-hyprcursor
 	adwaita-icon-theme
 	gnome-tweaks
@@ -82,6 +82,8 @@
 	blueberry
 	gparted
 	hyprpolkitagent
+	
+	lunar-client
 	];
 	
 	programs.librewolf.enable = true;
@@ -150,7 +152,7 @@ gtk = {
 	stylix.autoEnable = true;
 	
 	stylix.enable = true;
-	stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/saga.yaml";
+	stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/sakura.yaml";
 	stylix.polarity = "dark";
 
 	stylix.fonts = {
