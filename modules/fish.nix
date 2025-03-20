@@ -25,6 +25,7 @@
       xcopy = "xclip -sel clip";
       ppctl = "powerprofilesctl";
       "update-nixos" = "pushd $HOME/dotfiles && nix flake update --commit-lock-file && sudo nixos-rebuild switch --flake . && popd";
+      "new-wallpaper" = "swww img \"$(find ~/wallpapers/ -type f -print0 | shuf -z -n 1)\"";
     };
     
     shellInit = ''
