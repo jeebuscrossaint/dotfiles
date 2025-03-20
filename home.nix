@@ -35,6 +35,7 @@
 	xresources.properties = {};
 
 	home.packages = with pkgs; [
+	i3status-rust
 	fastfetch
 	tree
 	fzf
