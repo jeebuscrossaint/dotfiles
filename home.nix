@@ -25,6 +25,7 @@
 		./modules/dunst.nix
 		./modules/fnott.nix
 		./modules/sway.nix
+		./modules/hypridle.nix
         ];
 
 	home.username = "amarnath";
