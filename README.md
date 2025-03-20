@@ -1,9 +1,7 @@
 # dotfiles
 
-Yet to rice this readme up
+no longer uses GNU stow.
 
-this repo uses GNU Stow.
+uses nixos + home manager
 
-to install all these dotfiles clone the repo, install stow and whatever machine you have, then cd into this repository and run `stow .`
-
-thats about it
+dont think ill use freebsd anytime soon so one day with compliant hardware ill just add openbsd dots
