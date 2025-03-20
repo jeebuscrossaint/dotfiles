@@ -23,6 +23,7 @@
 		./modules/spectrwm.nix
 		./modules/swaylock.nix
 		./modules/dunst.nix
+		./modules/fnott.nix
         ];
 
 	home.username = "amarnath";

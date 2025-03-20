@@ -1,5 +1,0 @@
-# berry binds
-super + d rofi -show drun
-super + g scripts/./wallpaper.sh
-super + l scripts/./control.sh
-super + t kitty
