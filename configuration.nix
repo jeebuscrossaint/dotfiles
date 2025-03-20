@@ -137,6 +137,18 @@
   	displayManager.gdm.enable = true;
   	desktopManager.gnome.enable = true;
   };
+  
+  services.libinput = {
+  	enable = true;
+  	
+  	mouse = {
+  		accelProfile = "flat";
+  	};
+  	
+  	touchpad = {
+  		accelProfile = "flat";
+  	};
+  };
 
   environment.gnome.excludePackages = (with pkgs; [
   	  atomix # puzzle game
