@@ -22,6 +22,7 @@
                 ./modules/hyprland.nix
 		./modules/spectrwm.nix
 		./modules/swaylock.nix
+		./modules/dunst.nix
         ];
 
 	home.username = "amarnath";
