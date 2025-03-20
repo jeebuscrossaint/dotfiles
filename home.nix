@@ -24,6 +24,7 @@
 		./modules/swaylock.nix
 		./modules/dunst.nix
 		./modules/fnott.nix
+		./modules/sway.nix
         ];
 
 	home.username = "amarnath";
@@ -154,7 +155,7 @@ gtk = {
 	stylix.autoEnable = true;
 	
 	stylix.enable = true;
-	stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/sakura.yaml";
+	stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/bright.yaml";
 	stylix.polarity = "dark";
 
 	stylix.fonts = {
