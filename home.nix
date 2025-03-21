@@ -36,6 +36,10 @@
 	xresources.properties = {};
 
 	home.packages = with pkgs; [
+	quickemu
+	qemu_full
+	qemu-user
+	uefi-run
 	i3status-rust
 	fastfetch
 	tree
