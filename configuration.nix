@@ -134,8 +134,11 @@
 
   services.xserver = {
   	enable = true;
-  	displayManager.gdm.enable = true;
+  	displayManager.lightdm.enable = true;
   	desktopManager.gnome.enable = true;
+  	desktopManager.xfce.enable = true;
+  	windowManager.i3.enable = true;
+  	windowManager.spectrwm.enable = true;
   };
   
   services.libinput = {
