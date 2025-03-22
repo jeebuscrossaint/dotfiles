@@ -64,7 +64,7 @@
       glx-no-rebind-pixmap = true;
       
       # Corners
-      corner-radius = 10;
+      corner-radius = 0;
       rounded-corners-exclude = [
         "window_type = 'dock'"
         "window_type = 'desktop'"

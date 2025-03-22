@@ -95,6 +95,7 @@
 	hyprpolkitagent
 	
 	lunar-client
+	vim-full
 	];
 	
 	programs.librewolf.enable = true;
