@@ -96,6 +96,7 @@
 	
 	lunar-client
 	vim-full
+	conky
 	];
 	
 	programs.librewolf.enable = true;
@@ -164,7 +165,7 @@ gtk = {
 	stylix.autoEnable = true;
 	
 	stylix.enable = true;
-	stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/tokyo-city-terminal-dark.yaml";
+	stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/black-metal-marduk.yaml";
 	stylix.polarity = "dark";
 
 	stylix.fonts = {
