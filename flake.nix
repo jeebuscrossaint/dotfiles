@@ -14,7 +14,6 @@
     #ewww input
     ewww.url = "github:elkowar/eww";
     
-    nixvim.url = "github:nix-community/nixvim";
     home-manager = {
       url = "github:nix-community/home-manager/master";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -41,7 +40,6 @@
             home-manager.extraSpecialArgs = { inherit inputs; };
             # Add nixvim module to home-manager
             home-manager.sharedModules = [
-              nixvim.homeManagerModules.nixvim
             ];
           }
         ];

@@ -28,7 +28,6 @@
 		./modules/hypridle.nix
 		./modules/picom.nix
 		./modules/i3.nix
-		./modules/nixvim.nix
         ];
 
 	home.username = "amarnath";
@@ -98,7 +97,6 @@
 	lunar-client
 	conky
 	neovide
-	clang-tools
 	];
 	
 	programs.librewolf.enable = true;
