@@ -98,6 +98,7 @@
 	lunar-client
 	conky
 	neovide
+	clang-tools
 	];
 	
 	programs.librewolf.enable = true;
@@ -166,7 +167,7 @@ gtk = {
 	stylix.autoEnable = true;
 	
 	stylix.enable = true;
-	stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/black-metal-marduk.yaml";
+	stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/gruvbox-material-light-soft.yaml";
 	stylix.polarity = "dark";
 
 	stylix.fonts = {
