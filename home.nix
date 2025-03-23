@@ -95,8 +95,9 @@
 	hyprpolkitagent
 	
 	lunar-client
-	vim-full
 	conky
+	neovide
+	neovim-unwrapped
 	];
 	
 	programs.librewolf.enable = true;
