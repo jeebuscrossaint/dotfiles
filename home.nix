@@ -28,6 +28,7 @@
 		./modules/hypridle.nix
 		./modules/picom.nix
 		./modules/i3.nix
+		./modules/tofi.nix
 		./modules/nvf.nix
         ];
 
@@ -63,7 +64,6 @@
 	zoxide
 	avizo
 	fuzzel
-	tofi
 	# hyprland/sway-wayland stuff
 	swww
 	hypridle

@@ -57,7 +57,7 @@
       in {
         # Basic bindings
         "${modifier}+q" = "exec foot";
-        "${modifier}+d" = "exec rofi -show drun";
+        "${modifier}+d" = "exec tofi-drun";
         "${modifier}+c" = "kill";
         "${modifier}+Shift+c" = "reload";
         "${modifier}+l" = "exec ~/scripts/control.sh";

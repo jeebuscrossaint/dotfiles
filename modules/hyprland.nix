@@ -221,7 +221,7 @@
       "$notepad" = "gedit";
       "$clipboard" = "copyq show";
       "$discord" = "discord";
-      "$launcher" = "fuzzel --icon-theme rose-pine-moon";
+      "$launcher" = "tofi-drun";
       
       # Modifier keys
       "$mainMod" = "SUPER";
