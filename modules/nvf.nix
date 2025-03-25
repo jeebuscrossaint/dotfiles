@@ -70,6 +70,10 @@
         borders.enable = true;
         colorizer.enable = true;
       };
+      
+      terminal = {
+      	toggleterm.enable = true;
+      };
 
       autopairs.nvim-autopairs.enable = true;
 
