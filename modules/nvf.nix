@@ -74,6 +74,10 @@
       terminal = {
       	toggleterm.enable = true;
       };
+      
+      minimap = {
+      	codewindow.enable = true;
+      };
 
       autopairs.nvim-autopairs.enable = true;
 
