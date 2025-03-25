@@ -28,6 +28,7 @@
 		./modules/hypridle.nix
 		./modules/picom.nix
 		./modules/i3.nix
+		./modules/nvf.nix
         ];
 
 	home.username = "amarnath";
@@ -101,7 +102,7 @@
 	
 	programs.librewolf.enable = true;
 	#programs.fnott.enable = true;
-	programs.zed-editor.enable = true;
+	programs.zed-editor.enable = false;
 	programs.tmux.enable = true;
 	#programs.dunst.enable = true;
 	programs.emacs.enable = true;
@@ -165,7 +166,7 @@ gtk = {
 	stylix.autoEnable = true;
 	
 	stylix.enable = true;
-	stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/gruvbox-material-light-soft.yaml";
+	stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/chalk.yaml";
 	stylix.polarity = "dark";
 
 	stylix.fonts = {

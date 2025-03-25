@@ -14,12 +14,14 @@
     #ewww input
     ewww.url = "github:elkowar/eww";
     
+    nvf.url = "github:notashelf/nvf";
+    
     home-manager = {
       url = "github:nix-community/home-manager/master";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
-  outputs = inputs@{ nixpkgs, nix-ld, home-manager, stylix, nixvim, ... }: {
+  outputs = inputs@{ nixpkgs, nix-ld, home-manager, stylix, ... }: {
     nixosConfigurations = {
       nixos = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
@@ -38,8 +40,9 @@
             home-manager.useUserPackages = true;
             home-manager.users.amarnath = import ./home.nix;
             home-manager.extraSpecialArgs = { inherit inputs; };
-            # Add nixvim module to home-manager
+            # Add nvf module to home-manager
             home-manager.sharedModules = [
+            inputs.nvf.homeManagerModules.default
             ];
           }
         ];
