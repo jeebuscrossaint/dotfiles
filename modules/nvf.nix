@@ -45,6 +45,7 @@
         rust.enable = true;
         nix.enable = true;
         python.enable = true;
+        go.enable = true;
       };
 
       visuals = {
