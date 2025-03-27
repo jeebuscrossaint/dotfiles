@@ -104,7 +104,7 @@
 
   programs.librewolf.enable = true;
   #programs.fnott.enable = true;
-  programs.zed-editor.enable = false;
+  programs.zed-editor.enable = true;
   programs.tmux.enable = true;
   #programs.dunst.enable = true;
   programs.emacs.enable = true;
