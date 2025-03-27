@@ -100,6 +100,7 @@
     lunar-client
     conky
     neovide
+    proton-pass
   ];
 
   programs.librewolf.enable = true;
