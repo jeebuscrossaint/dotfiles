@@ -84,7 +84,6 @@
     gtk-engine-murrine
     gnome-themes-extra
     # devel
-    qemacs
     yazi
 
     wireshark-qt
@@ -101,6 +100,7 @@
     conky
     neovide
     proton-pass
+    emacs-gtk
   ];
 
   programs.librewolf.enable = true;
@@ -108,7 +108,6 @@
   programs.zed-editor.enable = true;
   programs.tmux.enable = true;
   #programs.dunst.enable = true;
-  programs.emacs.enable = true;
 
   gtk = {
     enable = true;
