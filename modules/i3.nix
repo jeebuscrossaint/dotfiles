@@ -44,13 +44,13 @@
       
       keybindings = lib.mkOptionDefault {
         # Main keybindings
-        "Mod4+q" = "exec alacritty";
+        "Mod4+q" = "exec kitty";
         "Mod4+c" = "kill";
         "Mod4+p" = "floating toggle";
-        "Mod4+d" = "exec ./scripts/launcher.sh";
-        "Mod4+g" = "exec ./scripts/wallpaper.sh";
+        "Mod4+d" = "exec rofi -show drun";
+        "Mod4+g" = "exec ";
         "Mod4+l" = "exec xsecurelock";
-        "Mod4+b" = "exec firefox-developer-edition";
+        "Mod4+b" = "exec zen";
         "Mod4+shift+s" = "exec flameshot gui";
         
         # Window management

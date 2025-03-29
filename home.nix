@@ -86,6 +86,10 @@
     gnome-themes-extra
     # devel
     yazi
+    xsecurelock
+    xss-lock
+    xdotool
+    xclip
 
     wireshark-qt
 
@@ -102,11 +106,6 @@
     neovide
     proton-pass
     emacs-gtk
-    go
-    vcpkg
-    gnumake
-    cmake
-    clang
   ];
 
   programs.librewolf.enable = true;
