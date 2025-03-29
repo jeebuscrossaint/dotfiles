@@ -1,16 +1,18 @@
-{ pkgs, lib, ... }:
 {
+  pkgs,
+  lib,
+  ...
+}: {
   wayland.windowManager.hyprland = {
     enable = true;
     systemd.enable = true;
     xwayland.enable = true;
-    
+
     settings = {
       # Monitor configuration
       monitor = ",preferred,auto,1";
       workspace = ", special";
-      
-      
+
       # Autostart applications
       "exec-once" = [
         "hypridle"
@@ -33,13 +35,13 @@
         "waybar --config ~/.config/waybar/config.json --style ~/.config/waybar/style.css"
         "/usr/bin/pipewire & /usr/bin/pipewire-pulse & /usr/bin/wireplumber"
       ];
-      
+
       # Environment variables
       env = [
         "XCURSOR_SIZE,24"
         "XCURSOR_THEME,WhiteSur-cursor"
       ];
-      
+
       # Input configuration
       input = {
         kb_layout = "us";
@@ -57,7 +59,7 @@
         sensitivity = 0;
         accel_profile = "flat";
       };
-      
+
       # General settings
       general = {
         gaps_in = 10;
@@ -67,12 +69,12 @@
         layout = "dwindle";
         allow_tearing = 1;
       };
-      
+
       # Debug settings
       "debug:disable_logs" = false;
       "debug:enable_stdout_logs" = true;
       "debug:colored_stdout_logs" = true;
-      
+
       # Decoration settings
       decoration = {
         shadow = {
@@ -105,7 +107,7 @@
           special = false;
         };
       };
-      
+
       # Animation settings
       animations = {
         enabled = true;
@@ -150,7 +152,7 @@
           "specialWorkspace, 1, 6, apparate, slidefade"
         ];
       };
-      
+
       # Misc settings
       misc = {
         # Removed background_color to avoid conflicts with Stylix
@@ -161,28 +163,20 @@
         swallow_regex = "^(kitty)$";
         vrr = 0;
       };
-      
+
       # Dwindle layout
       dwindle = {
         pseudotile = true;
         preserve_split = true;
       };
-      
+
       # Gestures
       gestures = {
         workspace_swipe = "on";
         workspace_swipe_fingers = 3;
         workspace_swipe_forever = true;
       };
-      
-      # Window rules
-      "windowrule" = [
-        "float, *.exe"
-        "float, wofi"
-        "float, fuzzel"
-        "float,^(pavucontrol)&"
-      ];
-      
+
       "windowrulev2" = [
         "noblur,title:^(Picture-in-Picture)$"
         "nodim,title:^(Picture-in-Picture)$"
@@ -192,9 +186,9 @@
         "opacity 1.0 override 1.0 override,class:^(zoom)$"
         "noblur,class:^(mpv)$"
         "nodim,class:^(mpv)$"
+        "noanim,class:^(wofi)$"
         "opacity 1.0 override 1.0 override,class:^(mpv)$"
         "animation slide, class:Rofi$"
-        "animation slide, class:^(wofi)$"
         "animation slide, class:^(fuzzel)&"
         "opacity 0.0 override 0.0 override,class:^(xwaylandvideobridge)$"
         "noanim,class:^(xwaylandvideobridge)$"
@@ -210,7 +204,7 @@
         "opacity 0.9, class:Alacritty"
         "opacity 0.9, class:foot"
       ];
-      
+
       # Application variables
       "$term" = "foot";
       "$term_alt" = "xterm";
@@ -221,14 +215,14 @@
       "$notepad" = "gedit";
       "$clipboard" = "copyq show";
       "$discord" = "discord";
-      "$launcher" = "tofi-drun";
-      
+      "$launcher" = "fuzzel";
+
       # Modifier keys
       "$mainMod" = "SUPER";
       "$altMod" = "SUPERALT";
       "$shiftMod" = "SUPERSHIFT";
       "$ctrlMod" = "SUPERCTRL";
-      
+
       # Key bindings
       bind = [
         "$mainMod, Q, exec, $term"
@@ -306,19 +300,19 @@
         "ALT, Tab, cyclenext,"
         "ALT, Tab, bringactivetotop,"
       ];
-      
+
       # Bind with modifiers
       "binde" = [
         ", code:123, exec, wpctl set-volume -1 1.5 @DEFAULT_AUDIO_SINK@ 5%+"
         ", code:122, exec, wpctl set-volume -1 1.5 @DEFAULT_AUDIO_SINK@ 5%-"
       ];
-      
+
       # Bind with mouse
       "bindm" = [
         "SUPERSHIFT, mouse:272, movewindow"
         "SUPERSHIFT, mouse:273, resizewindow"
       ];
-      
+
       # Custom environment variables
       custom = {
         env = [

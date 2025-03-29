@@ -29,8 +29,8 @@
     ./modules/hypridle.nix
     ./modules/picom.nix
     ./modules/i3.nix
-    ./modules/tofi.nix
     ./modules/nvf.nix
+    ./modules/fuzzel.nix
   ];
 
   home.username = "amarnath";
@@ -39,6 +39,7 @@
   xresources.properties = {};
 
   home.packages = with pkgs; [
+    wofi
     qalculate-gtk
     quickemu
     qemu_full
@@ -58,6 +59,7 @@
     swayrbar
     pfetch-rs
     autotiling-rs
+    autotiling
     ipfetch
     micro
     wl-clipboard-rs
@@ -65,7 +67,6 @@
     lsd
     zoxide
     avizo
-    fuzzel
     # hyprland/sway-wayland stuff
     swww
     hypridle
@@ -101,6 +102,11 @@
     neovide
     proton-pass
     emacs-gtk
+    go
+    vcpkg
+    gnumake
+    cmake
+    clang
   ];
 
   programs.librewolf.enable = true;
@@ -159,7 +165,6 @@
   programs.home-manager.enable = true;
 
   programs.cava.enable = true;
-  programs.fuzzel.enable = true;
   programs.qutebrowser.enable = true;
   programs.chromium.enable = true;
 

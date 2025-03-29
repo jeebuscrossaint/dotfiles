@@ -79,6 +79,11 @@
       minimap = {
       	codewindow.enable = true;
       };
+      
+      binds = {
+      	cheatsheet.enable = true;
+      	whichKey.enable = true;
+      };
 
       autopairs.nvim-autopairs.enable = true;
 
