@@ -36,7 +36,10 @@
   home.username = "amarnath";
   home.homeDirectory = "/home/amarnath";
 
-  xresources.properties = {};
+  xresources.properties = {
+  };
+  
+  home.pointerCursor.x11.enable = true;
 
   home.packages = with pkgs; [
     wofi
