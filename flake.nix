@@ -10,39 +10,48 @@
     stylix.url = "github:danth/stylix";
     #vim joyer hyprland home manager tutorial
     hyprland.url = "github:hyprwm/Hyprland";
-    
+
     #ewww input
     ewww.url = "github:elkowar/eww";
-    
+
     nvf.url = "github:notashelf/nvf";
-    
+
+    # my own project
+    numlockwl.url = "github:jeebuscrossaint/numlockwl";
+
     home-manager = {
       url = "github:nix-community/home-manager/master";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
-  outputs = inputs@{ nixpkgs, nix-ld, home-manager, stylix, ... }: {
+  outputs = inputs @ {
+    nixpkgs,
+    nix-ld,
+    home-manager,
+    stylix,
+    ...
+  }: {
     nixosConfigurations = {
       nixos = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
-        specialArgs = { inherit inputs; };
+        specialArgs = {inherit inputs;};
         modules = [
           stylix.nixosModules.stylix
           ./configuration.nix
-          
+
           # This will enable nix-ld and add its modules
           nix-ld.nixosModules.nix-ld
-          { programs.nix-ld.dev.enable = true; }
+          {programs.nix-ld.dev.enable = true;}
           # Home manager module
           home-manager.nixosModules.home-manager
           {
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
             home-manager.users.amarnath = import ./home.nix;
-            home-manager.extraSpecialArgs = { inherit inputs; };
+            home-manager.extraSpecialArgs = {inherit inputs;};
             # Add nvf module to home-manager
             home-manager.sharedModules = [
-            inputs.nvf.homeManagerModules.default
+              inputs.nvf.homeManagerModules.default
             ];
           }
         ];
