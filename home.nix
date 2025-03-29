@@ -16,7 +16,7 @@
     ./modules/btop.nix
     ./modules/rofi.nix
     ./modules/kitty.nix
-    #./modules/mangohud.nix
+    ./modules/mangohud.nix
     ./modules/micro.nix
     ./modules/mpv.nix
     ./modules/waybar.nix
@@ -147,10 +147,6 @@
   programs.gitui.enable = true;
 
   programs.starship = {
-    enable = true;
-  };
-
-  programs.alacritty = {
     enable = true;
   };
 

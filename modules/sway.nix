@@ -57,11 +57,11 @@
       in {
         # Basic bindings
         "${modifier}+q" = "exec foot";
-        "${modifier}+d" = "exec tofi-drun";
+        "${modifier}+d" = "exec fuzzel";
         "${modifier}+c" = "kill";
         "${modifier}+Shift+c" = "reload";
-        "${modifier}+l" = "exec ~/scripts/control.sh";
-        "${modifier}+g" = "exec ~/scripts/wallpaper.sh";
+        "${modifier}+l" = "exec swaylock -C ~/.config/swaylock/config";
+        "${modifier}+g" = "exec new-wallpaper";
         
         # Focus bindings
         "${modifier}+left" = "focus left";
