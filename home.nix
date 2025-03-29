@@ -38,7 +38,7 @@
 
   xresources.properties = {
   };
-  
+
   home.pointerCursor.x11.enable = true;
 
   home.packages = with pkgs; [
@@ -175,22 +175,22 @@
 
   stylix.fonts = {
     serif = {
-      package = pkgs.nerd-fonts.monaspace;
-      name = "MonaspiceNe Nerd Font";
+      package = pkgs.nerd-fonts.jetbrains-mono;
+      name = "JetBrainsMono Nerd Font";
     };
 
     sansSerif = {
-      package = pkgs.nerd-fonts.monaspace;
-      name = "MonaspiceNe Nerd Font";
+      package = pkgs.nerd-fonts.jetbrains-mono;
+      name = "JetBrainsMono Nerd Font";
     };
 
     monospace = {
-      package = pkgs.nerd-fonts.monaspace;
-      name = "MonaspiceNe Nerd Font";
+      package = pkgs.nerd-fonts.jetbrains-mono;
+      name = "JetBrainsMono Nerd Font";
     };
 
     emoji = {
-      package = pkgs.nerd-fonts.monaspace;
+      package = pkgs.nerd-fonts.jetbrains-mono;
       name = "Noto Color Emoji";
     };
   };
