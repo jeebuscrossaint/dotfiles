@@ -42,7 +42,8 @@
   home.pointerCursor.x11.enable = true;
 
   home.packages = with pkgs; [
-    wofi
+    cutter
+    ghidra
     qalculate-gtk
     quickemu
     qemu_full
@@ -57,8 +58,7 @@
     pciutils
     vesktop
     nix-search
-    pywal16
-    imagemagick
+    nix-index
     swayrbar
     pfetch-rs
     autotiling-rs
