@@ -18,6 +18,9 @@
 
     # my own project
     numlockwl.url = "github:jeebuscrossaint/numlockwl";
+    
+    # my other own project
+    doomer.url = "github:jeebuscrossaint/doomer";
 
     home-manager = {
       url = "github:nix-community/home-manager/master";

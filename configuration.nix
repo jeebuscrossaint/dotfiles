@@ -92,6 +92,7 @@
     inputs.zen-browser.packages."${system}".default
     inputs.ewww.packages."${system}".default
     inputs.numlockwl.packages."${system}".default
+    inputs.doomer.packages."${system}".default
   ];
 
   fonts.packages = with pkgs; [
