@@ -109,6 +109,7 @@
     neovide
     proton-pass
     emacs-gtk
+    libreoffice-qt6-fresh
   ];
 
   programs.librewolf.enable = true;
@@ -170,7 +171,7 @@
   stylix.autoEnable = true;
 
   stylix.enable = true;
-  stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/atelier-lakeside-light.yaml";
+  stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/edge-dark.yaml";
   stylix.polarity = "dark";
 
   stylix.fonts = {
