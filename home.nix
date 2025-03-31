@@ -31,6 +31,7 @@
     ./modules/i3.nix
     ./modules/nvf.nix
     ./modules/fuzzel.nix
+    ./modules/zed.nix
   ];
 
   home.username = "amarnath";
@@ -42,6 +43,7 @@
   home.pointerCursor.x11.enable = true;
 
   home.packages = with pkgs; [
+    swaynotificationcenter
     cutter
     ghidra
     qalculate-gtk
@@ -114,7 +116,6 @@
 
   programs.librewolf.enable = true;
   #programs.fnott.enable = true;
-  programs.zed-editor.enable = true;
   programs.tmux.enable = true;
   #programs.dunst.enable = true;
 
@@ -171,7 +172,7 @@
   stylix.autoEnable = true;
 
   stylix.enable = true;
-  stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/edge-dark.yaml";
+  stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/gruber.yaml";
   stylix.polarity = "dark";
 
   stylix.fonts = {

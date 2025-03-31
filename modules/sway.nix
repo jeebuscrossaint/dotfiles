@@ -158,6 +158,7 @@
         { command = "/usr/bin/wireplumber &"; always = false; }
         { command = "swayidle"; always = false; }
         { command = "/usr/libexec/xdg-desktop-portal-gtk"; always = false; }
+        { command = "swaync"; always = false; }
       ];
       
       # Output configuration
