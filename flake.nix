@@ -18,9 +18,12 @@
 
     # my own project
     numlockwl.url = "github:jeebuscrossaint/numlockwl";
-    
+
     # my other own project
     doomer.url = "github:jeebuscrossaint/doomer";
+
+    # my own bar
+    limebar.url = "github:jeebuscrossaint/limebar";
 
     home-manager = {
       url = "github:nix-community/home-manager/master";

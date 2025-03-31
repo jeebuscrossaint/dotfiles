@@ -93,6 +93,7 @@
     inputs.ewww.packages."${system}".default
     inputs.numlockwl.packages."${system}".default
     inputs.doomer.packages."${system}".default
+    inputs.limebar.packages."${system}".default
   ];
 
   fonts.packages = with pkgs; [
