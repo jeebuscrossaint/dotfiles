@@ -100,6 +100,10 @@
     nerd-fonts.monaspace
     nerd-fonts.jetbrains-mono
   ];
+  
+  services.logind.extraConfig = ''
+  	HandlePowerKey=ignore
+  '';
 
   programs.sway = {
     enable = true;

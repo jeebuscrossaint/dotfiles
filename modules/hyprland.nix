@@ -16,7 +16,7 @@
       # Autostart applications
       "exec-once" = [
         "hypridle"
-        "dunst"
+        "swaync"
         "copyq --start-server"
         "wl-paste --type text --watch cliphist store"
         "wl-paste --type image --watch cliphist store"
@@ -241,6 +241,7 @@
         "$shiftMod, K, exec, hyprctl kill"
         "$altMod, B, exec, $browser_pw"
         "SHIFT, F1, exec, pkill gammastep"
+        "$shiftMod, S, exec, hyprshot -m region"
         ", XF86AudioRaiseVolume, exec, volumectl -u up"
         ", XF86AudioLowerVolume, exec, volumectl -u down"
         ", XF86AudioMute, exec, volumectl toggle-mute"
@@ -250,7 +251,6 @@
         ", XF86MonBrightnessUp, exec, lightctl up"
         ", XF86MonBrightnessDown, exec, lightctl down"
         "$mainMod, L, exec, scripts/./control.sh"
-        "$shiftMod, B, exec, cd ~/.config/dunst && bash baseinfo.sh"
         "SUPER, G, exec, scripts/./wallpaper.sh"
         "$mainMod, left, movefocus, l"
         "$mainMod, right, movefocus, r"
