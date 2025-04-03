@@ -25,6 +25,18 @@
           lsp = "clangd"; # Explicitly set clangd for C++ files
         };
       };
+      
+      assistant = {
+      	default-model = {
+      		provider = "github.com";
+      		model = "claude-3-7-sonnet-latest";
+      	};
+      	
+      	editor-model = {
+      		provider = "github.com";
+      		model = "claude-3-7-sonnet-latest";
+      	};
+      };
     };
   };
 }

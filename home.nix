@@ -32,6 +32,7 @@
     ./modules/nvf.nix
     ./modules/fuzzel.nix
     ./modules/zed.nix
+    ./modules/hyprpaper.nix
   ];
 
   home.username = "amarnath";
@@ -43,6 +44,7 @@
   home.pointerCursor.x11.enable = true;
 
   home.packages = with pkgs; [
+  hyprpaper
     swaynotificationcenter
     cutter
     ghidra
@@ -172,7 +174,7 @@
   stylix.autoEnable = true;
 
   stylix.enable = true;
-  stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/pico.yaml";
+  stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/gigavolt.yaml";
   stylix.polarity = "dark";
 
   stylix.fonts = {
