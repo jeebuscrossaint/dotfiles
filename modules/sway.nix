@@ -149,7 +149,7 @@
         { command = "/usr/libexec/polkit-gnome-authentication-agent-1"; always = false; }
         { command = "wl-paste --type text --watch cliphist store"; always = false; }
         { command = "wl-paste --type image --watch cliphist store"; always = false; }
-        { command = "swww-daemon"; always = false; }
+        { command = "swaybg"; always = false; }
         { command = "dbus-update-activation-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP"; always = false; }
         { command = "gamemoded"; always = false; }
         { command = "avizo-service"; always = false; }

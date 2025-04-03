@@ -44,6 +44,7 @@
   home.pointerCursor.x11.enable = true;
 
   home.packages = with pkgs; [
+  swaybg
   hyprpaper
     swaynotificationcenter
     cutter
