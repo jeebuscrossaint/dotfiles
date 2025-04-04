@@ -116,6 +116,7 @@
     emacs-gtk
     libreoffice-qt6-fresh
     youtube-music
+    osu-lazer
   ];
 
   programs.librewolf.enable = true;
