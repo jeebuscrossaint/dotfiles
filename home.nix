@@ -115,6 +115,7 @@
     proton-pass
     emacs-gtk
     libreoffice-qt6-fresh
+    youtube-music
   ];
 
   programs.librewolf.enable = true;
@@ -219,6 +220,10 @@
     dark = "Rose-pine-moon";
     light = "Rose-pine-dawn";
   };
+  
+  stylix.opacity.terminal = 0.85;
+  stylix.opacity.popups = 0.9;
+  stylix.opacity.applications = 0.9;
+  stylix.opacity.desktop = 0.9;
 
-  stylix.targets.avizo.enable = true;
 }

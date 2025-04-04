@@ -164,7 +164,7 @@
       # Output configuration
       output = {
         "*" = {
-          bg = "#000000 solid_color";
+          #bg = "#000000 solid_color";
         };
       };
     };
