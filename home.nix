@@ -26,6 +26,7 @@
     ./modules/dunst.nix
     ./modules/fnott.nix
     ./modules/sway.nix
+    ./modules/sway-fix.nix
     ./modules/hypridle.nix
     ./modules/picom.nix
     ./modules/i3.nix
@@ -177,7 +178,7 @@
   stylix.autoEnable = true;
 
   stylix.enable = true;
-  stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/gigavolt.yaml";
+  stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/gruvbox-dark-soft.yaml";
   stylix.polarity = "dark";
 
   stylix.fonts = {
@@ -192,8 +193,8 @@
     };
 
     monospace = {
-      package = pkgs.nerd-fonts.jetbrains-mono;
-      name = "JetBrainsMono Nerd Font";
+      package = pkgs.cozette;
+      name = "Cozette";
     };
 
     emoji = {
@@ -203,7 +204,7 @@
   };
 
   stylix.fonts.sizes = {
-    terminal = 10;
+    terminal = 11;
     desktop = 10;
     applications = 10;
     popups = 10;

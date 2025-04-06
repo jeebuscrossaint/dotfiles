@@ -11,6 +11,7 @@
         inner = 0;
         outer = 0;
         smartGaps = true;
+        smartBorders = "on";
       };
       
       # Window appearance

@@ -813,6 +813,22 @@
     },
     "nixpkgs_10": {
       "locked": {
+        "lastModified": 1742669843,
+        "narHash": "sha256-G5n+FOXLXcRx+3hCJ6Rt6ZQyF1zqQ0DL0sWAMn2Nk0w=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "1e5b653dff12029333a6546c11e108ede13052eb",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "ref": "nixos-unstable",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "nixpkgs_11": {
+      "locked": {
         "lastModified": 1742288794,
         "narHash": "sha256-Txwa5uO+qpQXrNG4eumPSD+hHzzYi/CdaM80M9XRLCo=",
         "owner": "nixos",
@@ -1054,6 +1070,7 @@
         "numlockwl": "numlockwl",
         "nvf": "nvf",
         "stylix": "stylix",
+        "wart": "wart",
         "zen-browser": "zen-browser"
       }
     },
@@ -1314,6 +1331,24 @@
         "type": "github"
       }
     },
+    "wart": {
+      "inputs": {
+        "nixpkgs": "nixpkgs_10"
+      },
+      "locked": {
+        "lastModified": 1742920015,
+        "narHash": "sha256-lr8qHtSvhWLuBvWEKDs9uKh+l8ceYEYKH1q8V/+blN4=",
+        "owner": "jeebuscrossaint",
+        "repo": "wart",
+        "rev": "f400623e3c6f41b7ac8e89181f9abd18495c3d43",
+        "type": "github"
+      },
+      "original": {
+        "owner": "jeebuscrossaint",
+        "repo": "wart",
+        "type": "github"
+      }
+    },
     "xdph": {
       "inputs": {
         "hyprland-protocols": [
@@ -1357,7 +1392,7 @@
     },
     "zen-browser": {
       "inputs": {
-        "nixpkgs": "nixpkgs_10"
+        "nixpkgs": "nixpkgs_11"
       },
       "locked": {
         "lastModified": 1743216975,

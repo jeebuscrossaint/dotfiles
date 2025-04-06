@@ -76,6 +76,8 @@
     extraGroups = ["networkmanager" "wheel" "input" "wireshark"];
     packages = with pkgs; [];
   };
+  
+  programs.wireshark.enable = true;
 
   # Enable automatic login for the user.
   services.getty.autologinUser = "amarnath";
@@ -94,6 +96,7 @@
     inputs.numlockwl.packages."${system}".default
     inputs.doomer.packages."${system}".default
     inputs.limebar.packages."${system}".default
+    inputs.wart.packages."${system}".default
   ];
 
   fonts.packages = with pkgs; [

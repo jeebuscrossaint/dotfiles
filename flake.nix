@@ -24,6 +24,9 @@
 
     # my own bar
     limebar.url = "github:jeebuscrossaint/limebar";
+    
+    # that other thing
+    wart.url = "github:jeebuscrossaint/wart";
 
     home-manager = {
       url = "github:nix-community/home-manager/master";
