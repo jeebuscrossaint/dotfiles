@@ -76,7 +76,7 @@
     extraGroups = ["networkmanager" "wheel" "input" "wireshark"];
     packages = with pkgs; [];
   };
-  
+
   programs.wireshark.enable = true;
 
   # Enable automatic login for the user.
@@ -97,15 +97,32 @@
     inputs.doomer.packages."${system}".default
     inputs.limebar.packages."${system}".default
     inputs.wart.packages."${system}".default
+    inputs.prismlauncher.packages."${system}".default
+    inputs.hyprpicker.packages."${system}".default
+    inputs.hyprpaper.packages."${system}".default
+    #inputs.swayfx.packages."${system}".default
+    inputs.xdg-desktop-portal-hyprland.packages."${system}".default
+    inputs.hypridle.packages."${system}".default
+    inputs.quickemu.packages."${system}".default
+    inputs.quickgui.packages."${system}".default
+    inputs.nix-index.packages."${system}".default
+    inputs.swww.packages."${system}".default
+    inputs.rose-pine-hyprcursor.packages."${system}".default
+    inputs.yazi.packages."${system}".default
+    inputs.hyprpolkitagent.packages."${system}".default
+    inputs.conky.packages."${system}".default
+    inputs.helix.packages."${system}".default
+    inputs.waybar.packages."${system}".default
+    inputs.aocli.packages."${system}".default
   ];
 
   fonts.packages = with pkgs; [
     nerd-fonts.monaspace
     nerd-fonts.jetbrains-mono
   ];
-  
+
   services.logind.extraConfig = ''
-  	HandlePowerKey=ignore
+    HandlePowerKey=ignore
   '';
 
   programs.sway = {
@@ -119,7 +136,7 @@
     xwayland.enable = true;
     package = inputs.hyprland.packages."${pkgs.system}".hyprland;
   };
-  
+
   xdg.portal.enable = true;
   xdg.portal.wlr.enable = true;
 

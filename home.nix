@@ -30,6 +30,7 @@
     ./modules/hypridle.nix
     ./modules/picom.nix
     ./modules/i3.nix
+    ./modules/vscode.nix
     ./modules/nvf.nix
     ./modules/fuzzel.nix
     ./modules/zed.nix
@@ -45,13 +46,12 @@
   home.pointerCursor.x11.enable = true;
 
   home.packages = with pkgs; [
-  swaybg
-  hyprpaper
+    wlay
+    swaybg
     swaynotificationcenter
     cutter
     ghidra
     qalculate-gtk
-    quickemu
     qemu_full
     qemu-user
     uefi-run
@@ -63,12 +63,9 @@
     btop
     pciutils
     vesktop
-    nix-search
-    nix-index
     swayrbar
     pfetch-rs
     autotiling-rs
-    autotiling
     ipfetch
     micro
     wl-clipboard-rs
@@ -76,25 +73,17 @@
     lsd
     zoxide
     avizo
-    # hyprland/sway-wayland stuff
-    swww
-    hypridle
-    dunst
     copyq
     udiskie
     gamemode
     cava
     font-awesome
-    flameshot
     hyprshot
-    rose-pine-hyprcursor
-    adwaita-icon-theme
     gnome-tweaks
     sassc
     gtk-engine-murrine
     gnome-themes-extra
     # devel
-    yazi
     xsecurelock
     xss-lock
     xdotool
@@ -108,16 +97,14 @@
     dunst
     blueberry
     gparted
-    hyprpolkitagent
 
     lunar-client
-    conky
     neovide
     proton-pass
-    emacs-gtk
     libreoffice-qt6-fresh
     youtube-music
     osu-lazer
+    nix-search
   ];
 
   programs.librewolf.enable = true;
@@ -178,7 +165,7 @@
   stylix.autoEnable = true;
 
   stylix.enable = true;
-  stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/gruvbox-dark-soft.yaml";
+  stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/hopscotch.yaml";
   stylix.polarity = "dark";
 
   stylix.fonts = {
@@ -222,10 +209,9 @@
     dark = "Rose-pine-moon";
     light = "Rose-pine-dawn";
   };
-  
+
   stylix.opacity.terminal = 0.85;
   stylix.opacity.popups = 0.9;
   stylix.opacity.applications = 0.9;
   stylix.opacity.desktop = 0.9;
-
 }
