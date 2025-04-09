@@ -171,28 +171,28 @@
 
   stylix.fonts = {
     serif = {
-      package = pkgs.nerd-fonts.jetbrains-mono;
-      name = "JetBrainsMono Nerd Font";
+      package = pkgs.nerd-fonts.caskaydia-mono;
+      name = "CaskaydiaMono Nerd Font";
     };
 
     sansSerif = {
-      package = pkgs.nerd-fonts.jetbrains-mono;
-      name = "JetBrainsMono Nerd Font";
+      package = pkgs.nerd-fonts.caskaydia-mono;
+      name = "CaskaydiaMono Nerd Font";
     };
 
     monospace = {
-      package = pkgs.cozette;
-      name = "Cozette";
+      package = pkgs.nerd-fonts.caskaydia-mono;
+      name = "CaskaydiaMono Nerd Font";
     };
 
     emoji = {
-      package = pkgs.nerd-fonts.jetbrains-mono;
+      package = pkgs.nerd-fonts.caskaydia-mono;
       name = "Noto Color Emoji";
     };
   };
 
   stylix.fonts.sizes = {
-    terminal = 11;
+    terminal = 10;
     desktop = 10;
     applications = 10;
     popups = 10;
