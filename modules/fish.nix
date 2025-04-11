@@ -10,6 +10,7 @@
       #fish_config theme choose "Old School"
       starship init fish | source
       pfetch
+      direnv hook fish | source
     '';
     
     shellAliases = {

@@ -106,6 +106,8 @@
     youtube-music
     osu-lazer
     nix-search
+    direnv
+    powershell
   ];
 
   programs.librewolf.enable = true;
@@ -113,14 +115,11 @@
   programs.tmux.enable = true;
   #programs.dunst.enable = true;
 
-  gtk = {
-    enable = true;
-  };
-
   # Add these environment variables to ensure themes are properly applied
   home.sessionVariables = {
     XCURSOR_THEME = "rose-pine-cursor";
     XCURSOR_SIZE = "24";
+    NIXOS_OZONE_WL="1";
   };
   fonts.fontconfig.enable = true;
 
@@ -166,27 +165,27 @@
   stylix.autoEnable = true;
 
   stylix.enable = true;
-  stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/hopscotch.yaml";
+  stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/spacemacs.yaml";
   stylix.polarity = "dark";
 
   stylix.fonts = {
     serif = {
-      package = pkgs.nerd-fonts.caskaydia-mono;
-      name = "CaskaydiaMono Nerd Font";
+      package = pkgs.nerd-fonts.jetbrains-mono;
+      name = "JetBrainsMono Nerd Font";
     };
 
     sansSerif = {
-      package = pkgs.nerd-fonts.caskaydia-mono;
-      name = "CaskaydiaMono Nerd Font";
+      package = pkgs.nerd-fonts.jetbrains-mono;
+      name = "JetBrainsMono Nerd Font";
     };
 
     monospace = {
-      package = pkgs.nerd-fonts.caskaydia-mono;
-      name = "CaskaydiaMono Nerd Font";
+      package = pkgs.nerd-fonts.jetbrains-mono;
+      name = "JetBrainsMono Nerd Font";
     };
 
     emoji = {
-      package = pkgs.nerd-fonts.caskaydia-mono;
+      package = pkgs.nerd-fonts.jetbrains-mono;
       name = "Noto Color Emoji";
     };
   };
