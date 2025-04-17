@@ -2,7 +2,7 @@
 
 {
   programs.rofi = {
-    enable = true;
+    enable = false;
     
     # Basic configuration
     extraConfig = {

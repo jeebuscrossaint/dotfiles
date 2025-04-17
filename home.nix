@@ -46,7 +46,6 @@
   home.pointerCursor.x11.enable = true;
 
   home.packages = with pkgs; [
-    discordo
     wlay
     swaybg
     swaynotificationcenter
@@ -55,8 +54,6 @@
     qalculate-gtk
     qemu_full
     qemu-user
-    uefi-run
-    i3status-rust
     fastfetch
     tree
     fzf
@@ -68,7 +65,6 @@
     pfetch-rs
     autotiling-rs
     ipfetch
-    micro
     wl-clipboard-rs
     slurp
     lsd
@@ -79,41 +75,40 @@
     gamemode
     cava
     font-awesome
-    hyprshot
+  #  hyprshot
     gnome-tweaks
     sassc
     gtk-engine-murrine
     gnome-themes-extra
     # devel
-    xsecurelock
-    xss-lock
-    xdotool
-    xclip
+  #  xsecurelock
+  #  xss-lock
+  #  xdotool
+  #  xclip
 
     wireshark-qt
 
     # cool irc client
-    halloy
+#    halloy
 
-    dunst
+ #   dunst
     blueberry
     gparted
 
     lunar-client
-    neovide
+#    neovide
     proton-pass
     libreoffice-qt6-fresh
     youtube-music
-    osu-lazer
     nix-search
     direnv
     powershell
+    whatsapp-for-linux
+    tor-browser
   ];
 
-  programs.librewolf.enable = true;
-  #programs.fnott.enable = true;
+  programs.librewolf.enable = false;
   programs.tmux.enable = true;
-  #programs.dunst.enable = true;
 
   # Add these environment variables to ensure themes are properly applied
   home.sessionVariables = {
@@ -165,7 +160,7 @@
   stylix.autoEnable = true;
 
   stylix.enable = true;
-  stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/spacemacs.yaml";
+  stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/nord.yaml";
   stylix.polarity = "dark";
 
   stylix.fonts = {
@@ -210,7 +205,7 @@
     light = "Rose-pine-dawn";
   };
 
-  stylix.opacity.terminal = 0.85;
+  stylix.opacity.terminal = 0.0; # LOL
   stylix.opacity.popups = 0.9;
   stylix.opacity.applications = 0.9;
   stylix.opacity.desktop = 0.9;

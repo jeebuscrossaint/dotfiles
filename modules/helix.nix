@@ -56,6 +56,16 @@ programs.helix = {
         name = "nix";
         auto-format = true;
       }
+      {
+      	name = "c";
+      	auto-format = true;
+      	formatter = { command = "clangd"; };
+      }
+      { 
+        name = "cpp";
+        auto-format = true;
+        formatter = { command = "clangd"; };
+      }
     ];
   };
   

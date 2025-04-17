@@ -2,7 +2,7 @@
 
 {
   services.fnott = {
-    enable = true;
+    enable = false;
     package = pkgs.fnott;
     settings = {
       main = {

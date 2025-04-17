@@ -15,6 +15,9 @@
     ewww.url = "github:elkowar/eww";
 
     nvf.url = "github:notashelf/nvf";
+    
+    # debt
+    debt.url = "github:jeebuscrossaint/debt";
 
     # my own project
     numlockwl.url = "github:jeebuscrossaint/numlockwl";

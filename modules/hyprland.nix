@@ -4,7 +4,7 @@
   ...
 }: {
   wayland.windowManager.hyprland = {
-    enable = true;
+    enable = false;
     systemd.enable = true;
     xwayland.enable = true;
 

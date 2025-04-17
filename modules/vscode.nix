@@ -17,8 +17,8 @@
                 "git.autofetch" = true;
             };
 
-            "enableUpdateCheck" = false;
-            "enableExtensionUpdateCheck" = false;
+            "enableUpdateCheck" = true;
+            "enableExtensionUpdateCheck" = true;
 
             extensions = with pkgs.vscode-extensions; [
                 github.copilot
@@ -39,6 +39,7 @@
                 ms-vscode-remote.vscode-remote-extensionpack
                 llvm-vs-code-extensions.vscode-clangd
                 mkhl.direnv
+                nimlang.nimlang
             ];
         };
     };

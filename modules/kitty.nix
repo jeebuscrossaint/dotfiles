@@ -2,7 +2,7 @@
 
 {
   programs.kitty = {
-    enable = true;
+    enable = false;
     
     settings = {
       # Font Settings

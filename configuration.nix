@@ -92,28 +92,29 @@
     wget
     git
     inputs.zen-browser.packages."${system}".default
-    inputs.ewww.packages."${system}".default
+    #inputs.ewww.packages."${system}".default
     inputs.numlockwl.packages."${system}".default
     inputs.doomer.packages."${system}".default
     inputs.limebar.packages."${system}".default
     inputs.wart.packages."${system}".default
     inputs.prismlauncher.packages."${system}".default
-    inputs.hyprpicker.packages."${system}".default
-    inputs.hyprpaper.packages."${system}".default
+    #inputs.hyprpicker.packages."${system}".default
+    #inputs.hyprpaper.packages."${system}".default
     #inputs.swayfx.packages."${system}".default
-    inputs.xdg-desktop-portal-hyprland.packages."${system}".default
+    #inputs.xdg-desktop-portal-hyprland.packages."${system}".default
     inputs.hypridle.packages."${system}".default
     inputs.quickemu.packages."${system}".default
     inputs.quickgui.packages."${system}".default
     inputs.nix-index.packages."${system}".default
-    inputs.swww.packages."${system}".default
-    inputs.rose-pine-hyprcursor.packages."${system}".default
+    #inputs.swww.packages."${system}".default
+    #inputs.rose-pine-hyprcursor.packages."${system}".default
     inputs.yazi.packages."${system}".default
-    inputs.hyprpolkitagent.packages."${system}".default
-    inputs.conky.packages."${system}".default
+    #inputs.hyprpolkitagent.packages."${system}".default
+    #inputs.conky.packages."${system}".default
     inputs.helix.packages."${system}".default
-    inputs.waybar.packages."${system}".default
+    #inputs.waybar.packages."${system}".default
     inputs.aocli.packages."${system}".default
+    inputs.debt.packages."${system}".default
   ];
 
   fonts.packages = with pkgs; [
@@ -132,7 +133,7 @@
   };
 
   programs.hyprland = {
-    enable = true;
+    enable = false;
     xwayland.enable = true;
     package = inputs.hyprland.packages."${pkgs.system}".hyprland;
   };
@@ -167,9 +168,9 @@
     enable = true;
     displayManager.lightdm.enable = true;
     desktopManager.gnome.enable = true;
-    desktopManager.xfce.enable = true;
-    windowManager.i3.enable = true;
-    windowManager.spectrwm.enable = true;
+    desktopManager.xfce.enable = false;
+    windowManager.i3.enable = false;
+    windowManager.spectrwm.enable = false;
   };
 
   services.libinput = {
@@ -213,6 +214,12 @@
     seahorse
     gnome-logs
     gnome-connections
+    gnome-text-editor
+    gnome-weather
+    gnome-software
+    gnome-extension-manager
+    rygel
+    gnome-color-manager
   ];
 
   services.udev.packages = with pkgs; [gnome-settings-daemon];
