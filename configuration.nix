@@ -166,7 +166,7 @@
 
   services.xserver = {
     enable = true;
-    displayManager.lightdm.enable = true;
+    displayManager.gdm.enable = true;
     desktopManager.gnome.enable = true;
     desktopManager.xfce.enable = false;
     windowManager.i3.enable = false;
