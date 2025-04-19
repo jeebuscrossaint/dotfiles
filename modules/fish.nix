@@ -41,6 +41,7 @@
       #set -x PATH $HOME/bin $PATH
       #set -x PATH /usr/local/bin $PATH
       set -x GSK_RENDERER ngl
+      set -x NIXPKGS_ALLOW_UNFREE 1
     '';
     
     functions = {
