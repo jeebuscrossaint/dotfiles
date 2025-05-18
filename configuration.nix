@@ -35,6 +35,53 @@
     ];
   };
 
+hardware.opengl = {
+  enable = true;
+  driSupport = true;
+  driSupport32Bit = true;  # Enable 32-bit support for Steam and Wine
+};
+
+services.xserver.videoDrivers = ["nvidia"];
+
+hardware.nvidia = {
+  # Modesetting is required for Wayland
+  modesetting.enable = true;
+  
+  # Power management - usually better left disabled for laptops to avoid issues
+  powerManagement.enable = false;
+  
+  # Fine-grained power management (only works on Turing or newer GPUs, which your RTX 4070 is)
+  powerManagement.finegrained = true;
+  
+  # Open source kernel module - RTX 4070 is Ada Lovelace architecture, which is supported
+  open = true;
+  
+  # Enable the Nvidia settings menu
+  nvidiaSettings = true;
+  
+  # Force full composition pipeline to prevent screen tearing with picom
+  forceFullCompositionPipeline = true;
+  
+  # Use the appropriate driver version
+  # For RTX 4070 mobile (Ada Lovelace architecture), the stable driver is appropriate
+  package = config.boot.kernelPackages.nvidiaPackages.stable;
+};
+
+environment.sessionVariables = {
+  # For all Wayland compositors
+  WLR_NO_HARDWARE_CURSORS = "1";
+  
+  # For Electron apps
+  NIXOS_OZONE_WL = "1";
+  
+  # Force GBM backend for NVIDIA on Wayland
+  GBM_BACKEND = "nvidia-drm";
+  __GLX_VENDOR_LIBRARY_NAME = "nvidia";
+  
+  # For Vulkan applications
+  VK_ICD_FILENAMES = "/run/opengl-driver/share/vulkan/icd.d/nvidia_icd.json";
+};
+
   networking.hostName = "nixos"; # Define your hostname.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
 
