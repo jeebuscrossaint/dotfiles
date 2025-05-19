@@ -35,10 +35,8 @@
     ];
   };
 
-hardware.opengl = {
+hardware.graphics = {
   enable = true;
-  driSupport = true;
-  driSupport32Bit = true;  # Enable 32-bit support for Steam and Wine
 };
 
 services.xserver.videoDrivers = ["nvidia"];
@@ -51,7 +49,7 @@ hardware.nvidia = {
   powerManagement.enable = false;
   
   # Fine-grained power management (only works on Turing or newer GPUs, which your RTX 4070 is)
-  powerManagement.finegrained = true;
+  # powerManagement.finegrained = true;
   
   # Open source kernel module - RTX 4070 is Ada Lovelace architecture, which is supported
   open = true;
@@ -299,5 +297,5 @@ environment.sessionVariables = {
   # this value at the release version of the first install of this system.
   # Before changing this value read the documentation for this option
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
-  system.stateVersion = "24.11"; # Did you read the comment?
+  system.stateVersion = "25.05"; # Did you read the comment?
 }
