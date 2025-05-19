@@ -1,7 +1,7 @@
 {
   description = "younix";
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05";
     # browser please!
     zen-browser.url = "github:0xc000022070/zen-browser-flake";
     # run random binaries please!
@@ -15,7 +15,7 @@
     ewww.url = "github:elkowar/eww";
 
     nvf.url = "github:notashelf/nvf";
-    
+
     # debt
     debt.url = "github:jeebuscrossaint/debt";
 
@@ -30,7 +30,7 @@
 
     # that other thing
     wart.url = "github:jeebuscrossaint/wart";
-    
+
     # aocli
     aocli.url = "github:jeebuscrossaint/aocli";
 
