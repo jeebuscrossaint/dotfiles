@@ -19,7 +19,7 @@
   boot.loader.efi.canTouchEfiVariables = true;
   boot = {
     plymouth = {
-      enable = true;
+      enable = false;
     };
 
     consoleLogLevel = 0;
@@ -142,7 +142,7 @@ environment.sessionVariables = {
     inputs.doomer.packages."${system}".default
     inputs.limebar.packages."${system}".default
     inputs.wart.packages."${system}".default
-    inputs.prismlauncher.packages."${system}".default
+    #inputs.prismlauncher.packages."${system}".default
     #inputs.hyprpicker.packages."${system}".default
     #inputs.hyprpaper.packages."${system}".default
     #inputs.swayfx.packages."${system}".default

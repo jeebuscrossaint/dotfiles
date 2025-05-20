@@ -1,7 +1,7 @@
 {
   description = "younix";
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     # browser please!
     zen-browser.url = "github:0xc000022070/zen-browser-flake";
     # run random binaries please!

@@ -169,6 +169,8 @@
         };
       };
     };
+
+    extraOptions = [ "--unsupported-gpu" ];
     
     # Include system configuration
     extraConfig = ''
