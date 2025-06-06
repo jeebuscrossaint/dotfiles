@@ -4,7 +4,7 @@
   ...
 }: {
   programs.fuzzel = {
-    enable = true;
+    enable = false;
     package = pkgs.fuzzel;
     settings = {
       main = {

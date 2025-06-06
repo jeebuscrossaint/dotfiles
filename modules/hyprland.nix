@@ -215,7 +215,7 @@
       "$notepad" = "gedit";
       "$clipboard" = "copyq show";
       "$discord" = "discord";
-      "$launcher" = "fuzzel";
+      "$launcher" = "bemenu-run";
 
       # Modifier keys
       "$mainMod" = "SUPER";

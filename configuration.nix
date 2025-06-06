@@ -21,6 +21,7 @@
     plymouth = {
       enable = false;
     };
+    kernelPackages = pkgs.linuxPackages_latest;
 
     consoleLogLevel = 0;
     initrd.verbose = false;
@@ -35,50 +36,51 @@
     ];
   };
 
-hardware.graphics = {
-  enable = true;
-};
+  hardware.graphics = {
+    enable = true;
+  };
 
-services.xserver.videoDrivers = ["nvidia"];
+  services.xserver.videoDrivers = ["nvidia"];
 
-hardware.nvidia = {
-  # Modesetting is required for Wayland
-  modesetting.enable = true;
-  
-  # Power management - usually better left disabled for laptops to avoid issues
-  powerManagement.enable = false;
-  
-  # Fine-grained power management (only works on Turing or newer GPUs, which your RTX 4070 is)
-  # powerManagement.finegrained = true;
-  
-  # Open source kernel module - RTX 4070 is Ada Lovelace architecture, which is supported
-  open = true;
-  
-  # Enable the Nvidia settings menu
-  nvidiaSettings = true;
-  
-  # Force full composition pipeline to prevent screen tearing with picom
-  forceFullCompositionPipeline = true;
-  
-  # Use the appropriate driver version
-  # For RTX 4070 mobile (Ada Lovelace architecture), the stable driver is appropriate
-  package = config.boot.kernelPackages.nvidiaPackages.stable;
-};
+  hardware.nvidia = {
+    # Modesetting is required for Wayland
+    modesetting.enable = true;
 
-environment.sessionVariables = {
-  # For all Wayland compositors
-  WLR_NO_HARDWARE_CURSORS = "1";
-  
-  # For Electron apps
-  NIXOS_OZONE_WL = "1";
-  
-  # Force GBM backend for NVIDIA on Wayland
-  GBM_BACKEND = "nvidia-drm";
-  __GLX_VENDOR_LIBRARY_NAME = "nvidia";
-  
-  # For Vulkan applications
-  VK_ICD_FILENAMES = "/run/opengl-driver/share/vulkan/icd.d/nvidia_icd.json";
-};
+    # Power management - usually better left disabled for laptops to avoid issues
+    powerManagement.enable = false;
+
+    # Fine-grained power management (only works on Turing or newer GPUs, which your RTX 4070 is)
+    # powerManagement.finegrained = true;
+
+    # Open source kernel module - RTX 4070 is Ada Lovelace architecture, which is supported
+    open = true;
+
+    # Enable the Nvidia settings menu
+    nvidiaSettings = true;
+
+    # Force full composition pipeline to prevent screen tearing with picom
+    forceFullCompositionPipeline = true;
+
+    # Use the appropriate driver version
+    # For RTX 4070 mobile (Ada Lovelace architecture), the stable driver is appropriate
+    package = config.boot.kernelPackages.nvidiaPackages.stable;
+  };
+  nix.settings.auto-optimise-store = true;
+
+  environment.sessionVariables = {
+    # For all Wayland compositors
+    WLR_NO_HARDWARE_CURSORS = "1";
+
+    # For Electron apps
+    NIXOS_OZONE_WL = "1";
+
+    # Force GBM backend for NVIDIA on Wayland
+    GBM_BACKEND = "nvidia-drm";
+    __GLX_VENDOR_LIBRARY_NAME = "nvidia";
+
+    # For Vulkan applications
+    VK_ICD_FILENAMES = "/run/opengl-driver/share/vulkan/icd.d/nvidia_icd.json";
+  };
 
   networking.hostName = "nixos"; # Define your hostname.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
@@ -157,7 +159,7 @@ environment.sessionVariables = {
     #inputs.hyprpolkitagent.packages."${system}".default
     #inputs.conky.packages."${system}".default
     inputs.helix.packages."${system}".default
-    #inputs.waybar.packages."${system}".default
+    inputs.waybar.packages."${system}".default
     inputs.aocli.packages."${system}".default
     inputs.debt.packages."${system}".default
   ];
@@ -175,6 +177,12 @@ environment.sessionVariables = {
     enable = true;
     wrapperFeatures.gtk = true;
     extraPackages = with pkgs; [brightnessctl foot grim pulseaudio swayidle];
+  };
+
+  programs.fht-compositor = {
+    enable = true;
+    withUWSM = true; # recommended
+    # package = fht-compositor.packages.${pkgs.system}.fht-compositor; # optional if default is okay
   };
 
   programs.hyprland = {
@@ -212,7 +220,7 @@ environment.sessionVariables = {
   services.xserver = {
     enable = true;
     displayManager.gdm.enable = true;
-    desktopManager.gnome.enable = true;
+    desktopManager.gnome.enable = false;
     desktopManager.xfce.enable = false;
     windowManager.i3.enable = false;
     windowManager.spectrwm.enable = false;

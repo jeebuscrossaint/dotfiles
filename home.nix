@@ -1,6 +1,7 @@
 {
   config,
   pkgs,
+  inputs,
   ...
 }: {
   imports = [
@@ -35,6 +36,9 @@
     ./modules/fuzzel.nix
     ./modules/zed.nix
     ./modules/hyprpaper.nix
+    ./modules/fht.nix
+    ./modules/twmn.nix
+    ./modules/bemenu.nix
   ];
 
   home.username = "amarnath";
@@ -75,28 +79,28 @@
     gamemode
     cava
     font-awesome
-  #  hyprshot
+    #  hyprshot
     gnome-tweaks
     sassc
     gtk-engine-murrine
     gnome-themes-extra
     # devel
-  #  xsecurelock
-  #  xss-lock
-  #  xdotool
-  #  xclip
+    #  xsecurelock
+    #  xss-lock
+    #  xdotool
+    #  xclip
 
     wireshark-qt
 
     # cool irc client
-#    halloy
+    #    halloy
 
- #   dunst
+    #   dunst
     blueberry
     gparted
 
     lunar-client
-#    neovide
+    #    neovide
     proton-pass
     libreoffice-qt6-fresh
     youtube-music
@@ -105,6 +109,9 @@
     powershell
     whatsapp-for-linux
     tor-browser
+    glow
+    comma
+    swayimg
   ];
 
   programs.librewolf.enable = false;
@@ -114,7 +121,7 @@
   home.sessionVariables = {
     XCURSOR_THEME = "rose-pine-cursor";
     XCURSOR_SIZE = "24";
-    NIXOS_OZONE_WL="1";
+    NIXOS_OZONE_WL = "1";
   };
   fonts.fontconfig.enable = true;
 
@@ -148,6 +155,10 @@
     enableCompletion = true;
   };
 
+  programs.fht-compositor = {
+    enable = true;
+  };
+
   home.stateVersion = "25.05";
 
   programs.home-manager.enable = true;
@@ -155,32 +166,33 @@
   programs.cava.enable = true;
   programs.qutebrowser.enable = true;
   programs.chromium.enable = true;
-
+  programs.firefox.enable = true;
   services.avizo.enable = true;
+  services.tldr-update.enable = true;
   stylix.autoEnable = true;
 
   stylix.enable = true;
-  stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/nord.yaml";
+  stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/digital-rain.yaml";
   stylix.polarity = "dark";
 
   stylix.fonts = {
     serif = {
-      package = pkgs.nerd-fonts.jetbrains-mono;
-      name = "JetBrainsMono Nerd Font";
+      package = pkgs.nerd-fonts.fira-mono;
+      name = "Fira Mono Nerd Font";
     };
 
     sansSerif = {
-      package = pkgs.nerd-fonts.jetbrains-mono;
-      name = "JetBrainsMono Nerd Font";
+      package = pkgs.nerd-fonts.fira-mono;
+      name = "Fira Mono Nerd Font";
     };
 
     monospace = {
-      package = pkgs.nerd-fonts.jetbrains-mono;
-      name = "JetBrainsMono Nerd Font";
+      package = pkgs.nerd-fonts.fira-mono;
+      name = "Fira Mono Nerd Font";
     };
 
     emoji = {
-      package = pkgs.nerd-fonts.jetbrains-mono;
+      package = pkgs.noto-fonts-emoji;
       name = "Noto Color Emoji";
     };
   };
@@ -205,7 +217,7 @@
     light = "Rose-pine-dawn";
   };
 
-  stylix.opacity.terminal = 0.0; # LOL
+  stylix.opacity.terminal = 0.7; # LOL
   stylix.opacity.popups = 0.9;
   stylix.opacity.applications = 0.9;
   stylix.opacity.desktop = 0.9;

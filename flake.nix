@@ -70,6 +70,12 @@
     # waybar
     waybar.url = "github:Alexays/Waybar";
 
+    # fht-compositor
+    fht-compositor = {
+      url = "github:nferhat/fht-compositor";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.rust-overlay.follows = "";
+    };
     #rose-pine-hyprcursor
     rose-pine-hyprcursor = {
       url = "github:ndom91/rose-pine-hyprcursor";
@@ -104,6 +110,7 @@
         specialArgs = {inherit inputs;};
         modules = [
           stylix.nixosModules.stylix
+	  inputs.fht-compositor.nixosModules.default
           ./configuration.nix
 
           # This will enable nix-ld and add its modules
