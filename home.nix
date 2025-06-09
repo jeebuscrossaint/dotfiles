@@ -39,6 +39,8 @@
     ./modules/fht.nix
     ./modules/twmn.nix
     ./modules/bemenu.nix
+	./modules/i3status-rust.nix
+    ./modules/nixcord.nix
   ];
 
   home.username = "amarnath";
@@ -64,10 +66,11 @@
     which
     btop
     pciutils
-    vesktop
+    #vesktop
     swayrbar
     pfetch-rs
     autotiling-rs
+    autotiling
     ipfetch
     wl-clipboard-rs
     slurp
@@ -79,9 +82,8 @@
     gamemode
     cava
     font-awesome
-    #  hyprshot
+    hyprshot
     gnome-tweaks
-    sassc
     gtk-engine-murrine
     gnome-themes-extra
     # devel
@@ -110,8 +112,16 @@
     whatsapp-for-linux
     tor-browser
     glow
-    comma
     swayimg
+
+    # gnome extensions
+    gnomeExtensions.blur-my-shell
+    gnomeExtensions.burn-my-windows
+    gnomeExtensions.weather-or-not
+    gnomeExtensions.rounded-window-corners-reborn
+    gnomeExtensions.mpris-label
+    gnomeExtensions.fly-pie
+    gnomeExtensions.desktop-clock
   ];
 
   programs.librewolf.enable = false;
@@ -145,7 +155,7 @@
   };
 
   programs.gitui.enable = true;
-
+  programs.feh.enable = true;
   programs.starship = {
     enable = true;
   };
@@ -172,7 +182,7 @@
   stylix.autoEnable = true;
 
   stylix.enable = true;
-  stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/digital-rain.yaml";
+  stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/gruvbox-material-dark-soft.yaml";
   stylix.polarity = "dark";
 
   stylix.fonts = {
@@ -217,8 +227,8 @@
     light = "Rose-pine-dawn";
   };
 
-  stylix.opacity.terminal = 0.7; # LOL
-  stylix.opacity.popups = 0.9;
-  stylix.opacity.applications = 0.9;
-  stylix.opacity.desktop = 0.9;
+  stylix.opacity.terminal = 1.0; # LOL
+  stylix.opacity.popups = 1.0;
+  stylix.opacity.applications = 1.0;
+  stylix.opacity.desktop = 1.0;
 }

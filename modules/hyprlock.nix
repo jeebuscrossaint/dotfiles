@@ -1,6 +1,6 @@
 {
   programs.hyprlock = {
-    enable = false;
+    enable = true;
     settings = {
       # Font definitions
       "$font_family" = "MonaspiceNe Nerd Font";

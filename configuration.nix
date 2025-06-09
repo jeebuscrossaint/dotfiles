@@ -66,7 +66,7 @@
     package = config.boot.kernelPackages.nvidiaPackages.stable;
   };
   nix.settings.auto-optimise-store = true;
-
+  nix.settings.max-jobs = 16;
   environment.sessionVariables = {
     # For all Wayland compositors
     WLR_NO_HARDWARE_CURSORS = "1";
@@ -138,30 +138,31 @@
     vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
     wget
     git
-    inputs.zen-browser.packages."${system}".default
+    #inputs.zen-browser.packages."${system}".default
     #inputs.ewww.packages."${system}".default
     inputs.numlockwl.packages."${system}".default
     inputs.doomer.packages."${system}".default
-    inputs.limebar.packages."${system}".default
-    inputs.wart.packages."${system}".default
+    #inputs.limebar.packages."${system}".default
+    #inputs.wart.packages."${system}".default
     #inputs.prismlauncher.packages."${system}".default
     #inputs.hyprpicker.packages."${system}".default
     #inputs.hyprpaper.packages."${system}".default
     #inputs.swayfx.packages."${system}".default
-    #inputs.xdg-desktop-portal-hyprland.packages."${system}".default
-    inputs.hypridle.packages."${system}".default
+    #    inputs.xdg-desktop-portal-hyprland.packages."${system}".default
+    #    inputs.hypridle.packages."${system}".default
     inputs.quickemu.packages."${system}".default
     inputs.quickgui.packages."${system}".default
     inputs.nix-index.packages."${system}".default
     #inputs.swww.packages."${system}".default
-    #inputs.rose-pine-hyprcursor.packages."${system}".default
+    #    inputs.rose-pine-hyprcursor.packages."${system}".default
     inputs.yazi.packages."${system}".default
-    #inputs.hyprpolkitagent.packages."${system}".default
+    #    inputs.hyprpolkitagent.packages."${system}".default
     #inputs.conky.packages."${system}".default
     inputs.helix.packages."${system}".default
     inputs.waybar.packages."${system}".default
     inputs.aocli.packages."${system}".default
     inputs.debt.packages."${system}".default
+    #    inputs.ironbar.packages."${system}".default
   ];
 
   fonts.packages = with pkgs; [
@@ -220,10 +221,14 @@
   services.xserver = {
     enable = true;
     displayManager.gdm.enable = true;
-    desktopManager.gnome.enable = false;
+    desktopManager.gnome.enable = true;
     desktopManager.xfce.enable = false;
-    windowManager.i3.enable = false;
+    windowManager.i3.enable = true;
     windowManager.spectrwm.enable = false;
+  };
+  
+  services = {
+  	desktopManager.plasma6.enable = false;
   };
 
   services.libinput = {

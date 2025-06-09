@@ -5,7 +5,6 @@
       general = {
         live_config_reload = true;
         ipc_socket = true;
-        import = ["~/.cache/wal/colors-alacritty.toml"];
       };
       
       window = {
@@ -15,8 +14,6 @@
       };
       
       font = {
-        #normal = { family = "MonaspiceNe Nerd Font"; style = "Regular"; };
-        #size = 10.0;
         offset = { y = 4; };
       };
       

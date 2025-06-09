@@ -2,14 +2,10 @@
 
 {
   programs.kitty = {
-    enable = false;
+    enable = true;
     
     settings = {
       # Font Settings
-      font_family = "MonaspiceNe Nerd Font";
-      bold_font = "auto";
-      italic_font = "auto";
-      bold_italic_font = "auto";
       font_size = 10.0;
       
       # Size Settings

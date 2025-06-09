@@ -2,17 +2,17 @@
 
 {
   xsession.windowManager.i3 = {
-    enable = false;
+    enable = true;
     package = pkgs.i3;
     
     config = {
       modifier = "Mod4";
       
       terminal = "alacritty";
-      menu = "rofi -show drun";
+      menu = "bemenu-run";
       
       gaps = {
-        inner = 10;
+        inner = 0;
         outer = 0;
         smartGaps = true;
       };
@@ -47,10 +47,10 @@
         "Mod4+q" = "exec kitty";
         "Mod4+c" = "kill";
         "Mod4+p" = "floating toggle";
-        "Mod4+d" = "exec rofi -show drun";
+        "Mod4+d" = "exec bemenu-run";
         "Mod4+g" = "exec ";
         "Mod4+l" = "exec xsecurelock";
-        "Mod4+b" = "exec zen";
+        "Mod4+b" = "exec firefox";
         "Mod4+shift+s" = "exec flameshot gui";
         
         # Window management
@@ -110,6 +110,8 @@
         { command = "/usr/bin/pipewire & /usr/bin/pipewire-pulse & /usr/bin/wireplumber"; notification = false; }
         { command = "numlockx"; notification = false; }
         { command = "dunst"; notification = false; }
+        { command = "xrandr --output DP-2 --auto --output HDMI-0 --auto --right-of DP-2"; notification = false; }
+        { command = "xrandr --output HDMI-0 --mode 1920x1080 --rate 144.00"; notification = false; }
       ];
     };
     

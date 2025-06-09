@@ -70,6 +70,11 @@
     # waybar
     waybar.url = "github:Alexays/Waybar";
 
+    # nixcord
+    nixcord = {
+      url = "github:kaylorben/nixcord";
+    };
+
     # fht-compositor
     fht-compositor = {
       url = "github:nferhat/fht-compositor";
@@ -88,6 +93,12 @@
 
     # hyprpolkit agent
     hyprpolkitagent.url = "github:hyprwm/hyprpolkitagent";
+    
+    # ironbar
+    ironbar = {
+    	url = "github:JakeStanger/ironbar";
+    	inputs.nixpkgs.follows = "nixpkgs";
+    };
 
     # conky
     conky.url = "github:brndnmtthws/conky";
@@ -126,6 +137,7 @@
             # Add nvf module to home-manager
             home-manager.sharedModules = [
               inputs.nvf.homeManagerModules.default
+              inputs.nixcord.homeModules.nixcord
             ];
           }
         ];

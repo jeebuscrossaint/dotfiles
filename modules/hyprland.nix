@@ -10,7 +10,7 @@
 
     settings = {
       # Monitor configuration
-      monitor = ",preferred,auto,1";
+      monitor = ",highrr,auto,1";
       workspace = ", special";
 
       # Autostart applications

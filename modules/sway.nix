@@ -35,7 +35,7 @@
       modifier = "Mod4";
 
       # Default programs
-      menu = "bemenu-run";
+      menu = "BEMENU_BACKEND=wayland bemenu-run";
       terminal = "foot";
 
       # Bar configuration
@@ -57,7 +57,7 @@
       in {
         # Basic bindings
         "${modifier}+q" = "exec foot";
-        "${modifier}+d" = "exec bemenu-run";
+        "${modifier}+d" = "exec /bin/sh -c bemenu-run";
         "${modifier}+c" = "kill";
         "${modifier}+Shift+c" = "reload";
         "${modifier}+l" = "exec swaylock -C ~/.config/swaylock/config";
