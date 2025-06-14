@@ -87,10 +87,11 @@
     gtk-engine-murrine
     gnome-themes-extra
     # devel
-    #  xsecurelock
+      xsecurelock
     #  xss-lock
     #  xdotool
-    #  xclip
+      xclip
+      jetbrains.clion
 
     wireshark-qt
 
@@ -182,7 +183,7 @@
   stylix.autoEnable = true;
 
   stylix.enable = true;
-  stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/gruvbox-material-dark-soft.yaml";
+  stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/classic-dark.yaml";
   stylix.polarity = "dark";
 
   stylix.fonts = {

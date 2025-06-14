@@ -2,7 +2,7 @@
 
 {
   programs.swaylock = {
-    enable = true;
+    enable = false;
     package = pkgs.swaylock;
     settings = {
       clock = true;

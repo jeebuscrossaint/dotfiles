@@ -110,8 +110,8 @@
         { command = "/usr/bin/pipewire & /usr/bin/pipewire-pulse & /usr/bin/wireplumber"; notification = false; }
         { command = "numlockx"; notification = false; }
         { command = "dunst"; notification = false; }
-        { command = "xrandr --output DP-2 --auto --output HDMI-0 --auto --right-of DP-2"; notification = false; }
-        { command = "xrandr --output HDMI-0 --mode 1920x1080 --rate 144.00"; notification = false; }
+#        { command = "xrandr --output DP-2 --auto --output HDMI-0 --auto --right-of DP-2"; notification = false; }
+#        { command = "xrandr --output HDMI-0 --mode 1920x1080 --rate 144.00"; notification = false; }
       ];
     };
     

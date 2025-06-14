@@ -39,7 +39,7 @@
   hardware.graphics = {
     enable = true;
   };
-
+  
   services.xserver.videoDrivers = ["nvidia"];
 
   hardware.nvidia = {
@@ -220,11 +220,12 @@
 
   services.xserver = {
     enable = true;
-    displayManager.gdm.enable = true;
-    desktopManager.gnome.enable = true;
     desktopManager.xfce.enable = false;
     windowManager.i3.enable = true;
-    windowManager.spectrwm.enable = false;
+    windowManager.spectrwm.enable = true;
+    desktopManager.gnome.enable = false;
+    displayManager.gdm.enable = false;
+    displayManager.lightdm.enable = true;
   };
   
   services = {

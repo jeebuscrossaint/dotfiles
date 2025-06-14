@@ -27,6 +27,7 @@
       ppctl = "powerprofilesctl";
       "update-nixos" = "pushd $HOME/dotfiles && nix flake update --commit-lock-file && sudo nixos-rebuild switch --flake . && popd";
       "new-wallpaper" = "swww img \"$(find ~/wallpapers/ -type f -print0 | shuf -z -n 1)\"";
+      "display-update" = "xrandr --output DP-2 --auto --output HDMI-0 --auto --right-of DP-2 && xrandr --output HDMI-0 --mode 1920x1080 --rate 144.00";
     };
     
     shellInit = ''
