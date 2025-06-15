@@ -41,6 +41,7 @@
     ./modules/bemenu.nix
 	./modules/i3status-rust.nix
     ./modules/nixcord.nix
+    ./modules/i3-fix.nix
   ];
 
   home.username = "amarnath";
