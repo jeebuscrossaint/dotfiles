@@ -66,7 +66,7 @@
     package = config.boot.kernelPackages.nvidiaPackages.stable;
   };
   nix.settings.auto-optimise-store = true;
-  nix.settings.max-jobs = 16;
+  #nix.settings.max-jobs = 16;
   environment.sessionVariables = {
     # For all Wayland compositors
     WLR_NO_HARDWARE_CURSORS = "1";
@@ -150,18 +150,18 @@
     #inputs.swayfx.packages."${system}".default
     #    inputs.xdg-desktop-portal-hyprland.packages."${system}".default
     #    inputs.hypridle.packages."${system}".default
-    inputs.quickemu.packages."${system}".default
-    inputs.quickgui.packages."${system}".default
+    #inputs.quickemu.packages."${system}".default
+    #inputs.quickgui.packages."${system}".default
     inputs.nix-index.packages."${system}".default
     #inputs.swww.packages."${system}".default
     #    inputs.rose-pine-hyprcursor.packages."${system}".default
-    inputs.yazi.packages."${system}".default
+    #inputs.yazi.packages."${system}".default
     #    inputs.hyprpolkitagent.packages."${system}".default
     #inputs.conky.packages."${system}".default
-    inputs.helix.packages."${system}".default
-    inputs.waybar.packages."${system}".default
-    inputs.aocli.packages."${system}".default
-    inputs.debt.packages."${system}".default
+    #inputs.helix.packages."${system}".default
+    #inputs.waybar.packages."${system}".default
+    #inputs.aocli.packages."${system}".default
+    #inputs.debt.packages."${system}".default
     #    inputs.ironbar.packages."${system}".default
   ];
 
@@ -224,8 +224,7 @@
     windowManager.i3.enable = true;
     windowManager.spectrwm.enable = true;
     desktopManager.gnome.enable = false;
-    displayManager.gdm.enable = false;
-    displayManager.lightdm.enable = true;
+    displayManager.gdm.enable = true;
   };
   
   services = {
@@ -285,6 +284,9 @@
   security.pam.services.hyprlock = {};
   services.flatpak.enable = true;
   security.pam.services.gdm-password.enableGnomeKeyring = true;
+
+	# potentially temporrary
+	stylix.base16Scheme = "{pkgs.base16-schemes}/share/themes/classic-dark.yaml";
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
