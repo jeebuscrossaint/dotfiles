@@ -40,7 +40,7 @@
         enableTreesitter = true;
         enableExtraDiagnostics = true;
         clang.enable = true;
-        markdown.enable = true;
+        markdown.enable = false;
         rust.enable = true;
         nix.enable = true;
         python.enable = true;
