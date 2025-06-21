@@ -288,8 +288,8 @@
   security.pam.services.gdm-password.enableGnomeKeyring = true;
 
 	# potentially temporrary
-	#stylix.base16Scheme = "{pkgs.base16-schemes}/share/themes/classic-dark.yaml";
-  stylix.autoEnable = true;
+	stylix.base16Scheme = "{pkgs.base16-schemes}/share/themes/classic-dark.yaml";
+  /*stylix.autoEnable = true;
 
   stylix.enable = true;
   stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/bright.yaml";
@@ -340,7 +340,7 @@
   stylix.opacity.terminal = 1.0; # LOL
   stylix.opacity.popups = 1.0;
   stylix.opacity.applications = 1.0;
-  stylix.opacity.desktop = 1.0;
+  stylix.opacity.desktop = 1.0; */
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.

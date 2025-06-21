@@ -180,56 +180,56 @@
   programs.firefox.enable = true;
   services.avizo.enable = true;
   services.tldr-update.enable = true;
-  #stylix.autoEnable = true;
+  stylix.autoEnable = true;
 
-  #stylix.enable = true;
-  #stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/bright.yaml";
-  #stylix.polarity = "dark";
+  stylix.enable = true;
+  stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/bright.yaml";
+  stylix.polarity = "dark";
 
-  #stylix.fonts = {
-  #  serif = {
-  #    package = pkgs.nerd-fonts.fira-code;
-  #    name = "Fira Mono Nerd Font";
-  #  };
+  stylix.fonts = {
+    serif = {
+      package = pkgs.nerd-fonts.fira-code;
+      name = "Fira Mono Nerd Font";
+    };
 
-  #  sansSerif = {
-  #    package = pkgs.nerd-fonts.fira-code;
-  #    name = "Fira Mono Nerd Font";
-  #  };
+    sansSerif = {
+      package = pkgs.nerd-fonts.fira-code;
+      name = "Fira Mono Nerd Font";
+    };
 
-  #  monospace = {
-  #    package = pkgs.nerd-fonts.fira-code;
-  #    name = "Fira Mono Nerd Font";
-  #  };
+    monospace = {
+      package = pkgs.nerd-fonts.fira-code;
+      name = "Fira Mono Nerd Font";
+    };
 
-   # emoji = {
-   #   package = pkgs.noto-fonts-emoji;
-   #   name = "Noto Color Emoji";
-   # };
-  #};
+   emoji = {
+     package = pkgs.noto-fonts-emoji;
+     name = "Noto Color Emoji";
+   };
+  };
 
-  #stylix.fonts.sizes = {
-  #  terminal = 10;
-  #  desktop = 10;
-  #  applications = 10;
-  #  popups = 10;
-  #};
+  stylix.fonts.sizes = {
+    terminal = 10;
+    desktop = 10;
+    applications = 10;
+    popups = 10;
+  };
 
-  #stylix.cursor = {
-  #  name = "rose-pine-cursor";
-  #  package = pkgs.rose-pine-cursor;
-  #  size = 24;
-  #};
+  stylix.cursor = {
+    name = "rose-pine-cursor";
+    package = pkgs.rose-pine-cursor;
+    size = 24;
+  };
 
-  #stylix.iconTheme = {
-  #  enable = true;
-  #  package = pkgs.rose-pine-icon-theme;
-  #  dark = "Rose-pine-moon";
-  #  light = "Rose-pine-dawn";
-  #};
+  stylix.iconTheme = {
+    enable = true;
+    package = pkgs.rose-pine-icon-theme;
+    dark = "Rose-pine-moon";
+    light = "Rose-pine-dawn";
+  };
 
-  #stylix.opacity.terminal = 1.0; # LOL
-  #stylix.opacity.popups = 1.0;
-  #stylix.opacity.applications = 1.0;
-  #stylix.opacity.desktop = 1.0;
+  stylix.opacity.terminal = 1.0; # LOL
+  stylix.opacity.popups = 1.0;
+  stylix.opacity.applications = 1.0;
+  stylix.opacity.desktop = 1.0;
 }
