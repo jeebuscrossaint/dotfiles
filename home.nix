@@ -188,17 +188,17 @@
 
   stylix.fonts = {
     serif = {
-      package = pkgs.nerd-fonts.gohufont;
+      package = pkgs.nerd-fonts.fira-code;
       name = "Fira Mono Nerd Font";
     };
 
     sansSerif = {
-      package = pkgs.nerd-fonts.gohufont;
+      package = pkgs.nerd-fonts.fira-code;
       name = "Fira Mono Nerd Font";
     };
 
     monospace = {
-      package = pkgs.nerd-fonts.gohufont;
+      package = pkgs.nerd-fonts.fira-code;
       name = "Fira Mono Nerd Font";
     };
 

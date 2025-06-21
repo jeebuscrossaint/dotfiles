@@ -223,8 +223,10 @@
     desktopManager.xfce.enable = false;
     windowManager.i3.enable = true;
     windowManager.spectrwm.enable = true;
-    desktopManager.gnome.enable = false;
+    desktopManager.gnome.enable = true;
     displayManager.gdm.enable = true;
+    displayManager.sddm.enable = false;
+    displayManager.lightdm.enable = false;
   };
   
   services = {
@@ -286,7 +288,7 @@
   security.pam.services.gdm-password.enableGnomeKeyring = true;
 
 	# potentially temporrary
-	stylix.base16Scheme = "{pkgs.base16-schemes}/share/themes/classic-dark.yaml";
+	#stylix.base16Scheme = "{pkgs.base16-schemes}/share/themes/classic-dark.yaml";
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
