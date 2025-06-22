@@ -175,7 +175,7 @@
   programs.home-manager.enable = true;
 
   programs.cava.enable = true;
-  programs.qutebrowser.enable = true;
+  programs.qutebrowser.enable = false;
   programs.chromium.enable = true;
   programs.firefox.enable = true;
   services.avizo.enable = true;

@@ -223,14 +223,14 @@
     desktopManager.xfce.enable = false;
     windowManager.i3.enable = true;
     windowManager.spectrwm.enable = true;
-    desktopManager.gnome.enable = true;
-    displayManager.gdm.enable = true;
-    displayManager.sddm.enable = false;
     displayManager.lightdm.enable = false;
   };
   
   services = {
   	desktopManager.plasma6.enable = false;
+  	desktopManager.gnome.enable = true;
+  	displayManager.gdm.enable = true;
+  	displayManager.sddm.enable = false;
   };
 
   services.libinput = {
