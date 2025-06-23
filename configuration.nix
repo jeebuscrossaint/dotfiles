@@ -224,13 +224,13 @@
     windowManager.i3.enable = true;
     windowManager.spectrwm.enable = true;
     displayManager.lightdm.enable = false;
+    	desktopManager.gnome.enable = true;
+  	displayManager.gdm.enable = true;
+  	displayManager.sddm.enable = false;
   };
   
   services = {
   	desktopManager.plasma6.enable = false;
-  	desktopManager.gnome.enable = true;
-  	displayManager.gdm.enable = true;
-  	displayManager.sddm.enable = false;
   };
 
   services.libinput = {
@@ -288,8 +288,7 @@
   security.pam.services.gdm-password.enableGnomeKeyring = true;
 
 	# potentially temporrary
-	stylix.base16Scheme = "{pkgs.base16-schemes}/share/themes/classic-dark.yaml";
-  /*stylix.autoEnable = true;
+  stylix.autoEnable = true;
 
   stylix.enable = true;
   stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/bright.yaml";
@@ -297,17 +296,17 @@
 
   stylix.fonts = {
     serif = {
-      package = pkgs.nerd-fonts.fira-code;
+      package = pkgs.nerd-fonts.jetbrains-mono;
       name = "Fira Mono Nerd Font";
     };
 
     sansSerif = {
-      package = pkgs.nerd-fonts.fira-code;
+      package = pkgs.nerd-fonts.jetbrains-mono;
       name = "Fira Mono Nerd Font";
     };
 
     monospace = {
-      package = pkgs.nerd-fonts.fira-code;
+      package = pkgs.nerd-fonts.jetbrains-mono;
       name = "Fira Mono Nerd Font";
     };
 
@@ -330,17 +329,17 @@
     size = 24;
   };
 
-  stylix.iconTheme = {
+  /* stylix.iconTheme = {
     enable = true;
     package = pkgs.rose-pine-icon-theme;
     dark = "Rose-pine-moon";
     light = "Rose-pine-dawn";
-  };
+  };*/
 
   stylix.opacity.terminal = 1.0; # LOL
   stylix.opacity.popups = 1.0;
   stylix.opacity.applications = 1.0;
-  stylix.opacity.desktop = 1.0; */
+  stylix.opacity.desktop = 1.0; 
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.

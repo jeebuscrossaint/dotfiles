@@ -1,13 +1,13 @@
 {
   description = "younix";
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05";  # nixos-unstable -> nixos-25.05
     # browser please!
     # zen-browser.url = "github:0xc000022070/zen-browser-flake";
     # run random binaries please!
     nix-ld.url = "github:Mic92/nix-ld";
     # stylix (home manager gtk stylign is so incredibly butt)
-    stylix.url = "github:danth/stylix";
+    stylix.url = "github:danth/stylix/release-25.05"; # use stable
     #vim joyer hyprland home manager tutorial
     #hyprland.url = "github:hyprwm/Hyprland";
 
@@ -104,7 +104,7 @@
     #conky.url = "github:brndnmtthws/conky";
 
     home-manager = {
-      url = "github:nix-community/home-manager/master";
+      url = "github:nix-community/home-manager/release-25.05";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
@@ -120,7 +120,7 @@
         system = "x86_64-linux";
         specialArgs = {inherit inputs;};
         modules = [
-          inputs.stylix.homeModules.stylix
+          inputs.stylix.nixosModules.stylix
 	  inputs.fht-compositor.nixosModules.default
           ./configuration.nix
 
