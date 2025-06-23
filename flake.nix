@@ -120,7 +120,7 @@
         system = "x86_64-linux";
         specialArgs = {inherit inputs;};
         modules = [
-          stylix.nixosModules.stylix
+          inputs.stylix.homeModules.stylix
 	  inputs.fht-compositor.nixosModules.default
           ./configuration.nix
 
