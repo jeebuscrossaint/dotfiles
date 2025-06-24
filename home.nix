@@ -178,6 +178,7 @@
   programs.qutebrowser.enable = false;
   programs.chromium.enable = true;
   programs.firefox.enable = true;
+  programs.schizofox.enable = true;
   services.avizo.enable = true;
   services.tldr-update.enable = true;
   stylix.autoEnable = true;
@@ -189,17 +190,17 @@
   stylix.fonts = {
     serif = {
       package = pkgs.nerd-fonts.jetbrains-mono;
-      name = "Fira Mono Nerd Font";
+      #name = "Fira Mono Nerd Font";
     };
 
     sansSerif = {
       package = pkgs.nerd-fonts.jetbrains-mono;
-      name = "Fira Mono Nerd Font";
+      #name = "Fira Mono Nerd Font";
     };
 
     monospace = {
       package = pkgs.nerd-fonts.jetbrains-mono;
-      name = "Fira Mono Nerd Font";
+      #name = "Fira Mono Nerd Font";
     };
 
    emoji = {

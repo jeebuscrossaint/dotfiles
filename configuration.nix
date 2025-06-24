@@ -221,16 +221,16 @@
   services.xserver = {
     enable = true;
     desktopManager.xfce.enable = false;
-    windowManager.i3.enable = true;
-    windowManager.spectrwm.enable = true;
+    windowManager.i3.enable = false;
+    windowManager.spectrwm.enable = false;
     displayManager.lightdm.enable = false;
-    	desktopManager.gnome.enable = true;
+    	desktopManager.gnome.enable = false;
   	displayManager.gdm.enable = true;
   	displayManager.sddm.enable = false;
   };
   
   services = {
-  	desktopManager.plasma6.enable = false;
+  	desktopManager.plasma6.enable = true;
   };
 
   services.libinput = {
@@ -297,17 +297,17 @@
   stylix.fonts = {
     serif = {
       package = pkgs.nerd-fonts.jetbrains-mono;
-      name = "Fira Mono Nerd Font";
+      #name = "Fira Mono Nerd Font";
     };
 
     sansSerif = {
       package = pkgs.nerd-fonts.jetbrains-mono;
-      name = "Fira Mono Nerd Font";
+      #name = "Fira Mono Nerd Font";
     };
 
     monospace = {
       package = pkgs.nerd-fonts.jetbrains-mono;
-      name = "Fira Mono Nerd Font";
+      #name = "Fira Mono Nerd Font";
     };
 
     emoji = {

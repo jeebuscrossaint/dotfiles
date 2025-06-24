@@ -60,6 +60,8 @@
 
     #nix-index
     nix-index.url = "github:nix-community/nix-index";
+    
+    schizofox.url = "github:schizofox/schizofox";
 
     # swww
     # swww.url = "github:LGFae/swww";
@@ -138,6 +140,7 @@
             home-manager.sharedModules = [
               inputs.nvf.homeManagerModules.default
               inputs.nixcord.homeModules.nixcord
+              inputs.schizofox.homeManagerModules.default
             ];
           }
         ];
