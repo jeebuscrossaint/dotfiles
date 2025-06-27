@@ -229,13 +229,13 @@
     windowManager.i3.enable = true;
     windowManager.spectrwm.enable = false;
     displayManager.lightdm.enable = false;
-    	desktopManager.gnome.enable = false;
+    	desktopManager.gnome.enable = true;
   	displayManager.gdm.enable = true;
   	displayManager.sddm.enable = false;
   };
   
   services = {
-  	desktopManager.plasma6.enable = true;
+  	desktopManager.plasma6.enable = false;
   };
 
   services.libinput = {
