@@ -71,7 +71,7 @@
     swayrbar
     pfetch-rs
     autotiling-rs
-    autotiling
+    #autotiling
     ipfetch
     wl-clipboard-rs
     slurp
@@ -114,7 +114,8 @@
     tor-browser
     glow
     swayimg
-
+    microfetch
+    yazi
     # gnome extensions
     #gnomeExtensions.blur-my-shell
     #gnomeExtensions.burn-my-windows
@@ -178,13 +179,14 @@
   programs.qutebrowser.enable = false;
   programs.chromium.enable = true;
   programs.firefox.enable = true;
-  programs.schizofox.enable = true;
+  programs.schizofox.enable = false;
+  programs.nushell.enable = true;
   services.avizo.enable = true;
   services.tldr-update.enable = true;
   stylix.autoEnable = true;
 
   stylix.enable = true;
-  stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/bright.yaml";
+  stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/sakura.yaml";
   stylix.polarity = "dark";
 
   stylix.fonts = {
@@ -229,8 +231,8 @@
     light = "Rose-pine-dawn";
   };
 
-  stylix.opacity.terminal = 1.0; # LOL
-  stylix.opacity.popups = 1.0;
-  stylix.opacity.applications = 1.0;
-  stylix.opacity.desktop = 1.0;
+  stylix.opacity.terminal = 0.75; # LOL
+  stylix.opacity.popups = 0.75;
+  stylix.opacity.applications = 0.75;
+  stylix.opacity.desktop = 0.75;
 }

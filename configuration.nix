@@ -21,7 +21,7 @@
     plymouth = {
       enable = false;
     };
-    #kernelPackages = pkgs.linuxPackages_latest;
+    kernelPackages = pkgs.linuxPackages_hardened;
 
     consoleLogLevel = 0;
     initrd.verbose = false;
@@ -128,7 +128,11 @@
 
   # Enable automatic login for the user.
   services.getty.autologinUser = "amarnath";
-  services.power-profiles-daemon.enable = true;
+  services.power-profiles-daemon.enable = false;
+  services.supergfxd.enable = true;
+  services.asusd.enable = true;
+  services.asusd.enableUserService = true;
+  services.hardware.openrgb.enable = true;
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
 
@@ -178,6 +182,7 @@
     enable = true;
     wrapperFeatures.gtk = true;
     extraPackages = with pkgs; [brightnessctl foot grim pulseaudio swayidle];
+    package = pkgs.swayfx;
   };
 
   programs.fht-compositor = {
@@ -198,7 +203,7 @@
   programs.fish.enable = true;
   security.polkit.enable = true;
 
-  users.users.amarnath.shell = pkgs.fish;
+  users.users.amarnath.shell = pkgs.fish; #nushell sometime?
   security.rtkit.enable = true;
   services.pipewire = {
     enable = true;
@@ -221,7 +226,7 @@
   services.xserver = {
     enable = true;
     desktopManager.xfce.enable = false;
-    windowManager.i3.enable = false;
+    windowManager.i3.enable = true;
     windowManager.spectrwm.enable = false;
     displayManager.lightdm.enable = false;
     	desktopManager.gnome.enable = false;

@@ -10,6 +10,12 @@
     stylix.url = "github:danth/stylix/release-25.05"; # use stable
     #vim joyer hyprland home manager tutorial
     #hyprland.url = "github:hyprwm/Hyprland";
+    
+    plasma-manager = {
+    	url = "github:nix-community/plasma-manager";
+    	inputs.nixpkgs.follows = "nixpkgs";
+    	inputs.home-manager.follows = "home-manager";
+    };
 
     #ewww input
     # ewww.url = "github:elkowar/eww";
@@ -91,7 +97,7 @@
     #};
 
     # yazi
-    # yazi.url = "github:sxyazi/yazi";
+    #yazi.url = "github:sxyazi/yazi";
 
     # hyprpolkit agent
     # hyprpolkitagent.url = "github:hyprwm/hyprpolkitagent";
@@ -141,6 +147,7 @@
               inputs.nvf.homeManagerModules.default
               inputs.nixcord.homeModules.nixcord
               inputs.schizofox.homeManagerModules.default
+              inputs.plasma-manager.homeManagerModules.plasma-manager
             ];
           }
         ];

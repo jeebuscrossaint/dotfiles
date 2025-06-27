@@ -1,7 +1,7 @@
 # In your home.nix file
 {
   services.picom = {
-    enable = false;
+    enable = true;
     
     # Fading configuration
     fade = true;
