@@ -117,13 +117,13 @@
     microfetch
     yazi
     # gnome extensions
-    #gnomeExtensions.blur-my-shell
-    #gnomeExtensions.burn-my-windows
-    #gnomeExtensions.weather-or-not
-    #gnomeExtensions.rounded-window-corners-reborn
-    #gnomeExtensions.mpris-label
-    #gnomeExtensions.fly-pie
-    #gnomeExtensions.desktop-clock
+    gnomeExtensions.blur-my-shell
+    gnomeExtensions.burn-my-windows
+    gnomeExtensions.weather-or-not
+    gnomeExtensions.rounded-window-corners-reborn
+    gnomeExtensions.mpris-label
+    gnomeExtensions.fly-pie
+    gnomeExtensions.desktop-clock
   ];
 
   programs.librewolf.enable = false;
@@ -133,7 +133,7 @@
   home.sessionVariables = {
     XCURSOR_THEME = "rose-pine-cursor";
     XCURSOR_SIZE = "24";
-    NIXOS_OZONE_WL = "1";
+    #NIXOS_OZONE_WL = "1";
   };
   fonts.fontconfig.enable = true;
 
@@ -186,7 +186,7 @@
   stylix.autoEnable = true;
 
   stylix.enable = true;
-  stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/sakura.yaml";
+  stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/colors.yaml";
   stylix.polarity = "dark";
 
   stylix.fonts = {

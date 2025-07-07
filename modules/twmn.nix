@@ -1,7 +1,7 @@
 {
   # Enable twmn notification daemon
   services.twmn = {
-    enable = true;
+    enable = false;
     
     # How long notifications stay visible (in milliseconds)
     duration = 4000;  # 4 seconds

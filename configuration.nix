@@ -39,7 +39,7 @@
   hardware.graphics = {
     enable = true;
   };
-  
+
   services.xserver.videoDrivers = ["nvidia"];
 
   hardware.nvidia = {
@@ -50,7 +50,7 @@
     powerManagement.enable = false;
 
     # Fine-grained power management (only works on Turing or newer GPUs, which your RTX 4070 is)
-    # powerManagement.finegrained = true;
+    powerManagement.finegrained = false;
 
     # Open source kernel module - RTX 4070 is Ada Lovelace architecture, which is supported
     open = true;
@@ -63,7 +63,16 @@
 
     # Use the appropriate driver version
     # For RTX 4070 mobile (Ada Lovelace architecture), the stable driver is appropriate
-    package = config.boot.kernelPackages.nvidiaPackages.stable;
+    package = config.boot.kernelPackages.nvidiaPackages.beta;
+
+    prime = {
+      offload = {
+        enable = true;
+        enableOffloadCmd = true;
+      };
+      intelBusId = "PCI:0:2:0";
+      nvidiaBusId = "PCI:1:0:0";
+    };
   };
   nix.settings.auto-optimise-store = true;
   #nix.settings.max-jobs = 16;
@@ -93,7 +102,7 @@
   networking.networkmanager.enable = true;
 
   # Set your time zone.
-  time.timeZone = "America/New_York";
+  #time.timeZone = "America/New_York";
 
   # Select internationalisation properties.
   i18n.defaultLocale = "en_US.UTF-8";
@@ -164,7 +173,7 @@
     #inputs.conky.packages."${system}".default
     #inputs.helix.packages."${system}".default
     #inputs.waybar.packages."${system}".default
-    #inputs.aocli.packages."${system}".default
+    inputs.aocli.packages."${system}".default
     #inputs.debt.packages."${system}".default
     #    inputs.ironbar.packages."${system}".default
   ];
@@ -212,6 +221,12 @@
     pulse.enable = true;
     jack.enable = true;
   };
+  
+  services.chrony.enable = true;
+  time.timeZone = "Asia/Kolkata";
+  virtualisation.virtualbox.host.enable = true;
+  users.extraGroups.vboxusers.members = [ "amarnath" ];
+  virtualisation.virtualbox.host.enableExtensionPack = true;
 
   programs.steam = {
     enable = true;
@@ -229,13 +244,13 @@
     windowManager.i3.enable = true;
     windowManager.spectrwm.enable = false;
     displayManager.lightdm.enable = false;
-    	desktopManager.gnome.enable = true;
-  	displayManager.gdm.enable = true;
-  	displayManager.sddm.enable = false;
+    desktopManager.gnome.enable = true;
+    displayManager.gdm.enable = true;
+    displayManager.sddm.enable = false;
   };
-  
+
   services = {
-  	desktopManager.plasma6.enable = false;
+    desktopManager.plasma6.enable = true;
   };
 
   services.libinput = {
@@ -292,7 +307,7 @@
   services.flatpak.enable = true;
   security.pam.services.gdm-password.enableGnomeKeyring = true;
 
-	# potentially temporrary
+  # potentially temporrary
   stylix.autoEnable = true;
 
   stylix.enable = true;
@@ -334,17 +349,19 @@
     size = 24;
   };
 
-  /* stylix.iconTheme = {
+  /*
+     stylix.iconTheme = {
     enable = true;
     package = pkgs.rose-pine-icon-theme;
     dark = "Rose-pine-moon";
     light = "Rose-pine-dawn";
-  };*/
+  };
+  */
 
   stylix.opacity.terminal = 1.0; # LOL
   stylix.opacity.popups = 1.0;
   stylix.opacity.applications = 1.0;
-  stylix.opacity.desktop = 1.0; 
+  stylix.opacity.desktop = 1.0;
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.

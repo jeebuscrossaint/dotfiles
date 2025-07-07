@@ -38,7 +38,7 @@
     # wart.url = "github:jeebuscrossaint/wart";
 
     # aocli
-    # aocli.url = "github:jeebuscrossaint/aocli";
+    aocli.url = "github:jeebuscrossaint/aocli";
 
     #prismlauncher
     # prismlauncher.url = "github:PrismLauncher/PrismLauncher";
@@ -50,7 +50,7 @@
     # hyprpaper.url = "github:hyprwm/hyprpaper";
 
     # swayfx
-    swayfx.url = "github:WillPower3309/swayfx";
+    # swayfx.url = "github:WillPower3309/swayfx";
 
     # xdg-desktop-portal-hyprland
     # xdg-desktop-portal-hyprland.url = "github:hyprwm/xdg-desktop-portal-hyprland";
