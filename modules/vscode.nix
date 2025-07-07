@@ -38,8 +38,8 @@
                 james-yu.latex-workshop
                 ms-vscode-remote.vscode-remote-extensionpack
                 llvm-vs-code-extensions.vscode-clangd
+                ziglang.vscode-zig
                 mkhl.direnv
-                nimlang.nimlang
             ];
         };
     };
