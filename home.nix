@@ -56,6 +56,7 @@
     wlay
     swaybg
     swaynotificationcenter
+    drawing
     cutter
     ghidra
     qalculate-gtk
