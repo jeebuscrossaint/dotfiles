@@ -68,6 +68,7 @@
     nix-index.url = "github:nix-community/nix-index";
     
     schizofox.url = "github:schizofox/schizofox";
+    nix-flatpak.url = "github:gmodena/nix-flatpak/latest";
 
     # swww
     # swww.url = "github:LGFae/swww";
@@ -130,6 +131,7 @@
         modules = [
           inputs.stylix.nixosModules.stylix
 	  inputs.fht-compositor.nixosModules.default
+	  inputs.nix-flatpak.nixosModules.nix-flatpak
           ./configuration.nix
 
           # This will enable nix-ld and add its modules

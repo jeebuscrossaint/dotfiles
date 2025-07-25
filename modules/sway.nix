@@ -197,6 +197,10 @@
           command = "swaync";
           always = false;
         }
+        {
+          command = "swaybg -i /home/amarnath/walls/mountain/a_snowy_mountain_tops_with_blue_sky.jpg &";
+          always = false;
+        }
       ];
 
       # Output configuration

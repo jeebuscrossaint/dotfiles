@@ -118,6 +118,7 @@
     microfetch
     yazi
     notepad-next
+    discordo
     # gnome extensions
     #gnomeExtensions.blur-my-shell
     #gnomeExtensions.burn-my-windows

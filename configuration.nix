@@ -247,12 +247,12 @@
     windowManager.spectrwm.enable = false;
     displayManager.lightdm.enable = false;
     desktopManager.gnome.enable = false;
-    displayManager.gdm.enable = true;
+    displayManager.gdm.enable = false;
     displayManager.sddm.enable = false;
   };
 
   services = {
-    desktopManager.plasma6.enable = true;
+    desktopManager.plasma6.enable = false;
   };
 
   services.libinput = {
@@ -307,6 +307,10 @@
   services.udev.packages = with pkgs; [gnome-settings-daemon];
   security.pam.services.hyprlock = {};
   services.flatpak.enable = true;
+  services.flatpak.packages = [
+  	"org.vinegarhq.Sober"
+  ];
+  services.flatpak.update.onActivation = true;
   security.pam.services.gdm-password.enableGnomeKeyring = true;
 
   # potentially temporrary
