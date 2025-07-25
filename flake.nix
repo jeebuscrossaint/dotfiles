@@ -5,7 +5,7 @@
     # browser please!
     # zen-browser.url = "github:0xc000022070/zen-browser-flake";
     # run random binaries please!
-    nix-ld.url = "github:Mic92/nix-ld";
+    #nix-ld.url = "github:Mic92/nix-ld";
     # stylix (home manager gtk stylign is so incredibly butt)
     stylix.url = "github:danth/stylix/release-25.05"; # use stable
     #vim joyer hyprland home manager tutorial
@@ -118,7 +118,7 @@
   };
   outputs = inputs @ {
     nixpkgs,
-    nix-ld,
+    #nix-ld,
     home-manager,
     stylix,
     ...
@@ -133,8 +133,8 @@
           ./configuration.nix
 
           # This will enable nix-ld and add its modules
-          nix-ld.nixosModules.nix-ld
-          {programs.nix-ld.dev.enable = true;}
+          #nix-ld.nixosModules.nix-ld
+          #{programs.nix-ld.dev.enable = true;}
           # Home manager module
           home-manager.nixosModules.home-manager
           {

@@ -9,20 +9,15 @@
       set -g fish_greeting
       #fish_config theme choose "Old School"
       starship init fish | source
-      pfetch
-      direnv hook fish | source
+      microfetch
     '';
     
     shellAliases = {
-      drake = "neovide";
       jit = "git";
-      # hx = "helix";  # Commented out in your config
       ls = "lsd";
-      # sudo = "doas";  # Commented out in your config
       cl = "clear";
       htop = "btop";
       "11" = "ping 1.1.1.1";
-      "11gnu" = "ping gnu.org";
       xcopy = "xclip -sel clip";
       ppctl = "powerprofilesctl";
       "update-nixos" = "pushd $HOME/dotfiles && nix flake update --commit-lock-file && sudo nixos-rebuild switch --flake . && popd";
@@ -103,7 +98,6 @@
     lsd
     btop
     xclip
-    pfetch-rs
     # Add other packages you use
   ];
 }

@@ -56,12 +56,12 @@
     wlay
     swaybg
     swaynotificationcenter
-    drawing
+    #drawing
     cutter
     ghidra
     qalculate-gtk
-    qemu_full
-    qemu-user
+    #qemu_full
+    #qemu-user
     fastfetch
     tree
     fzf
@@ -70,7 +70,7 @@
     pciutils
     #vesktop
     swayrbar
-    pfetch-rs
+    #pfetch-rs
     autotiling-rs
     #autotiling
     ipfetch
@@ -82,9 +82,9 @@
     copyq
     udiskie
     gamemode
-    cava
+    #cava
     font-awesome
-    hyprshot
+    #hyprshot
     gnome-tweaks
     gtk-engine-murrine
     gnome-themes-extra
@@ -103,28 +103,29 @@
     blueberry
     gparted
 
-    lunar-client
+    #lunar-client
     #    neovide
-    proton-pass
+    #proton-pass
     libreoffice-qt6-fresh
     youtube-music
     nix-search
-    direnv
-    powershell
+    #direnv
+    #powershell
     whatsapp-for-linux
     tor-browser
     glow
-    swayimg
+    #swayimg
     microfetch
     yazi
+    notepad-next
     # gnome extensions
-    gnomeExtensions.blur-my-shell
-    gnomeExtensions.burn-my-windows
-    gnomeExtensions.weather-or-not
-    gnomeExtensions.rounded-window-corners-reborn
-    gnomeExtensions.mpris-label
-    gnomeExtensions.fly-pie
-    gnomeExtensions.desktop-clock
+    #gnomeExtensions.blur-my-shell
+    #gnomeExtensions.burn-my-windows
+    #gnomeExtensions.weather-or-not
+    #gnomeExtensions.rounded-window-corners-reborn
+    #gnomeExtensions.mpris-label
+    #gnomeExtensions.fly-pie
+    #gnomeExtensions.desktop-clock
   ];
 
   programs.librewolf.enable = false;
@@ -139,7 +140,7 @@
   fonts.fontconfig.enable = true;
 
   home.sessionVariables = {
-    EDITOR = "micro";
+    EDITOR = "vim";
   };
 
   programs.git = {
@@ -169,14 +170,14 @@
   };
 
   programs.fht-compositor = {
-    enable = true;
+    enable = false;
   };
 
   home.stateVersion = "25.05";
 
   programs.home-manager.enable = true;
 
-  programs.cava.enable = true;
+  programs.cava.enable = false;
   programs.qutebrowser.enable = false;
   programs.chromium.enable = true;
   programs.firefox.enable = true;
@@ -187,7 +188,7 @@
   stylix.autoEnable = true;
 
   stylix.enable = true;
-  stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/colors.yaml";
+  stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/digital-rain.yaml";
   stylix.polarity = "dark";
 
   stylix.fonts = {
@@ -232,7 +233,7 @@
     light = "Rose-pine-dawn";
   };
 
-  stylix.opacity.terminal = 0.75; # LOL
+  stylix.opacity.terminal = 0.0; # LOL
   stylix.opacity.popups = 0.75;
   stylix.opacity.applications = 0.75;
   stylix.opacity.desktop = 0.75;

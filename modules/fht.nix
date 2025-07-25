@@ -9,7 +9,7 @@
   ];
 
   programs.fht-compositor = {
-    enable = true;
+    enable = false;
 
     settings = {
       autostart = [];
@@ -61,7 +61,7 @@
       };
 
       keybinds = {
-        "Super-q" = "quit";
+        # "Super-q" = "quit";
         "Super-Ctrl-r" = "reload-config";
         "Super-Return" = {
           action = "run-command";

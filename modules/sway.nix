@@ -1,6 +1,5 @@
 # Simplified Sway configuration for Home Manager with SwayFX features
-{ pkgs, ... }:
-{
+{pkgs, ...}: {
   wayland.windowManager.sway = {
     enable = true;
     package = pkgs.swayfx-unwrapped;
@@ -10,10 +9,10 @@
     config = {
       # Gaps
       gaps = {
-        inner = 10;
-        outer = 10;
+        inner = 0;
+        outer = 0;
         smartGaps = false;
-        smartBorders = "off";
+        smartBorders = "on";
       };
 
       # Window appearance
@@ -211,36 +210,36 @@
     # SwayFX-specific configuration using extraConfig
     extraConfig = ''
       # Window blur effects
-      blur enable
-      blur_xray disable
-      blur_passes 2
-      blur_radius 5
-      blur_noise 0.02
-      blur_brightness 1.0
-      blur_contrast 1.0
-      blur_saturation 1.0
+      #blur enable
+      #blur_xray disable
+      #blur_passes 2
+      #blur_radius 5
+      #blur_noise 0.02
+      #blur_brightness 1.0
+      #blur_contrast 1.0
+      #blur_saturation 1.0
 
       # Corner radius for windows
-      corner_radius 10
+      #corner_radius 10
 
       # Window shadows
-      shadows enable
-      shadows_on_csd enable
-      shadow_blur_radius 20
-      shadow_color #0000007F
-      shadow_offset 0 0
-      shadow_inactive_color #0000004F
+      #shadows enable
+      #shadows_on_csd enable
+      #shadow_blur_radius 20
+      #shadow_color #0000007F
+      #shadow_offset 0 0
+      #shadow_inactive_color #0000004F
 
       # Dim unfocused windows
-      default_dim_inactive 0.1
-      dim_inactive_colors.unfocused #000000FF
-      dim_inactive_colors.urgent #900000FF
+      #default_dim_inactive 0.1
+      #dim_inactive_colors.unfocused #000000FF
+      #dim_inactive_colors.urgent #900000FF
 
       # Titlebar separator
-      titlebar_separator enable
+      #titlebar_separator enable
 
       # Scratchpad minimize (recommended to keep disabled)
-      scratchpad_minimize disable
+      #scratchpad_minimize disable
 
       # Layer effects for panels/bars
       layer_effects "waybar" {

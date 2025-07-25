@@ -104,7 +104,7 @@
   networking.networkmanager.enable = true;
 
   # Set your time zone.
-  #time.timeZone = "America/New_York";
+  time.timeZone = "America/New_York";
 
   # Select internationalisation properties.
   i18n.defaultLocale = "en_US.UTF-8";
@@ -181,8 +181,8 @@
   ];
 
   fonts.packages = with pkgs; [
-    nerd-fonts.monaspace
-    nerd-fonts.jetbrains-mono
+    #nerd-fonts.monaspace
+    #nerd-fonts.jetbrains-mono
   ];
 
   services.logind.extraConfig = ''
@@ -197,10 +197,11 @@
   };
 
   programs.fht-compositor = {
-    enable = true;
-    withUWSM = true; # recommended
+    enable = false;
     # package = fht-compositor.packages.${pkgs.system}.fht-compositor; # optional if default is okay
   };
+  
+  programs.nix-ld.enable = true;
 
   programs.hyprland = {
     enable = false;
@@ -225,7 +226,6 @@
   };
   
   services.chrony.enable = true;
-  time.timeZone = "Asia/Kolkata";
   virtualisation.virtualbox.host.enable = true;
   users.extraGroups.vboxusers.members = [ "amarnath" ];
   virtualisation.virtualbox.host.enableExtensionPack = true;
@@ -243,10 +243,10 @@
   services.xserver = {
     enable = true;
     desktopManager.xfce.enable = false;
-    windowManager.i3.enable = true;
+    windowManager.i3.enable = false;
     windowManager.spectrwm.enable = false;
     displayManager.lightdm.enable = false;
-    desktopManager.gnome.enable = true;
+    desktopManager.gnome.enable = false;
     displayManager.gdm.enable = true;
     displayManager.sddm.enable = false;
   };
@@ -360,7 +360,7 @@
   };
   */
 
-  stylix.opacity.terminal = 1.0; # LOL
+  stylix.opacity.terminal = 0.0; # LOL
   stylix.opacity.popups = 1.0;
   stylix.opacity.applications = 1.0;
   stylix.opacity.desktop = 1.0;
