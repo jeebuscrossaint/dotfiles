@@ -119,6 +119,7 @@
     yazi
     notepad-next
     discordo
+    corefonts
     # gnome extensions
     #gnomeExtensions.blur-my-shell
     #gnomeExtensions.burn-my-windows
