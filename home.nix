@@ -153,6 +153,11 @@
       credental.helper = "store";
     };
   };
+  
+  programs.ssh = {
+  	enable = true;
+  	addKeysToAgent = "yes";
+  };
 
   programs.gh = {
     enable = true;
@@ -180,6 +185,7 @@
   programs.home-manager.enable = true;
 
   programs.cava.enable = false;
+  programs.nh.enable = true;
   programs.qutebrowser.enable = false;
   programs.chromium.enable = true;
   programs.firefox.enable = true;
@@ -190,7 +196,7 @@
   stylix.autoEnable = true;
 
   stylix.enable = true;
-  stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/digital-rain.yaml";
+  stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/github-dark.yaml";
   stylix.polarity = "dark";
 
   stylix.fonts = {
@@ -235,7 +241,7 @@
     light = "Rose-pine-dawn";
   };
 
-  stylix.opacity.terminal = 0.0; # LOL
+  stylix.opacity.terminal = 0.75; # LOL
   stylix.opacity.popups = 0.75;
   stylix.opacity.applications = 0.75;
   stylix.opacity.desktop = 0.75;
