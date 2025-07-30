@@ -219,9 +219,9 @@
   programs.nix-ld.enable = true;
 
   programs.hyprland = {
-    enable = false;
+    enable = true;
     xwayland.enable = true;
-    package = inputs.hyprland.packages."${pkgs.system}".hyprland;
+    package = pkgs.hyprland;
   };
 
   xdg.portal.enable = true;
@@ -339,12 +339,12 @@
   stylix.fonts = {
     serif = {
       package = pkgs.nerd-fonts.jetbrains-mono;
-      #name = "Fira Mono Nerd Font";
+      #name = "JetBrains Mono Nerd Font";
     };
 
     sansSerif = {
       package = pkgs.nerd-fonts.jetbrains-mono;
-      #name = "Fira Mono Nerd Font";
+      #name = "Fira Mon Nerd Font";
     };
 
     monospace = {

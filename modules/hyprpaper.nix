@@ -4,11 +4,11 @@
   ...
 }: {
   services.hyprpaper = {
-    enable = true;
+    enable = false;
     settings = {
       ipc = "on";
       splash = false;
-      wallpaper = [",tile:~/tiles/gnu-linux_tile.png"];
+      wallpaper = [",/home/amarnath/walls/mountain/a_snowy_mountain_tops_with_blue_sky.jpg"];
     };
   };
 }

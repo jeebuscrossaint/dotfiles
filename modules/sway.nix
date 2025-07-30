@@ -207,6 +207,8 @@
       output = {
         "*" = {
           #bg = "#000000 solid_color";
+          render_bit_depth = "10";
+          color_profile = "srgb";
         };
       };
     };

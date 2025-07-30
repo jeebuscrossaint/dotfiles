@@ -53,9 +53,11 @@
   };
 
   home.pointerCursor.x11.enable = true;
+  home.pointerCursor.gtk.enable = true;
 
   home.packages = with pkgs; [
-    comma
+    swww
+    hyprpicker
     libsecret
     wlay
     swaybg
@@ -124,6 +126,10 @@
     discordo
     corefonts
     teams-for-linux
+    rose-pine-hyprcursor
+    hyprpolkitagent
+    gamemode
+    networkmanagerapplet
     # gnome extensions
     #gnomeExtensions.blur-my-shell
     #gnomeExtensions.burn-my-windows
@@ -141,7 +147,7 @@
   home.sessionVariables = {
     XCURSOR_THEME = "rose-pine-cursor";
     XCURSOR_SIZE = "24";
-    #NIXOS_OZONE_WL = "1";
+    NIXOS_OZONE_WL = "1";
   };
   fonts.fontconfig.enable = true;
 
