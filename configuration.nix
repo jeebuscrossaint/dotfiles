@@ -197,6 +197,20 @@
     package = pkgs.swayfx;
   };
 
+  location.provider = "geoclue2";
+
+  services.redshift = {
+    enable = true;
+    brightness = {
+      day = "1";
+      night = "1";
+    };
+    temperature = {
+      day = 5500;
+      night = 3700;
+    };
+  };
+
   programs.fht-compositor = {
     enable = false;
     # package = fht-compositor.packages.${pkgs.system}.fht-compositor; # optional if default is okay
@@ -304,7 +318,7 @@
     rygel
     gnome-color-manager
   ];
-  
+
   services.gnome.gnome-keyring.enable = true;
   services.udev.packages = with pkgs; [gnome-settings-daemon];
   security.pam.services.hyprlock = {};
