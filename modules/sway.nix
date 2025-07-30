@@ -59,7 +59,7 @@
       in {
         # Basic bindings
         "${modifier}+q" = "exec foot";
-        "${modifier}+d" = "exec bemenu-run";
+        "${modifier}+d" = "exec /bin/sh -c bemenu-run";
         "${modifier}+c" = "kill";
         "${modifier}+Shift+c" = "reload";
         "${modifier}+l" = "exec swaylock -C ~/.config/swaylock/config";

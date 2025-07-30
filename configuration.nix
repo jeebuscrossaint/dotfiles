@@ -5,6 +5,7 @@
   config,
   pkgs,
   inputs,
+  options,
   ...
 }: {
   imports = [
@@ -35,7 +36,7 @@
       "udev.log_priority=3"
     ];
   };
-  
+
   boot.kernel.sysctl."kernel.unprivileged_userns_clone" = 1;
 
   hardware.graphics = {
@@ -167,7 +168,7 @@
     #    inputs.hypridle.packages."${system}".default
     #inputs.quickemu.packages."${system}".default
     #inputs.quickgui.packages."${system}".default
-    inputs.nix-index.packages."${system}".default
+    #inputs.nix-index.packages."${system}".default
     #inputs.swww.packages."${system}".default
     #    inputs.rose-pine-hyprcursor.packages."${system}".default
     #inputs.yazi.packages."${system}".default
@@ -200,7 +201,7 @@
     enable = false;
     # package = fht-compositor.packages.${pkgs.system}.fht-compositor; # optional if default is okay
   };
-  
+
   programs.nix-ld.enable = true;
 
   programs.hyprland = {
@@ -215,7 +216,7 @@
   programs.fish.enable = true;
   security.polkit.enable = true;
 
-  users.users.amarnath.shell = pkgs.fish; #nushell sometime?
+  users.users.amarnath.shell = pkgs.bash; #nushell sometime?
   security.rtkit.enable = true;
   services.pipewire = {
     enable = true;
@@ -224,10 +225,10 @@
     pulse.enable = true;
     jack.enable = true;
   };
-  
-  services.chrony.enable = true;
+
+  networking.timeServers = options.networking.timeServers.default;
   virtualisation.virtualbox.host.enable = true;
-  users.extraGroups.vboxusers.members = [ "amarnath" ];
+  users.extraGroups.vboxusers.members = ["amarnath"];
   virtualisation.virtualbox.host.enableExtensionPack = true;
 
   programs.steam = {
@@ -303,12 +304,13 @@
     rygel
     gnome-color-manager
   ];
-
+  
+  services.gnome.gnome-keyring.enable = true;
   services.udev.packages = with pkgs; [gnome-settings-daemon];
   security.pam.services.hyprlock = {};
   services.flatpak.enable = true;
   services.flatpak.packages = [
-  	"org.vinegarhq.Sober"
+    "org.vinegarhq.Sober"
   ];
   services.flatpak.update.onActivation = true;
   security.pam.services.gdm-password.enableGnomeKeyring = true;

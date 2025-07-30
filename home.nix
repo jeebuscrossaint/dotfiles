@@ -42,6 +42,8 @@
 	./modules/i3status-rust.nix
     ./modules/nixcord.nix
     ./modules/i3-fix.nix
+    ./modules/nushell.nix
+    ./modules/bash.nix
   ];
 
   home.username = "amarnath";
@@ -53,6 +55,8 @@
   home.pointerCursor.x11.enable = true;
 
   home.packages = with pkgs; [
+    comma
+    libsecret
     wlay
     swaybg
     swaynotificationcenter
@@ -103,12 +107,11 @@
     blueberry
     gparted
 
-    #lunar-client
-    #    neovide
+    lunar-client
+        neovide
     #proton-pass
     libreoffice-qt6-fresh
     youtube-music
-    nix-search
     #direnv
     #powershell
     whatsapp-for-linux
@@ -120,6 +123,7 @@
     notepad-next
     discordo
     corefonts
+    teams-for-linux
     # gnome extensions
     #gnomeExtensions.blur-my-shell
     #gnomeExtensions.burn-my-windows
@@ -171,11 +175,6 @@
     enable = true;
   };
 
-  programs.bash = {
-    enable = true;
-    enableCompletion = true;
-  };
-
   programs.fht-compositor = {
     enable = false;
   };
@@ -190,7 +189,6 @@
   programs.chromium.enable = true;
   programs.firefox.enable = true;
   programs.schizofox.enable = false;
-  programs.nushell.enable = true;
   services.avizo.enable = true;
   services.tldr-update.enable = true;
   stylix.autoEnable = true;
@@ -241,7 +239,7 @@
     light = "Rose-pine-dawn";
   };
 
-  stylix.opacity.terminal = 0.75; # LOL
+  stylix.opacity.terminal = 0.0; # LOL
   stylix.opacity.popups = 0.75;
   stylix.opacity.applications = 0.75;
   stylix.opacity.desktop = 0.75;

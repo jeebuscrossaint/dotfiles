@@ -62,7 +62,7 @@
     # quickemu.url = "github:quickemu-project/quickemu";
     # quickgui.url = "github:quickemu-project/quickgui";
     #nix-search
-    nix-search.url = "github:peterldowns/nix-search-cli";
+    #nix-search.url = "github:peterldowns/nix-search-cli";
 
     #nix-index
     nix-index.url = "github:nix-community/nix-index";
