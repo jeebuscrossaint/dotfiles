@@ -200,7 +200,7 @@
   stylix.autoEnable = true;
 
   stylix.enable = true;
-  stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/github-dark.yaml";
+  stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/bright.yaml";
   stylix.polarity = "dark";
 
   stylix.fonts = {

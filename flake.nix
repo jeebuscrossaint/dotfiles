@@ -1,7 +1,7 @@
 {
   description = "younix";
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05";  # nixos-unstable -> nixos-25.05
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05"; # nixos-unstable -> nixos-25.05
     # browser please!
     # zen-browser.url = "github:0xc000022070/zen-browser-flake";
     # run random binaries please!
@@ -10,11 +10,11 @@
     stylix.url = "github:danth/stylix/release-25.05"; # use stable
     #vim joyer hyprland home manager tutorial
     #hyprland.url = "github:hyprwm/Hyprland";
-    
+
     plasma-manager = {
-    	url = "github:nix-community/plasma-manager";
-    	inputs.nixpkgs.follows = "nixpkgs";
-    	inputs.home-manager.follows = "home-manager";
+      url = "github:nix-community/plasma-manager";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.home-manager.follows = "home-manager";
     };
 
     #ewww input
@@ -66,7 +66,10 @@
 
     #nix-index
     nix-index.url = "github:nix-community/nix-index";
-    
+    quickshell = {
+      url = "git+https://git.outfoxxed.me/outfoxxed/quickshell";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     schizofox.url = "github:schizofox/schizofox";
     nix-flatpak.url = "github:gmodena/nix-flatpak/latest";
 
@@ -102,7 +105,7 @@
 
     # hyprpolkit agent
     # hyprpolkitagent.url = "github:hyprwm/hyprpolkitagent";
-    
+
     # ironbar
     #ironbar = {
     #	url = "github:JakeStanger/ironbar";
@@ -130,8 +133,8 @@
         specialArgs = {inherit inputs;};
         modules = [
           inputs.stylix.nixosModules.stylix
-	  inputs.fht-compositor.nixosModules.default
-	  inputs.nix-flatpak.nixosModules.nix-flatpak
+          inputs.fht-compositor.nixosModules.default
+          inputs.nix-flatpak.nixosModules.nix-flatpak
           ./configuration.nix
 
           # This will enable nix-ld and add its modules

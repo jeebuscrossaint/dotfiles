@@ -36,6 +36,10 @@
       "udev.log_priority=3"
     ];
   };
+  
+  console = {
+  	font = "Lat2-Terminus16";
+  };
 
   boot.kernel.sysctl."kernel.unprivileged_userns_clone" = 1;
 
@@ -178,6 +182,7 @@
     #inputs.waybar.packages."${system}".default
     inputs.aocli.packages."${system}".default
     #inputs.debt.packages."${system}".default
+    inputs.quickshell.packages."${system}".default
     #    inputs.ironbar.packages."${system}".default
   ];
 
@@ -370,15 +375,6 @@
     package = pkgs.rose-pine-cursor;
     size = 24;
   };
-
-  /*
-     stylix.iconTheme = {
-    enable = true;
-    package = pkgs.rose-pine-icon-theme;
-    dark = "Rose-pine-moon";
-    light = "Rose-pine-dawn";
-  };
-  */
 
   stylix.opacity.terminal = 0.0; # LOL
   stylix.opacity.popups = 1.0;
