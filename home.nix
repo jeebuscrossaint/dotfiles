@@ -57,6 +57,8 @@
 
   home.packages = with pkgs; [
     swww
+    shotman
+    hyprshot
     hyprpicker
     libsecret
     wlay
@@ -108,6 +110,7 @@
     #   dunst
     blueberry
     gparted
+    direnv
 
     lunar-client
         neovide
@@ -200,7 +203,7 @@
   stylix.autoEnable = true;
 
   stylix.enable = true;
-  stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/bright.yaml";
+  stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/gotham.yaml";
   stylix.polarity = "dark";
 
   stylix.fonts = {
@@ -245,8 +248,8 @@
     light = "Rose-pine-dawn";
   };
 
-  stylix.opacity.terminal = 0.0; # LOL
-  stylix.opacity.popups = 0.75;
-  stylix.opacity.applications = 0.75;
-  stylix.opacity.desktop = 0.75;
+  stylix.opacity.terminal = 1.0; # LOL
+  stylix.opacity.popups = 1.0;
+  stylix.opacity.applications = 1.0;
+  stylix.opacity.desktop = 1.0;
 }

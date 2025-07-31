@@ -124,7 +124,7 @@
         "XF86MonBrightnessDown" = "exec lightctl down";
 
         # Screenshot
-        "${modifier}+Shift+s" = "exec grim -g \"$(slurp)\" - | tee ~/Pictures/screenshot-$(date +'%Y-%m-%d_%H-%M-%S').png | wl-copy";
+        "${modifier}+Shift+s" = "exec shotman --capture region";
       };
 
       # Resize mode
@@ -198,8 +198,12 @@
           always = false;
         }
         {
-          command = "swaybg -i /home/amarnath/walls/mountain/a_snowy_mountain_tops_with_blue_sky.jpg &";
+          command = "swww-daemon";
           always = false;
+        }
+        {
+        	command = "gamemoded";
+        	always = false;
         }
       ];
 
@@ -267,7 +271,7 @@
       for_window [class="steam"] dim_inactive 0.0
     '';
 
-    extraOptions = ["--unsupported-gpu"];
+    #extraOptions = ["--unsupported-gpu"];
 
     # System integration
     systemd = {

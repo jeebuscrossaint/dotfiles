@@ -37,9 +37,7 @@
     ];
   };
   
-  console = {
-  	font = "Lat2-Terminus16";
-  };
+  console.font = "Lat2-Terminus16";
 
   boot.kernel.sysctl."kernel.unprivileged_userns_clone" = 1;
 
@@ -235,7 +233,7 @@
   programs.fish.enable = true;
   security.polkit.enable = true;
 
-  users.users.amarnath.shell = pkgs.bash; #nushell sometime?
+  users.users.amarnath.shell = pkgs.nushell; #nushell sometime?
   security.rtkit.enable = true;
   services.pipewire = {
     enable = true;
@@ -338,7 +336,7 @@
   stylix.autoEnable = true;
 
   stylix.enable = true;
-  stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/bright.yaml";
+  stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/gotham.yaml";
   #stylix.polarity = "dark";
 
   stylix.fonts = {
@@ -376,7 +374,7 @@
     size = 24;
   };
 
-  stylix.opacity.terminal = 0.0; # LOL
+  stylix.opacity.terminal = 1.0; # LOL
   stylix.opacity.popups = 1.0;
   stylix.opacity.applications = 1.0;
   stylix.opacity.desktop = 1.0;
