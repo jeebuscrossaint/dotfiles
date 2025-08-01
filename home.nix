@@ -133,6 +133,7 @@
     hyprpolkitagent
     gamemode
     networkmanagerapplet
+    gammastep
     # gnome extensions
     #gnomeExtensions.blur-my-shell
     #gnomeExtensions.burn-my-windows

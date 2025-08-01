@@ -205,6 +205,10 @@
         	command = "gamemoded";
         	always = false;
         }
+        {
+        	command = "nm-applet";
+        	always = false;
+        }
       ];
 
       # Output configuration

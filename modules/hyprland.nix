@@ -30,6 +30,7 @@
         "nm-applet"
         "swww-daemon"
         "waybar"
+        "nm-applet"
       ];
 
       # Environment variables
@@ -194,15 +195,6 @@
         "noanim,class:^(xwaylandvideobridge)$"
         "nofocus,class:^(xwaylandvideobridge)$"
         "noinitialfocus,class:^(xwaylandvideobridge)$"
-        "opacity 0.9, title:^(neo)?vim\\s+~"
-        "opacity 0.9, title:^nvim\\s+~"
-        "opacity 0.9, title:^Discord"
-        "opacity 0.9, class:vesktop"
-        "opacity 0.9, class:Code - Insiders"
-        "opacity 0.9, class:jetbrains-*"
-        "opacity 0.9, class:kitty"
-        "opacity 0.9, class:Alacritty"
-        "opacity 0.9, class:foot"
       ];
 
       # Application variables
@@ -215,7 +207,7 @@
       "$notepad" = "gedit";
       "$clipboard" = "copyq show";
       "$discord" = "discord";
-      "$launcher" = "fuzzel";
+      "$launcher" = "bemenu-run";
 
       # Modifier keys
       "$mainMod" = "SUPER";
