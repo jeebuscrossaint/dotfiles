@@ -16,6 +16,17 @@
     
     # Main configuration
     configFile.text = ''
+      # Check if we're in a TTY and set console font
+      if (tty | complete | get exit_code) == 0 {
+        if ($env.TERM? | default "" | str contains "linux") {
+          try {
+            setfont Lat2-Terminus16
+          } catch {
+            # Silently continue if setfont fails
+          }
+        }
+      }
+      
       # Remove default greeting
       $env.config = {
         show_banner: false

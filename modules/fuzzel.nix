@@ -4,7 +4,7 @@
   ...
 }: {
   programs.fuzzel = {
-    enable = false;
+    enable = true;
     package = pkgs.fuzzel;
     settings = {
       main = {
@@ -21,7 +21,6 @@
         list-executables-in-path = false;
         delayed-filter-ms = 300;
         delayed-filter-limit = 10000;
-        icon-theme = "rose-pine-dawn";
       };
       border = {
         width = 1;

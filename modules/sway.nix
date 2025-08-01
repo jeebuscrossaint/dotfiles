@@ -43,8 +43,8 @@
       # Bar configuration
       bars = [
         {
-          command = "swaybar";
-          statusCommand = "env RUST_BACKTRACE=1 RUST_LOG=swayr=debug swayrbar 2> /tmp/swayrbar.log";
+          command = "waybar";
+          #statusCommand = "env RUST_BACKTRACE=1 RUST_LOG=swayr=debug swayrbar 2> /tmp/swayrbar.log"; only to be used with swaybar if i do use that
           position = "bottom";
           #          height = 20;
         }
@@ -257,7 +257,7 @@
           blur_xray enable
           blur_ignore_transparent enable
           shadows enable
-          corner_radius 10
+          corner_radius 0
       }
 
       layer_effects "gtk-layer-shell" {

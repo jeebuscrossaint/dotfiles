@@ -336,23 +336,23 @@
   stylix.autoEnable = true;
 
   stylix.enable = true;
-  stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/gotham.yaml";
+  stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/catppuccin-frappe.yaml";
   #stylix.polarity = "dark";
 
   stylix.fonts = {
     serif = {
-      package = pkgs.nerd-fonts.jetbrains-mono;
-      #name = "JetBrains Mono Nerd Font";
+      package = pkgs.nerd-fonts.departure-mono;
+      name = "Departure Mono Nerd Font";
     };
 
     sansSerif = {
-      package = pkgs.nerd-fonts.jetbrains-mono;
-      #name = "Fira Mon Nerd Font";
+      package = pkgs.nerd-fonts.departure-mono;
+      name = "Departure Mono Nerd Font";
     };
 
     monospace = {
-      package = pkgs.nerd-fonts.jetbrains-mono;
-      #name = "Fira Mono Nerd Font";
+      package = pkgs.nerd-fonts.departure-mono;
+      name = "Departure Mono Nerd Font";
     };
 
     emoji = {

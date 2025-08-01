@@ -29,6 +29,7 @@
         "avizo-service"
         "nm-applet"
         "swww-daemon"
+        "waybar"
       ];
 
       # Environment variables
@@ -214,7 +215,7 @@
       "$notepad" = "gedit";
       "$clipboard" = "copyq show";
       "$discord" = "discord";
-      "$launcher" = "bemenu-run";
+      "$launcher" = "fuzzel";
 
       # Modifier keys
       "$mainMod" = "SUPER";
