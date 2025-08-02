@@ -2,11 +2,11 @@
 
 {
   programs.rofi = {
-    enable = false;
+    enable = true;
     
     # Basic configuration
     extraConfig = {
-      show-icons = true;
+      show-icons = false;
       display-drun = "";
       drun-display-format = "{name}";
       disable-history = false;

@@ -203,11 +203,11 @@
       "$browser" = "zen-browser";
       "$browser_pw" = "zen-browser --private-window";
       "$editor" = "kitty nvim";
-      "$explorer" = "nautilus";
+      "$explorer" = "pcmanfm";
       "$notepad" = "gedit";
       "$clipboard" = "copyq show";
       "$discord" = "discord";
-      "$launcher" = "bemenu-run";
+      "$launcher" = "rofi -show drun";
 
       # Modifier keys
       "$mainMod" = "SUPER";

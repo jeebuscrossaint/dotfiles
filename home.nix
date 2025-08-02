@@ -57,6 +57,7 @@
 
   home.packages = with pkgs; [
     swww
+    pcmanfm
     shotman
     hyprshot
     hyprpicker
@@ -204,23 +205,23 @@
   stylix.autoEnable = true;
 
   stylix.enable = true;
-  stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/catppuccin-frappe.yaml";
+  stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/rose-pine.yaml";
   stylix.polarity = "dark";
 
   stylix.fonts = {
     serif = {
-      package = pkgs.nerd-fonts.departure-mono;
-      name = "Departure Mono Nerd Font";
+      package = pkgs.nerd-fonts.jetbrains-mono;
+      name = "JetBrains Mono Nerd Font";
     };
 
     sansSerif = {
-      package = pkgs.nerd-fonts.departure-mono;
-      name = "Departure Mono Nerd Font";
+      package = pkgs.nerd-fonts.jetbrains-mono;
+      name = "JetBrains Mono Nerd Font";
     };
 
     monospace = {
-      package = pkgs.nerd-fonts.departure-mono;
-      name = "Departure Mono Nerd Font";
+      package = pkgs.nerd-fonts.jetbrains-mono;
+      name = "JetBrains Mono Nerd Font";
     };
 
    emoji = {
