@@ -155,7 +155,7 @@
     vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
     wget
     git
-    #inputs.zen-browser.packages."${system}".default
+    inputs.zen-browser.packages."${system}".default
     #inputs.ewww.packages."${system}".default
     inputs.numlockwl.packages."${system}".default
     inputs.doomer.packages."${system}".default
@@ -322,7 +322,7 @@
   stylix.autoEnable = true;
 
   stylix.enable = true;
-  stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/rose-pine.yaml";
+  stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/da-one-black.yaml";
   #stylix.polarity = "dark";
 
   stylix.fonts = {

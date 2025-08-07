@@ -3,7 +3,7 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05"; # nixos-unstable -> nixos-25.05
     # browser please!
-    # zen-browser.url = "github:0xc000022070/zen-browser-flake";
+    zen-browser.url = "github:0xc000022070/zen-browser-flake";
     # run random binaries please!
     #nix-ld.url = "github:Mic92/nix-ld";
     # stylix (home manager gtk stylign is so incredibly butt)

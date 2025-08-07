@@ -1,8 +1,8 @@
 { config, lib, pkgs, ... }:
-
 {
   programs.rofi = {
     enable = true;
+    package = pkgs.rofi-wayland;
     
     # Basic configuration
     extraConfig = {
@@ -60,6 +60,10 @@
       "element" = {
         border = mkLiteral "0";
         padding = mkLiteral "5px";
+      };
+      
+      "element.alternate" = {
+        "background-color" = mkLiteral "inherit";
       };
       
       "element-text" = {

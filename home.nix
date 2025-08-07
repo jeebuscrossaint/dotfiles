@@ -135,6 +135,8 @@
     gamemode
     networkmanagerapplet
     gammastep
+    imv
+    sbctl
     # gnome extensions
     #gnomeExtensions.blur-my-shell
     #gnomeExtensions.burn-my-windows
@@ -181,7 +183,7 @@
   };
 
   programs.gitui.enable = true;
-  programs.feh.enable = true;
+  programs.feh.enable = false;
   programs.starship = {
     enable = true;
   };
@@ -200,12 +202,13 @@
   programs.chromium.enable = false;
   programs.firefox.enable = true;
   programs.schizofox.enable = false;
+  programs.zathura.enable = true;
   services.avizo.enable = true;
   services.tldr-update.enable = true;
   stylix.autoEnable = true;
 
   stylix.enable = true;
-  stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/rose-pine.yaml";
+  stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/da-one-black.yaml";
   stylix.polarity = "dark";
 
   stylix.fonts = {

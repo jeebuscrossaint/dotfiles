@@ -21,16 +21,16 @@
           on-resume = "brightnessctl -rd rgb:kbd_backlight";        # turn on keyboard backlight
         }
         {
-          timeout = 300;                               # 5 min
+          timeout = 180;                               # 3 min
           on-timeout = "loginctl lock-session";        # lock screen
         }
         {
-          timeout = 330;                               # 5.5 min
+          timeout = 180;                               # 3 min
           on-timeout = "hyprctl dispatch dpms off";    # screen off
           on-resume = "hyprctl dispatch dpms on";      # screen on
         }
         {
-          timeout = 1800;                              # 30 min
+          timeout = 600;                              # 10 min
           on-timeout = "systemctl suspend";            # suspend pc
         }
       ];
