@@ -137,6 +137,9 @@
     gammastep
     imv
     sbctl
+    lowfi
+    pavucontrol
+    osu-lazer
     # gnome extensions
     #gnomeExtensions.blur-my-shell
     #gnomeExtensions.burn-my-windows

@@ -6,18 +6,29 @@
   pkgs,
   inputs,
   options,
+  lib,
   ...
 }: {
   imports = [
     # Include the results of the hardware scan.
     ./hardware-configuration.nix
+    inputs.lanzaboote.nixosModules.lanzaboote
   ];
 
   nix.settings.experimental-features = ["nix-command" "flakes"];
 
   # Bootloader.
-  boot.loader.systemd-boot.enable = true;
+  #boot.loader.systemd-boot.enable = true;
+  boot.loader.systemd-boot.enable = lib.mkForce false;
   boot.loader.efi.canTouchEfiVariables = true;
+  systemd.watchdog.rebootTime = "0";
+  systemd.watchdog.kexecTime = "0";
+  
+  boot.lanzaboote = {
+  	enable = true;
+  	pkiBundle = "/var/lib/sbctl";
+  };
+  
   boot = {
     plymouth = {
       enable = false;
@@ -43,6 +54,15 @@
 
   hardware.graphics = {
     enable = true;
+  };
+  hardware.bluetooth = {
+  	enable = true;
+  	powerOnBoot = true;
+  	settings = {
+  		General = {
+  			Experimental = true;
+  		};
+  	};
   };
 
   services.xserver.videoDrivers = ["nvidia"];

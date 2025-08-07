@@ -21,7 +21,10 @@
     # ewww.url = "github:elkowar/eww";
 
     nvf.url = "github:notashelf/nvf";
-
+    lanzaboote = {
+      url = "github:nix-community/lanzaboote/v0.4.2";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     # debt
     # debt.url = "github:jeebuscrossaint/debt";
 
