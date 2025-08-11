@@ -203,8 +203,8 @@
   programs.nh.enable = true;
   programs.qutebrowser.enable = false;
   programs.chromium.enable = false;
-  programs.firefox.enable = true;
-  programs.schizofox.enable = false;
+  programs.firefox.enable = false;
+  programs.schizofox.enable = true;
   programs.zathura.enable = true;
   services.avizo.enable = true;
   services.tldr-update.enable = true;
