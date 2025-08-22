@@ -343,7 +343,7 @@
   stylix.autoEnable = true;
 
   stylix.enable = true;
-  stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/da-one-black.yaml";
+  stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/ayu-light.yaml";
   #stylix.polarity = "dark";
 
   stylix.fonts = {
