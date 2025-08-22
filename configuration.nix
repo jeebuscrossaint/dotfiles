@@ -23,12 +23,12 @@
   boot.loader.efi.canTouchEfiVariables = true;
   systemd.watchdog.rebootTime = "0";
   systemd.watchdog.kexecTime = "0";
-  
+
   boot.lanzaboote = {
-  	enable = true;
-  	pkiBundle = "/var/lib/sbctl";
+    enable = true;
+    pkiBundle = "/var/lib/sbctl";
   };
-  
+
   boot = {
     plymouth = {
       enable = false;
@@ -48,7 +48,7 @@
       "nosmt"
     ];
   };
-  
+
   console.font = "Lat2-Terminus16";
 
   boot.kernel.sysctl."kernel.unprivileged_userns_clone" = 1;
@@ -57,13 +57,13 @@
     enable = true;
   };
   hardware.bluetooth = {
-  	enable = true;
-  	powerOnBoot = true;
-  	settings = {
-  		General = {
-  			Experimental = true;
-  		};
-  	};
+    enable = true;
+    powerOnBoot = true;
+    settings = {
+      General = {
+        Experimental = true;
+      };
+    };
   };
 
   services.xserver.videoDrivers = ["nvidia"];
@@ -250,9 +250,9 @@
   };
 
   networking.timeServers = options.networking.timeServers.default;
-  virtualisation.virtualbox.host.enable = true;
+  virtualisation.virtualbox.host.enable = false;
   users.extraGroups.vboxusers.members = ["amarnath"];
-  virtualisation.virtualbox.host.enableExtensionPack = true;
+  virtualisation.virtualbox.host.enableExtensionPack = false;
 
   programs.steam = {
     enable = true;
@@ -270,8 +270,8 @@
     windowManager.i3.enable = false;
     windowManager.spectrwm.enable = false;
     displayManager.lightdm.enable = false;
-    desktopManager.gnome.enable = false;
-    displayManager.gdm.enable = false;
+    desktopManager.gnome.enable = true;
+    displayManager.gdm.enable = true;
     displayManager.sddm.enable = false;
   };
 
@@ -327,7 +327,7 @@
     rygel
     gnome-color-manager
   ];
-  
+
   location.provider = "geoclue2";
   services.gnome.gnome-keyring.enable = true;
   services.udev.packages = with pkgs; [gnome-settings-daemon];
