@@ -376,8 +376,8 @@
   };
 
   stylix.cursor = {
-    name = "rose-pine-cursor";
-    package = pkgs.rose-pine-cursor;
+    name = "whitesur-cursors";
+    package = pkgs.whitesur-cursors; # was originally rose-pine-cursor
     size = 24;
   };
 

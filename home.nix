@@ -39,7 +39,7 @@
     ./modules/fht.nix
     ./modules/twmn.nix
     ./modules/bemenu.nix
-	./modules/i3status-rust.nix
+    ./modules/i3status-rust.nix
     ./modules/nixcord.nix
     ./modules/i3-fix.nix
     ./modules/nushell.nix
@@ -98,10 +98,10 @@
     gtk-engine-murrine
     gnome-themes-extra
     # devel
-      xsecurelock
+    xsecurelock
     #  xss-lock
     #  xdotool
-      xclip
+    xclip
 
     wireshark-qt
 
@@ -114,7 +114,7 @@
     direnv
 
     lunar-client
-        neovide
+    neovide
     #proton-pass
     libreoffice-qt6-fresh
     youtube-music
@@ -141,13 +141,13 @@
     pavucontrol
     osu-lazer
     # gnome extensions
-    #gnomeExtensions.blur-my-shell
-    #gnomeExtensions.burn-my-windows
-    #gnomeExtensions.weather-or-not
-    #gnomeExtensions.rounded-window-corners-reborn
-    #gnomeExtensions.mpris-label
-    #gnomeExtensions.fly-pie
-    #gnomeExtensions.desktop-clock
+    gnomeExtensions.blur-my-shell
+    gnomeExtensions.burn-my-windows
+    gnomeExtensions.weather-or-not
+    gnomeExtensions.rounded-window-corners-reborn
+    gnomeExtensions.mpris-label
+    gnomeExtensions.fly-pie
+    gnomeExtensions.desktop-clock
   ];
 
   programs.librewolf.enable = false;
@@ -173,10 +173,10 @@
       credental.helper = "store";
     };
   };
-  
+
   programs.ssh = {
-  	enable = true;
-  	addKeysToAgent = "yes";
+    enable = true;
+    addKeysToAgent = "yes";
   };
 
   programs.gh = {
@@ -230,10 +230,10 @@
       name = "JetBrains Mono Nerd Font";
     };
 
-   emoji = {
-     package = pkgs.noto-fonts-emoji;
-     name = "Noto Color Emoji";
-   };
+    emoji = {
+      package = pkgs.noto-fonts-emoji;
+      name = "Noto Color Emoji";
+    };
   };
 
   stylix.fonts.sizes = {
@@ -244,16 +244,26 @@
   };
 
   stylix.cursor = {
-    name = "rose-pine-cursor";
-    package = pkgs.rose-pine-cursor;
+    name = "whitesur-cursors";
+    package = pkgs.whitesur-cursors;
     size = 24;
+  };
+
+  stylix.targets.gtk.enable = false;
+  gtk = {
+    enable = true;
+
+    theme = {
+      package = pkgs.whitesur-gtk-theme;
+      name = "Whitesur-Dark";
+    };
   };
 
   stylix.iconTheme = {
     enable = true;
-    package = pkgs.rose-pine-icon-theme;
-    dark = "Rose-pine-moon";
-    light = "Rose-pine-dawn";
+    package = pkgs.whitesur-icon-theme;
+    dark = "Whitesur-icons";
+    light = "Whitesur-icons";
   };
 
   stylix.opacity.terminal = 1.0; # LOL
