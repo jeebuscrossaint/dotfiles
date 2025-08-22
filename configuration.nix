@@ -344,7 +344,6 @@
 
   stylix.enable = true;
   stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/ayu-light.yaml";
-  #stylix.polarity = "dark";
 
   stylix.fonts = {
     serif = {
@@ -385,6 +384,16 @@
   stylix.opacity.popups = 1.0;
   stylix.opacity.applications = 1.0;
   stylix.opacity.desktop = 1.0;
+
+  stylix.iconTheme = {
+    enable = true;
+    package = pkgs.whitesur-icon-theme;
+    dark = "Whitesur-icons";
+    light = "Whitesur-icons";
+  };
+
+  /*  stylix.targets.gtk.enable = false; */
+
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.

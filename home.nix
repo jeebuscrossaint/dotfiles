@@ -2,6 +2,7 @@
   config,
   pkgs,
   inputs,
+  lib,
   ...
 }: {
   imports = [
@@ -121,12 +122,10 @@
     #direnv
     #powershell
     whatsapp-for-linux
-    tor-browser
     glow
     #swayimg
     microfetch
     yazi
-    notepad-next
     discordo
     corefonts
     teams-for-linux
@@ -140,6 +139,7 @@
     lowfi
     pavucontrol
     osu-lazer
+    whitesur-icon-theme
     # gnome extensions
     gnomeExtensions.blur-my-shell
     gnomeExtensions.burn-my-windows
@@ -208,6 +208,7 @@
   programs.zathura.enable = true;
   services.avizo.enable = true;
   services.tldr-update.enable = true;
+  /*
   stylix.autoEnable = true;
 
   stylix.enable = true;
@@ -247,18 +248,19 @@
     name = "whitesur-cursors";
     package = pkgs.whitesur-cursors;
     size = 24;
-  };
+  }; */
+  
 
-  stylix.targets.gtk.enable = false;
+  stylix.targets.gtk.enable = false; 
   gtk = {
     enable = true;
 
     theme = {
-      package = pkgs.whitesur-gtk-theme;
-      name = "Whitesur-Dark";
+      package = lib.mkForce pkgs.whitesur-gtk-theme;
+      name = lib.mkForce "Whitesur-Dark";
     };
   };
-
+/*
   stylix.iconTheme = {
     enable = true;
     package = pkgs.whitesur-icon-theme;
@@ -269,5 +271,5 @@
   stylix.opacity.terminal = 1.0; # LOL
   stylix.opacity.popups = 1.0;
   stylix.opacity.applications = 1.0;
-  stylix.opacity.desktop = 1.0;
+  stylix.opacity.desktop = 1.0; */ 
 }
