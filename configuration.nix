@@ -89,7 +89,7 @@
 
     # Use the appropriate driver version
     # For RTX 4070 mobile (Ada Lovelace architecture), the stable driver is appropriate
-    package = config.boot.kernelPackages.nvidiaPackages.beta;
+    package = config.boot.kernelPackages.nvidiaPackages.stable;
 
     prime = {
       offload = {
@@ -104,7 +104,7 @@
   #nix.settings.max-jobs = 16;
   environment.sessionVariables = {
     # For all Wayland compositors
-    WLR_NO_HARDWARE_CURSORS = "1";
+    #WLR_NO_HARDWARE_CURSORS = "1";
 
     # For Electron apps
     NIXOS_OZONE_WL = "1";
@@ -328,6 +328,8 @@
     rygel
     gnome-color-manager
   ];
+
+  programs.xwayland.enable = true;
 
   location.provider = "geoclue2";
   services.gnome.gnome-keyring.enable = true;
