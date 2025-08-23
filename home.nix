@@ -53,8 +53,8 @@
   xresources.properties = {
   };
 
-  home.pointerCursor.x11.enable = true;
-  home.pointerCursor.gtk.enable = true;
+  /*home.pointerCursor.x11.enable = true;
+  home.pointerCursor.gtk.enable = true; */
 
   home.packages = with pkgs; [
     swww
@@ -140,6 +140,8 @@
     pavucontrol
     osu-lazer
     whitesur-icon-theme
+    whitesur-gtk-theme
+    whitesur-cursors
     # gnome extensions
     gnomeExtensions.blur-my-shell
     gnomeExtensions.burn-my-windows
@@ -148,6 +150,7 @@
     gnomeExtensions.mpris-label
     gnomeExtensions.fly-pie
     gnomeExtensions.desktop-clock
+    gnomeExtensions.dash-to-dock
   ];
 
   programs.librewolf.enable = false;
@@ -157,7 +160,7 @@
   home.sessionVariables = {
     XCURSOR_THEME = "rose-pine-cursor";
     XCURSOR_SIZE = "24";
-    NIXOS_OZONE_WL = "1";
+#    NIXOS_OZONE_WL = "1";
   };
   fonts.fontconfig.enable = true;
 
@@ -251,15 +254,7 @@
   }; */
   
 
-  stylix.targets.gtk.enable = false; 
-  gtk = {
-    enable = true;
-
-    theme = {
-      package = lib.mkForce pkgs.whitesur-gtk-theme;
-      name = lib.mkForce "Whitesur-Dark";
-    };
-  };
+  stylix.targets.gtk.enable = true; 
 /*
   stylix.iconTheme = {
     enable = true;

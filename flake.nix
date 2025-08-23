@@ -18,7 +18,7 @@
     };
 
     #ewww input
-    # ewww.url = "github:elkowar/eww";
+    # ewww.url = "github:elkowar/eww";  
 
     nvf.url = "github:notashelf/nvf";
     lanzaboote = {
@@ -90,6 +90,11 @@
       url = "github:kaylorben/nixcord";
     };
 
+    sf-mono-nerd-font = {
+      url = "github:jeebuscrossaint/sf-mono-nerd-font-flake";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     # fht-compositor
     fht-compositor = {
       url = "github:nferhat/fht-compositor";
@@ -150,6 +155,7 @@
             home-manager.useUserPackages = true;
             home-manager.users.amarnath = import ./home.nix;
             home-manager.extraSpecialArgs = {inherit inputs;};
+            home-manager.backupFileExtension = "backup";
             # Add nvf module to home-manager
             home-manager.sharedModules = [
               inputs.nvf.homeManagerModules.default

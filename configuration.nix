@@ -202,6 +202,7 @@
     #inputs.debt.packages."${system}".default
     inputs.quickshell.packages."${system}".default
     #    inputs.ironbar.packages."${system}".default
+    inputs.sf-mono-nerd-font.packages."${system}".default
   ];
 
   fonts.packages = with pkgs; [
@@ -239,7 +240,7 @@
   programs.fish.enable = true;
   security.polkit.enable = true;
 
-  users.users.amarnath.shell = pkgs.nushell; #nushell sometime?
+  users.users.amarnath.shell = pkgs.fish; #nushell sometime?
   security.rtkit.enable = true;
   services.pipewire = {
     enable = true;
@@ -262,7 +263,7 @@
   };
 
   # Some random BS
-  home-manager.backupFileExtension = "backup";
+  #home-manager.backupFileExtension = "backup";
 
   services.xserver = {
     enable = true;
@@ -343,22 +344,22 @@
   stylix.autoEnable = true;
 
   stylix.enable = true;
-  stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/ayu-light.yaml";
+  stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/tomorrow-night.yaml";
 
   stylix.fonts = {
     serif = {
-      package = pkgs.nerd-fonts.jetbrains-mono;
-      name = "JetBrains Mono Nerd Font";
+      package = inputs.sf-mono-nerd-font.packages."${pkgs.system}".default;
+      name = "SFMono Nerd Font";
     };
 
     sansSerif = {
-      package = pkgs.nerd-fonts.jetbrains-mono;
-      name = "JetBrains Mono Nerd Font";
+      package = inputs.sf-mono-nerd-font.packages."${pkgs.system}".default;
+      name = "SFMono Nerd Font";
     };
 
     monospace = {
-      package = pkgs.nerd-fonts.jetbrains-mono;
-      name = "JetBrains Mono Nerd Font";
+      package = inputs.sf-mono-nerd-font.packages."${pkgs.system}".default;
+      name = "SFMono Nerd Font";
     };
 
     emoji = {
@@ -374,26 +375,21 @@
     popups = 10;
   };
 
-  stylix.cursor = {
-    name = "whitesur-cursors";
-    package = pkgs.whitesur-cursors; # was originally rose-pine-cursor
-    size = 24;
-  };
-
   stylix.opacity.terminal = 1.0; # LOL
   stylix.opacity.popups = 1.0;
   stylix.opacity.applications = 1.0;
   stylix.opacity.desktop = 1.0;
-
+/*
   stylix.iconTheme = {
     enable = true;
     package = pkgs.whitesur-icon-theme;
     dark = "Whitesur-icons";
     light = "Whitesur-icons";
-  };
+  }; */
 
-  /*  stylix.targets.gtk.enable = false; */
-
+  /*
+  stylix.targets.gtk.enable = false;
+  */
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
