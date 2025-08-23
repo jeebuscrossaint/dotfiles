@@ -263,7 +263,7 @@
   };
 
   # Some random BS
-  #home-manager.backupFileExtension = "backup";
+  home-manager.backupFileExtension = "backup";
 
   services.xserver = {
     enable = true;
