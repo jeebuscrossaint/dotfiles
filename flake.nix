@@ -155,7 +155,6 @@
             home-manager.useUserPackages = true;
             home-manager.users.amarnath = import ./home.nix;
             home-manager.extraSpecialArgs = {inherit inputs;};
-            home-manager.backupFileExtension = "backup";
             # Add nvf module to home-manager
             home-manager.sharedModules = [
               inputs.nvf.homeManagerModules.default
