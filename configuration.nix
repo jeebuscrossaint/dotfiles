@@ -31,14 +31,14 @@
 
   boot = {
     plymouth = {
-      enable = false;
+      enable = true;
     };
     kernelPackages = pkgs.linuxPackages_hardened;
 
     consoleLogLevel = 0;
     initrd.verbose = false;
     kernelParams = [
-      "quiet"
+      #"quiet"
       "splash"
       "boot.shell_on_fail"
       "loglevel=3"
@@ -79,7 +79,7 @@
     powerManagement.finegrained = false;
 
     # Open source kernel module - RTX 4070 is Ada Lovelace architecture, which is supported
-    open = true;
+    open = false;
 
     # Enable the Nvidia settings menu
     nvidiaSettings = true;
@@ -346,7 +346,7 @@
   stylix.autoEnable = true;
 
   stylix.enable = true;
-  stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/tomorrow-night.yaml";
+  stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/ayu-light.yaml";
 
   stylix.fonts = {
     serif = {
@@ -381,13 +381,14 @@
   stylix.opacity.popups = 1.0;
   stylix.opacity.applications = 1.0;
   stylix.opacity.desktop = 1.0;
-/*
+  /*
   stylix.iconTheme = {
     enable = true;
     package = pkgs.whitesur-icon-theme;
     dark = "Whitesur-icons";
     light = "Whitesur-icons";
-  }; */
+  };
+  */
 
   /*
   stylix.targets.gtk.enable = false;

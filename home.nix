@@ -53,8 +53,10 @@
   xresources.properties = {
   };
 
-  /*home.pointerCursor.x11.enable = true;
-  home.pointerCursor.gtk.enable = true; */
+  /*
+    home.pointerCursor.x11.enable = true;
+  home.pointerCursor.gtk.enable = true;
+  */
 
   home.packages = with pkgs; [
     swww
@@ -142,6 +144,7 @@
     whitesur-icon-theme
     whitesur-gtk-theme
     whitesur-cursors
+    whitesur-kde
     # gnome extensions
     gnomeExtensions.blur-my-shell
     gnomeExtensions.burn-my-windows
@@ -160,7 +163,7 @@
   home.sessionVariables = {
     XCURSOR_THEME = "rose-pine-cursor";
     XCURSOR_SIZE = "24";
-#    NIXOS_OZONE_WL = "1";
+    #    NIXOS_OZONE_WL = "1";
   };
   fonts.fontconfig.enable = true;
 
@@ -251,11 +254,11 @@
     name = "whitesur-cursors";
     package = pkgs.whitesur-cursors;
     size = 24;
-  }; */
-  
+  };
+  */
 
-  stylix.targets.gtk.enable = true; 
-/*
+  stylix.targets.gtk.enable = true;
+  /*
   stylix.iconTheme = {
     enable = true;
     package = pkgs.whitesur-icon-theme;
@@ -266,5 +269,6 @@
   stylix.opacity.terminal = 1.0; # LOL
   stylix.opacity.popups = 1.0;
   stylix.opacity.applications = 1.0;
-  stylix.opacity.desktop = 1.0; */ 
+  stylix.opacity.desktop = 1.0;
+  */
 }
