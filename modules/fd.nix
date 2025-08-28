@@ -1,7 +1,7 @@
 
 {
 programs.fd = {
-  enable = true;
+  enable = false;
   hidden = true;  # Search hidden files and directories
   ignores = [
     ".git/"

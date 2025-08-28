@@ -1,7 +1,7 @@
 { config, pkgs, lib, ... }:
 {
 programs.bottom = {
-	enable = true;
+	enable = false;
 	settings = {
 		flags = {
 			temperature_type = "f";

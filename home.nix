@@ -141,10 +141,12 @@
     lowfi
     pavucontrol
     osu-lazer
+    tor-browser
     whitesur-icon-theme
     whitesur-gtk-theme
     whitesur-cursors
     whitesur-kde
+    apple-cursor
     # gnome extensions
     gnomeExtensions.blur-my-shell
     gnomeExtensions.burn-my-windows

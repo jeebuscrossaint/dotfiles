@@ -38,9 +38,9 @@
         "XCURSOR_SIZE,24"
         "XCURSOR_THEME,rose-pine-cursor"
       ];
-      
+
       experimental = {
-      	"xx_color_management_v4" = true;
+        "xx_color_management_v4" = true;
       };
 
       # Input configuration
@@ -207,7 +207,7 @@
       "$notepad" = "gedit";
       "$clipboard" = "copyq show";
       "$discord" = "discord";
-      "$launcher" = "rofi -show drun";
+      "$launcher" = "BEMENU_BACKEND=wayland bemenu-run";
 
       # Modifier keys
       "$mainMod" = "SUPER";

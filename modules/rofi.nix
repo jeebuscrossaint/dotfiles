@@ -1,9 +1,13 @@
-{ config, lib, pkgs, ... }:
 {
+  config,
+  lib,
+  pkgs,
+  ...
+}: {
   programs.rofi = {
-    enable = true;
+    enable = false;
     package = pkgs.rofi-wayland;
-    
+
     # Basic configuration
     extraConfig = {
       show-icons = false;
@@ -14,7 +18,7 @@
       hide-scrollbar = true;
       sidebar-mode = false;
     };
-    
+
     # Theme configuration
     theme = let
       inherit (config.lib.formats.rasi) mkLiteral;
@@ -25,28 +29,28 @@
         width = mkLiteral "30%";
         height = mkLiteral "40%";
       };
-      
+
       "inputbar" = {
-        children = map mkLiteral [ 
-          "textbox-prompt-colon" 
-          "entry" 
-          "num-filtered-rows" 
-          "textbox-num-sep" 
-          "num-rows" 
-          "case-indicator" 
+        children = map mkLiteral [
+          "textbox-prompt-colon"
+          "entry"
+          "num-filtered-rows"
+          "textbox-num-sep"
+          "num-rows"
+          "case-indicator"
         ];
         border = mkLiteral "0 0 1px 0";
         padding = mkLiteral "5px";
       };
-      
+
       "prompt" = {
         padding = mkLiteral "5px 5px 0px";
       };
-      
+
       "entry" = {
         padding = mkLiteral "5px";
       };
-      
+
       "listview" = {
         lines = 8;
         columns = 1;
@@ -56,38 +60,42 @@
         scrollbar = false;
         padding = mkLiteral "5px 5px 0px";
       };
-      
+
       "element" = {
         border = mkLiteral "0";
         padding = mkLiteral "5px";
       };
-      
+
       "element.alternate" = {
         "background-color" = mkLiteral "inherit";
       };
-      
+
       "element-text" = {
         "background-color" = mkLiteral "inherit";
         "text-color" = mkLiteral "inherit";
       };
-      
-      /* Styles for Rofi calc */
+
+      /*
+      Styles for Rofi calc
+      */
       "textbox-prompt-colon" = {
         expand = false;
         str = ":";
         margin = mkLiteral "0px 0.3em 0em 0em";
       };
-      
+
       "num-filtered-rows, num-rows" = {
         "text-color" = mkLiteral "inherit";
       };
-      
+
       "textbox-num-sep" = {
         expand = false;
         str = "/";
       };
-      
-      /* Style for the result field in Rofi calc */
+
+      /*
+      Style for the result field in Rofi calc
+      */
       "textbox" = {
         padding = mkLiteral "8px";
       };

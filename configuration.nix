@@ -167,6 +167,10 @@
   services.supergfxd.enable = true;
   services.asusd.enable = true;
   services.asusd.enableUserService = true;
+  services.tor = {
+    enable = true;
+    client.enable = true;
+  };
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
 
@@ -215,7 +219,7 @@
   '';
 
   programs.sway = {
-    enable = true;
+    enable = false;
     wrapperFeatures.gtk = true;
     extraPackages = with pkgs; [brightnessctl foot grim pulseaudio swayidle];
     package = pkgs.swayfx;
@@ -346,7 +350,7 @@
   stylix.autoEnable = true;
 
   stylix.enable = true;
-  stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/qualia.yaml";
+  stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/kanagawa-dragon.yaml";
 
   stylix.fonts = {
     serif = {

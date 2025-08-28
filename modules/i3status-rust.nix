@@ -3,11 +3,10 @@
   config,
   pkgs,
   ...
-}:
-{
+}: {
   programs.i3status-rust = {
     enable = true;
-    
+
     bars = {
       # Use "default" as the name - creates config-default.toml
       default = {
@@ -64,13 +63,13 @@
             format = " $icon $timestamp.datetime(f:'%a %d/%m %H:%M') ";
           }
         ];
-        
+
         icons = "awesome6";
       };
     };
   };
 
   # Create a symlink from config-default.toml to config.toml
-  xdg.configFile."i3status-rust/config.toml".source = 
+  xdg.configFile."i3status-rust/config.toml".source =
     config.xdg.configFile."i3status-rust/config-default.toml".source;
 }

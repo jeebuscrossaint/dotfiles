@@ -2,7 +2,7 @@
 
 {
   programs.micro = {
-    enable = true;
+    enable = false;
     settings = {
       # Tab settings
       tabsize = 8;         # Set tab width to 8 spaces

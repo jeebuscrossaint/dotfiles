@@ -2,7 +2,7 @@
 
 {
   programs.nushell = {
-    enable = true;
+    enable = false;
     
     # Environment variables
     envFile.text = ''

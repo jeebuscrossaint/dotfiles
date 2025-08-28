@@ -2,7 +2,7 @@
 
 {
   xsession.windowManager.spectrwm = {
-    enable = true;
+    enable = false;
     settings = {
       # GENERAL SETTINGS
       workspace_limit = 10;

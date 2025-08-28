@@ -1,7 +1,7 @@
 # Simplified Sway configuration for Home Manager with SwayFX features
 {pkgs, ...}: {
   wayland.windowManager.sway = {
-    enable = true;
+    enable = false;
     package = pkgs.swayfx-unwrapped;
     checkConfig = false;
     xwayland = true;
@@ -202,12 +202,12 @@
           always = false;
         }
         {
-        	command = "gamemoded";
-        	always = false;
+          command = "gamemoded";
+          always = false;
         }
         {
-        	command = "nm-applet";
-        	always = false;
+          command = "nm-applet";
+          always = false;
         }
       ];
 
