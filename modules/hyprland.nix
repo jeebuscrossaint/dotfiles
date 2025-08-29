@@ -29,7 +29,7 @@
         "avizo-service"
         "nm-applet"
         "swww-daemon"
-        "waybar"
+        #"waybar"
         "nm-applet"
       ];
 
@@ -65,7 +65,7 @@
       general = {
         gaps_in = 0;
         gaps_out = 0;
-        border_size = 1;
+        border_size = 0;
         # Removed color settings to avoid conflicts with Stylix
         layout = "dwindle";
         allow_tearing = 1;
@@ -229,7 +229,7 @@
         "SUPER, E, exec, $explorer"
         "SUPERSHIFT, S, exec, XDG_CURRENT_DESKTOP=sway flameshot gui"
         "SUPER, F1, exec, gammastep -O 2750 &"
-        "SUPER, B, exec, $browser"
+        "SUPER, B, exec, ~/bruh.sh --dunst"
         "$shiftMod, K, exec, hyprctl kill"
         "$altMod, B, exec, $browser_pw"
         "SHIFT, F1, exec, pkill gammastep"

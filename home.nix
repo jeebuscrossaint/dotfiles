@@ -59,6 +59,8 @@
   */
 
   home.packages = with pkgs; [
+    libnotify
+    bc
     swww
     pcmanfm
     shotman
@@ -67,7 +69,6 @@
     libsecret
     wlay
     swaybg
-    swaynotificationcenter
     #drawing
     cutter
     ghidra
