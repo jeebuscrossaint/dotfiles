@@ -18,7 +18,7 @@
     };
 
     #ewww input
-    # ewww.url = "github:elkowar/eww";  
+    # ewww.url = "github:elkowar/eww";
 
     nvf.url = "github:notashelf/nvf";
     lanzaboote = {
@@ -29,7 +29,7 @@
     # debt.url = "github:jeebuscrossaint/debt";
 
     # my own project
-    numlockwl.url = "github:jeebuscrossaint/numlockwl";
+    #numlockwl.url = "github:jeebuscrossaint/numlockwl";
 
     # my other own project
     doomer.url = "github:jeebuscrossaint/doomer";
@@ -69,10 +69,6 @@
 
     #nix-index
     nix-index.url = "github:nix-community/nix-index";
-    quickshell = {
-      url = "git+https://git.outfoxxed.me/outfoxxed/quickshell";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
     schizofox.url = "github:schizofox/schizofox";
     nix-flatpak.url = "github:gmodena/nix-flatpak/latest";
 
@@ -96,11 +92,11 @@
     };
 
     # fht-compositor
-    fht-compositor = {
-      url = "github:nferhat/fht-compositor";
-      inputs.nixpkgs.follows = "nixpkgs";
-      inputs.rust-overlay.follows = "";
-    };
+    #fht-compositor = {
+    #      url = "github:nferhat/fht-compositor";
+    #inputs.nixpkgs.follows = "nixpkgs";
+    #      inputs.rust-overlay.follows = "";
+    #    };
     #rose-pine-hyprcursor
     #rose-pine-hyprcursor = {
     #  url = "github:ndom91/rose-pine-hyprcursor";
@@ -141,7 +137,7 @@
         specialArgs = {inherit inputs;};
         modules = [
           inputs.stylix.nixosModules.stylix
-          inputs.fht-compositor.nixosModules.default
+          #          inputs.fht-compositor.nixosModules.default
           inputs.nix-flatpak.nixosModules.nix-flatpak
           ./configuration.nix
 

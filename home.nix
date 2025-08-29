@@ -37,7 +37,7 @@
     ./modules/fuzzel.nix
     ./modules/zed.nix
     ./modules/hyprpaper.nix
-    ./modules/fht.nix
+    #    ./modules/fht.nix
     ./modules/twmn.nix
     ./modules/bemenu.nix
     ./modules/i3status-rust.nix
@@ -199,9 +199,9 @@
     enable = true;
   };
 
-  programs.fht-compositor = {
-    enable = false;
-  };
+  #  programs.fht-compositor = {
+  #    enable = false;
+  #  };
 
   home.stateVersion = "25.05";
 

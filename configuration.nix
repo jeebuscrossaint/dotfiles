@@ -31,7 +31,7 @@
 
   boot = {
     plymouth = {
-      enable = true;
+      enable = false;
     };
     kernelPackages = pkgs.linuxPackages_hardened;
 
@@ -39,19 +39,48 @@
     initrd.verbose = false;
     kernelParams = [
       #"quiet"
-      "splash"
+      #      "splash"
       "boot.shell_on_fail"
-      "loglevel=3"
+      "loglevel=5"
       "rd.systemd.show_status=false"
       "rd.udev.log_level=3"
       "udev.log_priority=3"
       "nosmt"
+      "init_on_alloc=1"
+      "init_on_free=1"
+      "slab_nomerge"
+      "slab_debug=FZP"
+      "page_alloc.shuffle=1"
+      "randomize_kstack_offset=on"
+      "pti=on"
+      "stack_guard_gap=1024"
+      "modules.sig_enforce=1"
+      "vsyscall=none"
+      "debugfs=off"
+      "oops=panic"
+      "spec_store_bypass_disable=on"
+      "l1tf=full,force"
+      "mds=full,nosmt"
+      "tsx=off"
+      "tsx_async_abort=full,nosmt"
+      "rd.systemd.show_status=1"
+      "systemd.loglevel=debug"
     ];
   };
 
   console.font = "Lat2-Terminus16";
 
   boot.kernel.sysctl."kernel.unprivileged_userns_clone" = 1;
+  boot.kernel.sysctl = {
+    "random.trust_cpu" = 0;
+    "random.trust_bootloader" = 0;
+    "kernel.kptr_restrict" = 2; # Hide kernel pointers
+    "kernel.dmesg_restrict" = 1; # Restrict dmesg
+    "kernel.printk" = "3 3 3 3"; # Disable kernel logs to console
+    "kernel.unprivileged_bpf_disabled" = 1; # Disable unprivileged BPF
+    "kernel.kexec_load_disabled" = 1; # Disable kexec
+    "kernel.sysrq" = 0; # Disable magic SysRq key
+  };
 
   hardware.graphics = {
     enable = true;
@@ -164,9 +193,9 @@
   # Enable automatic login for the user.
   services.getty.autologinUser = "amarnath";
   services.power-profiles-daemon.enable = false;
-  services.supergfxd.enable = true;
-  services.asusd.enable = true;
-  services.asusd.enableUserService = true;
+  services.supergfxd.enable = false;
+  services.asusd.enable = false;
+  services.asusd.enableUserService = false;
   services.tor = {
     enable = true;
     client.enable = true;
@@ -182,7 +211,7 @@
     git
     inputs.zen-browser.packages."${system}".default
     #inputs.ewww.packages."${system}".default
-    inputs.numlockwl.packages."${system}".default
+    #    inputs.numlockwl.packages."${system}".default
     inputs.doomer.packages."${system}".default
     #inputs.limebar.packages."${system}".default
     #inputs.wart.packages."${system}".default
@@ -204,14 +233,9 @@
     #inputs.waybar.packages."${system}".default
     inputs.aocli.packages."${system}".default
     #inputs.debt.packages."${system}".default
-    inputs.quickshell.packages."${system}".default
+    #    inputs.quickshell.packages."${system}".default
     #    inputs.ironbar.packages."${system}".default
     inputs.sf-mono-nerd-font.packages."${system}".default
-  ];
-
-  fonts.packages = with pkgs; [
-    #nerd-fonts.monaspace
-    #nerd-fonts.jetbrains-mono
   ];
 
   services.logind.extraConfig = ''
@@ -225,10 +249,10 @@
     package = pkgs.swayfx;
   };
 
-  programs.fht-compositor = {
-    enable = false;
-    # package = fht-compositor.packages.${pkgs.system}.fht-compositor; # optional if default is okay
-  };
+  #  programs.fht-compositor = {
+  #    enable = false;
+  # package = fht-compositor.packages.${pkgs.system}.fht-compositor; # optional if default is okay
+  #  };
 
   programs.nix-ld.enable = true;
 
