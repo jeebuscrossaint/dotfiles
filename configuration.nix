@@ -108,7 +108,7 @@
     powerManagement.finegrained = false;
 
     # Open source kernel module - RTX 4070 is Ada Lovelace architecture, which is supported
-    open = false;
+    open = true;
 
     # Enable the Nvidia settings menu
     nvidiaSettings = true;
@@ -192,10 +192,10 @@
 
   # Enable automatic login for the user.
   services.getty.autologinUser = "amarnath";
-  services.power-profiles-daemon.enable = false;
-  services.supergfxd.enable = false;
-  services.asusd.enable = false;
-  services.asusd.enableUserService = false;
+  services.power-profiles-daemon.enable = true;
+  services.supergfxd.enable = true;
+  services.asusd.enable = true;
+  services.asusd.enableUserService = true;
   services.tor = {
     enable = true;
     client.enable = true;
@@ -355,6 +355,7 @@
     gnome-extension-manager
     rygel
     gnome-color-manager
+    gnome-console
   ];
 
   programs.xwayland.enable = true;

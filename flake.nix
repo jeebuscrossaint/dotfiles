@@ -33,7 +33,7 @@
 
     # my other own project
     doomer.url = "github:jeebuscrossaint/doomer";
-
+    spicetify-nix.url = "github:Gerg-L/spicetify-nix";
     # my own bar
     # limebar.url = "github:jeebuscrossaint/limebar";
 
@@ -43,43 +43,10 @@
     # aocli
     aocli.url = "github:jeebuscrossaint/aocli";
 
-    #prismlauncher
-    # prismlauncher.url = "github:PrismLauncher/PrismLauncher";
-
-    # hyprpicker
-    # hyprpicker.url = "github:hyprwm/hyprpicker";
-
-    # hyprpaper
-    # hyprpaper.url = "github:hyprwm/hyprpaper";
-
-    # swayfx
-    # swayfx.url = "github:WillPower3309/swayfx";
-
-    # xdg-desktop-portal-hyprland
-    # xdg-desktop-portal-hyprland.url = "github:hyprwm/xdg-desktop-portal-hyprland";
-
-    #hypridle
-    # hypridle.url = "github:hyprwm/hypridle";
-
-    # quickemu
-    # quickemu.url = "github:quickemu-project/quickemu";
-    # quickgui.url = "github:quickemu-project/quickgui";
-    #nix-search
-    #nix-search.url = "github:peterldowns/nix-search-cli";
-
     #nix-index
     nix-index.url = "github:nix-community/nix-index";
     schizofox.url = "github:schizofox/schizofox";
     nix-flatpak.url = "github:gmodena/nix-flatpak/latest";
-
-    # swww
-    # swww.url = "github:LGFae/swww";
-
-    # helix
-    # helix.url = "github:helix-editor/helix";
-
-    # waybar
-    # waybar.url = "github:Alexays/Waybar";
 
     # nixcord
     nixcord = {
@@ -91,33 +58,8 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # fht-compositor
-    #fht-compositor = {
-    #      url = "github:nferhat/fht-compositor";
-    #inputs.nixpkgs.follows = "nixpkgs";
-    #      inputs.rust-overlay.follows = "";
-    #    };
-    #rose-pine-hyprcursor
-    #rose-pine-hyprcursor = {
-    #  url = "github:ndom91/rose-pine-hyprcursor";
-    #  inputs.nixpkgs.follows = "nixpkgs";
-    #  inputs.hyprlang.follows = "hyprland/hyprlang";
-    #};
-
-    # yazi
-    #yazi.url = "github:sxyazi/yazi";
-
     # hyprpolkit agent
     # hyprpolkitagent.url = "github:hyprwm/hyprpolkitagent";
-
-    # ironbar
-    #ironbar = {
-    #	url = "github:JakeStanger/ironbar";
-    #	inputs.nixpkgs.follows = "nixpkgs";
-    #};
-
-    # conky
-    #conky.url = "github:brndnmtthws/conky";
 
     home-manager = {
       url = "github:nix-community/home-manager/release-25.05";

@@ -8,6 +8,7 @@
   imports = [
     ./modules/fish.nix
     ./modules/alacritty.nix
+    #./modules/ashell.nix
     ./modules/bat.nix
     ./modules/foot.nix
     ./modules/tealdeer.nix
@@ -45,6 +46,8 @@
     ./modules/i3-fix.nix
     ./modules/nushell.nix
     ./modules/bash.nix
+    ./modules/spicetify.nix
+    ./modules/chawan.nix
   ];
 
   home.username = "amarnath";
@@ -59,7 +62,12 @@
   */
 
   home.packages = with pkgs; [
+    vulkan-tools
+    vulkan-loader
+    vulkan-validation-layers
+    vulkan-extension-layer
     libnotify
+    ashell
     bc
     swww
     pcmanfm
@@ -81,73 +89,45 @@
     which
     btop
     pciutils
-    #vesktop
-    swayrbar
-    #pfetch-rs
-    autotiling-rs
-    #autotiling
+    #    swayrbar
+    #autotiling-rs
     ipfetch
     wl-clipboard-rs
     slurp
     lsd
     zoxide
     avizo
-    copyq
+    cliphist
     udiskie
     gamemode
-    #cava
     font-awesome
-    #hyprshot
     gnome-tweaks
     gtk-engine-murrine
     gnome-themes-extra
-    # devel
-    xsecurelock
-    #  xss-lock
-    #  xdotool
     xclip
-
     wireshark-qt
-
-    # cool irc client
-    #    halloy
-
-    #   dunst
     blueberry
     gparted
-    direnv
-
     lunar-client
-    neovide
-    #proton-pass
     libreoffice-qt6-fresh
-    youtube-music
-    #direnv
-    #powershell
+    powershell
     whatsapp-for-linux
     glow
-    #swayimg
     microfetch
     yazi
-    discordo
     corefonts
-    teams-for-linux
     rose-pine-hyprcursor
     hyprpolkitagent
     gamemode
-    networkmanagerapplet
-    gammastep
     imv
     sbctl
     lowfi
     pavucontrol
-    osu-lazer
     tor-browser
     whitesur-icon-theme
     whitesur-gtk-theme
     whitesur-cursors
-    whitesur-kde
-    apple-cursor
+    #whitesur-kde
     # gnome extensions
     gnomeExtensions.blur-my-shell
     gnomeExtensions.burn-my-windows
@@ -166,7 +146,7 @@
   home.sessionVariables = {
     XCURSOR_THEME = "rose-pine-cursor";
     XCURSOR_SIZE = "24";
-    #    NIXOS_OZONE_WL = "1";
+    NIXOS_OZONE_WL = "1";
   };
   fonts.fontconfig.enable = true;
 
@@ -194,11 +174,8 @@
     gitCredentialHelper.hosts = ["https://github.com"];
   };
 
-  programs.gitui.enable = true;
+  programs.gitui.enable = false;
   programs.feh.enable = false;
-  programs.starship = {
-    enable = true;
-  };
 
   #  programs.fht-compositor = {
   #    enable = false;
@@ -208,15 +185,15 @@
 
   programs.home-manager.enable = true;
 
-  programs.cava.enable = false;
+  programs.cava.enable = true;
   programs.nh.enable = true;
   programs.qutebrowser.enable = false;
   programs.chromium.enable = false;
-  programs.firefox.enable = false;
-  programs.schizofox.enable = true;
-  programs.zathura.enable = true;
+  programs.firefox.enable = true;
+  programs.schizofox.enable = false;
+  programs.zathura.enable = false;
   services.avizo.enable = true;
-  services.tldr-update.enable = true;
+  services.tldr-update.enable = false;
   /*
   stylix.autoEnable = true;
 

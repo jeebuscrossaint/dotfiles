@@ -10,8 +10,18 @@
 
     settings = {
       # Monitor configuration
-      monitor = ",highrr,auto,1,bitdepth,10,cm,hdr";
+      #monitor = ",highrr,auto,1,bitdepth,10,cm,hdr";
       #monitor = ", bitdepth, 10, cm, hdr";
+      monitor = [
+        # Laptop screen (eDP-1) - Max resolution and refresh rate, positioned on the left (primary)
+        "eDP-1,2560x1600@240,0x0,1"
+
+        # External monitor (HDMI-A-1) - 1080p@60Hz positioned to the right of laptop
+        "HDMI-A-1,1920x1080@60,2560x0,1"
+
+        # Fallback for any other monitors
+        ",preferred,auto,1"
+      ];
       workspace = ", special";
 
       # Autostart applications

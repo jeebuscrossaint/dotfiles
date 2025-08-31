@@ -8,7 +8,7 @@
     interactiveShellInit = ''
       set -g fish_greeting
       #fish_config theme choose "Old School"
-      starship init fish | source
+      #starship init fish | source
       microfetch
     '';
     
@@ -63,26 +63,6 @@
         '';
       };
     };
-    
-    plugins = [
-      # If you want to add zoxide as a plugin, you can do something like this:
-      # {
-      #   name = "zoxide";
-      #   src = pkgs.fetchFromGitHub {
-      #     owner = "kidonng";
-      #     repo = "zoxide.fish";
-      #     rev = "fd993e8"; # Replace with actual commit hash
-      #     sha256 = "..."; # Fill in the SHA256 hash
-      #   };
-      # }
-    ];
-  };
-  
-  # For zoxide, home-manager has a dedicated module:
-  programs.zoxide = {
-    enable = true;
-    enableFishIntegration = true;
-    options = []; # Add any zoxide options you need
   };
   
   # For starship, home-manager also has a module:
