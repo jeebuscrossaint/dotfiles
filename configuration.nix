@@ -108,7 +108,7 @@
     powerManagement.finegrained = false;
 
     # Open source kernel module - RTX 4070 is Ada Lovelace architecture, which is supported
-    open = true;
+    open = false;
 
     # Enable the Nvidia settings menu
     nvidiaSettings = true;
@@ -187,8 +187,6 @@
     extraGroups = ["networkmanager" "wheel" "input" "wireshark"];
     packages = with pkgs; [];
   };
-
-  programs.wireshark.enable = true;
 
   # Enable automatic login for the user.
   services.getty.autologinUser = "amarnath";

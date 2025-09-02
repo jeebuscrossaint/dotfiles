@@ -7,6 +7,7 @@
 }: {
   imports = [
     ./modules/fish.nix
+    ./modules/newsboat.nix
     ./modules/alacritty.nix
     #./modules/ashell.nix
     ./modules/bat.nix
@@ -105,12 +106,12 @@
     gtk-engine-murrine
     gnome-themes-extra
     xclip
-    wireshark-qt
+    #wireshark-qt
     blueberry
     gparted
     lunar-client
     libreoffice-qt6-fresh
-    powershell
+    #powershell
     whatsapp-for-linux
     glow
     microfetch
