@@ -65,6 +65,7 @@
       "tsx_async_abort=full,nosmt"
       "rd.systemd.show_status=1"
       "systemd.loglevel=debug"
+      "nvidia-drm.modeset=1"
     ];
   };
 
@@ -108,7 +109,7 @@
     powerManagement.finegrained = false;
 
     # Open source kernel module - RTX 4070 is Ada Lovelace architecture, which is supported
-    open = false;
+    open = true;
 
     # Enable the Nvidia settings menu
     nvidiaSettings = true;
@@ -129,6 +130,7 @@
       nvidiaBusId = "PCI:1:0:0";
     };
   };
+
   nix.settings.auto-optimise-store = true;
   #nix.settings.max-jobs = 16;
   environment.sessionVariables = {
@@ -373,7 +375,7 @@
   stylix.autoEnable = true;
 
   stylix.enable = true;
-  stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/kanagawa-dragon.yaml";
+  stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/irblack.yaml";
 
   stylix.fonts = {
     serif = {

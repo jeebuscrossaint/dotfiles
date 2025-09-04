@@ -14,10 +14,10 @@
       #monitor = ", bitdepth, 10, cm, hdr";
       monitor = [
         # Laptop screen (eDP-1) - Max resolution and refresh rate, positioned on the left (primary)
-        "eDP-1,2560x1600@240,0x0,1"
+        # External monitor (HDMI-A-1) - 1080p@60Hz positioned to the top of laptop
+        "HDMI-A-1,1920x1080@60,0x0,1"
 
-        # External monitor (HDMI-A-1) - 1080p@60Hz positioned to the right of laptop
-        "HDMI-A-1,1920x1080@60,2560x0,1"
+        "eDP-1,2560x1600@240,0x1080,1"
 
         # Fallback for any other monitors
         ",preferred,auto,1"
@@ -332,7 +332,7 @@
           "_JAVA_AWT_WM_NONREPARENTING,1"
           "CLUTTER_BACKEND,wayland"
           "WLR_NO_HARDWARE_CURSORS,1"
-          "AQ_DRM_DEVICES,/dev/dri/card1:/dev/dri/card2"
+          "AQ_DRM_DEVICES,/dev/dri/card0:/dev/dri/card1"
           "HYPRCURSOR_THEME,rose-pine-hyprcursor"
           "HYPRCURSOR_SIZE,24"
         ];

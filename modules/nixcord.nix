@@ -34,7 +34,6 @@
         fullSearchContext.enable = true;
         gameActivityToggle.enable = true;
         gifPaste.enable = true;
-        hideAttachments.enable = true;
         iLoveSpam.enable = true;
         imageZoom.enable = true;
         implicitRelationships.enable = true;

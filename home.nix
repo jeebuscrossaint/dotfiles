@@ -128,6 +128,9 @@
     whitesur-icon-theme
     whitesur-gtk-theme
     whitesur-cursors
+    rose-pine-cursor
+    rose-pine-icon-theme
+    rose-pine-gtk-theme
     #whitesur-kde
     # gnome extensions
     gnomeExtensions.blur-my-shell
@@ -140,7 +143,7 @@
     gnomeExtensions.dash-to-dock
   ];
 
-  programs.librewolf.enable = false;
+  programs.librewolf.enable = true;
   programs.tmux.enable = true;
 
   # Add these environment variables to ensure themes are properly applied
@@ -190,9 +193,9 @@
   programs.nh.enable = true;
   programs.qutebrowser.enable = false;
   programs.chromium.enable = false;
-  programs.firefox.enable = true;
+  programs.firefox.enable = false;
   programs.schizofox.enable = false;
-  programs.zathura.enable = false;
+  programs.zathura.enable = true;
   services.avizo.enable = true;
   services.tldr-update.enable = false;
   /*
