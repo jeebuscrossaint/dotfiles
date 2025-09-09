@@ -6,9 +6,12 @@
   ...
 }: {
   imports = [
+    ./modules/newsboat.nix
+    #./modules/bspwm.nix
+    #    ./modules/sxhkd.nix
     ./modules/fish.nix
     ./modules/newsboat.nix
-    ./modules/alacritty.nix
+    #    ./modules/alacritty.nix
     #./modules/ashell.nix
     ./modules/bat.nix
     ./modules/foot.nix
@@ -19,7 +22,7 @@
     ./modules/fd.nix
     ./modules/btop.nix
     ./modules/rofi.nix
-    ./modules/kitty.nix
+    #    ./modules/kitty.nix
     ./modules/mangohud.nix
     ./modules/micro.nix
     ./modules/mpv.nix
@@ -42,13 +45,14 @@
     #    ./modules/fht.nix
     ./modules/twmn.nix
     ./modules/bemenu.nix
-    ./modules/i3status-rust.nix
+    #    ./modules/i3status-rust.nix
     ./modules/nixcord.nix
     ./modules/i3-fix.nix
     ./modules/nushell.nix
     ./modules/bash.nix
     ./modules/spicetify.nix
     ./modules/chawan.nix
+    ./modules/emacs.nix
   ];
 
   home.username = "amarnath";
@@ -68,15 +72,19 @@
     vulkan-validation-layers
     vulkan-extension-layer
     libnotify
-    ashell
+    xwallpaper
     bc
     swww
     pcmanfm
+    unclutter
     shotman
     hyprshot
+    uemacs
     hyprpicker
     libsecret
     wlay
+    xsecurelock
+    flameshot
     swaybg
     #drawing
     cutter
@@ -92,6 +100,7 @@
     pciutils
     #    swayrbar
     #autotiling-rs
+    autotiling
     ipfetch
     wl-clipboard-rs
     slurp
@@ -106,7 +115,7 @@
     gtk-engine-murrine
     gnome-themes-extra
     xclip
-    #wireshark-qt
+    wireshark
     blueberry
     gparted
     lunar-client
@@ -128,19 +137,20 @@
     whitesur-icon-theme
     whitesur-gtk-theme
     whitesur-cursors
+    whitesur-kde
     rose-pine-cursor
     rose-pine-icon-theme
     rose-pine-gtk-theme
     #whitesur-kde
     # gnome extensions
-    gnomeExtensions.blur-my-shell
-    gnomeExtensions.burn-my-windows
-    gnomeExtensions.weather-or-not
-    gnomeExtensions.rounded-window-corners-reborn
-    gnomeExtensions.mpris-label
-    gnomeExtensions.fly-pie
-    gnomeExtensions.desktop-clock
-    gnomeExtensions.dash-to-dock
+    #gnomeExtensions.blur-my-shell
+    #    gnomeExtensions.burn-my-windows
+    #    gnomeExtensions.weather-or-not
+    #    gnomeExtensions.rounded-window-corners-reborn
+    #    gnomeExtensions.mpris-label
+    #    gnomeExtensions.fly-pie
+    #    gnomeExtensions.desktop-clock
+    #    gnomeExtensions.dash-to-dock
   ];
 
   programs.librewolf.enable = true;

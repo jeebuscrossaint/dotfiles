@@ -3,19 +3,13 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05"; # nixos-unstable -> nixos-25.05
     # browser please!
-    zen-browser.url = "github:0xc000022070/zen-browser-flake";
+    #zen-browser.url = "github:0xc000022070/zen-browser-flake";
     # run random binaries please!
     #nix-ld.url = "github:Mic92/nix-ld";
     # stylix (home manager gtk stylign is so incredibly butt)
     stylix.url = "github:danth/stylix/release-25.05"; # use stable
     #vim joyer hyprland home manager tutorial
     #hyprland.url = "github:hyprwm/Hyprland";
-
-    plasma-manager = {
-      url = "github:nix-community/plasma-manager";
-      inputs.nixpkgs.follows = "nixpkgs";
-      inputs.home-manager.follows = "home-manager";
-    };
 
     #ewww input
     # ewww.url = "github:elkowar/eww";
@@ -98,7 +92,6 @@
               inputs.nvf.homeManagerModules.default
               inputs.nixcord.homeModules.nixcord
               inputs.schizofox.homeManagerModules.default
-              inputs.plasma-manager.homeManagerModules.plasma-manager
             ];
           }
         ];

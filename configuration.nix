@@ -119,7 +119,7 @@
 
     # Use the appropriate driver version
     # For RTX 4070 mobile (Ada Lovelace architecture), the stable driver is appropriate
-    package = config.boot.kernelPackages.nvidiaPackages.stable;
+    package = config.boot.kernelPackages.nvidiaPackages.beta;
 
     prime = {
       offload = {
@@ -209,7 +209,7 @@
     vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
     wget
     git
-    inputs.zen-browser.packages."${system}".default
+    #    inputs.zen-browser.packages."${system}".default
     #inputs.ewww.packages."${system}".default
     #    inputs.numlockwl.packages."${system}".default
     inputs.doomer.packages."${system}".default
@@ -296,16 +296,17 @@
   services.xserver = {
     enable = true;
     desktopManager.xfce.enable = false;
-    windowManager.i3.enable = false;
+    windowManager.i3.enable = true;
     windowManager.spectrwm.enable = false;
-    displayManager.lightdm.enable = false;
-    desktopManager.gnome.enable = true;
-    displayManager.gdm.enable = true;
+    windowManager.bspwm.enable = false;
+    displayManager.lightdm.enable = true;
+    desktopManager.gnome.enable = false;
+    displayManager.gdm.enable = false;
     displayManager.sddm.enable = false;
   };
 
   services = {
-    desktopManager.plasma6.enable = false;
+    desktopManager.plasma6.enable = true;
   };
 
   services.libinput = {
@@ -375,7 +376,7 @@
   stylix.autoEnable = true;
 
   stylix.enable = true;
-  stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/irblack.yaml";
+  stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/grayscale-dark.yaml";
 
   stylix.fonts = {
     serif = {

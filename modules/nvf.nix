@@ -58,30 +58,14 @@
         };
       };
 
-      filetree = {
-        neo-tree.enable = true;
-      };
-
-      assistant = {
-        copilot.enable = true;
-      };
-
       ui = {
         borders.enable = true;
         colorizer.enable = true;
       };
-      
-      terminal = {
-      	toggleterm.enable = true;
-      };
-      
-      minimap = {
-      	codewindow.enable = true;
-      };
-      
+
       binds = {
-      	cheatsheet.enable = true;
-      	whichKey.enable = true;
+        cheatsheet.enable = true;
+        whichKey.enable = true;
       };
 
       autopairs.nvim-autopairs.enable = true;

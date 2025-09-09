@@ -1,9 +1,11 @@
-{ config, pkgs, ... }:
-
 {
+  config,
+  pkgs,
+  ...
+}: {
   programs.fish = {
     enable = true;
-    
+
     # Remove greeting
     interactiveShellInit = ''
       set -g fish_greeting
@@ -11,7 +13,7 @@
       #starship init fish | source
       microfetch
     '';
-    
+
     shellAliases = {
       jit = "git";
       ls = "lsd";
@@ -22,9 +24,9 @@
       ppctl = "powerprofilesctl";
       "update-nixos" = "pushd $HOME/dotfiles && nix flake update --commit-lock-file && sudo nixos-rebuild switch --flake . && popd";
       "new-wallpaper" = "swww img \"$(find ~/wallpapers/ -type f -print0 | shuf -z -n 1)\"";
-      "display-update" = "xrandr --output DP-2 --auto --output HDMI-0 --auto --right-of DP-2 && xrandr --output HDMI-0 --mode 1920x1080 --rate 144.00";
+      "display-update" = "xrandr --output eDP-1 --mode 2560x1600 --rate 240.00 --primary --output  HDMI-1-0 --mode 1920x1080 --rate 60.00 --above eDP-1";
     };
-    
+
     shellInit = ''
       # Environment variables
       #set -x PATH $HOME/.cargo/bin $PATH
@@ -39,22 +41,22 @@
       set -x GSK_RENDERER ngl
       set -x NIXPKGS_ALLOW_UNFREE 1
     '';
-    
+
     functions = {
       findheader = ''
         find /usr/include /usr/local/include -name "$argv[1]" 2>/dev/null
       '';
-      
+
       colorview = {
         argumentNames = "hex";
         body = ''
           # Remove # if present
           set hex (string replace -r "^#?" "" -- $hex)
-          
+
           set -l r (echo $hex | cut -c 1-2)
           set -l g (echo $hex | cut -c 3-4)
           set -l b (echo $hex | cut -c 5-6)
-          
+
           printf "\033[48;2;%d;%d;%dm     \033[0m %s\n" \
               (printf "%d" "0x$r") \
               (printf "%d" "0x$g") \
@@ -64,7 +66,7 @@
       };
     };
   };
-  
+
   # For starship, home-manager also has a module:
   programs.starship = {
     enable = true;
@@ -72,7 +74,7 @@
     # You can add your starship config here
     # settings = { ... };
   };
-  
+
   # Make sure pkgs includes lsd, btop, etc.
   home.packages = with pkgs; [
     lsd
