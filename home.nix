@@ -73,7 +73,8 @@
     xwallpaper
     bc
     swww
-    pcmanfm
+        pcmanfm
+        standardnotes
     guvcview
     #unclutter
     shotman
