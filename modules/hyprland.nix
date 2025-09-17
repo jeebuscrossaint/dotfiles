@@ -15,9 +15,9 @@
       monitor = [
         # Laptop screen (eDP-1) - Max resolution and refresh rate, positioned on the left (primary)
         # External monitor (HDMI-A-1) - 1080p@60Hz positioned to the top of laptop
-        "HDMI-A-1,1920x1080@60,0x0,1"
+        "HDMI-A-1,1920x1080@60,2560x0,1"
 
-        "eDP-1,2560x1600@240,0x1080,1"
+        "eDP-1,2560x1600@240,0x0,1"
 
         # Fallback for any other monitors
         ",preferred,auto,1"

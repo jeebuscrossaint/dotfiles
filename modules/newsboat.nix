@@ -21,7 +21,7 @@
     ];
 
     # Configuration options
-    maxItems = 100;
+    maxItems = 500;
     reloadThreads = 8;
     autoReload = true;
     reloadTime = 5; # 30 minutes

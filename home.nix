@@ -9,50 +9,53 @@
     ./modules/newsboat.nix
     #./modules/bspwm.nix
     #    ./modules/sxhkd.nix
-    ./modules/fish.nix
+    # ./modules/fish.nix
     ./modules/newsboat.nix
     #    ./modules/alacritty.nix
     #./modules/ashell.nix
     ./modules/bat.nix
     ./modules/foot.nix
-    ./modules/tealdeer.nix
-    ./modules/bottom.nix
+    # ./modules/tealdeer.nix
+    #./modules/bottom.nix
     ./modules/helix.nix
     ./modules/hyprlock.nix
     ./modules/fd.nix
     ./modules/btop.nix
     ./modules/rofi.nix
     #    ./modules/kitty.nix
-    ./modules/mangohud.nix
-    ./modules/micro.nix
+    #./modules/mangohud.nix
+    #./modules/micro.nix
     ./modules/mpv.nix
-    ./modules/waybar.nix
+    #./modules/waybar.nix
     ./modules/hyprland.nix
-    ./modules/spectrwm.nix
+    #./modules/spectrwm.nix
     ./modules/swaylock.nix
     ./modules/dunst.nix
-    ./modules/fnott.nix
-    ./modules/sway.nix
+    #./modules/fnott.nix
+    # ./modules/sway.nix
     ./modules/sway-fix.nix
     ./modules/hypridle.nix
-    ./modules/picom.nix
-    ./modules/i3.nix
+    #./modules/picom.nix
+    #./modules/i3.nix
     ./modules/vscode.nix
     ./modules/nvf.nix
     ./modules/fuzzel.nix
-    ./modules/zed.nix
+    #./modules/zed.nix
     ./modules/hyprpaper.nix
     #    ./modules/fht.nix
-    ./modules/twmn.nix
+    # ./modules/twmn.nix
     ./modules/bemenu.nix
     #    ./modules/i3status-rust.nix
     ./modules/nixcord.nix
     ./modules/i3-fix.nix
-    ./modules/nushell.nix
+    #./modules/nushell.nix
     ./modules/bash.nix
     ./modules/spicetify.nix
     ./modules/chawan.nix
-    ./modules/emacs.nix
+    #    ./modules/emacs.nix
+    ./modules/zsh.nix
+    ./modules/river.nix
+    ./modules/spotify-player.nix
   ];
 
   home.username = "amarnath";
@@ -60,11 +63,6 @@
 
   xresources.properties = {
   };
-
-  /*
-    home.pointerCursor.x11.enable = true;
-  home.pointerCursor.gtk.enable = true;
-  */
 
   home.packages = with pkgs; [
     vulkan-tools
@@ -76,16 +74,15 @@
     bc
     swww
     pcmanfm
-    unclutter
+    guvcview
+    #unclutter
     shotman
     hyprshot
-    uemacs
     hyprpicker
     libsecret
     wlay
-    xsecurelock
-    flameshot
-    swaybg
+    #xsecurelock
+    #flameshot
     #drawing
     cutter
     ghidra
@@ -98,14 +95,13 @@
     which
     btop
     pciutils
-    #    swayrbar
-    #autotiling-rs
-    autotiling
+        swayrbar
+    autotiling-rs
     ipfetch
     wl-clipboard-rs
     slurp
     lsd
-    zoxide
+    #zoxide
     avizo
     cliphist
     udiskie
@@ -137,11 +133,9 @@
     whitesur-icon-theme
     whitesur-gtk-theme
     whitesur-cursors
-    whitesur-kde
     rose-pine-cursor
     rose-pine-icon-theme
     rose-pine-gtk-theme
-    #whitesur-kde
     # gnome extensions
     #gnomeExtensions.blur-my-shell
     #    gnomeExtensions.burn-my-windows
@@ -165,7 +159,7 @@
   fonts.fontconfig.enable = true;
 
   home.sessionVariables = {
-    EDITOR = "vim";
+    EDITOR = "hx";
   };
 
   programs.git = {
@@ -188,13 +182,6 @@
     gitCredentialHelper.hosts = ["https://github.com"];
   };
 
-  programs.gitui.enable = false;
-  programs.feh.enable = false;
-
-  #  programs.fht-compositor = {
-  #    enable = false;
-  #  };
-
   home.stateVersion = "25.05";
 
   programs.home-manager.enable = true;
@@ -203,66 +190,8 @@
   programs.nh.enable = true;
   programs.qutebrowser.enable = false;
   programs.chromium.enable = false;
-  programs.firefox.enable = false;
   programs.schizofox.enable = false;
   programs.zathura.enable = true;
   services.avizo.enable = true;
-  services.tldr-update.enable = false;
-  /*
-  stylix.autoEnable = true;
 
-  stylix.enable = true;
-  stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/ayu-light.yaml";
-  stylix.polarity = "dark";
-
-  stylix.fonts = {
-    serif = {
-      package = pkgs.nerd-fonts.jetbrains-mono;
-      name = "JetBrains Mono Nerd Font";
-    };
-
-    sansSerif = {
-      package = pkgs.nerd-fonts.jetbrains-mono;
-      name = "JetBrains Mono Nerd Font";
-    };
-
-    monospace = {
-      package = pkgs.nerd-fonts.jetbrains-mono;
-      name = "JetBrains Mono Nerd Font";
-    };
-
-    emoji = {
-      package = pkgs.noto-fonts-emoji;
-      name = "Noto Color Emoji";
-    };
-  };
-
-  stylix.fonts.sizes = {
-    terminal = 10;
-    desktop = 10;
-    applications = 10;
-    popups = 10;
-  };
-
-  stylix.cursor = {
-    name = "whitesur-cursors";
-    package = pkgs.whitesur-cursors;
-    size = 24;
-  };
-  */
-
-  stylix.targets.gtk.enable = true;
-  /*
-  stylix.iconTheme = {
-    enable = true;
-    package = pkgs.whitesur-icon-theme;
-    dark = "Whitesur-icons";
-    light = "Whitesur-icons";
-  };
-
-  stylix.opacity.terminal = 1.0; # LOL
-  stylix.opacity.popups = 1.0;
-  stylix.opacity.applications = 1.0;
-  stylix.opacity.desktop = 1.0;
-  */
 }

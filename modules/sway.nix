@@ -1,7 +1,7 @@
 # Simplified Sway configuration for Home Manager with SwayFX features
 {pkgs, ...}: {
   wayland.windowManager.sway = {
-    enable = false;
+    enable = true;
     package = pkgs.swayfx-unwrapped;
     checkConfig = false;
     xwayland = true;
@@ -64,6 +64,8 @@
         "${modifier}+Shift+c" = "reload";
         "${modifier}+l" = "exec swaylock -C ~/.config/swaylock/config";
         "${modifier}+g" = "exec new-wallpaper";
+        "${modifier}+b" = "exec ~/bruh.sh --dunst";
+        "${modifier}+Insert" = "exec cliphist list | bemenu | cliphist decode | wl-copy";  # Add clipboard history keybinding
 
         # Focus bindings
         "${modifier}+left" = "focus left";
@@ -103,15 +105,15 @@
 
         # Layout bindings
         "${modifier}+Shift+v" = "floating toggle";
-        "${modifier}+b" = "splith";
-        "${modifier}+v" = "splitv";
-        "${modifier}+s" = "layout stacking";
-        "${modifier}+w" = "layout tabbed";
-        "${modifier}+e" = "layout toggle split";
+#        "${modifier}+b" = "splith";
+#        "${modifier}+v" = "splitv";
+#        "${modifier}+s" = "layout stacking";
+#        "${modifier}+w" = "layout tabbed";
+#        "${modifier}+e" = "layout toggle split";
         "${modifier}+f" = "fullscreen";
-        "${modifier}+space" = "focus mode_toggle";
-        "${modifier}+a" = "focus parent";
-        "${modifier}+r" = "mode resize";
+#        "${modifier}+space" = "focus mode_toggle";
+#        "${modifier}+a" = "focus parent";
+#        "${modifier}+r" = "mode resize";
 
         # Media keys
         "XF86AudioRaiseVolume" = "exec volumectl up";
@@ -159,10 +161,6 @@
         }
         {
           command = "autotiling-rs";
-          always = false;
-        }
-        {
-          command = "copyq --start-server";
           always = false;
         }
         {
@@ -217,6 +215,14 @@
           #bg = "#000000 solid_color";
           render_bit_depth = "10";
           color_profile = "srgb";
+        };
+        "eDP-1" = {
+        mode = "2560x1600@240Hz";
+        position = "0,0";
+        };
+        "HDMI-A-1" = {
+          mode = "1920x1080@60Hz";
+          position = "2560,0";
         };
       };
     };

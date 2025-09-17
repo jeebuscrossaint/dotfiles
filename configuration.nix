@@ -187,54 +187,72 @@
     isNormalUser = true;
     description = "amarnath";
     extraGroups = ["networkmanager" "wheel" "input" "wireshark"];
-    packages = with pkgs; [];
   };
 
   # Enable automatic login for the user.
   services.getty.autologinUser = "amarnath";
-  services.power-profiles-daemon.enable = true;
-  services.supergfxd.enable = true;
-  services.asusd.enable = true;
-  services.asusd.enableUserService = true;
-  services.tor = {
+  services.tlp = {
     enable = true;
-    client.enable = true;
+    settings = {
+      # CPU
+      CPU_SCALING_GOVERNOR_ON_AC = "performance";
+      CPU_SCALING_GOVERNOR_ON_BAT = "powersave";
+      CPU_MIN_PERF_ON_AC = 0;
+      CPU_MAX_PERF_ON_AC = 100;
+      CPU_MIN_PERF_ON_BAT = 0;
+      CPU_MAX_PERF_ON_BAT = 30; # Limit CPU to 30% on battery
+
+      # Platform
+      PLATFORM_PROFILE_ON_AC = "performance";
+      PLATFORM_PROFILE_ON_BAT = "low-power";
+
+      # Processor
+      CPU_BOOST_ON_AC = 1;
+      CPU_BOOST_ON_BAT = 0; # Disable turbo boost on battery
+      CPU_HWP_DYN_BOOST_ON_AC = 1;
+      CPU_HWP_DYN_BOOST_ON_BAT = 0;
+
+      # GPU
+      RUNTIME_PM_ON_AC = "on";
+      RUNTIME_PM_ON_BAT = "auto";
+
+      # WiFi power saving
+      WIFI_PWR_ON_AC = "off";
+      WIFI_PWR_ON_BAT = "on";
+
+      # PCI Runtime PM
+      RUNTIME_PM_ALL = 1;
+
+      # USB autosuspend
+      USB_AUTOSUSPEND = 1;
+      USB_BLACKLIST_WWAN = 1;
+
+      # Disk
+      DISK_IDLE_SECS_ON_AC = 0;
+      DISK_IDLE_SECS_ON_BAT = 2;
+
+      # SATA link power management
+      SATA_LINKPWR_ON_AC = "med_power_with_dipm max_performance";
+      SATA_LINKPWR_ON_BAT = "min_power";
+    };
   };
+  # services.supergfxd.enable = false;
+  # services.asusd.enable = false;
+  # services.asusd.enableUserService = false;
+  # services.tor = {
+  # enable = true;
+  # client.enable = true;
+  # };
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
 
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
-    vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
     wget
     git
-    #    inputs.zen-browser.packages."${system}".default
-    #inputs.ewww.packages."${system}".default
-    #    inputs.numlockwl.packages."${system}".default
     inputs.doomer.packages."${system}".default
-    #inputs.limebar.packages."${system}".default
-    #inputs.wart.packages."${system}".default
-    #inputs.prismlauncher.packages."${system}".default
-    #inputs.hyprpicker.packages."${system}".default
-    #inputs.hyprpaper.packages."${system}".default
-    #inputs.swayfx.packages."${system}".default
-    #    inputs.xdg-desktop-portal-hyprland.packages."${system}".default
-    #    inputs.hypridle.packages."${system}".default
-    #inputs.quickemu.packages."${system}".default
-    #inputs.quickgui.packages."${system}".default
-    #inputs.nix-index.packages."${system}".default
-    #inputs.swww.packages."${system}".default
-    #    inputs.rose-pine-hyprcursor.packages."${system}".default
-    #inputs.yazi.packages."${system}".default
-    #    inputs.hyprpolkitagent.packages."${system}".default
-    #inputs.conky.packages."${system}".default
-    #inputs.helix.packages."${system}".default
-    #inputs.waybar.packages."${system}".default
     inputs.aocli.packages."${system}".default
-    #inputs.debt.packages."${system}".default
-    #    inputs.quickshell.packages."${system}".default
-    #    inputs.ironbar.packages."${system}".default
     inputs.sf-mono-nerd-font.packages."${system}".default
   ];
 
@@ -249,10 +267,9 @@
     package = pkgs.swayfx;
   };
 
-  #  programs.fht-compositor = {
-  #    enable = false;
-  # package = fht-compositor.packages.${pkgs.system}.fht-compositor; # optional if default is okay
-  #  };
+  programs.river = {
+    enable = true;
+  };
 
   programs.nix-ld.enable = true;
 
@@ -265,10 +282,10 @@
   xdg.portal.enable = true;
   xdg.portal.wlr.enable = true;
 
-  programs.fish.enable = true;
+  programs.zsh.enable = true;
   security.polkit.enable = true;
 
-  users.users.amarnath.shell = pkgs.fish; #nushell sometime?
+  users.users.amarnath.shell = pkgs.zsh;
   security.rtkit.enable = true;
   services.pipewire = {
     enable = true;
@@ -296,17 +313,17 @@
   services.xserver = {
     enable = true;
     desktopManager.xfce.enable = false;
-    windowManager.i3.enable = true;
+    windowManager.i3.enable = false;
     windowManager.spectrwm.enable = false;
     windowManager.bspwm.enable = false;
-    displayManager.lightdm.enable = true;
+    displayManager.lightdm.enable = false;
     desktopManager.gnome.enable = false;
     displayManager.gdm.enable = false;
-    displayManager.sddm.enable = false;
+    #displayManager.sddm.enable = false;
   };
 
   services = {
-    desktopManager.plasma6.enable = true;
+    desktopManager.plasma6.enable = false;
   };
 
   services.libinput = {
@@ -376,7 +393,7 @@
   stylix.autoEnable = true;
 
   stylix.enable = true;
-  stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/grayscale-dark.yaml";
+  stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/da-one-black.yaml";
 
   stylix.fonts = {
     serif = {
@@ -411,18 +428,6 @@
   stylix.opacity.popups = 1.0;
   stylix.opacity.applications = 1.0;
   stylix.opacity.desktop = 1.0;
-  /*
-  stylix.iconTheme = {
-    enable = true;
-    package = pkgs.whitesur-icon-theme;
-    dark = "Whitesur-icons";
-    light = "Whitesur-icons";
-  };
-  */
-
-  /*
-  stylix.targets.gtk.enable = false;
-  */
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
