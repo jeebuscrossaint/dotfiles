@@ -29,7 +29,7 @@
     #./modules/waybar.nix
     ./modules/hyprland.nix
     #./modules/spectrwm.nix
-    ./modules/swaylock.nix
+    # ./modules/swaylock.nix
     ./modules/dunst.nix
     #./modules/fnott.nix
     # ./modules/sway.nix
@@ -39,9 +39,9 @@
     #./modules/i3.nix
     ./modules/vscode.nix
     ./modules/nvf.nix
-    ./modules/fuzzel.nix
+    # ./modules/fuzzel.nix
     #./modules/zed.nix
-    ./modules/hyprpaper.nix
+    # ./modules/hyprpaper.nix
     #    ./modules/fht.nix
     # ./modules/twmn.nix
     ./modules/bemenu.nix
@@ -55,7 +55,8 @@
     #    ./modules/emacs.nix
     ./modules/zsh.nix
     ./modules/river.nix
-    ./modules/spotify-player.nix
+    ./modules/ncspot.nix
+    # ./modules/spotify-player.nix
   ];
 
   home.username = "amarnath";
@@ -96,7 +97,7 @@
     which
     btop
     pciutils
-        swayrbar
+        # swayrbar
     autotiling-rs
     ipfetch
     wl-clipboard-rs
@@ -123,8 +124,8 @@
     microfetch
     yazi
     corefonts
-    rose-pine-hyprcursor
-    hyprpolkitagent
+    # rose-pine-hyprcursor
+    # hyprpolkitagent
     gamemode
     imv
     sbctl

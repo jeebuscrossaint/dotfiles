@@ -274,7 +274,7 @@
   programs.nix-ld.enable = true;
 
   programs.hyprland = {
-    enable = true;
+    enable = false;
     xwayland.enable = true;
     package = pkgs.hyprland;
   };
