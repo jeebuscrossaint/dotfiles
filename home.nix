@@ -55,7 +55,7 @@
     #    ./modules/emacs.nix
     ./modules/zsh.nix
     ./modules/river.nix
-    ./modules/ncspot.nix
+    # ./modules/ncspot.nix
     # ./modules/spotify-player.nix
   ];
 
