@@ -31,15 +31,15 @@
 
   boot = {
     plymouth = {
-      enable = false;
+      enable = true;
     };
     kernelPackages = pkgs.linuxPackages_hardened;
 
     consoleLogLevel = 0;
     initrd.verbose = false;
     kernelParams = [
-      #"quiet"
-      #      "splash"
+      "quiet"
+           "splash"
       "boot.shell_on_fail"
       "loglevel=5"
       "rd.systemd.show_status=false"
@@ -66,6 +66,7 @@
       "rd.systemd.show_status=1"
       "systemd.loglevel=debug"
       "nvidia-drm.modeset=1"
+      # "nouveau.modeset=1"
     ];
   };
 
