@@ -10,7 +10,7 @@
     #./modules/bspwm.nix
     #    ./modules/sxhkd.nix
     # ./modules/fish.nix
-    ./modules/newsboat.nix
+    # ./modules/newsboat.nix
     #    ./modules/alacritty.nix
     #./modules/ashell.nix
     ./modules/bat.nix
@@ -33,12 +33,12 @@
     ./modules/dunst.nix
     #./modules/fnott.nix
     # ./modules/sway.nix
-    ./modules/sway-fix.nix
+    # ./modules/sway-fix.nix
     ./modules/hypridle.nix
     #./modules/picom.nix
     #./modules/i3.nix
     ./modules/vscode.nix
-    ./modules/nvf.nix
+    # ./modules/nvf.nix
     # ./modules/fuzzel.nix
     #./modules/zed.nix
     # ./modules/hyprpaper.nix
@@ -47,9 +47,9 @@
     ./modules/bemenu.nix
     #    ./modules/i3status-rust.nix
     ./modules/nixcord.nix
-    ./modules/i3-fix.nix
+    # ./modules/i3-fix.nix
     #./modules/nushell.nix
-    ./modules/bash.nix
+    # ./modules/bash.nix
     # ./modules/spicetify.nix
     ./modules/chawan.nix
     #    ./modules/emacs.nix
@@ -122,7 +122,8 @@
     #powershell
     whatsapp-for-linux
     glow
-    microfetch
+    # microfetch
+    pfetch-rs
     yazi
     corefonts
     # rose-pine-hyprcursor

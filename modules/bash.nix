@@ -110,8 +110,8 @@
       fi
       
       # Run microfetch on startup (only in interactive shells)
-      if [[ $- == *i* ]] && command -v microfetch &> /dev/null; then
-        microfetch
+      if [[ $- == *i* ]] && command -v pfetch &> /dev/null; then
+        pfetch
       fi
       
       # Better tab completion
