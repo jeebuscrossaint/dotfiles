@@ -131,6 +131,8 @@
     };
   };
 
+  hardware.xone.enable = true;
+
   nix.settings.auto-optimise-store = true;
   #nix.settings.max-jobs = 16;
   environment.sessionVariables = {
@@ -192,7 +194,7 @@
   # Enable automatic login for the user.
   services.getty.autologinUser = "amarnath";
   services.tlp = {
-    enable = true;
+    enable = false;
     settings = {
       # CPU
       CPU_SCALING_GOVERNOR_ON_AC = "performance";
@@ -236,9 +238,9 @@
       SATA_LINKPWR_ON_BAT = "min_power";
     };
   };
-  # services.supergfxd.enable = false;
-  # services.asusd.enable = false;
-  # services.asusd.enableUserService = false;
+  # services.supergfxd.enable = true;
+  # services.asusd.enable = true;
+  # services.asusd.enableUserService = true;
   # services.tor = {
   # enable = true;
   # client.enable = true;
@@ -317,8 +319,8 @@
     windowManager.spectrwm.enable = false;
     windowManager.bspwm.enable = false;
     displayManager.lightdm.enable = false;
-    desktopManager.gnome.enable = false;
-    displayManager.gdm.enable = false;
+    desktopManager.gnome.enable = true;
+    displayManager.gdm.enable = true;
     #displayManager.sddm.enable = false;
   };
 
@@ -393,7 +395,7 @@
   stylix.autoEnable = true;
 
   stylix.enable = true;
-  stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/everforest.yaml";
+  stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/black-metal.yaml";
 
   stylix.fonts = {
     serif = {

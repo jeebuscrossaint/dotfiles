@@ -27,7 +27,7 @@
     #./modules/micro.nix
     ./modules/mpv.nix
     #./modules/waybar.nix
-    ./modules/hyprland.nix
+    # ./modules/hyprland.nix
     #./modules/spectrwm.nix
     # ./modules/swaylock.nix
     ./modules/dunst.nix
@@ -50,7 +50,7 @@
     ./modules/i3-fix.nix
     #./modules/nushell.nix
     ./modules/bash.nix
-    ./modules/spicetify.nix
+    # ./modules/spicetify.nix
     ./modules/chawan.nix
     #    ./modules/emacs.nix
     ./modules/zsh.nix
@@ -83,6 +83,7 @@
     hyprpicker
     libsecret
     wlay
+    youtube-music
     #xsecurelock
     #flameshot
     #drawing
@@ -139,14 +140,15 @@
     rose-pine-icon-theme
     rose-pine-gtk-theme
     # gnome extensions
-    #gnomeExtensions.blur-my-shell
-    #    gnomeExtensions.burn-my-windows
-    #    gnomeExtensions.weather-or-not
-    #    gnomeExtensions.rounded-window-corners-reborn
-    #    gnomeExtensions.mpris-label
-    #    gnomeExtensions.fly-pie
-    #    gnomeExtensions.desktop-clock
-    #    gnomeExtensions.dash-to-dock
+    gnomeExtensions.blur-my-shell
+       gnomeExtensions.burn-my-windows
+       gnomeExtensions.weather-or-not
+       gnomeExtensions.rounded-window-corners-reborn
+       gnomeExtensions.mpris-label
+       gnomeExtensions.fly-pie
+       gnomeExtensions.desktop-clock
+       gnomeExtensions.dash-to-dock
+       gnomeExtensions.paperwm
   ];
 
   programs.librewolf.enable = true;
