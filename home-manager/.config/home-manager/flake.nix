@@ -27,7 +27,7 @@
     
     schizofox.url = "github:schizofox/schizofox";
 
-    nix-flatpak.url = "github:gmodena/nix-flatpak";
+    nix-flatpak.url = "github:gmodena/nix-flatpak/?ref=latest";
   };
   
   outputs = { nixpkgs, home-manager, ... }@inputs: {
