@@ -5,7 +5,9 @@ how to use:
 
 
 cat archpkglist.txt | xargs paru -S 
+
 stow home-manager
+
 stow nix
 
 thats a bout it
