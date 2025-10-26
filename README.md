@@ -1,8 +1,17 @@
 # dotfiles
 
-uses nixos + home manager
 
-dont think ill use freebsd anytime soon so one day with compliant hardware ill just add openbsd dots
+how to use:
+
+
+cat archpkglist.txt | xargs paru -S 
+stow home-manager
+stow nix
+
+thats a bout it
+
+make sure you have nix installed along with home-manager
+
 
 wallpaper repos for additional epic:
 https://github.com/rann01/IRIX-tiles

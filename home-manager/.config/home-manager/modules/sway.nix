@@ -2,7 +2,7 @@
 {pkgs, ...}: {
   wayland.windowManager.sway = {
     enable = true;
-    package = pkgs.swayfx-unwrapped;
+    package = pkgs.emptyDirectory;
     checkConfig = false;
     xwayland = true;
 
@@ -64,7 +64,7 @@
         "${modifier}+Shift+c" = "reload";
         "${modifier}+l" = "exec swaylock -C ~/.config/swaylock/config";
         "${modifier}+g" = "exec new-wallpaper";
-        "${modifier}+b" = "exec ~/bruh.sh --dunst";
+        "${modifier}+b" = "exec ~/dotfiles/bruh.sh --dunst";
         "${modifier}+Insert" = "exec cliphist list | bemenu | cliphist decode | wl-copy";  # Add clipboard history keybinding
 
         # Focus bindings
@@ -126,7 +126,8 @@
         "XF86MonBrightnessDown" = "exec lightctl down";
 
         # Screenshot
-        "${modifier}+Shift+s" = "exec shotman --capture region";
+        # "${modifier}+Shift+s" = "${modifier}+Shift+s" = ''exec grim -g "$(swaymsg -t get_tree | jq -r '.. | select(.pid? and .visible?) | .rect | "\(.x),\(.y) \(.width)x\(.height)"' | slurp)" - | swappy -f -'';
+       "${modifier}+Shift+s" = "exec ~/dotfiles/swayscreenshot.sh";
       };
 
       # Resize mode

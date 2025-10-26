@@ -8,7 +8,7 @@
     enable = true;
 
     config = {
-      frameless = true;
+      # frameless = true;
       plugins = {
         # accountPanelServerProfile.enable = true;
         # alwaysAnimate.enable = true;

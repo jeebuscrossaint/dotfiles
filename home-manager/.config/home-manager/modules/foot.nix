@@ -6,6 +6,7 @@
 }: {
   programs.foot = {
     enable = true;
+    
     settings = {
       main = {
         letter-spacing = 0;
