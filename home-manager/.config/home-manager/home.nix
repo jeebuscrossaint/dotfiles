@@ -23,6 +23,9 @@
       ./modules/sway.nix
     ./modules/fish.nix
      ./modules/swaylock.nix
+     ./modules/rofi.nix
+     ./modules/swayidle.nix
+     ./modules/sway-fix.nix
   ];
 
   # IMPORTANT: This tells Home Manager it's running standalone
@@ -49,11 +52,16 @@
     # xwallpaper
     bc
     swww
+    hollywood
+    cmatrix
+    cbonsai
+    pipes-rs
     # pcmanfm
     gdu
     standardnotes
     # guvcview
     shotman
+    less
     # hyprshot
     # hyprpicker
     # libsecret
@@ -92,14 +100,14 @@
     gparted
     lunar-client
     # libreoffice-qt6-fresh
-    # whatsapp-for-linux
+    whatsapp-for-linux
     glow
     # pfetch-rs
     yazi
     corefonts
     slack
     # gamemode
-    # imv
+    imv
     # sbctl
     lowfi
     pavucontrol
@@ -111,6 +119,10 @@
     rose-pine-icon-theme
     rose-pine-gtk-theme
     networkmanagerapplet
+    guvcview
+    # cheese
+    snapshot
+    brightnessctl
     # gnomeExtensions.blur-my-shell
     # gnomeExtensions.burn-my-windows
     # gnomeExtensions.weather-or-not
@@ -138,14 +150,16 @@
   
   fonts.fontconfig.enable = true;
 
-  # programs.git = {
-    # enable = true;
-    # userName = "jeebuscrossaint";
-    # userEmail = "thediamond270@gmail.com";
-    # extraConfig = {
-      # credential.helper = "store";
-    # };
-  # };
+  programs.git = {
+    enable = true;
+    # user.name = "jeebuscrossaint";
+    # user.email = "thediamond270@gmail.com";
+    settings = {
+      credential.helper = "store";
+      user.name = "jeebuscrossaint";
+      user.email = "thediamond270@gmail.com";
+    };
+  };
 
   # programs.ssh = {
     # enable = true;
@@ -163,6 +177,7 @@
 
   programs.home-manager.enable = true;
 
+  services.home-manager.autoUpgrade.useFlake = true;
   programs.cava.enable = true;
   programs.nh.enable = true;
   programs.qutebrowser.enable = false;
@@ -171,18 +186,10 @@
   programs.zathura.enable = true;
   services.avizo.enable = true;
 
-  services.flatpak = {
-    packages = [
-      "org.vinegarhq.Sober"
-    ];
-
-    update.onActivation = true;
-  };
-  
-  
+    
   # Stylix configuration (optional, remove if you don't want it)
   stylix.enable = true;
-  stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/grayscale-dark.yaml";
+  stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/material-darker.yaml";
   
   stylix.fonts = {
     serif = {

@@ -27,7 +27,7 @@
     
     schizofox.url = "github:schizofox/schizofox";
 
-    nix-flatpak.url = "github:gmodena/nix-flatpak/?ref=latest";
+    
   };
   
   outputs = { nixpkgs, home-manager, ... }@inputs: {
@@ -44,7 +44,7 @@
           inputs.nvf.homeManagerModules.default
           inputs.nixcord.homeModules.nixcord
           inputs.schizofox.homeManagerModules.default
-          inputs.nix-flatpak.homeManagerModules.nix-flatpak
+          
         ];
       };
     };

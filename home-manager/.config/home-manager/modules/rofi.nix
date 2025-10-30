@@ -5,8 +5,8 @@
   ...
 }: {
   programs.rofi = {
-    enable = false;
-    package = pkgs.rofi-wayland;
+    enable = true;
+    package = pkgs.rofi;
 
     # Basic configuration
     extraConfig = {
