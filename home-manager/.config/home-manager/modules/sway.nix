@@ -68,7 +68,7 @@
         "${modifier}+g" = "exec new-wallpaper";
         "${modifier}+b" = "exec ~/dotfiles/bruh.sh --dunst";
         "${modifier}+Insert" = "exec cliphist list | bemenu | cliphist decode | wl-copy";  # Add clipboard history keybinding
-
+        "${modifier}+Alt+h" = "exec swaymsg output eDP-1 hdr toggle";
         # Focus bindings
         "${modifier}+left" = "focus left";
         "${modifier}+down" = "focus down";
@@ -218,6 +218,7 @@
           #bg = "#000000 solid_color";
           render_bit_depth = "10";
           color_profile = "srgb";
+          hdr = "off";
         };
         "eDP-1" = {
         mode = "2560x1600@240Hz";
@@ -265,23 +266,23 @@
       #scratchpad_minimize disable
 
       # Layer effects for panels/bars
-      layer_effects "waybar" {
-          blur enable
-          blur_xray enable
-          blur_ignore_transparent enable
-          shadows enable
-          corner_radius 0
-      }
+      # layer_effects "waybar" {
+          # blur enable
+          # blur_xray enable
+          # blur_ignore_transparent enable
+          # shadows enable
+          # corner_radius 0
+      # }
 
-      layer_effects "gtk-layer-shell" {
-          blur enable
-          shadows enable
-          corner_radius 8
-      }
+      # layer_effects "gtk-layer-shell" {
+      #     blur enable
+      #     shadows enable
+      #     corner_radius 8
+      # }
 
-      # Example of per-window dim settings
-      for_window [app_id="firefox"] dim_inactive 0.05
-      for_window [class="steam"] dim_inactive 0.0
+      # # Example of per-window dim settings
+      # for_window [app_id="firefox"] dim_inactive 0.05
+      # for_window [class="steam"] dim_inactive 0.0
     '';
 
     #extraOptions = ["--unsupported-gpu"];
