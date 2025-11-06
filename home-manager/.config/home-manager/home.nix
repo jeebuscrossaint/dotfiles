@@ -26,6 +26,7 @@
      ./modules/rofi.nix
      ./modules/swayidle.nix
      ./modules/sway-fix.nix
+     ./modules/labwc.nix
   ];
 
   # IMPORTANT: This tells Home Manager it's running standalone
@@ -50,6 +51,8 @@
     # vulkan-extension-layer
     # libnotify
     # xwallpaper
+    wget
+    dosfstools
     bc
     swww
     hollywood
@@ -66,6 +69,7 @@
     # hyprpicker
     # libsecret
     # wlay
+    wlsunset
     # youtube-music
     # cutter
     # ghidra
@@ -189,7 +193,7 @@
     
   # Stylix configuration (optional, remove if you don't want it)
   stylix.enable = true;
-  stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/material-darker.yaml";
+  stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/gigavolt.yaml";
   
   stylix.fonts = {
     serif = {
