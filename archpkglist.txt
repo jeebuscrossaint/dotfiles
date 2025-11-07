@@ -6,8 +6,10 @@ bluez-utils
 chaotic-keyring
 chaotic-mirrorlist
 devtools
+dosfstools
 efibootmgr
 fish
+flatpak
 gdm
 git
 gnome-browser-connector
@@ -19,6 +21,7 @@ grim
 gst-plugin-pipewire
 helix
 intel-ucode
+labwc
 libpulse
 librewolf
 linux
@@ -42,7 +45,7 @@ slurp
 sof-firmware
 stow
 swappy
-swayfx
+sway
 swaylock-effects
 wireplumber
 zram-generator

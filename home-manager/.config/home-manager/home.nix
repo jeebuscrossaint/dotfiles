@@ -193,7 +193,7 @@
     
   # Stylix configuration (optional, remove if you don't want it)
   stylix.enable = true;
-  stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/gigavolt.yaml";
+  stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/mountain.yaml";
   
   stylix.fonts = {
     serif = {

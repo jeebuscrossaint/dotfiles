@@ -259,6 +259,7 @@
       <!-- Window rules -->
       <windowRules>
         <!-- Add your window rules here if needed -->
+        # <windowRule identifier="*" serverDecoration="no" />
       </windowRules>
     </labwc_config>
   '';
