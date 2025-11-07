@@ -1,7 +1,5 @@
 # Labwc configuration for Home Manager inspired by Sway config
 {pkgs, lib, ...}: {
-  # Install labwc
-  
 
   # Main labwc configuration file
   xdg.configFile."labwc/rc.xml".text = ''
@@ -259,7 +257,6 @@
       <!-- Window rules -->
       <windowRules>
         <!-- Add your window rules here if needed -->
-        # <windowRule identifier="*" serverDecoration="no" />
       </windowRules>
     </labwc_config>
   '';
@@ -310,11 +307,24 @@
   xdg.configFile."labwc/themerc".text = ''
     # Window border
     border.width: 1
+    border.color: #333333
+    
+    # Title bar (we're disabling it)
+    window.active.title.bg.color: #2e3440
+    window.inactive.title.bg.color: #3b4252
+    
+    # Window buttons
+    window.active.button.unpressed.image.color: #d8dee9
+    window.inactive.button.unpressed.image.color: #4c566a
     
     # Padding
     padding.height: 3
     padding.width: 3
     
     # Menu
+    menu.items.bg.color: #2e3440
+    menu.items.text.color: #d8dee9
+    menu.items.active.bg.color: #5e81ac
+    menu.items.active.text.color: #eceff4
   '';
 }
