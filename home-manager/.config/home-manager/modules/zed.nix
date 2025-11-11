@@ -5,7 +5,7 @@
   ...
 }: {
   programs.zed-editor = {
-    enable = false;
+    enable = true;
     extensions = ["nix" "toml" "make"];
     extraPackages = with pkgs; [
       rustfmt

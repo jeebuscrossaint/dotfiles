@@ -11,8 +11,8 @@
       set -g fish_greeting
       #fish_config theme choose "Old School"
       starship init fish | source
-      # pfetch
-      microfetch
+      pfetch
+      # microfetch
     '';
 
     shellAliases = {

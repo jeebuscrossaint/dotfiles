@@ -27,6 +27,7 @@
      ./modules/swayidle.nix
      ./modules/sway-fix.nix
      ./modules/labwc.nix
+     ./modules/zed.nix
   ];
 
   # IMPORTANT: This tells Home Manager it's running standalone
@@ -70,7 +71,11 @@
     # libsecret
     # wlay
     wlsunset
-    # youtube-music
+    youtube-music
+    tinycc
+    typstyle
+    typst
+    typst-live
     # cutter
     # ghidra
     qalculate-gtk
@@ -82,6 +87,7 @@
     # pciutils
     autotiling-rs
     ipfetch
+    pfetch-rs
     wl-clipboard-rs
     swappy
     slurp
@@ -101,10 +107,10 @@
     # xclip
     # wireshark
     blueberry
-    gparted
+    # gparted
     lunar-client
-    # libreoffice-qt6-fresh
-    whatsapp-for-linux
+    libreoffice-fresh
+    wasistlos
     glow
     # pfetch-rs
     yazi
@@ -123,7 +129,7 @@
     rose-pine-icon-theme
     rose-pine-gtk-theme
     networkmanagerapplet
-    guvcview
+    # guvcview
     # cheese
     snapshot
     brightnessctl
@@ -193,7 +199,7 @@
     
   # Stylix configuration (optional, remove if you don't want it)
   stylix.enable = true;
-  stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/mountain.yaml";
+  stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/catppuccin-mocha.yaml";
   
   stylix.fonts = {
     serif = {
@@ -209,7 +215,7 @@
       name = "SFMono Nerd Font";
     };
     emoji = {
-      package = pkgs.noto-fonts-emoji;
+      package = pkgs.noto-fonts-color-emoji;
       name = "Noto Color Emoji";
     };
   };
