@@ -28,6 +28,9 @@
      ./modules/sway-fix.nix
      ./modules/labwc.nix
      ./modules/zed.nix
+     ./modules/yazi.nix
+     ./modules/wayfire.nix
+     ./modules/kitty.nix
   ];
 
   # IMPORTANT: This tells Home Manager it's running standalone
@@ -62,6 +65,7 @@
     pipes-rs
     # pcmanfm
     gdu
+    steam
     standardnotes
     # guvcview
     shotman
@@ -76,7 +80,8 @@
     typstyle
     typst
     typst-live
-    # cutter
+    dotnet-sdk
+    cutter
     # ghidra
     qalculate-gtk
     fastfetch
@@ -133,6 +138,8 @@
     # cheese
     snapshot
     brightnessctl
+    rustup
+    # rustfmt
     # gnomeExtensions.blur-my-shell
     # gnomeExtensions.burn-my-windows
     # gnomeExtensions.weather-or-not
@@ -146,6 +153,7 @@
     # inputs.doomer.packages."${pkgs.system}".default
     # inputs.aocli.packages."${pkgs.system}".default
     # inputs.sf-mono-nerd-font.packages."${pkgs.system}".default
+    # inputs.drawy.packages."${pkgs.system}".default
   ];
 
   # programs.librewolf.enable = true;
@@ -199,7 +207,7 @@
     
   # Stylix configuration (optional, remove if you don't want it)
   stylix.enable = true;
-  stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/catppuccin-mocha.yaml";
+  stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/kanagawa-dragon.yaml";
   
   stylix.fonts = {
     serif = {
@@ -227,7 +235,7 @@
     popups = 10;
   };
 
-  stylix.opacity.terminal = 1.0;
+  stylix.opacity.terminal = 0.5;
   stylix.opacity.popups = 1.0;
   stylix.opacity.applications = 1.0;
   stylix.opacity.desktop = 1.0;

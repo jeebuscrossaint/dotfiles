@@ -34,7 +34,7 @@
         
         <!-- Basic keybindings -->
         <keybind key="W-q">
-          <action name="Execute" command="foot" />
+          <action name="Execute" command="kitty" />
         </keybind>
         
         <keybind key="W-d">

@@ -27,6 +27,7 @@ librewolf
 linux
 linux-firmware
 microfetch
+mkinitcpio-firmware
 nerd-fonts-sf-mono
 networkmanager
 nvidia
@@ -38,8 +39,6 @@ pipewire-alsa
 pipewire-jack
 pipewire-pulse
 pkgfile
-power-profiles-daemon
-rustup
 sbctl
 slurp
 sof-firmware
@@ -47,5 +46,8 @@ stow
 swappy
 sway
 swaylock-effects
+systemctl-tui
+tlp
+wayfire
 wireplumber
 zram-generator
