@@ -57,6 +57,9 @@
     # xwallpaper
     wget
     dosfstools
+    bottom
+    qemu
+    # virtualboxWithExtpack
     bc
     swww
     hollywood
