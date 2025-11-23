@@ -13,6 +13,9 @@
       starship init fish | source
       pfetch
       # microfetch
+      if test "$TERM" = "linux"
+        setfont Lat2-Terminus16 2>/dev/null
+      end
     '';
 
     shellAliases = {
