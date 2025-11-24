@@ -109,7 +109,7 @@
     # udiskie
     # gamemode
     font-awesome
-    gnome-tweaks
+    # gnome-tweaks
     # gtk-engine-murrine
     # gnome-themes-extra
     # xclip
