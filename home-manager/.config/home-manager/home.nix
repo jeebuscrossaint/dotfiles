@@ -109,7 +109,7 @@
     # udiskie
     # gamemode
     font-awesome
-    # gnome-tweaks
+    gnome-tweaks
     # gtk-engine-murrine
     # gnome-themes-extra
     # xclip
@@ -238,7 +238,7 @@
     popups = 10;
   };
 
-  stylix.opacity.terminal = 0.5;
+  stylix.opacity.terminal = 1.0;
   stylix.opacity.popups = 1.0;
   stylix.opacity.applications = 1.0;
   stylix.opacity.desktop = 1.0;
