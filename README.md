@@ -1,6 +1,7 @@
 # dotfiles
 
 
+yo my librewolf extensions are ublock sponsorblock bettercanvas return-dislike-youtube docsafterdark proton-pass dark-reader adnauseam
 how to use:
 
 
