@@ -44,7 +44,7 @@
         messageLatency.enable = true;
         messageLinkEmbeds.enable = true;
         messageLogger.enable = true;
-        moreCommands.enable = true;
+        # moreCommands.enable = true;
         # moyai.enable = true;
         mutualGroupDMs.enable = true;
         noF1.enable = true;

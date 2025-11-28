@@ -82,12 +82,12 @@
         "Mod4+a" = "focus parent";
 
         # Media keys
-        "XF86AudioRaiseVolume" = "exec --no-startup-id ~/go/bin/volumectl up";
-        "XF86AudioLowerVolume" = "exec --no-startup-id ~/go/bin/volumectl down";
+        "XF86AudioRaiseVolume" = "exec --no-startup-id volumectl up";
+        "XF86AudioLowerVolume" = "exec --no-startup-id volumectl down";
         "XF86Launch3" = "exec --no-startup-id playerctl play-pause";
-        "XF86AudioMicMute" = "exec --no-startup-id pactl set-source-mute @DEFAULT_SOURCE@ toggle";
-        "XF86MonBrightnessUp" = "exec --no-startup-id brightnessctl set +5%";
-        "XF86MonBrightnessDown" = "exec --no-startup-id brightnessctl set 5%-";
+        "XF86AudioMicMute" = "exec --no-startup-id volumectl -m toggle-mute";
+        "XF86MonBrightnessUp" = "exec --no-startup-id lightctl up";
+        "XF86MonBrightnessDown" = "exec --no-startup-id lightctl down";
       };
 
       modes = {

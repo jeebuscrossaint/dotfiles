@@ -27,6 +27,8 @@
     
     schizofox.url = "github:schizofox/schizofox";
 
+    sway-alttab-flake.url = "github:jeebuscrossaint/sway-alttab-flake";
+
     
   };
   

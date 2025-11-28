@@ -20,8 +20,8 @@
     ./modules/bemenu.nix
     ./modules/nixcord.nix
     ./modules/chawan.nix
-      ./modules/sway.nix
-    ./modules/fish.nix
+     ./modules/sway.nix
+     ./modules/fish.nix
      ./modules/swaylock.nix
      ./modules/rofi.nix
      ./modules/swayidle.nix
@@ -29,8 +29,12 @@
      ./modules/labwc.nix
      ./modules/zed.nix
      ./modules/yazi.nix
-     ./modules/wayfire.nix
+     # ./modules/wayfire.nix
      ./modules/kitty.nix
+     ./modules/nvf.nix
+     ./modules/i3.nix
+     ./modules/i3-fix.nix
+     ./modules/xmonad.nix
   ];
 
   # IMPORTANT: This tells Home Manager it's running standalone
@@ -59,6 +63,10 @@
     dosfstools
     bottom
     qemu
+    xterm
+    xsecurelock
+    flameshot
+    autotiling
     # virtualboxWithExtpack
     bc
     swww
@@ -74,7 +82,8 @@
     shotman
     less
     # hyprshot
-    # hyprpicker
+    hyprpicker
+    htop
     # libsecret
     # wlay
     wlsunset
@@ -157,6 +166,7 @@
     # inputs.aocli.packages."${pkgs.system}".default
     # inputs.sf-mono-nerd-font.packages."${pkgs.system}".default
     # inputs.drawy.packages."${pkgs.system}".default
+    inputs.sway-alttab-flake.packages."${pkgs.system}".default
   ];
 
   # programs.librewolf.enable = true;
@@ -210,7 +220,7 @@
     
   # Stylix configuration (optional, remove if you don't want it)
   stylix.enable = true;
-  stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/kanagawa-dragon.yaml";
+  stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/evenok-dark.yaml";
   
   stylix.fonts = {
     serif = {

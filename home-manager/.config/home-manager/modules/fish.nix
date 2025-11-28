@@ -22,7 +22,7 @@
       jit = "git";
       ls = "lsd";
       cl = "clear";
-      htop = "btop";
+      # htop = "btop";
       "11" = "ping 1.1.1.1";
       xcopy = "xclip -sel clip";
       ppctl = "powerprofilesctl";

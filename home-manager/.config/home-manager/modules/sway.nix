@@ -68,7 +68,7 @@
         "${modifier}+g" = "exec new-wallpaper";
         "${modifier}+b" = "exec ~/dotfiles/bruh.sh --dunst";
         "${modifier}+Insert" = "exec cliphist list | bemenu | cliphist decode | wl-copy";  # Add clipboard history keybinding
-        "${modifier}+Alt+h" = "exec swaymsg output eDP-1 hdr toggle";
+        # "${modifier}+Alt+h" = "exec swaymsg output eDP-1 hdr toggle";
         # Focus bindings
         "${modifier}+left" = "focus left";
         "${modifier}+down" = "focus down";
@@ -210,6 +210,10 @@
           command = "nm-applet";
           always = false;
         }
+        {
+          command = "sway-alttab";
+          always = false;
+        }
       ];
 
       # Output configuration
@@ -218,7 +222,7 @@
           #bg = "#000000 solid_color";
           render_bit_depth = "10";
           color_profile = "srgb";
-          hdr = "off";
+          # hdr = "off";
         };
         "eDP-1" = {
         mode = "2560x1600@240Hz";
