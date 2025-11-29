@@ -6,8 +6,8 @@
   ...
 }: {
   xsession.windowManager.xmonad = {
-    enable = true;
-    enableContribAndExtras = true;
+    # enable = true;
+    # enableContribAndExtras = true;
     
     extraPackages = haskellPackages: [
       haskellPackages.xmonad-contrib

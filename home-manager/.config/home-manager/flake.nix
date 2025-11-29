@@ -29,6 +29,8 @@
 
     sway-alttab-flake.url = "github:jeebuscrossaint/sway-alttab-flake";
 
+    lode-fonts.url = "github:jeebuscrossaint/lode-fonts-flake";
+
     
   };
   

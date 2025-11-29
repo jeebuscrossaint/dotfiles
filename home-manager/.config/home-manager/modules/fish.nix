@@ -14,7 +14,7 @@
       pfetch
       # microfetch
       if test "$TERM" = "linux"
-        setfont Lat2-Terminus16 2>/dev/null
+        setfont spleen-16x32 2>/dev/null
       end
     '';
 
@@ -28,7 +28,7 @@
       ppctl = "powerprofilesctl";
       # "update-nixos" = "pushd $HOME/dotfiles && nix flake update --commit-lock-file && sudo nixos-rebuild switch --flake . && popd";
       # "new-wallpaper" = "swww img \"$(find ~/wallpapers/ -type f -print0 | shuf -z -n 1)\"";
-      "display-update" = "xrandr --output eDP-1 --mode 2560x1600 --rate 240.00 --primary --output  HDMI-1-0 --mode 1920x1080 --rate 60.00 --above eDP-1";
+      "display-update" = "xrandr --output eDP-1 --mode 2560x1600 --rate 240.00 --primary --output  HDMI-1-0 --mode 1920x1080 --rate 60.00 --right-of eDP-1";
     };
 
     shellInit = ''

@@ -17,7 +17,7 @@
     ./modules/dunst.nix
     ./modules/hypridle.nix
     ./modules/vscode.nix
-    ./modules/bemenu.nix
+    # ./modules/bemenu.nix
     ./modules/nixcord.nix
     ./modules/chawan.nix
      ./modules/sway.nix
@@ -34,7 +34,9 @@
      ./modules/nvf.nix
      ./modules/i3.nix
      ./modules/i3-fix.nix
-     ./modules/xmonad.nix
+     # ./modules/xmonad.nix
+     # ./modules/awesome.nix
+     # ./modules/spectrwm.nix
   ];
 
   # IMPORTANT: This tells Home Manager it's running standalone
@@ -64,7 +66,8 @@
     bottom
     qemu
     xterm
-    xsecurelock
+    xorg.xrandr
+    # xsecurelock
     flameshot
     autotiling
     # virtualboxWithExtpack
@@ -89,6 +92,7 @@
     wlsunset
     youtube-music
     tinycc
+    nixfmt
     typstyle
     typst
     typst-live
@@ -220,20 +224,52 @@
     
   # Stylix configuration (optional, remove if you don't want it)
   stylix.enable = true;
-  stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/evenok-dark.yaml";
+  stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/kimber.yaml";
   
-  stylix.fonts = {
+  # stylix.base16Scheme = "${pkgs.writeTextFile {
+  #  name = "hacker-green-scheme";
+  #  text = ''
+  #    name: "Hacker Green"
+  #    slug: hacker-green
+  #    author: "Amarnath Patel apatel6ty@protonmail.com"
+  #    variant: "dark"
+  #    palette:
+  #      base00: "#000000"  # black (background)
+  #      base01: "#003300"  # dark green (lighter background, status bars)
+  #      base02: "#006600"  # medium green (selection background)
+  #      base03: "#009900"  # bright green (comments, invisibles, line highlighting)
+  #      base04: "#00cc00"  # light green (dark foreground, used for status bars)
+  #      base05: "#33ff33"  # green (default foreground, caret, delimiters, operators)
+  #      base06: "#66ff66"  # light green (light foreground)
+  #      base07: "#99ff99"  # very light green (lightest foreground)
+  #      base08: "#ff3333"  # red (error highlighting, diff removed)
+  #      base09: "#ff9933"  # orange (integers, booleans, constants)
+  #      base0A: "#ffff33"  # yellow (keywords, search text)
+  #      base0B: "#33ff33"  # green (strings, inherited classes)
+  #      base0C: "#66ff66"  # cyan (support, regex, escape characters)
+  #      base0D: "#33cc33"  # blue (functions, methods, attribute ids)
+  #      base0E: "#99cc99"  # purple (storage, selectors, markup italics)
+  #      base0F: "#cc6666"  # brown (deprecated elements, embedded language tags)
+  #    '';
+  #  }}";
+    stylix.fonts = {
     serif = {
-      package = inputs.sf-mono-nerd-font.packages."${pkgs.system}".default;
-      name = "SFMono Nerd Font";
+      # package = inputs.sf-mono-nerd-font.packages."${pkgs.system}".default;
+      # name = "SFMono Nerd Font";
+      package = pkgs.spleen;
+      name = "Spleen 16x32";
     };
     sansSerif = {
-      package = inputs.sf-mono-nerd-font.packages."${pkgs.system}".default;
-      name = "SFMono Nerd Font";
+      # package = inputs.sf-mono-nerd-font.packages."${pkgs.system}".default;
+      # name = "SFMono Nerd Font";
+package = pkgs.spleen;
+      name = "Spleen 16x32";
     };
     monospace = {
-      package = inputs.sf-mono-nerd-font.packages."${pkgs.system}".default;
-      name = "SFMono Nerd Font";
+      # package = inputs.sf-mono-nerd-font.packages."${pkgs.system}".default;
+      # name = "SFMono Nerd Font";
+package = pkgs.spleen;
+      name = "Spleen 16x32";
     };
     emoji = {
       package = pkgs.noto-fonts-color-emoji;
@@ -242,13 +278,13 @@
   };
 
   stylix.fonts.sizes = {
-    terminal = 10;
-    desktop = 10;
-    applications = 10;
-    popups = 10;
+    terminal = 13.5;
+    desktop = 13.5;
+    applications = 13.5;
+    popups = 13.5;
   };
 
-  stylix.opacity.terminal = 1.0;
+  stylix.opacity.terminal = 0.5;
   stylix.opacity.popups = 1.0;
   stylix.opacity.applications = 1.0;
   stylix.opacity.desktop = 1.0;

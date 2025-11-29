@@ -18,14 +18,15 @@
         inner = 0;
         outer = 0;
         smartGaps = true;
+        smartBorders = "on";
       };
 
       window = {
-        border = 0;
+        border = 1;
         hideEdgeBorders = "none";
         commands = [
           {
-            command = "border pixel 2";
+            command = "border pixel 1";
             criteria = {class = ".*";};
           }
           {
@@ -51,13 +52,13 @@
 
       keybindings = lib.mkOptionDefault {
         # Main keybindings
-        "Mod4+q" = "exec xterm";
+        "Mod4+q" = "exec kitty";
         "Mod4+c" = "kill";
         "Mod4+p" = "floating toggle";
-        "Mod4+d" = "exec bemenu-run";
+        "Mod4+d" = "exec rofi -show drun";
         "Mod4+g" = "exec ";
         "Mod4+l" = "exec xsecurelock";
-        "Mod4+b" = "exec ~/bruh.sh --dunst";
+        "Mod4+b" = "exec ~/dotfiles/bruh.sh --dunst";
         "Mod4+shift+s" = "exec flameshot gui";
 
         # Window management
@@ -164,7 +165,7 @@
           notification = false;
         }
         {
-          command = "xrandr --output eDP-1 --mode 2560x1600 --rate 240.00 --primary --output HDMI-1-0 --mode 1920x1080 --rate 60.00 --above eDP-1";
+          command = "xrandr --output eDP-1 --mode 2560x1600 --rate 240.00 --primary --output HDMI-1-0 --mode 1920x1080 --rate 60.00 --right-of eDP-1";
           notification = false;
         }
         {

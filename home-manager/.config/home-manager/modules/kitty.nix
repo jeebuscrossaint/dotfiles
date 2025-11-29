@@ -9,7 +9,7 @@
 
     settings = {
       # Font Settings
-      font_size = 10.0;
+      font_size = 8.0;
 
       # Size Settings
       adjust_line_height = 2;
@@ -65,11 +65,11 @@
       inactive_text_alpha = 1.0;
 
       # Tab Bar Settings
-      tab_bar_min_tabs = 1;
-      tab_bar_edge = "bottom";
-      tab_bar_style = "powerline";
-      tab_powerline_style = "slanted";
-      tab_title_template = "{title}{' :{}:'.format(num_windows) if num_windows > 1 else ''}";
+      # tab_bar_min_tabs = 1;
+      # tab_bar_edge = "bottom";
+      # tab_bar_style = "powerline";
+      # tab_powerline_style = "slanted";
+      # tab_title_template = "{title}{' :{}:'.format(num_windows) if num_windows > 1 else ''}";
 
       # Mark Settings (Marked Text)
       mark1_foreground = "#1E1E2E";
