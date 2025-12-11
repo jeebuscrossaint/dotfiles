@@ -73,9 +73,9 @@
 
       # General settings
       general = {
-        gaps_in = 0;
-        gaps_out = 0;
-        border_size = 0;
+        gaps_in = 10;
+        gaps_out = 10;
+        border_size = 1;
         # Removed color settings to avoid conflicts with Stylix
         layout = "dwindle";
         allow_tearing = 1;
@@ -89,7 +89,7 @@
       # Decoration settings
       decoration = {
         shadow = {
-          enabled = false;
+          enabled = true;
           range = 11;
           render_power = 10;
           sharp = false;
@@ -97,14 +97,14 @@
           # Removed color settings to avoid conflicts with Stylix
           scale = 1.0;
         };
-        rounding = 0;
+        rounding = 7;
         active_opacity = 1.0;
         inactive_opacity = 1.0;
         dim_strength = 0.0;
         dim_around = 0;
         dim_inactive = false;
         blur = {
-          enabled = false;
+          enabled = true;
           size = 7;
           passes = 2;
           vibrancy = 0;
@@ -121,7 +121,7 @@
 
       # Animation settings
       animations = {
-        enabled = false;
+        enabled = true;
         bezier = [
           "main, 0.21, 1, 0.21, 1.05"
           "linear, 0.0, 0.0, 1.0, 1.0"
@@ -183,8 +183,8 @@
 
       # Gestures
       gestures = {
-        workspace_swipe = "on";
-        workspace_swipe_fingers = 3;
+        # workspace_swipe = "on";
+        # workspace_swipe_fingers = 3;
         workspace_swipe_forever = true;
       };
 

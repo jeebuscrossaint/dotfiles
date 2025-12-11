@@ -7,7 +7,7 @@
 }: {
   imports = [
     # ./modules/newsboat.nix
-    # ./modules/bat.nix
+    ./modules/bat.nix
     ./modules/foot.nix
     ./modules/helix.nix
     ./modules/hyprlock.nix
@@ -16,6 +16,8 @@
      ./modules/mpv.nix
     ./modules/dunst.nix
     ./modules/hypridle.nix
+    ./modules/hyprlock.nix
+    ./modules/hyprland.nix
     ./modules/vscode.nix
     # ./modules/bemenu.nix
     ./modules/nixcord.nix
@@ -32,8 +34,10 @@
      # ./modules/wayfire.nix
      ./modules/kitty.nix
      ./modules/nvf.nix
-     ./modules/i3.nix
-     ./modules/i3-fix.nix
+     # ./modules/i3.nix
+     # ./modules/i3-fix.nix
+     ./modules/sxwm.nix
+     ./modules/picom.nix
      # ./modules/xmonad.nix
      # ./modules/awesome.nix
      # ./modules/spectrwm.nix
@@ -66,12 +70,14 @@
     bottom
     qemu
     xterm
-    xorg.xrandr
+    xcalc
+    xrandr
     # xsecurelock
     flameshot
     autotiling
     # virtualboxWithExtpack
     bc
+    feh
     swww
     hollywood
     cmatrix
@@ -79,24 +85,24 @@
     pipes-rs
     # pcmanfm
     gdu
-    steam
+    # steam
     standardnotes
     # guvcview
     shotman
     less
     # hyprshot
     hyprpicker
-    htop
+    # htop
     # libsecret
     # wlay
     wlsunset
     youtube-music
     tinycc
     nixfmt
-    typstyle
-    typst
-    typst-live
-    dotnet-sdk
+    # typstyle
+    # typst
+    # typst-live
+    # dotnet-sdk
     cutter
     # ghidra
     qalculate-gtk
@@ -107,15 +113,16 @@
     # btop
     # pciutils
     autotiling-rs
-    ipfetch
+    # ipfetch
     pfetch-rs
+    nitch
     wl-clipboard-rs
     swappy
     slurp
     grim
     jq
     # slurp
-    lsd
+    # lsd
     # microfetch
     avizo
     cliphist
@@ -130,9 +137,10 @@
     blueberry
     # gparted
     lunar-client
+    prismlauncher
     libreoffice-fresh
     wasistlos
-    glow
+    # glow
     # pfetch-rs
     yazi
     corefonts
@@ -152,9 +160,12 @@
     networkmanagerapplet
     # guvcview
     # cheese
-    snapshot
+    # snapshot
     brightnessctl
     rustup
+    # xorg.fontmiscmisc
+    cudaPackages.cuda_nvcc
+    nix-search
     # rustfmt
     # gnomeExtensions.blur-my-shell
     # gnomeExtensions.burn-my-windows
@@ -166,8 +177,9 @@
     # gnomeExtensions.dash-to-dock
     # gnomeExtensions.paperwm
     # Add your custom packages
-    # inputs.doomer.packages."${pkgs.system}".default
-    # inputs.aocli.packages."${pkgs.system}".default
+    inputs.doomer.packages."${pkgs.system}".default
+    inputs.aocli.packages."${pkgs.system}".default
+    inputs.sxwm.packages."${pkgs.system}".default
     # inputs.sf-mono-nerd-font.packages."${pkgs.system}".default
     # inputs.drawy.packages."${pkgs.system}".default
     inputs.sway-alttab-flake.packages."${pkgs.system}".default
@@ -180,10 +192,11 @@
     XCURSOR_THEME = "rose-pine-cursor";
     XCURSOR_SIZE = "24";
     NIXOS_OZONE_WL = "1";
-    EDITOR = "helix";
+    EDITOR = "hx";
   };
   
   fonts.fontconfig.enable = true;
+  # fonts.fontconfig.allowBitmaps = true;
 
   programs.git = {
     enable = true;
@@ -208,14 +221,15 @@
   };
 
   # CRITICAL for standalone: This must match your Nix channel version
-  home.stateVersion = "25.05";  # Change to match Home Manager version
+  home.stateVersion = "25.11";  # Change to match Home Manager version
 
+  stylix.enableReleaseChecks = false;
   programs.home-manager.enable = true;
 
   services.home-manager.autoUpgrade.useFlake = true;
   programs.cava.enable = true;
-  programs.nh.enable = true;
-  programs.qutebrowser.enable = false;
+  # programs.nh.enable = true;
+  programs.qutebrowser.enable = true;
   programs.chromium.enable = true;
   programs.schizofox.enable = false;
   programs.zathura.enable = true;
@@ -224,7 +238,7 @@
     
   # Stylix configuration (optional, remove if you don't want it)
   stylix.enable = true;
-  stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/kimber.yaml";
+  stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/da-one-black.yaml";
   
   # stylix.base16Scheme = "${pkgs.writeTextFile {
   #  name = "hacker-green-scheme";
@@ -254,22 +268,22 @@
   #  }}";
     stylix.fonts = {
     serif = {
-      # package = inputs.sf-mono-nerd-font.packages."${pkgs.system}".default;
-      # name = "SFMono Nerd Font";
-      package = pkgs.spleen;
-      name = "Spleen 16x32";
+      package = inputs.sf-mono-nerd-font.packages."${pkgs.system}".default;
+      name = "SFMono Nerd Font";
+      # package = pkgs.uw-ttyp0;
+      # name = "UW Ttyp0";
     };
     sansSerif = {
-      # package = inputs.sf-mono-nerd-font.packages."${pkgs.system}".default;
-      # name = "SFMono Nerd Font";
-package = pkgs.spleen;
-      name = "Spleen 16x32";
+      package = inputs.sf-mono-nerd-font.packages."${pkgs.system}".default;
+      name = "SFMono Nerd Font";
+      # package = pkgs.uw-ttyp0;
+      # name = "UW Ttyp0";
     };
     monospace = {
-      # package = inputs.sf-mono-nerd-font.packages."${pkgs.system}".default;
-      # name = "SFMono Nerd Font";
-package = pkgs.spleen;
-      name = "Spleen 16x32";
+      package = inputs.sf-mono-nerd-font.packages."${pkgs.system}".default;
+      name = "SFMono Nerd Font";
+      # package = pkgs.uw-ttyp0;
+      # name = "UW Ttyp0";
     };
     emoji = {
       package = pkgs.noto-fonts-color-emoji;
@@ -278,13 +292,13 @@ package = pkgs.spleen;
   };
 
   stylix.fonts.sizes = {
-    terminal = 13.5;
-    desktop = 13.5;
-    applications = 13.5;
-    popups = 13.5;
+    terminal = 10;
+    desktop = 10;
+    applications = 10;
+    popups = 10;
   };
 
-  stylix.opacity.terminal = 0.5;
+  stylix.opacity.terminal = 1.0;
   stylix.opacity.popups = 1.0;
   stylix.opacity.applications = 1.0;
   stylix.opacity.desktop = 1.0;

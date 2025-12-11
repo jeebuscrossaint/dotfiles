@@ -6,19 +6,19 @@
     
     timeouts = [
       # Lock screen after 2.5 minutes of inactivity
-      {
-        timeout = 150;
-        command = "swaylock";
-      }
+#      {
+#        timeout = 150;
+#        command = "swaylock";
+#      }
       # Turn off displays after 10 minutes
       {
-        timeout = 600;
+        timeout = 180;
         command = "swaymsg 'output * dpms off'";
         resumeCommand = "swaymsg 'output * dpms on'";
       }
-      # Suspend system after 15 minutes
+      # Suspend system after 5 minutes
       {
-        timeout = 900;
+        timeout = 300;
         command = "systemctl suspend";
       }
     ];

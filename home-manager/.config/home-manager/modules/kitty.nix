@@ -9,7 +9,7 @@
 
     settings = {
       # Font Settings
-      font_size = 8.0;
+      # font_size = 8.0;
 
       # Size Settings
       adjust_line_height = 2;

@@ -19,17 +19,19 @@
     aocli.url = "github:jeebuscrossaint/aocli";
     
     nixcord.url = "github:kaylorben/nixcord";
+
+    sxwm.url = "github:jeebuscrossaint/sxwm-flake";
     
     sf-mono-nerd-font = {
       url = "github:jeebuscrossaint/sf-mono-nerd-font-flake";
-      inputs.nixpkgs.follows = "nixpkgs";
+      # inputs.nixpkgs.follows = "nixpkgs";
     };
     
     schizofox.url = "github:schizofox/schizofox";
 
     sway-alttab-flake.url = "github:jeebuscrossaint/sway-alttab-flake";
 
-    lode-fonts.url = "github:jeebuscrossaint/lode-fonts-flake";
+    # lode-fonts.url = "github:jeebuscrossaint/lode-fonts-flake";
 
     
   };

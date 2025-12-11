@@ -1,7 +1,7 @@
 # In your home.nix file
 {
   services.picom = {
-    enable = false;
+    enable = true;
     
     # Fading configuration
     fade = true;
@@ -13,7 +13,7 @@
     ];
     
     # Shadow configuration
-    shadow = true;
+    shadow = false;
     shadowOffsets = [(- 15) (- 15)]; # Proper syntax for negative numbers in lists
     shadowOpacity = 0.75;
     shadowExclude = [

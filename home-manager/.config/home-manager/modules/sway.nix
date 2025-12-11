@@ -18,7 +18,7 @@
       # Window appearance
       window = {
         titlebar = false;
-        border = 1;
+        border = 0;
       };
 
       # Inputs
@@ -39,7 +39,7 @@
       # Default programs
       # menu = "BEMENU_BACKEND=wayland bemenu-run";
       menu = "rofi -show drun";
-      terminal = "foot";
+      terminal = "kitty";
 
       # Bar configuration
       bars = [
