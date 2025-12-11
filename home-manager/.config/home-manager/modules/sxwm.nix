@@ -5,7 +5,7 @@
   ...
 }: {
   # Disable other window managers
-  xsession.windowManager.i3.enable = false;
+  # xsession.windowManager.i3.enable = false;
 
   # Generate sxwm config
   home.file.".config/sxwmrc".text = ''

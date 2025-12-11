@@ -34,8 +34,8 @@
      # ./modules/wayfire.nix
      ./modules/kitty.nix
      ./modules/nvf.nix
-     # ./modules/i3.nix
-     # ./modules/i3-fix.nix
+     ./modules/i3.nix
+     ./modules/i3-fix.nix
      ./modules/sxwm.nix
      ./modules/picom.nix
      # ./modules/xmonad.nix
@@ -72,6 +72,7 @@
     xterm
     xcalc
     xrandr
+    unclutter-xfixes
     # xsecurelock
     flameshot
     autotiling
