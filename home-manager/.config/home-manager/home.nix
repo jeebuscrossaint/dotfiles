@@ -35,6 +35,7 @@
      ./modules/kitty.nix
      # ./modules/nvf.nix
      ./modules/micro.nix
+     ./modules/mangowc.nix
      # ./modules/i3.nix
      # ./modules/i3-fix.nix
      # ./modules/sxwm.nix
@@ -308,7 +309,7 @@
     popups = 12;
   };
 
-  stylix.opacity.terminal = 1.0;
+  stylix.opacity.terminal = 0.7;
   stylix.opacity.popups = 1.0;
   stylix.opacity.applications = 1.0;
   stylix.opacity.desktop = 1.0;
