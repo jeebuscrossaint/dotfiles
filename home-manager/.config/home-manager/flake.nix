@@ -31,6 +31,10 @@
 
     sway-alttab-flake.url = "github:jeebuscrossaint/sway-alttab-flake";
 
+    # win10-dark.url = "github:jeebuscrossaint/Windows-10-Dark-flake";
+
+    segoe-font.url = "github:jeebuscrossaint/segoe-ui-linux-flake";
+
     # lode-fonts.url = "github:jeebuscrossaint/lode-fonts-flake";
 
     

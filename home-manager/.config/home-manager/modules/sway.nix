@@ -26,6 +26,17 @@
         "type:touchpad" = {
           natural_scroll = "disabled";
         };
+        "type:keyboard" = {
+          repeat_delay = "200";
+          repeat_rate = "50";
+        };
+      };
+
+      seat = {
+        "*" = {
+          hide_cursor = "3000";
+          # hide_cursor_when_typing = "enable";
+        };
       };
 
       # Focus behavior
@@ -59,7 +70,7 @@
         modifier = "Mod4";
       in {
         # Basic bindings
-        "${modifier}+q" = "exec foot";
+        "${modifier}+q" = "exec kitty";
         # "${modifier}+d" = "exec /bin/sh -c bemenu-run";
         "${modifier}+d" = "exec rofi -show drun";
         "${modifier}+c" = "kill";
@@ -126,6 +137,7 @@
         "XF86AudioPlay" = "exec playerctl play-pause";
         "XF86MonBrightnessUp" = "exec lightctl up";
         "XF86MonBrightnessDown" = "exec lightctl down";
+        "XF86TouchpadToggle" = "input type:touchpad events toggle enabled disabled";
 
         # Screenshot
         # "${modifier}+Shift+s" = "${modifier}+Shift+s" = ''exec grim -g "$(swaymsg -t get_tree | jq -r '.. | select(.pid? and .visible?) | .rect | "\(.x),\(.y) \(.width)x\(.height)"' | slurp)" - | swappy -f -'';

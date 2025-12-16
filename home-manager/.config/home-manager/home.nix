@@ -8,18 +8,18 @@
   imports = [
     # ./modules/newsboat.nix
     ./modules/bat.nix
-    ./modules/foot.nix
+    # ./modules/foot.nix
     ./modules/helix.nix
-    ./modules/hyprlock.nix
+    # ./modules/hyprlock.nix
     # ./modules/fd.nix
     ./modules/btop.nix
      ./modules/mpv.nix
     ./modules/dunst.nix
-    ./modules/hypridle.nix
-    ./modules/hyprlock.nix
-    ./modules/hyprland.nix
+    # ./modules/hypridle.nix
+    # ./modules/hyprlock.nix
+    # ./modules/hyprland.nix
     ./modules/vscode.nix
-    # ./modules/bemenu.nix
+    ./modules/bemenu.nix
     ./modules/nixcord.nix
     ./modules/chawan.nix
      ./modules/sway.nix
@@ -29,18 +29,20 @@
      ./modules/swayidle.nix
      ./modules/sway-fix.nix
      ./modules/labwc.nix
-     ./modules/zed.nix
+     # ./modules/zed.nix
      ./modules/yazi.nix
      # ./modules/wayfire.nix
      ./modules/kitty.nix
-     ./modules/nvf.nix
-     ./modules/i3.nix
-     ./modules/i3-fix.nix
-     ./modules/sxwm.nix
-     ./modules/picom.nix
+     # ./modules/nvf.nix
+     ./modules/micro.nix
+     # ./modules/i3.nix
+     # ./modules/i3-fix.nix
+     # ./modules/sxwm.nix
+     # ./modules/picom.nix
      # ./modules/xmonad.nix
      # ./modules/awesome.nix
      # ./modules/spectrwm.nix
+     # ./modules/river.nix
   ];
 
   # IMPORTANT: This tells Home Manager it's running standalone
@@ -65,92 +67,95 @@
     # vulkan-extension-layer
     # libnotify
     # xwallpaper
-    wget
-    dosfstools
-    bottom
-    qemu
-    xterm
-    xcalc
-    xrandr
-    unclutter-xfixes
+    # wget
+    # dosfstools
+    # bottom
+    # qemu
+    # windows10-icons
+    # fluent-gtk-theme
+    # xterm
+    # xcalc
+    # xrandr
+    # unclutter-xfixes
     # xsecurelock
-    flameshot
-    autotiling
+    # flameshot
+    # autotiling
     # virtualboxWithExtpack
-    bc
-    feh
-    swww
+    # bc
+    # feh
+    # swww
     hollywood
-    cmatrix
-    cbonsai
-    pipes-rs
+    # cmatrix
+    # cbonsai
+    # pipes-rs
     # pcmanfm
-    gdu
+    # gdu
     # steam
     standardnotes
     # guvcview
     shotman
-    less
+    # less
     # hyprshot
-    hyprpicker
+    # hyprpicker
     # htop
     # libsecret
     # wlay
-    wlsunset
-    youtube-music
-    tinycc
-    nixfmt
+    # wlsunset
+    # youtube-music
+    # tinycc
+    # nixfmt
     # typstyle
     # typst
     # typst-live
     # dotnet-sdk
     cutter
     # ghidra
-    qalculate-gtk
-    fastfetch
-    tree
+    # qalculate-gtk
+    # fastfetch
+    # tree
     # fzf
     # which
     # btop
     # pciutils
-    autotiling-rs
+    # autotiling-rs
     # ipfetch
-    pfetch-rs
+    # pfetch-rs
     nitch
-    wl-clipboard-rs
-    swappy
-    slurp
-    grim
-    jq
+    # wl-clipboard-rs
+    # swappy
+    # slurp
+    # grim
+    # jq
     # slurp
     # lsd
     # microfetch
     avizo
-    cliphist
+    # cliphist
     # udiskie
     # gamemode
-    font-awesome
+    # font-awesome
     # gnome-tweaks
     # gtk-engine-murrine
     # gnome-themes-extra
     # xclip
     # wireshark
-    blueberry
+    # blueberry
     # gparted
     lunar-client
-    prismlauncher
-    libreoffice-fresh
+    # prismlauncher-unwrapped
+    # openjdk21
+    # libreoffice-fresh
     wasistlos
     # glow
     # pfetch-rs
-    yazi
-    corefonts
-    slack
+    # yazi
+    # corefonts
+    # slack
     # gamemode
-    imv
+    # imv
     # sbctl
     lowfi
-    pavucontrol
+    # pavucontrol
     tor-browser
     whitesur-icon-theme
     whitesur-gtk-theme
@@ -158,15 +163,16 @@
     rose-pine-cursor
     rose-pine-icon-theme
     rose-pine-gtk-theme
-    networkmanagerapplet
+    # networkmanagerapplet
     # guvcview
     # cheese
     # snapshot
     brightnessctl
-    rustup
+    # rustup
     # xorg.fontmiscmisc
-    cudaPackages.cuda_nvcc
+    # cudaPackages.cuda_nvcc
     nix-search
+    # brave
     # rustfmt
     # gnomeExtensions.blur-my-shell
     # gnomeExtensions.burn-my-windows
@@ -180,15 +186,17 @@
     # Add your custom packages
     inputs.doomer.packages."${pkgs.system}".default
     inputs.aocli.packages."${pkgs.system}".default
-    inputs.sxwm.packages."${pkgs.system}".default
+    # inputs.sxwm.packages."${pkgs.system}".default
     # inputs.sf-mono-nerd-font.packages."${pkgs.system}".default
     # inputs.drawy.packages."${pkgs.system}".default
     inputs.sway-alttab-flake.packages."${pkgs.system}".default
+    # inputs.win10-dark.packages."${pkgs.system}".default
+    # inputs.segoe-font.packages."${pkgs.system}".default
   ];
 
   # programs.librewolf.enable = true;
-  programs.tmux.enable = true;
-
+  # programs.tmux.enable = true;
+  
   home.sessionVariables = {
     XCURSOR_THEME = "rose-pine-cursor";
     XCURSOR_SIZE = "24";
@@ -239,7 +247,7 @@
     
   # Stylix configuration (optional, remove if you don't want it)
   stylix.enable = true;
-  stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/da-one-black.yaml";
+  stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/windows-10.yaml";
   
   # stylix.base16Scheme = "${pkgs.writeTextFile {
   #  name = "hacker-green-scheme";
@@ -269,22 +277,23 @@
   #  }}";
     stylix.fonts = {
     serif = {
-      package = inputs.sf-mono-nerd-font.packages."${pkgs.system}".default;
-      name = "SFMono Nerd Font";
-      # package = pkgs.uw-ttyp0;
-      # name = "UW Ttyp0";
+      # package = inputs.sf-mono-nerd-font.packages."${pkgs.system}".default;
+      # name = "SFMono Nerd Font";
+      package = pkgs.nerd-fonts.ubuntu-mono;
+      name = "UbuntuMono Nerd Font Mono";
     };
     sansSerif = {
-      package = inputs.sf-mono-nerd-font.packages."${pkgs.system}".default;
-      name = "SFMono Nerd Font";
-      # package = pkgs.uw-ttyp0;
-      # name = "UW Ttyp0";
+      # package = inputs.sf-mono-nerd-font.packages."${pkgs.system}".default;
+      # name = "SFMono Nerd Font";
+      package = pkgs.nerd-fonts.ubuntu-mono;
+      name = "UbuntuMono Nerd Font Mono";
+    
     };
     monospace = {
-      package = inputs.sf-mono-nerd-font.packages."${pkgs.system}".default;
-      name = "SFMono Nerd Font";
-      # package = pkgs.uw-ttyp0;
-      # name = "UW Ttyp0";
+      # package = inputs.sf-mono-nerd-font.packages."${pkgs.system}".default;
+      # name = "SFMono Nerd Font";
+      package = pkgs.nerd-fonts.ubuntu-mono;
+      name = "UbuntuMono Nerd Font Mono";
     };
     emoji = {
       package = pkgs.noto-fonts-color-emoji;
@@ -293,10 +302,10 @@
   };
 
   stylix.fonts.sizes = {
-    terminal = 10;
-    desktop = 10;
-    applications = 10;
-    popups = 10;
+    terminal = 12;
+    desktop = 12;
+    applications = 12;
+    popups = 12;
   };
 
   stylix.opacity.terminal = 1.0;

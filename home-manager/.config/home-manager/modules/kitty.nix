@@ -12,7 +12,7 @@
       # font_size = 8.0;
 
       # Size Settings
-      adjust_line_height = 2;
+      # adjust_line_height = 2;
       adjust_column_width = 0;
       window_padding_width = 40;
 

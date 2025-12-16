@@ -23,23 +23,19 @@
       extensions = with pkgs.vscode-extensions; [
         github.copilot
         ms-python.python
-        #ms-vscode.cpptools
-        jnoortheen.nix-ide
+        ms-python.vscode-pylance
+         jnoortheen.nix-ide
         ms-vscode.hexeditor
+        ms-vscode.anycode
         github.copilot-chat
-        tamasfe.even-better-toml
-        timonwong.shellcheck
-        ms-vscode.powershell
-        ms-vscode.cmake-tools
-        bmalehorn.vscode-fish
-        rust-lang.rust-analyzer
+      timonwong.shellcheck
+          ms-vscode.cmake-tools
         ms-vscode.makefile-tools
         mechatroner.rainbow-csv
         james-yu.latex-workshop
-        ms-vscode-remote.vscode-remote-extensionpack
         llvm-vs-code-extensions.vscode-clangd
-        ziglang.vscode-zig
-        
+        # nvidia.nsight-copilot
+        # nvidia.nsight-vscode-extension
       ];
     };
   };

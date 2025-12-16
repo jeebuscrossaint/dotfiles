@@ -46,8 +46,8 @@
       #set -x PATH /usr/local/bin $PATH
       set -x GSK_RENDERER ngl
       set -x NIXPKGS_ALLOW_UNFREE 1
-      # fish_add_path /opt/cuda/bin
-      # set -x LD_LIBRARY_PATH /opt/cuda/lib64 $LD_LIBRARY_PATH
+      fish_add_path /opt/cuda/bin
+      set -x LD_LIBRARY_PATH /opt/cuda/lib64 $LD_LIBRARY_PATH
     '';
 
     functions = {

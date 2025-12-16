@@ -8,7 +8,7 @@
       #!/bin/sh
       
       # Variables
-      term="foot"
+      term="kitty"
       term_alt="xterm"
       browser="zen-browser"
       browser_pw="zen-browser --private-window"
