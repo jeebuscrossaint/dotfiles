@@ -22,7 +22,7 @@
     # ============================================
     # WINDOW EFFECTS (Disabled - matching Sway)
     # ============================================
-    blur=0
+    blur=1
     blur_layer=1
     blur_optimized=1
     blur_params_num_passes=2
@@ -31,7 +31,7 @@
     blur_params_brightness=0.9
     blur_params_contrast=0.9
     blur_params_saturation=1.2
-    shadows=0
+    shadows=1
     shadow_only_floating=0
     layer_shadows=0
     shadows_size=10
@@ -47,12 +47,13 @@
     # ============================================
     # ANIMATIONS (Enabled - smooth like Sway)
     # ============================================
+    # animations could be zoom slide fade none
     animations=1
     layer_animations=0
-    animation_type_open=slide
-    animation_type_close=slide
-    layer_animation_type_open=slide
-    layer_animation_type_close=slide
+    animation_type_open=zoom 
+    animation_type_close=zoom
+    layer_animation_type_open=zoom
+    layer_animation_type_close=zoom
     animation_fade_in=1
     animation_fade_out=1
     tag_animation_direction=1
@@ -163,10 +164,10 @@
     # ============================================
     # APPEARANCE (Gaps disabled like Sway)
     # ============================================
-    gappih=20
-    gappiv=20
-    gappoh=20
-    gappov=20
+    gappih=25
+    gappiv=25
+    gappoh=25
+    gappov=25
     scratchpad_width_ratio=0.8
     scratchpad_height_ratio=0.9
     borderpx=0
@@ -221,7 +222,7 @@
     exec-once=avizo-service
     exec-once=swayidle
     exec-once=swaync
-    exec-once=ww --daemon
+    # exec-once=ww --daemon
     exec-once=sway-alttab
     exec-once=waybar
 

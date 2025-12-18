@@ -6,7 +6,7 @@
 }: {
   programs.zed-editor = {
     enable = true;
-    extensions = ["nix" "toml" "make"];
+    extensions = ["nix" "toml" "make" "typst"];
     extraPackages = with pkgs; [
       rustfmt
       rust-analyzer

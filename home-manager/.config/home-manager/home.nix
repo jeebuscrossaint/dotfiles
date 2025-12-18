@@ -114,6 +114,16 @@
     };
   };
 
+  programs.vivid = {
+    enable = true;
+    package = pkgs.emptyDirectory;
+  };
+
+  programs.tofi = {
+    enable = true;
+    package = pkgs.emptyDirectory;
+  };
+
   programs.gh = {
     enable = true;
     gitCredentialHelper.enable = true;
@@ -127,10 +137,19 @@
   programs.home-manager.enable = true;
 
   services.home-manager.autoUpgrade.useFlake = true;
-  programs.qutebrowser.enable = true;
-  programs.chromium.enable = true;
+  programs.qutebrowser = {
+    enable = true;
+    # package = pkgs.emptyDirectory;
+  };
+  programs.chromium = {
+    enable = true;
+    package = pkgs.emptyDirectory;
+  };
   programs.schizofox.enable = false;
-  programs.zathura.enable = true;
+  programs.zathura = {
+    enable = true;
+    package = pkgs.emptyDirectory;
+  };
   services.avizo.enable = true;
 
     
@@ -172,7 +191,7 @@
     popups = 14;
   };
 
-  stylix.opacity.terminal = 1.0;
+  stylix.opacity.terminal = 0.0;
   stylix.opacity.popups = 1.0;
   stylix.opacity.applications = 1.0;
   stylix.opacity.desktop = 1.0;
