@@ -22,7 +22,7 @@
     # ============================================
     # WINDOW EFFECTS (Disabled - matching Sway)
     # ============================================
-    blur=1
+    blur=0
     blur_layer=1
     blur_optimized=1
     blur_params_num_passes=2
@@ -31,7 +31,7 @@
     blur_params_brightness=0.9
     blur_params_contrast=0.9
     blur_params_saturation=1.2
-    shadows=1
+    shadows=0
     shadow_only_floating=0
     layer_shadows=0
     shadows_size=10
@@ -39,7 +39,7 @@
     shadows_position_x=0
     shadows_position_y=0
     shadowscolor=0x000000ff
-    border_radius=7
+    border_radius=0
     no_radius_when_single=1
     focused_opacity=1.0
     unfocused_opacity=1.0
@@ -163,10 +163,10 @@
     # ============================================
     # APPEARANCE (Gaps disabled like Sway)
     # ============================================
-    gappih=10
-    gappiv=10
-    gappoh=10
-    gappov=10
+    gappih=20
+    gappiv=20
+    gappoh=20
+    gappov=20
     scratchpad_width_ratio=0.8
     scratchpad_height_ratio=0.9
     borderpx=0
@@ -221,7 +221,7 @@
     exec-once=avizo-service
     exec-once=swayidle
     exec-once=swaync
-    exec-once=swww-daemon
+    exec-once=ww --daemon
     exec-once=sway-alttab
     exec-once=waybar
 
@@ -238,7 +238,7 @@
     bind=SUPER,l,spawn,swaylock -C ~/.config/swaylock/config
     bind=SUPER,g,spawn,new-wallpaper
     bind=SUPER,b,spawn,~/dotfiles/bruh.sh --dunst
-    bind=SUPER,Insert,spawn,cliphist list | bemenu | cliphist decode | wl-copy
+    bind=SUPER+SHIFT,o,spawn,"cliphist list | bemenu | cliphist decode | wl-copy"
 
     # Focus direction (arrow keys)
     bind=SUPER,Left,focusdir,left
@@ -279,7 +279,7 @@
     # Layout controls
     bind=SUPER+SHIFT,v,togglefloating
     bind=SUPER,f,togglefullscreen
-    bind=SUPER,r,setkeymode,resize
+    # bind=SUPER,r,setkeymode,resize
 
     # Media keys
     bind=NONE,XF86AudioRaiseVolume,spawn,volumectl up
@@ -317,7 +317,7 @@
     mousebind=SUPER,btn_left,moveresize,curmove
     mousebind=SUPER,btn_right,moveresize,curresize
     mousebind=SUPER+CTRL,btn_right,killclient
-    mousebind=NONE,btn_middle,togglemaximizescreen,0
+    # mousebind=NONE,btn_middle,togglemaximizescreen,0
 
     # ============================================
     # GESTURE BINDINGS (Touchpad gestures)

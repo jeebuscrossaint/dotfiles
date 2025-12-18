@@ -6,6 +6,7 @@
 }: {
   programs.kitty = {
     enable = true;
+    package = pkgs.emptyDirectory;
 
     settings = {
       # Font Settings

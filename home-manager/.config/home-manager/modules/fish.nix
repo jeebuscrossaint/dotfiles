@@ -9,11 +9,8 @@
     # Remove greeting
     interactiveShellInit = ''
       set -g fish_greeting
-      #fish_config theme choose "Old School"
       starship init fish | source
-      # pfetch
-      nitch
-      # microfetch
+      motd
       if test "$TERM" = "linux"
         setfont Lat2-Terminus16 2>/dev/null
       end
@@ -222,11 +219,4 @@
   };
 };
 
-  # Make sure pkgs includes lsd, btop, etc.
-  home.packages = with pkgs; [
-    lsd
-    btop
-    xclip
-    # Add other packages you use
-  ];
 }

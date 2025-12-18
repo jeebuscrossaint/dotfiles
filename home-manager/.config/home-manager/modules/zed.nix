@@ -42,7 +42,7 @@
         ### copilot_chat models { gpt-4o gpt-4 gpt-3.5-turbo o1-preview } requires github connected
         default_model = {
           provider = "copilot_chat";
-          model = "claude-3-7-sonnet";
+          model = "claude-4-5-sonnet";
         };
 
         #                inline_alternatives = [

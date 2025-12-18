@@ -5,6 +5,7 @@
 }: {
   programs.bemenu = {
     enable = true;
+    package = pkgs.emptyDirectory;
     settings = {
       ignorecase = true;
       list = 10;

@@ -22,27 +22,20 @@
 
     sxwm.url = "github:jeebuscrossaint/sxwm-flake";
     
-    sf-mono-nerd-font = {
-      url = "github:jeebuscrossaint/sf-mono-nerd-font-flake";
-      # inputs.nixpkgs.follows = "nixpkgs";
-    };
+    sf-mono-nerd-font.url = "github:jeebuscrossaint/sf-mono-nerd-font-flake";
     
     schizofox.url = "github:schizofox/schizofox";
 
-    sway-alttab-flake.url = "github:jeebuscrossaint/sway-alttab-flake";
+    ww.url = "github:jeebuscrossaint/ww";
 
-    # win10-dark.url = "github:jeebuscrossaint/Windows-10-Dark-flake";
-
-    segoe-font.url = "github:jeebuscrossaint/segoe-ui-linux-flake";
-
-    # lode-fonts.url = "github:jeebuscrossaint/lode-fonts-flake";
+    motd.url = "github:jeebuscrossaint/motd";
 
     
   };
   
   outputs = { nixpkgs, home-manager, ... }@inputs: {
     homeConfigurations = {
-      # Replace "amarnath" with your Arch Linux username
+      # Replace "amarnath" with your username
       amarnath = home-manager.lib.homeManagerConfiguration {
         pkgs = nixpkgs.legacyPackages.x86_64-linux;
         
