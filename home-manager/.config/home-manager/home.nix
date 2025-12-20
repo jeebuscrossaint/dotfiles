@@ -61,16 +61,46 @@
     rose-pine-gtk-theme
     brightnessctl
     mangowc
-    # gnomeExtensions.blur-my-shell
-    # gnomeExtensions.burn-my-windows
-    # gnomeExtensions.weather-or-not
-    # gnomeExtensions.rounded-window-corners-reborn
-    # gnomeExtensions.mpris-label
-    # gnomeExtensions.fly-pie
-    # gnomeExtensions.desktop-clock
-    # gnomeExtensions.dash-to-dock
-    # gnomeExtensions.paperwm
-    # Add your custom packages
+    xterm
+    libnotify
+    pavucontrol
+    brave
+    nmap
+    qemu
+    cliphist
+    cmatrix
+    fastfetch
+    glow
+    pipes-rs
+    libreoffice-fresh
+    tree
+    xmake
+    tinycc
+    shellcheck
+    xxd
+    prismlauncher
+    cbonsai
+    gnome-tweaks
+    nautilus
+    autotiling-rs
+    grim
+    hyprpicker
+    slurp
+    swappy
+    wlsunset
+    wl-clipboard-rs
+    labwc
+    corefonts
+    imagemagick
+    imv
+    youtube-music
+    nmap
+    slack
+    yt-dlp
+    blueman
+    qalculate-gtk
+    systemctl-tui
+    gdu
     inputs.doomer.packages."${pkgs.stdenv.hostPlatform.system}".default
     inputs.aocli.packages."${pkgs.stdenv.hostPlatform.system}".default
     inputs.ww.packages."${pkgs.stdenv.hostPlatform.system}".default
