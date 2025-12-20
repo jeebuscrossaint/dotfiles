@@ -3,7 +3,7 @@
   wayland.windowManager.wayfire = {
     enable = true;
     xwayland.enable = true;
-    package = pkgs.emptyDirectory;
+    # package = pkgs.emptyDirectory;
 
     plugins = with pkgs.wayfirePlugins; [
       wcm

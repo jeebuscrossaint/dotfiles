@@ -3,7 +3,7 @@
 {
   programs.swaylock = {
     enable = true;
-    package = pkgs.emptyDirectory;
+    # package = pkgs.emptyDirectory;
     settings = {
       clock = true;
       timestr = "%-I:%M %p";

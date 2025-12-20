@@ -50,7 +50,7 @@
     cutter
     avizo
     lunar-client
-    # wasistlos
+    wasistlos
     lowfi
     tor-browser
     whitesur-icon-theme
@@ -59,7 +59,8 @@
     rose-pine-cursor
     rose-pine-icon-theme
     rose-pine-gtk-theme
-    # brightnessctl
+    brightnessctl
+    mangowc
     # gnomeExtensions.blur-my-shell
     # gnomeExtensions.burn-my-windows
     # gnomeExtensions.weather-or-not
@@ -80,7 +81,7 @@
 
   home.sessionVariables = {
     XCURSOR_THEME = "rose-pine-cursor";
-    XCURSOR_SIZE = "24";
+    XCURSOR_SIZE = "12";
     NIXOS_OZONE_WL = "1";
     EDITOR = "hx";
   };
@@ -98,12 +99,12 @@
 
   programs.vivid = {
     enable = true;
-    package = pkgs.emptyDirectory;
+    # # package = pkgs.emptyDirectory;
   };
 
   programs.tofi = {
     enable = true;
-    package = pkgs.emptyDirectory;
+    # # package = pkgs.emptyDirectory;
   };
 
   programs.gh = {
@@ -121,16 +122,16 @@
   services.home-manager.autoUpgrade.useFlake = true;
   programs.qutebrowser = {
     enable = true;
-    # package = pkgs.emptyDirectory;
+    # # package = pkgs.emptyDirectory;
   };
   programs.chromium = {
     enable = true;
-    # package = pkgs.emptyDirectory;
+    # # package = pkgs.emptyDirectory;
   };
   programs.schizofox.enable = false;
   programs.zathura = {
     enable = true;
-    package = pkgs.emptyDirectory;
+    # # package = pkgs.emptyDirectory;
   };
   services.avizo.enable = true;
 

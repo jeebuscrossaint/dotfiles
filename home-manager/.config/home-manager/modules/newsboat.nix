@@ -6,7 +6,7 @@
 {
   programs.newsboat = {
     enable = true;
-    package = pkgs.emptyDirectory;
+    # # package = pkgs.emptyDirectory;
 
     urls = [
       # YouTube Channels

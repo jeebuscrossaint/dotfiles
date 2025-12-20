@@ -3,7 +3,7 @@
 {
 programs.bat = {
   enable = true;
-  package = pkgs.emptyDirectory;
+  # # package = pkgs.emptyDirectory;
   config = {
     #theme = "TwoDark";
     pager = "less -FR";

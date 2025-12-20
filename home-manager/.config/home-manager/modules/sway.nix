@@ -2,7 +2,7 @@
 {pkgs, ...}: {
   wayland.windowManager.sway = {
     enable = true;
-    package = pkgs.emptyDirectory;
+    # package = pkgs.emptyDirectory;
     checkConfig = false;
     xwayland = true;
 
