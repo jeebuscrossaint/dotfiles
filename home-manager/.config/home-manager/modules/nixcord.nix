@@ -3,7 +3,8 @@
   lib,
   pkgs,
   ...
-}: {
+}:
+{
   programs.nixcord = {
     enable = true;
 
@@ -20,10 +21,10 @@
         # betterSessions.enable = true;
         betterSettings.enable = true;
         callTimer.enable = true;
-        clearURLs.enable = true;
+        clearUrLs.enable = true;
         colorSighted.enable = true;
         # consoleJanitor.enable = true;
-        copyUserURLs.enable = true;
+        copyUserUrLs.enable = true;
         disableCallIdle.enable = true;
         fakeNitro.enable = true;
         fixCodeblockGap.enable = true;
@@ -50,10 +51,10 @@
         noF1.enable = true;
         noMosaic.enable = true;
         # noPendingCount = {
-          # hideFriendRequestsCount = false;
+        # hideFriendRequestsCount = false;
         # };
         noProfileThemes.enable = true;
-        noRPC.enable = true;
+        # noRpc.enable = true;
         noReplyMention.enable = true;
         noServerEmojis.enable = true;
         noSystemBadge.enable = true;

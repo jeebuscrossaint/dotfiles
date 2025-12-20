@@ -3,6 +3,7 @@
 {
   programs.micro = {
     enable = true;
+    package = pkgs.emptyDirectory;
     settings = {
       # Tab settings
       tabsize = 8;         # Set tab width to 8 spaces

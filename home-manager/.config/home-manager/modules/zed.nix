@@ -3,10 +3,16 @@
   lib,
   pkgs,
   ...
-}: {
+}:
+{
   programs.zed-editor = {
     enable = true;
-    extensions = ["nix" "toml" "make" "typst"];
+    extensions = [
+      "nix"
+      "toml"
+      "make"
+      "typst"
+    ];
     extraPackages = with pkgs; [
       rustfmt
       rust-analyzer
@@ -29,6 +35,15 @@
         };
         cpp = {
           lsp = "clangd"; # Explicitly set clangd for C++ files
+        };
+      };
+
+      agent = {
+        enabled = true;
+        default_open_ai_model = null;
+        default_model = {
+          provider = "copilot_chat";
+          model = "claude-4-5-sonnet";
         };
       };
 

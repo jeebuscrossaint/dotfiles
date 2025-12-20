@@ -3,7 +3,7 @@
 
 programs.helix = {
   enable = true;
-  # package = pkgs.emptyDirectory;
+  package = pkgs.emptyDirectory;
   settings = {
     editor = {
       line-number = "relative";

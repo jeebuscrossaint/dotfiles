@@ -6,7 +6,7 @@
 }: {
   programs.rofi = {
     enable = true;
-    package = pkgs.rofi;
+    package = pkgs.emptyDirectory;
 
     # Basic configuration
     extraConfig = {
