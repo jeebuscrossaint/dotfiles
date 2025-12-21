@@ -1,9 +1,40 @@
-{pkgs, ...}: {
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
+with lib;
+let
+  # Extract stylix colors with hex format (0xRRGGBBaa)
+  # Stylix provides colors with hashtags, we need to convert them
+  hexToMango =
+    color:
+    let
+      # Remove the '#' and add '0x' prefix and 'ff' for full opacity
+      hex = removePrefix "#" color;
+    in
+    "0x${hex}ff";
+
+  # Window Manager colors (following stylix style guide)
+  unfocusedBorder = hexToMango config.lib.stylix.colors.withHashtag.base03;
+  focusedBorder = hexToMango config.lib.stylix.colors.withHashtag.base0D;
+  urgentBorder = hexToMango config.lib.stylix.colors.withHashtag.base08;
+  rootColor = hexToMango config.lib.stylix.colors.withHashtag.base00;
+
+  # Additional border colors for special states
+  maximizeColor = hexToMango config.lib.stylix.colors.withHashtag.base0B; # Green
+  scratchpadColor = hexToMango config.lib.stylix.colors.withHashtag.base0D; # Blue
+  globalColor = hexToMango config.lib.stylix.colors.withHashtag.base0E; # Purple
+  overlayColor = hexToMango config.lib.stylix.colors.withHashtag.base0C; # Cyan
+in
+{
   # Create the mangowc config directory and file
   home.file.".config/mango/config.conf".text = ''
     # ============================================
     # MANGOWC CONFIGURATION
     # Auto-generated from Nix Home Manager
+    # Styled with Stylix
     # ============================================
 
     # ============================================
@@ -50,7 +81,7 @@
     # animations could be zoom slide fade none
     animations=0
     layer_animations=0
-    animation_type_open=zoom 
+    animation_type_open=zoom
     animation_type_close=zoom
     layer_animation_type_open=zoom
     layer_animation_type_close=zoom
@@ -162,23 +193,28 @@
     button_map=0
 
     # ============================================
-    # APPEARANCE (Gaps disabled like Sway)
+    # APPEARANCE (Styled with Stylix)
+    # Following the stylix style guide for window managers:
+    # - Unfocused window border: base03
+    # - Focused window border: base0D
+    # - Urgent window border: base08
+    # - Root/background color: base00
     # ============================================
-    gappih=10
-    gappiv=10
-    gappoh=10
-    gappov=10
+    gappih=0
+    gappiv=0
+    gappoh=0
+    gappov=0
     scratchpad_width_ratio=0.8
     scratchpad_height_ratio=0.9
-    borderpx=0
-    rootcolor=0x000000ff
-    bordercolor=0x444444ff
-    focuscolor=0xad741fff
-    maximizescreencolor=0x89aa61ff
-    urgentcolor=0xad401fff
-    scratchpadcolor=0x516c93ff
-    globalcolor=0xb153a7ff
-    overlaycolor=0x14a57cff
+    borderpx=1
+    rootcolor=${rootColor}
+    bordercolor=${unfocusedBorder}
+    focuscolor=${focusedBorder}
+    maximizescreencolor=${maximizeColor}
+    urgentcolor=${urgentBorder}
+    scratchpadcolor=${scratchpadColor}
+    globalcolor=${globalColor}
+    overlaycolor=${overlayColor}
 
     # ============================================
     # TAG RULES
