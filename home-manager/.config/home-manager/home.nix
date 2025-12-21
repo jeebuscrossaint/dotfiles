@@ -65,7 +65,6 @@
     libnotify
     pavucontrol
     brave
-    nmap
     qemu
     cliphist
     cmatrix

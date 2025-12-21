@@ -22,7 +22,7 @@
     # ============================================
     # WINDOW EFFECTS (Disabled - matching Sway)
     # ============================================
-    blur=1
+    blur=0
     blur_layer=1
     blur_optimized=1
     blur_params_num_passes=2
@@ -31,7 +31,7 @@
     blur_params_brightness=0.9
     blur_params_contrast=0.9
     blur_params_saturation=1.2
-    shadows=1
+    shadows=0
     shadow_only_floating=0
     layer_shadows=0
     shadows_size=10
@@ -48,7 +48,7 @@
     # ANIMATIONS (Enabled - smooth like Sway)
     # ============================================
     # animations could be zoom slide fade none
-    animations=1
+    animations=0
     layer_animations=0
     animation_type_open=zoom 
     animation_type_close=zoom
@@ -164,10 +164,10 @@
     # ============================================
     # APPEARANCE (Gaps disabled like Sway)
     # ============================================
-    gappih=25
-    gappiv=25
-    gappoh=25
-    gappov=25
+    gappih=10
+    gappiv=10
+    gappoh=10
+    gappov=10
     scratchpad_width_ratio=0.8
     scratchpad_height_ratio=0.9
     borderpx=0
