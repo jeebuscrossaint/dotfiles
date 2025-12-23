@@ -44,6 +44,7 @@
   };
 
   home.packages = with pkgs; [
+    dconf
     hollywood
     standardnotes
     shotman
@@ -144,7 +145,7 @@
   };
 
   # CRITICAL for standalone: This must match your Nix channel version
-  home.stateVersion = "25.11"; # Change to match Home Manager version
+  home.stateVersion = "26.05"; # Change to match Home Manager version
 
   stylix.enableReleaseChecks = false;
   programs.home-manager.enable = true;
