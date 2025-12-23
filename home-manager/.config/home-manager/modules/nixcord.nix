@@ -21,10 +21,10 @@
         # betterSessions.enable = true;
         betterSettings.enable = true;
         callTimer.enable = true;
-        clearUrLs.enable = true;
+        # clearUrLs.enable = true;
         colorSighted.enable = true;
         # consoleJanitor.enable = true;
-        copyUserUrLs.enable = true;
+        # copyUserUrLs.enable = true;
         disableCallIdle.enable = true;
         fakeNitro.enable = true;
         fixCodeblockGap.enable = true;
@@ -47,7 +47,7 @@
         messageLogger.enable = true;
         # moreCommands.enable = true;
         # moyai.enable = true;
-        mutualGroupDMs.enable = true;
+        # mutualGroupDMs.enable = true;
         noF1.enable = true;
         noMosaic.enable = true;
         # noPendingCount = {

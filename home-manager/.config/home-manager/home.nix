@@ -51,6 +51,7 @@
     avizo
     lunar-client
     wasistlos
+    zoom-us
     lowfi
     tor-browser
     whitesur-icon-theme
