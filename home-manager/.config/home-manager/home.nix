@@ -29,7 +29,7 @@
   ];
 
   # IMPORTANT: This tells Home Manager it's running standalone
-  targets.genericLinux.enable = true;
+  #targets.genericLinux.enable = true;
 
   home.username = "amarnath"; # Change to your username
   home.homeDirectory = "/home/amarnath"; # Change to your home dir
@@ -45,6 +45,8 @@
 
   home.packages = with pkgs; [
     dconf
+    sbctl
+    bc
     hollywood
     standardnotes
     shotman
