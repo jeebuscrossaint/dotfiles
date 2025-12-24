@@ -46,6 +46,7 @@
   home.packages = with pkgs; [
     dconf
     sbctl
+    playerctl
     bc
     hollywood
     standardnotes
@@ -77,9 +78,6 @@
     pipes-rs
     libreoffice-fresh
     tree
-    xmake
-    tinycc
-    shellcheck
     xxd
     prismlauncher
     cbonsai
@@ -108,9 +106,14 @@
     inputs.aocli.packages."${pkgs.stdenv.hostPlatform.system}".default
     inputs.ww.packages."${pkgs.stdenv.hostPlatform.system}".default
     inputs.motd.packages."${pkgs.stdenv.hostPlatform.system}".default
+    inputs.woled.packages."${pkgs.stdenv.hostPlatform.system}".default
   ];
 
   programs.nh.enable = true;
+  programs.direnv = {
+    enable = true;
+    nix-direnv.enable = true;
+    };
 
   home.sessionVariables = {
     XCURSOR_THEME = "rose-pine-cursor";
@@ -132,12 +135,10 @@
 
   programs.vivid = {
     enable = true;
-    # # package = pkgs.emptyDirectory;
   };
 
   programs.tofi = {
     enable = true;
-    # # package = pkgs.emptyDirectory;
   };
 
   programs.gh = {
@@ -155,16 +156,13 @@
   services.home-manager.autoUpgrade.useFlake = true;
   programs.qutebrowser = {
     enable = true;
-    # # package = pkgs.emptyDirectory;
   };
   programs.chromium = {
-    enable = true;
-    # # package = pkgs.emptyDirectory;
+    enable = false;
   };
-  programs.schizofox.enable = false;
+  programs.schizofox.enable = true;
   programs.zathura = {
     enable = true;
-    # # package = pkgs.emptyDirectory;
   };
   services.avizo.enable = true;
 

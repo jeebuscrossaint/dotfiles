@@ -30,6 +30,8 @@
 
     motd.url = "github:jeebuscrossaint/motd";
 
+    woled.url = "github:jeebuscrossaint/woled";
+
     
   };
   

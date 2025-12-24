@@ -4,20 +4,44 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
 
-    # add lanzaboote for secure boot later bro
-
+    lanzaboote = {
+      url = "github:nix-community/lanzaboote/v1.0.0";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
     nix-flatpak.url = "github:gmodena/nix-flatpak/latest";
   };
 
-  outputs = { self, nixpkgs, nix-flatpak, ... }: {
-    nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
-      system = "x86_64-linux";
-      modules = [
-        ./configuration.nix
-        # lanzaboote eventually
-        nix-flatpak.nixosModules.nix-flatpak
-      ];
+  outputs =
+    {
+      self,
+      nixpkgs,
+      lanzaboote,
+      nix-flatpak,
+      ...
+    }:
+    {
+      nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
+        system = "x86_64-linux";
+        modules = [
+          ./configuration.nix
+
+          lanzaboote.nixosModules.lanzaboote
+
+          (
+            { pkgs, lib, ... }:
+            {
+              boot.loader.systemd-boot.enable = lib.mkForce false;
+
+              boot.lanzaboote = {
+                enable = true;
+                pkiBundle = "/var/lib/sbctl";
+              };
+            }
+          )
+
+          nix-flatpak.nixosModules.nix-flatpak
+        ];
+      };
     };
-  };
 }

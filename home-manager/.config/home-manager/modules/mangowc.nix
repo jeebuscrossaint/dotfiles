@@ -245,23 +245,15 @@ in
     # ============================================
     # EXEC-ONCE (Startup applications)
     # ============================================
-    exec-once=numlockwl
-    exec-once=fnott
     exec-once=udiskie
     exec-once=nm-applet
-    exec-once=autotiling-rs
     exec-once=wl-paste --type text --watch cliphist store
     exec-once=wl-paste --type image --watch cliphist store
-    exec-once=swaybg
-    exec-once=dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=wlroots
+     exec-once=dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=wlroots
     exec-once=gamemoded
     exec-once=avizo-service
-    exec-once=swayidle
-    exec-once=swaync
-    # exec-once=ww --daemon
-    exec-once=sway-alttab
-    exec-once=waybar
-
+    exec-once=woled --lock
+ 
     # ============================================
     # KEY BINDINGS
     # ============================================

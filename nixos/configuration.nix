@@ -18,9 +18,7 @@
   ];
 
   # Bootloader.
-  boot.loader.grub.enable = true;
-  boot.loader.grub.device = "nodev";
-  boot.loader.grub.efiSupport = true;
+  boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
   hardware.graphics = {
@@ -51,6 +49,8 @@
 
   systemd.settings.Manager.RebootWatchdogSec = "0";
   systemd.settings.Manager.KExecWatchdogSec = "0";
+
+  services.fwupd.enable = true;
 
   services.printing.enable = true;
   services.avahi = {
