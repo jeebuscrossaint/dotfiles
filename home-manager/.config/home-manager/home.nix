@@ -26,6 +26,7 @@
     ./modules/kitty.nix
     ./modules/micro.nix
     ./modules/mangowc.nix
+    ./modules/foot.nix
   ];
 
   # IMPORTANT: This tells Home Manager it's running standalone
@@ -66,7 +67,6 @@
     rose-pine-gtk-theme
     brightnessctl
     mangowc
-    xterm
     libnotify
     pavucontrol
     brave
@@ -113,7 +113,7 @@
   programs.direnv = {
     enable = true;
     nix-direnv.enable = true;
-    };
+  };
 
   home.sessionVariables = {
     XCURSOR_THEME = "rose-pine-cursor";
@@ -153,14 +153,17 @@
   stylix.enableReleaseChecks = false;
   programs.home-manager.enable = true;
 
-  services.home-manager.autoUpgrade.useFlake = true;
+  services.home-manager.autoUpgrade = {
+    enable = true;
+    frequency = "daily";
+  };
   programs.qutebrowser = {
     enable = true;
   };
   programs.chromium = {
     enable = false;
   };
-  programs.schizofox.enable = true;
+  programs.schizofox.enable = false;
   programs.zathura = {
     enable = true;
   };
@@ -174,21 +177,21 @@
     serif = {
       # package = inputs.sf-mono-nerd-font.packages."${pkgs.system}".default;
       # name = "SFMono Nerd Font";
-      package = pkgs.nerd-fonts.ubuntu-mono;
-      name = "UbuntuMono Nerd Font Mono";
+      package = pkgs.nerd-fonts.go-mono;
+      name = "GoMono Nerd Font Mono";
     };
     sansSerif = {
       # package = inputs.sf-mono-nerd-font.packages."${pkgs.system}".default;
       # name = "SFMono Nerd Font";
-      package = pkgs.nerd-fonts.ubuntu-mono;
-      name = "UbuntuMono Nerd Font Mono";
+      package = pkgs.nerd-fonts.go-mono;
+      name = "GoMono Nerd Font Mono";
 
     };
     monospace = {
       # package = inputs.sf-mono-nerd-font.packages."${pkgs.system}".default;
       # name = "SFMono Nerd Font";
-      package = pkgs.nerd-fonts.ubuntu-mono;
-      name = "UbuntuMono Nerd Font Mono";
+      package = pkgs.nerd-fonts.go-mono;
+      name = "GoMono Nerd Font Mono";
     };
     emoji = {
       package = pkgs.noto-fonts-color-emoji;
@@ -203,7 +206,7 @@
     popups = 12;
   };
 
-  stylix.opacity.terminal = 0.75;
+  stylix.opacity.terminal = 1.0;
   stylix.opacity.popups = 1.0;
   stylix.opacity.applications = 1.0;
   stylix.opacity.desktop = 1.0;

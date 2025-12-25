@@ -23,6 +23,7 @@
 
   hardware.graphics = {
     enable = true;
+    enable32Bit = true;
   };
 
   services.xserver.videoDrivers = [ "nvidia" ];
@@ -71,6 +72,43 @@
   };
 
   nix.settings.auto-optimise-store = true;
+  nix.gc = {
+    automatic = true;
+    dates = "weekly";
+    options = "--delete-older-than 7d";
+  };
+
+  system.autoUpgrade = {
+    enable = true;
+    flake = "path:/home/amarnath/dotfiles/nixos";
+    flags = [
+      "--update-input"
+      "nixpkgs"
+    ];
+    dates = "daily";
+    allowReboot = false;
+  };
+
+  boot.tmp.useTmpfs = true;
+  services.fstrim.enable = true;
+
+  services.locate = {
+    enable = true;
+    package = pkgs.plocate;
+    interval = "hourly";
+  };
+
+  nix.settings.max-jobs = "auto";
+  nix.settings.cores = 0;
+
+  programs.gamemode.enable = true;
+  programs.steam = {
+    enable = true;
+    remotePlay.openFirewall = true;
+    dedicatedServer.openFirewall = true;
+    gamescopeSession.enable = true;
+  };
+
   services.getty.autologinUser = "amarnath";
   services.flatpak.enable = true;
   services.flatpak.packages = [

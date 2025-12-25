@@ -10,7 +10,8 @@
     interactiveShellInit = ''
       set -g fish_greeting
       starship init fish | source
-      motd
+      # motd
+      fastfetch
       if test "$TERM" = "linux"
         setfont Lat2-Terminus16 2>/dev/null
       end

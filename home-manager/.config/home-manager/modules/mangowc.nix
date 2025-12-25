@@ -260,7 +260,7 @@ in
     keymode=default
 
     # Basic applications
-    bind=SUPER,q,spawn,kitty
+    bind=SUPER,q,spawn,foot
     bind=SUPER,d,spawn,rofi -show drun
     bind=SUPER,c,killclient
     bind=SUPER+SHIFT,c,reload_config
