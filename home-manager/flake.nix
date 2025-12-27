@@ -28,11 +28,9 @@
 
     ww.url = "github:jeebuscrossaint/ww";
 
-    motd.url = "github:jeebuscrossaint/motd";
-
     woled.url = "github:jeebuscrossaint/woled";
 
-    
+    fresh.url = "github:sinelaw/fresh";
   };
   
   outputs = { nixpkgs, home-manager, ... }@inputs: {

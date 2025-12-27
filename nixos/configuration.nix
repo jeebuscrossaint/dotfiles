@@ -53,6 +53,22 @@
 
   services.fwupd.enable = true;
 
+  # services.desktopManager.plasma6.enable = true;
+  # services.displayManager.sddm.enable = true;
+  # services.displayManager.sddm.wayland.enable = true;
+  
+  environment.plasma6.excludePackages = with pkgs.kdePackages; [
+      kate
+      okular
+      elisa
+      khelpcenter
+      gwenview
+      print-manager
+      discover
+      ark
+      kwalletmanager
+  ];
+
   services.printing.enable = true;
   services.avahi = {
     enable = true;

@@ -49,6 +49,7 @@
     sbctl
     playerctl
     bc
+    jetbrains.clion
     hollywood
     standardnotes
     shotman
@@ -62,6 +63,7 @@
     whitesur-icon-theme
     whitesur-gtk-theme
     whitesur-cursors
+    whitesur-kde
     rose-pine-cursor
     rose-pine-icon-theme
     rose-pine-gtk-theme
@@ -105,7 +107,7 @@
     inputs.doomer.packages."${pkgs.stdenv.hostPlatform.system}".default
     inputs.aocli.packages."${pkgs.stdenv.hostPlatform.system}".default
     inputs.ww.packages."${pkgs.stdenv.hostPlatform.system}".default
-    inputs.motd.packages."${pkgs.stdenv.hostPlatform.system}".default
+    inputs.fresh.packages."${pkgs.stdenv.hostPlatform.system}".default
     inputs.woled.packages."${pkgs.stdenv.hostPlatform.system}".default
   ];
 
@@ -159,9 +161,6 @@
   };
   programs.qutebrowser = {
     enable = true;
-  };
-  programs.chromium = {
-    enable = false;
   };
   programs.schizofox.enable = false;
   programs.zathura = {
