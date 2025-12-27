@@ -135,13 +135,9 @@
     };
   };
 
-  programs.vivid = {
-    enable = true;
-  };
+  programs.vivid.enable = true;
 
-  programs.tofi = {
-    enable = true;
-  };
+  programs.tofi.enable = true;
 
   programs.gh = {
     enable = true;
@@ -159,13 +155,10 @@
     enable = true;
     frequency = "daily";
   };
-  programs.qutebrowser = {
-    enable = true;
-  };
+  
+  programs.qutebrowser.enable = true;
   programs.schizofox.enable = false;
-  programs.zathura = {
-    enable = true;
-  };
+  programs.zathura.enable = true;
   services.avizo.enable = true;
 
   # Stylix configuration (optional, remove if you don't want it)
