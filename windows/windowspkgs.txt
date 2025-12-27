@@ -36,7 +36,7 @@ netcat               1.12               main       2025-05-17 11:12:47
 networkmanager       2025.10.18.0       extras     2025-10-19 12:07:47 
 nmap                 7.98               main       2025-08-25 21:08:06 
 notepadnext          0.12               extras     2025-06-25 17:13:54 
-powertoys            0.96.0             extras     2025-11-20 15:45:13 
+powertoys            0.96.1             extras     2025-12-26 19:44:46 
 prismlauncher        9.4                games      2025-12-01 18:55:54 
 python               3.14.2             main       2025-12-21 23:07:12 
 qalculate            5.8.2              extras     2025-11-20 15:09:37 
@@ -54,8 +54,8 @@ tcc                  0.9.27             main       2025-05-15 15:20:30
 typst                0.14.2             main       2025-12-21 23:07:32 
 unzip                6.00               main       2025-12-22 00:07:57 
 uutils-coreutils     0.5.0              main       2025-12-27 00:18:50 
+vesktop              1.6.3              extras     2025-12-26 19:43:25 
 vlc                  3.0.21             extras     2025-05-15 15:20:49 
-vscode               1.107.1            extras     2025-12-21 23:07:59 
 wget                 1.21.4             main       2025-09-25 21:51:00 
 winscp               6.5.5              extras     2025-11-20 15:10:13 
 wireshark            4.6.2              extras     2025-12-21 23:08:34 
@@ -63,6 +63,7 @@ wiztree              4.28               extras     2025-11-27 03:14:42
 xmake                3.0.5              main       2025-11-27 03:14:51 
 youtube-music        3.11.0             extras     2025-09-18 19:37:48 
 yt-dlp               2025.12.08         main       2025-12-21 23:08:37 
+zed                  0.217.3            extras     2025-12-27 16:50:44 
 zig                  0.15.2             main       2025-10-12 14:26:39 
 zoom                 6.6.11.23272       extras     2025-12-21 23:08:56 
 
