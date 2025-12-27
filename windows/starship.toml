@@ -1,0 +1,122 @@
+# ~/.config/starship.toml (or %USERPROFILE%\.config\starship.toml on Windows)
+
+# Add a blank line between shell prompts
+add_newline = true
+
+# Format string - customize the prompt layout
+format = """
+[╭─](bold green)$time $username$sudo$memory_usage $localip$hostname $directory$fill$cmd_duration $battery
+[╰─](bold green)$status$character"""
+
+# Fill module for spacing
+[fill]
+symbol = " "
+
+# Custom prompt character
+[character]
+success_symbol = "[>](bold green)"
+error_symbol = "[>](bold red)"
+vimcmd_symbol = "[<](bold green)"
+
+# Status code of last command
+[status]
+disabled = false
+style = "bold red"
+symbol = "X "
+success_symbol = ""
+format = "[$symbol$status]($style) "
+map_symbol = true
+
+# Time
+[time]
+disabled = false
+style = "bold white"
+format = "[$time]($style)"
+time_format = "%I:%M:%S %p"
+utc_time_offset = "local"
+
+# Username
+[username]
+show_always = true
+style_user = "bold blue"
+style_root = "bold red"
+format = "[$user]($style)"
+
+# Sudo status
+[sudo]
+disabled = true
+style = "bold yellow"
+format = "[$symbol]($style)"
+
+# Memory usage
+[memory_usage]
+disabled = false
+threshold = 0
+style = "bold dimmed green"
+symbol = " "
+format = "[$symbol$ram_pct]($style)"
+
+# Local IP address
+[localip]
+disabled = false
+ssh_only = false
+style = "bold yellow"
+format = "[@$localipv4]($style) "
+
+# Hostname
+[hostname]
+ssh_only = false
+style = "bold cyan"
+format = "[$hostname]($style)"
+disabled = false
+
+# Directory
+[directory]
+truncation_length = 3
+truncate_to_repo = true
+style = "bold purple"
+format = " in [$path]($style)[$read_only]($read_only_style)"
+read_only = " RO"
+read_only_style = "red"
+truncation_symbol = ".../"
+home_symbol = "~"
+
+# Command duration
+[cmd_duration]
+min_time = 500
+style = "bold yellow"
+format = "[$duration]($style)"
+show_milliseconds = false
+
+# Battery
+[battery]
+disabled = false
+full_symbol = ""
+charging_symbol = ""
+discharging_symbol = ""
+unknown_symbol = ""
+empty_symbol = ""
+format = "[$symbol$percentage]($style)"
+
+[[battery.display]]
+threshold = 10
+style = "bold red"
+
+[[battery.display]]
+threshold = 30
+style = "bold yellow"
+
+[[battery.display]]
+threshold = 100
+style = "bold green"
+
+# Git branch
+[git_branch]
+symbol = " "
+style = "bold purple"
+format = "on [$symbol$branch]($style) "
+
+# Git status
+[git_status]
+style = "bold red"
+format = "([$all_status$ahead_behind]($style))"
