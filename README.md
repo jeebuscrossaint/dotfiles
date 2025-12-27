@@ -1,13 +1,18 @@
 # dotfiles
 
 
-yo my librewolf extensions are ublock sponsorblock bettercanvas return-dislike-youtube docsafterdark proton-pass dark-reader adnauseam
+yo my librewolf extensions are ublock sponsorblock bettercanvas return-dislike-youtube docsafterdark proton-pass dark-reader
 how to use:
 
+have nix
+install home manager standalone
+build both nixos and home-manager configs
 
-stow home-manager
-
-stow nix
+how to use windows:
+put starship.toml in .config
+put the freaky powershell config in Documents/Powershell
+install scoop
+install packages listed in the txt
 
 thats a bout it
 
