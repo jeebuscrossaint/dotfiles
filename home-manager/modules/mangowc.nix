@@ -54,17 +54,17 @@ in
     # WINDOW EFFECTS (Disabled - matching Sway)
     # ============================================
     blur=0
-    blur_layer=1
+    blur_layer=0
     blur_optimized=1
     blur_params_num_passes=2
     blur_params_radius=5
-    blur_params_noise=0.02
-    blur_params_brightness=0.9
-    blur_params_contrast=0.9
+    blur_params_noise=0.00
+    blur_params_brightness=1.0
+    blur_params_contrast=1.0
     blur_params_saturation=1.2
     shadows=0
     shadow_only_floating=0
-    layer_shadows=0
+    layer_shadows=1
     shadows_size=10
     shadows_blur=15
     shadows_position_x=0
@@ -79,8 +79,8 @@ in
     # ANIMATIONS (Enabled - smooth like Sway)
     # ============================================
     # animations could be zoom slide fade none
-    animations=0
-    layer_animations=0
+    animations=1
+    layer_animations=1
     animation_type_open=zoom
     animation_type_close=zoom
     layer_animation_type_open=zoom
@@ -200,13 +200,13 @@ in
     # - Urgent window border: base08
     # - Root/background color: base00
     # ============================================
-    gappih=0
-    gappiv=0
-    gappoh=0
-    gappov=0
+    gappih=20
+    gappiv=20
+    gappoh=20
+    gappov=20
     scratchpad_width_ratio=0.8
     scratchpad_height_ratio=0.9
-    borderpx=1
+    borderpx=7
     rootcolor=${rootColor}
     bordercolor=${unfocusedBorder}
     focuscolor=${focusedBorder}

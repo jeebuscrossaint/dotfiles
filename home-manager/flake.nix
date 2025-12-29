@@ -31,6 +31,8 @@
     woled.url = "github:jeebuscrossaint/woled";
 
     fresh.url = "github:sinelaw/fresh";
+
+    nix-vscode-extensions.url = "github:nix-community/nix-vscode-extensions";
   };
   
   outputs = { nixpkgs, home-manager, ... }@inputs: {
