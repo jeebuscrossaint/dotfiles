@@ -26,8 +26,8 @@
       <!-- Keyboard settings -->
       <keyboard>
         <numlock>on</numlock>
-        <repeatRate>25</repeatRate>
-        <repeatDelay>300</repeatDelay>
+        <repeatRate>50</repeatRate>
+        <repeatDelay>200</repeatDelay>
         
         <!-- Default keybindings -->
         <default />
@@ -292,6 +292,8 @@
       
       # Status bar
       waybar &
+
+      woled --lock &
     '';
   };
 

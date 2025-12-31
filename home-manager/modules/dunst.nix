@@ -6,7 +6,6 @@
 }: {
   services.dunst = {
     enable = true;
-    # package = pkgs.emptyDirectory;
     settings = {
       global = {
         # Display settings

@@ -26,6 +26,8 @@
     ./modules/newsboat.nix
     ./modules/nixcord.nix
     ./modules/vscode.nix
+    ./modules/micro.nix
+    ./modules/labwc.nix
   ];
 
   # ============================================================================
@@ -83,17 +85,11 @@
     base16Scheme = "${pkgs.base16-schemes}/share/themes/grayscale-dark.yaml";
 
     fonts = {
-      serif = {
-        package = pkgs.nerd-fonts.iosevka;
-        name = "Iosevka Nerd Font Mono";
-      };
-      sansSerif = {
-        package = pkgs.nerd-fonts.iosevka;
-        name = "Iosevka Nerd Font Mono";
-      };
+      serif = config.stylix.fonts.monospace;
+      sansSerif = config.stylix.fonts.monospace;
       monospace = {
-        package = pkgs.nerd-fonts.iosevka;
-        name = "Iosevka Nerd Font Mono";
+        package = pkgs.nerd-fonts.hasklug;
+        name = "Hasklug Nerd Font Mono";
       };
       emoji = {
         package = pkgs.noto-fonts-color-emoji;
@@ -236,5 +232,6 @@
     inputs.ww.packages."${pkgs.stdenv.hostPlatform.system}".default
     inputs.fresh.packages."${pkgs.stdenv.hostPlatform.system}".default
     inputs.woled.packages."${pkgs.stdenv.hostPlatform.system}".default
+    inputs.motd.packages."${pkgs.stdenv.hostPlatform.system}".default
   ];
 }

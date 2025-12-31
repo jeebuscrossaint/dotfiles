@@ -143,7 +143,7 @@ in
     syncobj_enable=0
     adaptive_sync=0
     allow_shortcuts_inhibit=1
-    allow_tearing=0
+    allow_tearing=1
     allow_lock_transparent=0
     axis_bind_apply_timeout=100
     focus_on_activate=1

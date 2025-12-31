@@ -20,6 +20,14 @@ in
         "clangd.path" = "${pkgs.llvmPackages_20.clang-unwrapped}/bin/clangd";
         "git.autofetch" = true;
         "files.autoSave" = "afterDelay";
+        "leetcode.workspaceFolder" = "/home/amarnath/.leetcode";
+        "leetcode.hint.configWebviewMarkdown" = false;
+        "leetcode.defaultLanguage" = "cpp";
+        "github.copilot.nextEditSuggestions.enabled" = false;
+        "github.copilot.enable.*" = false;
+        "github.copilot.enable.plaintext" = false;
+        "github.copilot.enable.markdown" = false;
+        "github.copilot.enable.scminput" = false;
       };
       "enableUpdateCheck" = false;
       "enableExtensionUpdateCheck" = false;
@@ -42,11 +50,12 @@ in
         marketplace.leetcode.vscode-leetcode
         marketplace.tomoki1207.pdf  # vscode-pdf
         marketplace.myriad-dreamin.tinymist  # tinymist typst
-        marketplace.ocamllabs.ocaml-platform
+        # marketplace.ocamllabs.ocaml-platform
         marketplace.codezombiech.gitignore  # gitignore
         marketplace.tboox.xmake-vscode
         marketplace.guyutongxue.cpp-reference
         marketplace.tchojnacki.cpp-compile
+        marketplace.mkhl.direnv
       ];
     };
   };
