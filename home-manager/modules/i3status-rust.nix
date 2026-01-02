@@ -6,7 +6,7 @@
 }: {
   programs.i3status-rust = {
     enable = true;
-    package = pkgs.i3status-rust
+    package = pkgs.i3status-rust;
     bars = {
       # Use "default" as the name - creates config-default.toml
       default = {

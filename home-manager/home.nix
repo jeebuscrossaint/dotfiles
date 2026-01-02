@@ -24,6 +24,7 @@
     ./modules/nixcord.nix
     ./modules/vscode.nix
     ./modules/i3.nix
+    ./modules/i3status-rust.nix
     ./modules/picom.nix
   ];
 
@@ -181,6 +182,8 @@
     guvcview
     xss-lock
     xsecurelock
+    feh
+    flameshot
 
     # === Custom Inputs ===
     inputs.ww.packages."${pkgs.stdenv.hostPlatform.system}".default

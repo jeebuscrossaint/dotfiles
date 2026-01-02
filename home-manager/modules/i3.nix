@@ -3,7 +3,8 @@
   lib,
   pkgs,
   ...
-}: {
+}:
+{
   xsession.windowManager.i3 = {
     enable = true;
     package = pkgs.i3;
@@ -27,15 +28,21 @@
         commands = [
           {
             command = "border pixel 1";
-            criteria = {class = ".*";};
+            criteria = {
+              class = ".*";
+            };
           }
           {
             command = "floating enable";
-            criteria = {class = "rofi";};
+            criteria = {
+              class = "rofi";
+            };
           }
           {
             command = "floating enable";
-            criteria = {class = "zoom";};
+            criteria = {
+              class = "zoom";
+            };
           }
         ];
       };
@@ -43,12 +50,19 @@
       floating = {
         modifier = "Mod4";
         criteria = [
-          {class = "rofi";}
-          {class = "zoom";}
+          { class = "rofi"; }
+          { class = "zoom"; }
         ];
       };
 
-      bars = [];
+      # Bar with i3status-rust
+      bars = [
+        {
+          position = "bottom";
+          statusCommand = "${pkgs.i3status-rust}/bin/i3status-rs ~/.config/i3status-rust/config-default.toml";
+          trayOutput = "primary";
+        }
+      ];
 
       keybindings = lib.mkOptionDefault {
         # Main keybindings
@@ -60,6 +74,9 @@
         "Mod4+l" = "exec xsecurelock";
         "Mod4+b" = "exec ~/dotfiles/bruh.sh --dunst";
         "Mod4+shift+s" = "exec flameshot gui";
+
+        # Toggle bar (Super+Shift+B)
+        "Mod4+Shift+b" = "bar mode toggle";
 
         # Window management
         "Mod4+Left" = "focus left";
@@ -172,8 +189,6 @@
           command = "unclutter";
           notification = false;
         }
-        #        { command = "xrandr --output DP-2 --auto --output HDMI-0 --auto --right-of DP-2"; notification = false; }
-        #        { command = "xrandr --output HDMI-0 --mode 1920x1080 --rate 144.00"; notification = false; }
       ];
     };
 
