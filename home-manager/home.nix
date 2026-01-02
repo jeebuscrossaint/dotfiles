@@ -119,6 +119,7 @@
   home.packages = with pkgs; [
     nodePackages.nodejs
     jetbrains.clion
+    autotiling
     vibrantlinux
     dconf
     xorg.xinit
@@ -147,13 +148,13 @@
     wasistlos
     cliphist
     wl-clipboard-rs
-    # whitesur-icon-theme
-    # whitesur-gtk-theme
-    # whitesur-cursors
-    # whitesur-kde
-    # rose-pine-cursor
-    # rose-pine-icon-theme
-    # rose-pine-gtk-theme
+    whitesur-icon-theme
+    whitesur-gtk-theme
+    whitesur-cursors
+    whitesur-kde
+    rose-pine-cursor
+    rose-pine-icon-theme
+    rose-pine-gtk-theme
     corefonts
     brave
     tor-browser
@@ -170,14 +171,16 @@
     qalculate-gtk
     qemu
     cutter
-    # hollywood
+    hollywood
     cmatrix
     fastfetch
     pipes-rs
-    # cbonsai
+    cbonsai
     lowfi
     glow
     guvcview
+    xss-lock
+    xsecurelock
 
     # === Custom Inputs ===
     inputs.ww.packages."${pkgs.stdenv.hostPlatform.system}".default

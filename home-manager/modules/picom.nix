@@ -5,7 +5,7 @@
     
     # Fading configuration
     fade = true;
-    fadeDelta = 10;
+    fadeDelta = 5;
     fadeSteps = [0.028 0.03]; # No commas needed in this list style
     fadeExclude = [
       "window_type = 'dock'"
@@ -26,7 +26,7 @@
     
     # Opacity configuration
     activeOpacity = 1.0;
-    inactiveOpacity = 0.9;
+    inactiveOpacity = 1.0;
     menuOpacity = 0.95;
     
     # Window type settings
@@ -40,11 +40,11 @@
     
     # Opacity rules
     opacityRules = [
-      "90:class_g = 'URxvt'"
-      "90:class_g = 'Alacritty'"
-      "90:class_g = 'kitty'"
-      "95:class_g = 'Firefox' && focused"
-      "90:class_g = 'Firefox' && !focused"
+      # "90:class_g = 'URxvt'"
+      # "90:class_g = 'Alacritty'"
+      # "90:class_g = 'kitty'"
+      # "95:class_g = 'Firefox' && focused"
+      # "90:class_g = 'Firefox' && !focused"
     ];
     
     # Backend and other settings

@@ -47,6 +47,15 @@
     open = true;
     nvidiaSettings = true;
     package = config.boot.kernelPackages.nvidiaPackages.beta;
+    prime = {
+      offload = {
+        enable = true;
+        enableOffloadCmd = true;
+      };
+
+      intelBusId = "PCI:0:2:0";
+      nvidiaBusId = "PCI:1:0:0";
+    };
   };
 
   # Bluetooth
@@ -67,6 +76,8 @@
 
   services.xserver.windowManager.i3.enable = true;
   services.displayManager.gdm.enable = true;
+  services.xserver.enable = true;
+  services.xserver.displayManager.gdm.enable = true;
 
   # Printing & Discovery
   services.printing.enable = true;
