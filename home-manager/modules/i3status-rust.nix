@@ -8,7 +8,6 @@
     enable = true;
     package = pkgs.i3status-rust;
     bars = {
-      # Use "default" as the name - creates config-default.toml
       default = {
         blocks = [
           {
@@ -65,6 +64,7 @@
         ];
 
         icons = "awesome6";
+        theme = "plain";
       };
     };
   };

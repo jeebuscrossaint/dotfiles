@@ -12,12 +12,12 @@
     config = {
       modifier = "Mod4";
 
-      terminal = "xterm";
-      menu = "bemenu-run";
+      terminal = "kitty";
+      menu = "rofi -show drun";
 
       gaps = {
-        inner = 0;
-        outer = 0;
+        inner = 20;
+        outer = 10;
         smartGaps = true;
         smartBorders = "on";
       };
@@ -27,7 +27,7 @@
         hideEdgeBorders = "none";
         commands = [
           {
-            command = "border pixel 1";
+            command = "border pixel 7";
             criteria = {
               class = ".*";
             };
@@ -44,6 +44,12 @@
               class = "zoom";
             };
           }
+          {
+            command = "floating enable";
+            criteria = {
+              class = "pavucontrol";
+            };
+          }
         ];
       };
 
@@ -52,6 +58,7 @@
         criteria = [
           { class = "rofi"; }
           { class = "zoom"; }
+          { class = "pavucontrol"; }
         ];
       };
 
@@ -61,28 +68,37 @@
           position = "bottom";
           statusCommand = "${pkgs.i3status-rust}/bin/i3status-rs ~/.config/i3status-rust/config-default.toml";
           trayOutput = "primary";
+          fonts = {
+            names = [ "Hasklug Nerd Font Mono" ];
+            size = 11.0;
+          };
         }
       ];
 
       keybindings = lib.mkOptionDefault {
-        # Main keybindings
+        # Basic applications
         "Mod4+q" = "exec kitty";
-        "Mod4+c" = "kill";
-        "Mod4+p" = "floating toggle";
+        "Mod4+Shift+q" = "exec xterm";
         "Mod4+d" = "exec rofi -show drun";
-        "Mod4+g" = "exec ";
+        "Mod4+c" = "kill";
+        "Mod4+Shift+c" = "reload";
         "Mod4+l" = "exec xsecurelock";
+        "Mod4+g" = "exec new-wallpaper";
         "Mod4+b" = "exec ~/dotfiles/bruh.sh --dunst";
-        "Mod4+shift+s" = "exec flameshot gui";
 
-        # Toggle bar (Super+Shift+B)
+        # Screenshot with flameshot
+        "Mod4+Shift+s" = "exec flameshot gui";
+
+        # Toggle bar
         "Mod4+Shift+b" = "bar mode toggle";
 
-        # Window management
+        # Window management - arrow keys
         "Mod4+Left" = "focus left";
         "Mod4+Down" = "focus down";
         "Mod4+Up" = "focus up";
         "Mod4+Right" = "focus right";
+
+        # Move windows - arrow keys with Shift
         "Mod4+Shift+Left" = "move left";
         "Mod4+Shift+Down" = "move down";
         "Mod4+Shift+Up" = "move up";
@@ -102,10 +118,15 @@
         # Media keys
         "XF86AudioRaiseVolume" = "exec --no-startup-id volumectl up";
         "XF86AudioLowerVolume" = "exec --no-startup-id volumectl down";
-        "XF86Launch3" = "exec --no-startup-id playerctl play-pause";
+        "XF86AudioMute" = "exec --no-startup-id volumectl toggle-mute";
         "XF86AudioMicMute" = "exec --no-startup-id volumectl -m toggle-mute";
+        "XF86Launch3" = "exec --no-startup-id playerctl play-pause";
+        "XF86AudioPlay" = "exec --no-startup-id playerctl play-pause";
         "XF86MonBrightnessUp" = "exec --no-startup-id lightctl up";
         "XF86MonBrightnessDown" = "exec --no-startup-id lightctl down";
+
+        # Touchpad toggle
+        "XF86TouchpadToggle" = "exec --no-startup-id ~/.config/i3/toggle-touchpad.sh";
       };
 
       modes = {
@@ -120,6 +141,12 @@
       };
 
       startup = [
+        # Fast key repeat - matching mangowc (50ms rate, 200ms delay)
+        {
+          command = "xset r rate 200 50";
+          notification = false;
+          always = true;
+        }
         {
           command = "dex --autostart --environment i3";
           notification = false;
@@ -154,27 +181,7 @@
           notification = false;
         }
         {
-          command = ".config/lemonbar/lemon.sh";
-          notification = false;
-        }
-        {
           command = "autotiling";
-          notification = false;
-        }
-        {
-          command = "rog-control-center";
-          notification = false;
-        }
-        {
-          command = "gamescope";
-          notification = false;
-        }
-        {
-          command = "/usr/bin/pipewire & /usr/bin/pipewire-pulse & /usr/bin/wireplumber";
-          notification = false;
-        }
-        {
-          command = "numlockx";
           notification = false;
         }
         {
@@ -189,6 +196,10 @@
           command = "unclutter";
           notification = false;
         }
+        {
+          command = "picom -b";
+          notification = false;
+        }
       ];
     };
 
@@ -199,6 +210,25 @@
       exec --no-startup-id set MOZ_ENABLE_WAYLAND 0
       exec --no-startup-id set CLUTTER_BACKEND x11
       exec --no-startup-id set QT_QPA_PLATFORM x11
+    '';
+  };
+
+  # Touchpad toggle script
+  home.file.".config/i3/toggle-touchpad.sh" = {
+    executable = true;
+    text = ''
+      #!/bin/sh
+      device=$(xinput list | grep -i touchpad | grep -oP 'id=\K\d+')
+      if [ -n "$device" ]; then
+        state=$(xinput list-props "$device" | grep "Device Enabled" | grep -oP ':\s*\K\d+')
+        if [ "$state" = "1" ]; then
+          xinput disable "$device"
+          notify-send "Touchpad" "Disabled" -t 1000
+        else
+          xinput enable "$device"
+          notify-send "Touchpad" "Enabled" -t 1000
+        fi
+      fi
     '';
   };
 }

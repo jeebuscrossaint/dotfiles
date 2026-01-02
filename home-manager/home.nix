@@ -61,7 +61,7 @@
    stylix = {
     enable = true;
     enableReleaseChecks = false;
-    base16Scheme = "${pkgs.base16-schemes}/share/themes/grayscale-dark.yaml";
+    base16Scheme = "${pkgs.base16-schemes}/share/themes/kanagawa-dragon.yaml";
 
     fonts = {
       serif = config.stylix.fonts.monospace;
@@ -184,6 +184,11 @@
     xsecurelock
     feh
     flameshot
+    xorg.xinput
+    xorg.xset
+    unclutter-xfixes
+    font-awesome
+    gammastep
 
     # === Custom Inputs ===
     inputs.ww.packages."${pkgs.stdenv.hostPlatform.system}".default
