@@ -39,7 +39,8 @@ in
         jnoortheen.nix-ide
         ms-vscode.cmake-tools
         ms-vscode.makefile-tools
-        llvm-vs-code-extensions.vscode-clangd  
+        llvm-vs-code-extensions.vscode-clangd
+        # ms-vscode.cpptools 
        # Additional extensions from nixpkgs
         vadimcn.vscode-lldb  # codelldb
       ] ++ [

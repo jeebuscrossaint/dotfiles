@@ -16,18 +16,11 @@
     ./hardware-configuration.nix
   ];
 
-  # ============================================================================
-  # System Configuration
-  # ============================================================================
-
   system.stateVersion = "25.11";
   networking.hostName = "nixos";
   time.timeZone = "America/New_York";
 
-  # ============================================================================
-  # Boot Configuration
-  # ============================================================================
-
+ 
   boot = {
     loader = {
       systemd-boot.enable = true;
@@ -38,10 +31,7 @@
     plymouth.enable = true;
   };
 
-  # ============================================================================
-  # Hardware Configuration
-  # ============================================================================
-
+ 
   # Graphics
   hardware.graphics = {
     enable = true;
@@ -70,13 +60,13 @@
     };
   };
 
-  # ============================================================================
-  # Networking
-  # ============================================================================
-
+  
   networking.networkmanager.enable = true;
   services.openssh.enable = true;
   services.tailscale.enable = true;
+
+  services.xserver.windowManager.i3.enable = true;
+  services.displayManager.gdm.enable = true;
 
   # Printing & Discovery
   services.printing.enable = true;
@@ -86,10 +76,7 @@
     openFirewall = true;
   };
 
-  # ============================================================================
-  # Localization
-  # ============================================================================
-
+ 
   i18n.defaultLocale = "en_US.UTF-8";
   i18n.extraLocaleSettings = {
     LC_ADDRESS = "en_US.UTF-8";
@@ -108,10 +95,6 @@
     variant = "";
   };
 
-  # ============================================================================
-  # Audio
-  # ============================================================================
-
   security.rtkit.enable = true;
   services.pipewire = {
     enable = true;
@@ -121,10 +104,7 @@
     jack.enable = true;
   };
 
-  # ============================================================================
-  # User Configuration
-  # ============================================================================
-
+  
   users.users.amarnath = {
     isNormalUser = true;
     description = "amarnath";
@@ -138,9 +118,6 @@
 
   services.getty.autologinUser = "amarnath";
 
-  # ============================================================================
-  # Nix Configuration
-  # ============================================================================
 
   nix.settings = {
     experimental-features = [
@@ -173,9 +150,6 @@
 
   nixpkgs.config.allowUnfree = true;
 
-  # ============================================================================
-  # System Services & Optimization
-  # ============================================================================
 
   # Systemd
   systemd.settings.Manager = {
@@ -203,11 +177,7 @@
 
   # Firmware Updates
   services.fwupd.enable = true;
-
-  # ============================================================================
-  # Desktop Environment & Portal
-  # ============================================================================
-
+ 
   xdg.portal = {
     enable = true;
     wlr.enable = true;
@@ -216,9 +186,6 @@
 
   security.polkit.enable = true;
 
-  # ============================================================================
-  # Programs & Applications
-  # ============================================================================
 
   # Shell
   programs.fish.enable = true;
@@ -244,9 +211,6 @@
   # Compatibility
   programs.nix-ld.enable = true;
 
-  # ============================================================================
-  # System Packages
-  # ============================================================================
 
   environment.systemPackages = with pkgs; [
     # Add your packages here

@@ -1,6 +1,27 @@
-# Labwc configuration for Home Manager inspired by Sway config
-{pkgs, lib, ...}: {
-
+# Labwc configuration for Home Manager with Stylix integration
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
+with lib;
+let
+  # Extract stylix colors (remove '#' prefix for direct use in XML/config)
+  removeHash = color: removePrefix "#" color;
+  
+  # Window Manager colors (following stylix style guide)
+  unfocusedBorder = removeHash config.lib.stylix.colors.withHashtag.base03;
+  focusedBorder = removeHash config.lib.stylix.colors.withHashtag.base0D;
+  urgentBorder = removeHash config.lib.stylix.colors.withHashtag.base08;
+  rootColor = removeHash config.lib.stylix.colors.withHashtag.base00;
+  backgroundColor = removeHash config.lib.stylix.colors.withHashtag.base00;
+  textColor = removeHash config.lib.stylix.colors.withHashtag.base05;
+  activeTextColor = removeHash config.lib.stylix.colors.withHashtag.base07;
+  accentColor = removeHash config.lib.stylix.colors.withHashtag.base0D;
+  inactiveColor = removeHash config.lib.stylix.colors.withHashtag.base02;
+in
+{
   # Main labwc configuration file
   xdg.configFile."labwc/rc.xml".text = ''
     <?xml version="1.0"?>
@@ -8,11 +29,11 @@
       <!-- Core settings -->
       <core>
         <decoration>server</decoration>
-        <gap>0</gap>
+        <gap>10</gap>
         <adaptiveSync>no</adaptiveSync>
       </core>
 
-      <!-- Theme settings -->
+      <!-- Theme settings with Stylix colors -->
       <theme>
         <name>Clearlooks</name>
         <cornerRadius>0</cornerRadius>
@@ -305,28 +326,51 @@
     XDG_SESSION_DESKTOP=labwc
   '';
 
-  # Themerc (window decoration theme)
+  # Themerc (window decoration theme) with Stylix colors
   xdg.configFile."labwc/themerc".text = ''
-    # Window border
-    border.width: 1
-    border.color: #333333
+    # ============================================
+    # LABWC THEME - Styled with Stylix
+    # Following the stylix style guide:
+    # - Unfocused window border: base03
+    # - Focused window border: base0D
+    # - Background: base00
+    # - Text: base05
+    # ============================================
     
-    # Title bar (we're disabling it)
-    window.active.title.bg.color: #2e3440
-    window.inactive.title.bg.color: #3b4252
+    # Window border colors
+    border.width: 2
+    border.color: #${unfocusedBorder}
     
-    # Window buttons
-    window.active.button.unpressed.image.color: #d8dee9
-    window.inactive.button.unpressed.image.color: #4c566a
+    # Active window (focused)
+    window.active.title.bg.color: #${backgroundColor}
+    window.active.label.text.color: #${activeTextColor}
+    window.active.button.unpressed.image.color: #${activeTextColor}
+    window.active.button.hover.image.color: #${accentColor}
+    window.active.border.color: #${focusedBorder}
+    
+    # Inactive window (unfocused)
+    window.inactive.title.bg.color: #${inactiveColor}
+    window.inactive.label.text.color: #${textColor}
+    window.inactive.button.unpressed.image.color: #${textColor}
+    window.inactive.button.hover.image.color: #${accentColor}
+    window.inactive.border.color: #${unfocusedBorder}
     
     # Padding
     padding.height: 3
     padding.width: 3
     
-    # Menu
-    menu.items.bg.color: #2e3440
-    menu.items.text.color: #d8dee9
-    menu.items.active.bg.color: #5e81ac
-    menu.items.active.text.color: #eceff4
+    # Menu colors
+    menu.items.bg.color: #${backgroundColor}
+    menu.items.text.color: #${textColor}
+    menu.items.active.bg.color: #${accentColor}
+    menu.items.active.text.color: #${activeTextColor}
+    menu.border.width: 1
+    menu.border.color: #${focusedBorder}
+    
+    # OSD (On-Screen Display)
+    osd.bg.color: #${backgroundColor}
+    osd.border.color: #${focusedBorder}
+    osd.border.width: 1
+    osd.label.text.color: #${textColor}
   '';
 }

@@ -81,10 +81,10 @@ in
     # animations could be zoom slide fade none
     animations=1
     layer_animations=1
-    animation_type_open=zoom
-    animation_type_close=zoom
-    layer_animation_type_open=zoom
-    layer_animation_type_close=zoom
+    animation_type_open=fade
+    animation_type_close=fade
+    layer_animation_type_open=fade
+    layer_animation_type_close=fade
     animation_fade_in=1
     animation_fade_out=1
     tag_animation_direction=1
