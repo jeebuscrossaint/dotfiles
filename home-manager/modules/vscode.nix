@@ -40,7 +40,6 @@ in
         ms-vscode.cmake-tools
         ms-vscode.makefile-tools
         llvm-vs-code-extensions.vscode-clangd
-        # ms-vscode.cpptools 
        # Additional extensions from nixpkgs
         vadimcn.vscode-lldb  # codelldb
       ] ++ [
@@ -51,7 +50,7 @@ in
         marketplace.leetcode.vscode-leetcode
         marketplace.tomoki1207.pdf  # vscode-pdf
         marketplace.myriad-dreamin.tinymist  # tinymist typst
-        # marketplace.ocamllabs.ocaml-platform
+        marketplace.ocamllabs.ocaml-platform
         marketplace.codezombiech.gitignore  # gitignore
         marketplace.tboox.xmake-vscode
         marketplace.guyutongxue.cpp-reference

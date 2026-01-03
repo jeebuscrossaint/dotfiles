@@ -7,8 +7,8 @@
 {
   programs.nixcord = {
     enable = true;
-    vesktop.enable = true;
-    discord.enable = false;
+    # vesktop.enable = true;
+    discord.enable = true;
 
     config = {
       # frameless = true;

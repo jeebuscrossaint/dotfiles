@@ -61,7 +61,7 @@
    stylix = {
     enable = true;
     enableReleaseChecks = false;
-    base16Scheme = "${pkgs.base16-schemes}/share/themes/kanagawa-dragon.yaml";
+    base16Scheme = "${pkgs.base16-schemes}/share/themes/darcula.yaml";
 
     fonts = {
       serif = config.stylix.fonts.monospace;
@@ -134,6 +134,8 @@
     nmap
     tree
     # labwc
+    ocaml
+    smartmontools
     pavucontrol
     gnome-tweaks
     nautilus
@@ -189,6 +191,7 @@
     unclutter-xfixes
     font-awesome
     gammastep
+    xclip
 
     # === Custom Inputs ===
     inputs.ww.packages."${pkgs.stdenv.hostPlatform.system}".default
