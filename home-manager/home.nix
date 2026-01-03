@@ -25,7 +25,7 @@
     ./modules/vscode.nix
     ./modules/i3.nix
     ./modules/i3status-rust.nix
-    ./modules/picom.nix
+    # ./modules/picom.nix
   ];
 
   home.username = "amarnath";
@@ -195,7 +195,7 @@
 
     # === Custom Inputs ===
     inputs.ww.packages."${pkgs.stdenv.hostPlatform.system}".default
-    inputs.fresh.packages."${pkgs.stdenv.hostPlatform.system}".default
+    # inputs.fresh.packages."${pkgs.stdenv.hostPlatform.system}".default
     inputs.woled.packages."${pkgs.stdenv.hostPlatform.system}".default
     inputs.motd.packages."${pkgs.stdenv.hostPlatform.system}".default
   ];

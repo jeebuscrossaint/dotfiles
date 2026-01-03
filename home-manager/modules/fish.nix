@@ -83,11 +83,14 @@
     add_newline = true;
 
     # Format string - customize the prompt layout
-    format = ''
-      [╭─](bold green)$time $username$sudo$memory_usage $localip$hostname $directory$fill$cmd_duration $battery
-      [╰─](bold green)$status$character
-    '';
-
+# format = ''
+  # [╭─](bold green)$time $username$sudo$memory_usage $localip$hostname $directory$fill$cmd_duration $battery
+  # [╰─](bold green)$status$character
+# '';
+  format = ''
+[╭─](bold green)$time $username$sudo$memory_usage $localip$hostname $directory$fill$cmd_duration $battery
+[╰─](bold green)$status$character
+'';
     # Fill module for spacing
     fill = {
       symbol = " ";
