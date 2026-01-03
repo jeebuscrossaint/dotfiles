@@ -77,7 +77,7 @@
   services.xserver.windowManager.i3.enable = true;
   services.displayManager.gdm.enable = true;
   services.xserver.enable = true;
-  services.xserver.displayManager.gdm.enable = true;
+  # services.xserver.desktopManager.enlightenment.enable = true;
 
   # Printing & Discovery
   services.printing.enable = true;

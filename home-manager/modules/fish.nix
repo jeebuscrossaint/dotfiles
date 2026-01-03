@@ -11,7 +11,7 @@
       set -g fish_greeting
       starship init fish | source
       # motd
-      fastfetch
+      # fastfetch
       if test "$TERM" = "linux"
         setfont Lat2-Terminus16 2>/dev/null
       end

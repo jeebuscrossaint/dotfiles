@@ -165,7 +165,7 @@
     zoom-us
     imv
     imagemagick
-    youtube-music
+    pear-desktop
     yt-dlp
     prismlauncher
     lunar-client
