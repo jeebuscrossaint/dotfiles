@@ -10,9 +10,9 @@
   imports = [
     ./modules/fish.nix
     ./modules/kitty.nix
-    ./modules/foot.nix
+    # ./modules/foot.nix
     ./modules/helix.nix
-    ./modules/zed.nix
+    # ./modules/zed.nix
     ./modules/yazi.nix
     ./modules/bat.nix
     ./modules/btop.nix
@@ -24,8 +24,7 @@
     ./modules/nixcord.nix
     ./modules/vscode.nix
     ./modules/i3.nix
-    ./modules/i3status-rust.nix
-    # ./modules/picom.nix
+    # ./modules/i3status-rust.nix
   ];
 
   home.username = "amarnath";
@@ -61,14 +60,14 @@
    stylix = {
     enable = true;
     enableReleaseChecks = false;
-    base16Scheme = "${pkgs.base16-schemes}/share/themes/darcula.yaml";
+    base16Scheme = "${pkgs.base16-schemes}/share/themes/ascendancy.yaml";
 
     fonts = {
       serif = config.stylix.fonts.monospace;
       sansSerif = config.stylix.fonts.monospace;
       monospace = {
-        package = pkgs.nerd-fonts.hasklug;
-        name = "Hasklug Nerd Font Mono";
+        package = pkgs.nerd-fonts.jetbrains-mono;
+        name = "JetBrains Nerd Font Mono";
        };
       emoji = {
         package = pkgs.noto-fonts-color-emoji;
@@ -121,7 +120,6 @@
     nodePackages.nodejs
     jetbrains.clion
     autotiling
-    vibrantlinux
     dconf
     xorg.xinit
     xauth
@@ -154,7 +152,7 @@
     whitesur-icon-theme
     whitesur-gtk-theme
     whitesur-cursors
-    whitesur-kde
+    # whitesur-kde
     rose-pine-cursor
     rose-pine-icon-theme
     rose-pine-gtk-theme
@@ -172,13 +170,13 @@
     libreoffice-fresh
     standardnotes
     qalculate-gtk
-    qemu
+    # qemu
     cutter
-    hollywood
+    # hollywood
     cmatrix
     fastfetch
-    pipes-rs
-    cbonsai
+    # pipes-rs
+    # cbonsai
     lowfi
     glow
     guvcview
@@ -195,7 +193,6 @@
 
     # === Custom Inputs ===
     inputs.ww.packages."${pkgs.stdenv.hostPlatform.system}".default
-    # inputs.fresh.packages."${pkgs.stdenv.hostPlatform.system}".default
     inputs.woled.packages."${pkgs.stdenv.hostPlatform.system}".default
     inputs.motd.packages."${pkgs.stdenv.hostPlatform.system}".default
   ];

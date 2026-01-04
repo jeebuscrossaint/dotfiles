@@ -205,12 +205,12 @@
 
   # Gaming
   programs.gamemode.enable = true;
-  programs.steam = {
-    enable = true;
-    remotePlay.openFirewall = true;
-    dedicatedServer.openFirewall = true;
-    gamescopeSession.enable = true;
-  };
+  # programs.steam = {
+    # enable = true;
+    # remotePlay.openFirewall = true;
+    # dedicatedServer.openFirewall = true;
+    # gamescopeSession.enable = true;
+  # };
 
   # Flatpak
   services.flatpak = {

@@ -52,9 +52,9 @@ in
         marketplace.myriad-dreamin.tinymist  # tinymist typst
         marketplace.ocamllabs.ocaml-platform
         marketplace.codezombiech.gitignore  # gitignore
-        marketplace.tboox.xmake-vscode
-        marketplace.guyutongxue.cpp-reference
-        marketplace.tchojnacki.cpp-compile
+        # marketplace.tboox.xmake-vscode
+        # marketplace.guyutongxue.cpp-reference
+        # marketplace.tchojnacki.cpp-compile
         marketplace.mkhl.direnv
       ];
     };
