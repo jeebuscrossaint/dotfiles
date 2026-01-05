@@ -22,7 +22,7 @@
 
     woled.url = "github:jeebuscrossaint/woled";
 
-    fresh.url = "github:sinelaw/fresh";
+    # fresh.url = "github:sinelaw/fresh";
 
     motd.url = "github:jeebuscrossaint/motd";
 

@@ -78,6 +78,46 @@
   services.displayManager.gdm.enable = true;
   services.xserver.enable = true;
   # services.xserver.desktopManager.enlightenment.enable = true;
+  services.xserver.desktopManager.gnome.enable = true;
+
+    environment.gnome.excludePackages = with pkgs; [
+    atomix # puzzle game
+    cheese # webcam tool
+    evince # document viewer
+    geary # email reader
+    gedit # text editor
+    gnome-characters
+    gnome-music
+    gnome-photos
+    gnome-terminal
+    gnome-tour
+    hitori # sudoku game
+    iagno # go game
+    tali # poker game
+    totem # video player
+    gnome-contacts
+    gnome-calendar
+    yelp
+    gnome-maps
+    gnome-calculator
+    gnome-system-monitor
+    simple-scan
+    gnome-clocks
+    gnome-font-viewer
+    file-roller
+    epiphany
+    seahorse
+    gnome-logs
+    gnome-connections
+    gnome-text-editor
+    gnome-weather
+    gnome-software
+    gnome-extension-manager
+    rygel
+    gnome-color-manager
+#    gnome-console
+  ];
+
 
   # Printing & Discovery
   services.printing.enable = true;

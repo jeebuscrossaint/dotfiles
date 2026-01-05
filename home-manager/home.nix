@@ -25,6 +25,9 @@
     ./modules/vscode.nix
     ./modules/i3.nix
     # ./modules/i3status-rust.nix
+    ./modules/waybar.nix
+    ./modules/sway.nix
+    ./modules/swayidle.nix
   ];
 
   home.username = "amarnath";
