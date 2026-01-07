@@ -78,7 +78,8 @@
   services.displayManager.gdm.enable = true;
   services.xserver.enable = true;
   # services.xserver.desktopManager.enlightenment.enable = true;
-  services.xserver.desktopManager.gnome.enable = true;
+  # services.xserver.desktopManager.gnome.enable = true;
+  services.gnome.gnome-keyring.enable = false;
 
     environment.gnome.excludePackages = with pkgs; [
     atomix # puzzle game

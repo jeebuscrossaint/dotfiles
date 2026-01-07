@@ -12,7 +12,7 @@
     ./modules/kitty.nix
     # ./modules/foot.nix
     ./modules/helix.nix
-    # ./modules/zed.nix
+    ./modules/zed.nix
     ./modules/yazi.nix
     ./modules/bat.nix
     ./modules/btop.nix
@@ -32,7 +32,7 @@
 
   home.username = "amarnath";
   home.homeDirectory = "/home/amarnath";
-  home.stateVersion = "26.05";
+  home.stateVersion = "25.11";
 
   programs.home-manager.enable = true;
 
