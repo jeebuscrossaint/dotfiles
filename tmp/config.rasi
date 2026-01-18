@@ -1,0 +1,83 @@
+/* -------------------------- */
+/* Rofi theme (standalone)   */
+/* -------------------------- */
+
+/* Basic configuration */
+configuration {
+    show-icons: false;
+    display-drun: "";
+    drun-display-format: "{name}";
+    disable-history: false;
+    fullscreen: false;
+    hide-scrollbar: true;
+    sidebar-mode: false;
+}
+
+/* Window styling */
+window {
+    border: 1px;
+    padding: 5px;
+    width: 30%;
+    height: 40%;
+}
+
+/* Inputbar and prompt styling */
+inputbar {
+    border: 0 0 1px 0;
+    padding: 5px;
+}
+
+prompt {
+    padding: 5px 5px 0px 5px;
+}
+
+entry {
+    padding: 5px;
+}
+
+/* Listview (results) styling */
+listview {
+    lines: 8;
+    columns: 1;
+    fixed-height: 0;
+    border: 1px 0 0 0;
+    spacing: 5px;
+    scrollbar: false;
+    padding: 5px 5px 0px 5px;
+}
+
+/* Elements */
+element {
+    border: 0;
+    padding: 5px;
+}
+
+element.alternate {
+    background-color: inherit;
+}
+
+element-text {
+    background-color: inherit;
+    text-color: inherit;
+}
+
+/* Rofi calc styles */
+textbox-prompt-colon {
+    expand: false;
+    str: ":";
+    margin: 0px 0.3em 0em 0em;
+}
+
+num-filtered-rows, num-rows {
+    text-color: inherit;
+}
+
+textbox-num-sep {
+    expand: false;
+    str: "/";
+}
+
+textbox {
+    padding: 8px;
+}
+

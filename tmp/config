@@ -1,0 +1,182 @@
+############################
+# Basics
+############################
+
+set $mod Mod4
+set $terminal kitty
+set $menu rofi -show drun
+
+font pango:monospace 10
+
+############################
+# Gaps & Borders
+############################
+
+gaps inner 20
+gaps outer 10
+smart_gaps on
+smart_borders on
+
+default_border pixel 1
+hide_edge_borders none
+
+for_window [class=".*"] border pixel 7
+
+############################
+# Floating rules
+############################
+
+floating_modifier $mod
+
+for_window [class="rofi"] floating enable
+for_window [class="zoom"] floating enable
+for_window [class="pavucontrol"] floating enable
+
+client.focused          #5e81ac #5e81ac #eceff4 #5e81ac #5e81ac
+client.focused_inactive #5e81ac #5e81ac #eceff4 #5e81ac #5e81ac
+client.unfocused        #5e81ac #5e81ac #eceff4 #5e81ac #5e81ac
+
+############################
+# Workspaces
+############################
+
+set $ws1 "1"
+set $ws2 "2"
+set $ws3 "3"
+set $ws4 "4"
+set $ws5 "5"
+set $ws6 "6"
+set $ws7 "7"
+set $ws8 "8"
+set $ws9 "9"
+
+# Switch to workspace
+bindsym $mod+1 workspace $ws1
+bindsym $mod+2 workspace $ws2
+bindsym $mod+3 workspace $ws3
+bindsym $mod+4 workspace $ws4
+bindsym $mod+5 workspace $ws5
+bindsym $mod+6 workspace $ws6
+bindsym $mod+7 workspace $ws7
+bindsym $mod+8 workspace $ws8
+bindsym $mod+9 workspace $ws9
+
+# Move focused window to workspace
+bindsym $mod+Shift+1 move container to workspace $ws1
+bindsym $mod+Shift+2 move container to workspace $ws2
+bindsym $mod+Shift+3 move container to workspace $ws3
+bindsym $mod+Shift+4 move container to workspace $ws4
+bindsym $mod+Shift+5 move container to workspace $ws5
+bindsym $mod+Shift+6 move container to workspace $ws6
+bindsym $mod+Shift+7 move container to workspace $ws7
+bindsym $mod+Shift+8 move container to workspace $ws8
+bindsym $mod+Shift+9 move container to workspace $ws9
+
+############################
+# Application keybindings
+############################
+
+bindsym $mod+q exec kitty
+bindsym $mod+Shift+q exec xterm
+bindsym $mod+d exec rofi -show drun
+bindsym $mod+c kill
+bindsym $mod+Shift+c reload
+bindsym $mod+l exec xsecurelock
+bindsym $mod+g exec new-wallpaper
+bindsym $mod+b exec ~/dotfiles/bruh.sh --dunst
+
+bindsym $mod+Shift+s exec flameshot gui
+bindsym $mod+Shift+b bar mode toggle
+
+############################
+# Focus movement
+############################
+
+bindsym $mod+Left focus left
+bindsym $mod+Down focus down
+bindsym $mod+Up focus up
+bindsym $mod+Right focus right
+
+############################
+# Move windows
+############################
+
+bindsym $mod+Shift+Left move left
+bindsym $mod+Shift+Down move down
+bindsym $mod+Shift+Up move up
+bindsym $mod+Shift+Right move right
+
+############################
+# Layout management
+############################
+
+bindsym $mod+h split h
+bindsym $mod+v split v
+bindsym $mod+f fullscreen toggle
+bindsym $mod+s layout stacking
+bindsym $mod+w layout tabbed
+bindsym $mod+e layout toggle split
+bindsym $mod+space focus mode_toggle
+bindsym $mod+Shift+space floating toggle
+bindsym $mod+a focus parent
+
+############################
+# Resize mode
+############################
+
+mode "resize" {
+    bindsym Left resize shrink width 10 px or 10 ppt
+    bindsym Down resize grow height 10 px or 10 ppt
+    bindsym Up resize shrink height 10 px or 10 ppt
+    bindsym Right resize grow width 10 px or 10 ppt
+    bindsym Return mode "default"
+    bindsym Escape mode "default"
+}
+
+bindsym $mod+r mode "resize"
+
+############################
+# Media & hardware keys
+############################
+
+bindsym XF86AudioRaiseVolume exec --no-startup-id volumectl up
+bindsym XF86AudioLowerVolume exec --no-startup-id volumectl down
+bindsym XF86AudioMute exec --no-startup-id volumectl toggle-mute
+bindsym XF86AudioMicMute exec --no-startup-id volumectl -m toggle-mute
+bindsym XF86Launch3 exec --no-startup-id playerctl play-pause
+bindsym XF86AudioPlay exec --no-startup-id playerctl play-pause
+bindsym XF86MonBrightnessUp exec --no-startup-id lightctl up
+bindsym XF86MonBrightnessDown exec --no-startup-id lightctl down
+
+bindsym XF86TouchpadToggle exec --no-startup-id ~/.config/i3/toggle-touchpad.sh
+
+############################
+# Startup
+############################
+
+exec_always --no-startup-id xset r rate 200 50
+exec --no-startup-id dex --autostart --environment i3
+exec --no-startup-id xss-lock --transfer-sleep-lock -- xsecurelock
+exec --no-startup-id nm-applet
+exec --no-startup-id timedatectl set-local-rtc 1 --adjust-system-clock
+exec --no-startup-id udiskie
+exec --no-startup-id /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
+exec --no-startup-id xclip
+exec --no-startup-id xdotool key --clearmodifiers Num_Lock
+exec --no-startup-id autotiling
+exec --no-startup-id dunst
+exec --no-startup-id xrandr --output eDP-1 --mode 2560x1600 --rate 240.00 --primary \
+    --output HDMI-1-0 --mode 1920x1080 --rate 60.00 --right-of eDP-1
+exec --no-startup-id unclutter
+exec --no-startup-id picom -b
+
+############################
+# Environment (X11)
+############################
+
+exec --no-startup-id env QT_QPA_PLATFORMTHEME=qt6ct
+exec --no-startup-id env GDK_BACKEND=x11
+exec --no-startup-id env MOZ_ENABLE_WAYLAND=0
+exec --no-startup-id env CLUTTER_BACKEND=x11
+exec --no-startup-id env QT_QPA_PLATFORM=x11
+
