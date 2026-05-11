@@ -1,36 +1,36 @@
-# coat labwc theme: Twilight
-# David Hart (https://github.com/hartbit)
+# coat labwc theme: Square
+# FredHappyface (https://github.com/fredHappyface)
 
 border.width: 2
 
 # Active window
-window.active.title.bg.color: #323537
-window.active.label.text.color: #FFFFFF
-window.active.button.unpressed.image.color: #FFFFFF
-window.active.button.hover.image.color: #7587A6
-window.active.border.color: #7587A6
+window.active.title.bg.color: #050505
+window.active.label.text.color: #E2E2E2
+window.active.button.unpressed.image.color: #E2E2E2
+window.active.button.hover.image.color: #A9CDEB
+window.active.border.color: #A9CDEB
 
 # Inactive window
-window.inactive.title.bg.color: #1E1E1E
-window.inactive.label.text.color: #5F5A60
-window.inactive.button.unpressed.image.color: #5F5A60
-window.inactive.button.hover.image.color: #5F5A60
-window.inactive.border.color: #464B50
+window.inactive.title.bg.color: #1A1A1A
+window.inactive.label.text.color: #4B4B4B
+window.inactive.button.unpressed.image.color: #4B4B4B
+window.inactive.button.hover.image.color: #4B4B4B
+window.inactive.border.color: #141414
 
 # Padding
 padding.height: 2
 padding.width: 4
 
 # Menu
-menu.items.bg.color: #323537
-menu.items.text.color: #A7A7A7
-menu.items.active.bg.color: #7587A6
-menu.items.active.text.color: #1E1E1E
+menu.items.bg.color: #050505
+menu.items.text.color: #BABABA
+menu.items.active.bg.color: #A9CDEB
+menu.items.active.text.color: #1A1A1A
 menu.border.width: 1
-menu.border.color: #464B50
+menu.border.color: #141414
 
 # OSD
-osd.bg.color: #323537
-osd.border.color: #7587A6
+osd.bg.color: #050505
+osd.border.color: #A9CDEB
 osd.border.width: 1
-osd.label.text.color: #A7A7A7
+osd.label.text.color: #BABABA

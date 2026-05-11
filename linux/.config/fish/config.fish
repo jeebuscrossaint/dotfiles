@@ -42,7 +42,7 @@ alias cl="clear"
 alias 11="ping 1.1.1.1"
 alias xcopy="wl-copy"
 alias ls="lsd"
-alias doas="sudo"
+#alias doas="sudo"
 
 ########################################
 # Functions

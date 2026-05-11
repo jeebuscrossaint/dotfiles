@@ -2,7 +2,7 @@
 
 include ~/.config/sway/coat-theme
 
-# Override: dark titlebar bg matching terminal, blue text
+# Override: dark titlebar bg matching terminal
 client.focused $base0D $base00 $base0D $base0D $base0C
 
 set $mod Mod4
@@ -12,20 +12,24 @@ set $term footclient
 xwayland enable
 
 # Window appearance
-#default_border pixel 2
-default_border normal 2
+default_border pixel 2
+#default_border normal 2
 titlebar_border_thickness 2
 hide_edge_borders smart
 
 # Gaps
-gaps inner 0
-gaps outer 0
+gaps inner 5
+gaps outer 5
 smart_gaps on
 smart_borders on
 
 # Input
 input type:touchpad {
     natural_scroll disabled
+}
+
+input type:pointer {
+    accel_profile flat
 }
 
 input type:keyboard {
@@ -149,3 +153,41 @@ exec sh -c 'command -v nm-applet && nm-applet'
 exec dbus-update-activation-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP
 exec start-polkit
 exec canvas-notify
+exec gentoo-pipewire-launcher 
+
+# SwayFX
+# SwayFX effects
+corner_radius 10
+smart_corner_radius enable
+
+blur disable
+blur_passes 2
+blur_radius 3
+blur_xray disable
+
+shadows disable
+shadows_on_csd enable
+shadow_blur_radius 20
+shadow_color #0000007F
+shadow_inactive_color #0000004F
+shadow_offset 3 3
+
+default_dim_inactive 0.08
+dim_inactive_colors.unfocused $base00
+dim_inactive_colors.urgent $base08
+
+titlebar_separator disable
+scratchpad_minimize disable
+
+layer_effects "waybar" {
+    blur enable
+    blur_ignore_transparent enable
+    shadows enable
+ #   corner_radius 8
+}
+
+layer_effects "notifications" {
+   blur enable
+   shadows enable
+   corner_radius 8
+}

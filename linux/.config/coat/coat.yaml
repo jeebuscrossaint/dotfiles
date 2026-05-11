@@ -18,13 +18,16 @@ enabled:
   - waybar
   - labwc
   - swaylock
+  - kde
+  - firefox
+  - mpv
   
 # The 'scheme' key is a top-level scalar
-scheme: twilight
+scheme: square
 prefer_base24: false
 
 opacity:
-  terminal: 1.0
+  terminal: 0.7
   applications: 1.0
   desktop: 1.0
   popups: 1.0
@@ -32,9 +35,9 @@ opacity:
 # The 'font' key triggers in_font_section and expects a mapping (dictionary)
 font:
   emoji: "Noto Color Emoji"
-  monospace: "BigBlueTermPlus Nerd Font Mono"
-  sansserif: "BigBlueTermPlus Nerd Font"
-  serif: "BigBlueTermPlus Nerd Font"
+  monospace: "UbuntuMono Nerd Font Mono"
+  sansserif: "UbuntuMono Nerd Font"
+  serif: "UbuntuMono Nerd Font"
   sizes:
     terminal: 11
     desktop: 11
