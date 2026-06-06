@@ -18,8 +18,8 @@ titlebar_border_thickness 2
 hide_edge_borders smart
 
 # Gaps
-gaps inner 5
-gaps outer 5
+gaps inner 0
+gaps outer 0
 smart_gaps on
 smart_borders on
 
@@ -53,9 +53,10 @@ output eDP-1 {
 }
 
 output HDMI-A-1 {
-    mode 1920x1080@60Hz
+    mode 3840x2160@30Hz
     position 2560,0
 }
+
 
 # Keybinds
 bindsym $mod+q exec $term
@@ -123,6 +124,8 @@ bindsym XF86AudioMicMute exec volumectl -m toggle-mute
 bindsym XF86Launch3 exec playerctl play-pause
 bindsym XF86AudioPlay exec playerctl play-pause
 bindsym XF86TouchpadToggle input type:touchpad events toggle enabled disabled
+bindsym XF86MonBrightnessUp exec brightnessctl set +5%
+bindsym XF86MonBrightnessDown exec brightnessctl set 5%-
 
 # Resize mode
 mode "resize" {
@@ -144,20 +147,23 @@ bar {
 }
 
 # Startup
+exec dbus-update-activation-environment --all
 exec foot --server
 exec autotiling-rs
 exec swayidle -w -C ~/.config/swayidle/config
 exec env GTK_USE_PORTAL=0 waybar -c ~/.config/waybar/config.json -s ~/.config/waybar/style.css
 exec dunst
 exec sh -c 'command -v nm-applet && nm-applet'
-exec dbus-update-activation-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP
+exec dbus-update-activation-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=sway
 exec start-polkit
 exec canvas-notify
 exec gentoo-pipewire-launcher 
+exec /usr/libexec/xdg-desktop-portal-wlr
+exec /usr/libexec/xdg-desktop-portal
 
 # SwayFX
 # SwayFX effects
-corner_radius 10
+corner_radius 0
 smart_corner_radius enable
 
 blur disable
@@ -167,27 +173,28 @@ blur_xray disable
 
 shadows disable
 shadows_on_csd enable
-shadow_blur_radius 20
-shadow_color #0000007F
-shadow_inactive_color #0000004F
-shadow_offset 3 3
+shadow_blur_radius 10
+shadow_color $base00
+shadow_inactive_color $base00
+shadow_offset 0 0
 
-default_dim_inactive 0.08
+default_dim_inactive 0.0
 dim_inactive_colors.unfocused $base00
 dim_inactive_colors.urgent $base08
 
 titlebar_separator disable
 scratchpad_minimize disable
 
-layer_effects "waybar" {
-    blur enable
-    blur_ignore_transparent enable
-    shadows enable
+#layer_effects "waybar" {
+#    blur enable
+#    blur_ignore_transparent enable
+#    shadows enable
  #   corner_radius 8
-}
+#}
 
 layer_effects "notifications" {
    blur enable
    shadows enable
    corner_radius 8
 }
+

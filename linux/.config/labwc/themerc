@@ -1,36 +1,36 @@
-# coat labwc theme: Square
-# FredHappyface (https://github.com/fredHappyface)
+# coat labwc theme: Vesper
+# FormalSnake (https://github.com/formalsnake)
 
 border.width: 2
 
 # Active window
-window.active.title.bg.color: #050505
-window.active.label.text.color: #E2E2E2
-window.active.button.unpressed.image.color: #E2E2E2
-window.active.button.hover.image.color: #A9CDEB
-window.active.border.color: #A9CDEB
+window.active.title.bg.color: #232323
+window.active.label.text.color: #D5D5D5
+window.active.button.unpressed.image.color: #D5D5D5
+window.active.button.hover.image.color: #8EAAAA
+window.active.border.color: #8EAAAA
 
 # Inactive window
-window.inactive.title.bg.color: #1A1A1A
-window.inactive.label.text.color: #4B4B4B
-window.inactive.button.unpressed.image.color: #4B4B4B
-window.inactive.button.hover.image.color: #4B4B4B
-window.inactive.border.color: #141414
+window.inactive.title.bg.color: #101010
+window.inactive.label.text.color: #333333
+window.inactive.button.unpressed.image.color: #333333
+window.inactive.button.hover.image.color: #333333
+window.inactive.border.color: #222222
 
 # Padding
 padding.height: 2
 padding.width: 4
 
 # Menu
-menu.items.bg.color: #050505
-menu.items.text.color: #BABABA
-menu.items.active.bg.color: #A9CDEB
-menu.items.active.text.color: #1A1A1A
+menu.items.bg.color: #232323
+menu.items.text.color: #B7B7B7
+menu.items.active.bg.color: #8EAAAA
+menu.items.active.text.color: #101010
 menu.border.width: 1
-menu.border.color: #141414
+menu.border.color: #222222
 
 # OSD
-osd.bg.color: #050505
-osd.border.color: #A9CDEB
+osd.bg.color: #232323
+osd.border.color: #8EAAAA
 osd.border.width: 1
-osd.label.text.color: #BABABA
+osd.label.text.color: #B7B7B7

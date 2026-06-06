@@ -21,9 +21,10 @@ enabled:
   - kde
   - firefox
   - mpv
+  - vscode
   
 # The 'scheme' key is a top-level scalar
-scheme: square
+scheme: vesper
 prefer_base24: false
 
 opacity:
@@ -39,6 +40,6 @@ font:
   sansserif: "UbuntuMono Nerd Font"
   serif: "UbuntuMono Nerd Font"
   sizes:
-    terminal: 11
-    desktop: 11
-    popups: 11
+    terminal: 14
+    desktop: 14
+    popups: 14
