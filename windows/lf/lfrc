@@ -1,0 +1,25 @@
+set shell powershell
+set shellopts "-NoProfile -NonInteractive"
+
+set scrolloff 10
+set icons true
+set hidden false
+set drawbox true
+set dirfirst true
+set mouse true
+set period 1
+set previewer bat
+
+# Navigation
+map g top
+map G bottom
+map . set hidden!
+map ~ cd ~
+
+# File ops
+map D delete
+map x cut
+map y copy
+map p paste
+map r push :rename<enter>
+map <enter> open

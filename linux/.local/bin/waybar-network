@@ -1,0 +1,31 @@
+#!/bin/sh
+# Cross-platform network widget: iw/ip on Linux, ifconfig on OpenBSD
+
+if command -v iwgetid > /dev/null 2>&1; then
+    # Linux
+    ssid=$(iwgetid -r 2>/dev/null)
+    if [ -n "$ssid" ]; then
+        quality=$(awk 'NR==3{gsub(/\./,"",$3); print int($3*100/70)}' /proc/net/wireless 2>/dev/null)
+        [ -z "$quality" ] && quality="?"
+        printf '{"text":" %s %s%%","tooltip":"%s\\n%s%% signal"}\n' "$ssid" "$quality" "$ssid" "$quality"
+    elif ip link 2>/dev/null | grep -q "state UP"; then
+        ip=$(ip -4 addr show scope global 2>/dev/null | awk '/inet/{print $2}' | head -1)
+        printf '{"text":"󰈀","tooltip":"Ethernet\\n%s"}\n' "$ip"
+    else
+        printf '{"text":"󰖪","tooltip":"Disconnected"}\n'
+    fi
+else
+    # OpenBSD — parse ifconfig
+    ssid=$(ifconfig 2>/dev/null | awk '/nwid/{print $2; exit}')
+    if [ -n "$ssid" ] && [ "$ssid" != '""' ]; then
+        ip=$(ifconfig 2>/dev/null | awk '/inet /{print $2; exit}')
+        printf '{"text":" %s","tooltip":"%s\\n%s"}\n' "$ssid" "$ssid" "$ip"
+    else
+        ip=$(ifconfig 2>/dev/null | awk '/inet /{print $2; exit}')
+        if [ -n "$ip" ]; then
+            printf '{"text":"󰈀","tooltip":"Ethernet\\n%s"}\n' "$ip"
+        else
+            printf '{"text":"󰖪","tooltip":"Disconnected"}\n'
+        fi
+    fi
+fi

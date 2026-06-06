@@ -1,0 +1,200 @@
+# Sway configuration
+
+include ~/.config/sway/coat-theme
+
+# Override: dark titlebar bg matching terminal
+client.focused $base0D $base00 $base0D $base0D $base0C
+
+set $mod Mod4
+set $menu fuzzel
+set $term footclient
+
+xwayland enable
+
+# Window appearance
+default_border pixel 2
+#default_border normal 2
+titlebar_border_thickness 2
+hide_edge_borders smart
+
+# Gaps
+gaps inner 0
+gaps outer 0
+smart_gaps on
+smart_borders on
+
+# Input
+input type:touchpad {
+    natural_scroll disabled
+}
+
+input type:pointer {
+    accel_profile flat
+}
+
+input type:keyboard {
+    repeat_delay 200
+    repeat_rate 50
+}
+
+seat * hide_cursor 3000
+focus_follows_mouse yes
+floating_modifier $mod
+
+# Output
+output * {
+    render_bit_depth 10
+    color_profile srgb
+}
+
+output eDP-1 {
+    mode 2560x1600@240Hz
+    position 0,0
+}
+
+output HDMI-A-1 {
+    mode 3840x2160@30Hz
+    position 2560,0
+}
+
+
+# Keybinds
+bindsym $mod+q exec $term
+bindsym $mod+d exec $menu
+bindsym $mod+c kill
+bindsym $mod+Shift+c reload
+bindsym $mod+l exec swaylock
+bindsym $mod+Delete exec wlboard
+bindsym $mod+p exec toggle-waybar
+bindsym $mod+Shift+s exec swayscreenshot
+
+# Focus
+bindsym $mod+Left focus left
+bindsym $mod+Down focus down
+bindsym $mod+Up focus up
+bindsym $mod+Right focus right
+#bindsym $mod+h focus left
+#bindsym $mod+j focus down
+#bindsym $mod+k focus up
+#bindsym $mod+l focus right
+
+# Move
+bindsym $mod+Shift+Left move left
+bindsym $mod+Shift+Down move down
+bindsym $mod+Shift+Up move up
+bindsym $mod+Shift+Right move right
+bindsym $mod+Shift+h move left
+bindsym $mod+Shift+j move down
+bindsym $mod+Shift+k move up
+bindsym $mod+Shift+l move right
+
+# Workspaces
+bindsym $mod+1 workspace number 1
+bindsym $mod+2 workspace number 2
+bindsym $mod+3 workspace number 3
+bindsym $mod+4 workspace number 4
+bindsym $mod+5 workspace number 5
+bindsym $mod+6 workspace number 6
+bindsym $mod+7 workspace number 7
+bindsym $mod+8 workspace number 8
+bindsym $mod+9 workspace number 9
+bindsym $mod+0 workspace number 10
+
+bindsym $mod+Shift+1 move container to workspace number 1
+bindsym $mod+Shift+2 move container to workspace number 2
+bindsym $mod+Shift+3 move container to workspace number 3
+bindsym $mod+Shift+4 move container to workspace number 4
+bindsym $mod+Shift+5 move container to workspace number 5
+bindsym $mod+Shift+6 move container to workspace number 6
+bindsym $mod+Shift+7 move container to workspace number 7
+bindsym $mod+Shift+8 move container to workspace number 8
+bindsym $mod+Shift+9 move container to workspace number 9
+bindsym $mod+Shift+0 move container to workspace number 10
+
+# Layout
+bindsym $mod+Shift+v floating toggle
+bindsym $mod+f fullscreen
+bindsym $mod+r mode "resize"
+
+# Media keys
+bindsym XF86AudioRaiseVolume exec volumectl up
+bindsym XF86AudioLowerVolume exec volumectl down
+bindsym XF86AudioMute exec volumectl toggle-mute
+bindsym XF86AudioMicMute exec volumectl -m toggle-mute
+bindsym XF86Launch3 exec playerctl play-pause
+bindsym XF86AudioPlay exec playerctl play-pause
+bindsym XF86TouchpadToggle input type:touchpad events toggle enabled disabled
+bindsym XF86MonBrightnessUp exec brightnessctl set +5%
+bindsym XF86MonBrightnessDown exec brightnessctl set 5%-
+
+# Resize mode
+mode "resize" {
+    bindsym Left  resize shrink width  20px
+    bindsym Down  resize grow   height 20px
+    bindsym Up    resize shrink height 20px
+    bindsym Right resize grow   width  20px
+    bindsym h resize shrink width  20px
+    bindsym j resize grow   height 20px
+    bindsym k resize shrink height 20px
+    bindsym l resize grow   width  20px
+
+    bindsym Return mode "default"
+    bindsym Escape mode "default"
+}
+
+bar {
+    mode invisible
+}
+
+# Startup
+exec dbus-update-activation-environment --all
+exec foot --server
+exec autotiling-rs
+exec swayidle -w -C ~/.config/swayidle/config
+exec env GTK_USE_PORTAL=0 waybar -c ~/.config/waybar/config.json -s ~/.config/waybar/style.css
+exec dunst
+exec sh -c 'command -v nm-applet && nm-applet'
+exec dbus-update-activation-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=sway
+exec start-polkit
+exec canvas-notify
+exec gentoo-pipewire-launcher 
+exec /usr/libexec/xdg-desktop-portal-wlr
+exec /usr/libexec/xdg-desktop-portal
+
+# SwayFX
+# SwayFX effects
+corner_radius 0
+smart_corner_radius enable
+
+blur disable
+blur_passes 2
+blur_radius 3
+blur_xray disable
+
+shadows disable
+shadows_on_csd enable
+shadow_blur_radius 10
+shadow_color $base00
+shadow_inactive_color $base00
+shadow_offset 0 0
+
+default_dim_inactive 0.0
+dim_inactive_colors.unfocused $base00
+dim_inactive_colors.urgent $base08
+
+titlebar_separator disable
+scratchpad_minimize disable
+
+#layer_effects "waybar" {
+#    blur enable
+#    blur_ignore_transparent enable
+#    shadows enable
+ #   corner_radius 8
+#}
+
+layer_effects "notifications" {
+   blur enable
+   shadows enable
+   corner_radius 8
+}
+

@@ -1,0 +1,147 @@
+@import "coat-theme.css";
+
+* {
+    border: none;
+    border-radius: 0;
+    min-height: 0;
+    box-shadow: none;
+    outline: none;
+    transition: color 0.15s ease, background 0.15s ease;
+}
+
+window#waybar {
+    background: @base00;
+    color: @base05;
+}
+
+#workspaces button {
+    padding: 0 8px;
+    color: @base04;
+    background: transparent;
+    transition: all 0.15s ease;
+}
+
+#workspaces button:hover {
+    color: @base05;
+    background: @base02;
+}
+
+#workspaces button.active {
+    color: @base00;
+    background: @base0D;
+    font-weight: bold;
+}
+
+#workspaces button.urgent {
+    color: @base00;
+    background: @base08;
+}
+
+#workspaces button.occupied:not(.active) {
+    color: @base05;
+}
+
+#window,
+#clock,
+#custom-weather,
+#custom-mpris,
+#network,
+#network.wifi,
+#network.ethernet,
+#network.disconnected,
+#network.connected,
+#bluetooth,
+#bluetooth.connected,
+#bluetooth.off,
+#bluetooth.disabled,
+#cpu,
+#custom-gpu,
+#temperature,
+#temperature.critical,
+#memory,
+#battery,
+#battery.charging,
+#battery.plugged,
+#battery.warning,
+#battery.critical,
+#wireplumber,
+#wireplumber.muted,
+#custom-mic,
+#tray,
+#custom-updates {
+    padding: 0 12px;
+    color: @base05;
+    background: transparent;
+    border-bottom: none;
+}
+
+#network.disconnected {
+    color: @base08;
+    background: transparent;
+}
+
+#bluetooth.off,
+#bluetooth.disabled {
+    color: @base03;
+    background: transparent;
+}
+
+#temperature.critical {
+    color: @base08;
+    background: transparent;
+    animation: pulse-warn 0.8s ease-in-out infinite alternate;
+}
+
+#battery.warning:not(.charging) {
+    color: @base07;
+    background: transparent;
+}
+
+#battery.critical:not(.charging) {
+    color: @base08;
+    background: transparent;
+    animation: none;
+}
+
+#wireplumber.muted {
+    color: @base08;
+    background: transparent;
+}
+
+#custom-mic.muted {
+    color: @base08;
+    background: transparent;
+}
+
+#tray > .passive {
+    -gtk-icon-effect: dim;
+}
+
+#tray > .needs-attention {
+    -gtk-icon-effect: highlight;
+    background: @base08;
+}
+
+tooltip {
+    background: @base01;
+    border: 1px solid @base03;
+    transition: none;
+    opacity: 1;
+}
+
+tooltip label {
+    color: @base05;
+}
+
+@keyframes blink {
+    to {
+        color: @base00;
+        background: @base08;
+    }
+}
+
+@keyframes pulse-warn {
+    to {
+        opacity: 0.5;
+    }
+}

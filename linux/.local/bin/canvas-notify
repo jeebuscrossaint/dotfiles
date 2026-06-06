@@ -1,0 +1,69 @@
+#!/usr/bin/env python3
+# canvas-notify — send dunst notifications for upcoming Canvas assignments
+# Tracks sent notifications to avoid repeating within a session
+
+import json
+import os
+import subprocess
+from datetime import datetime, timezone, timedelta
+
+SENT_FILE = os.path.expanduser("~/.cache/canvas/notified.json")
+
+THRESHOLDS = [
+    (timedelta(days=1),  "due tomorrow",  "normal"),
+    (timedelta(hours=3), "due in 3 hours", "critical"),
+    (timedelta(hours=1), "due in 1 hour",  "critical"),
+]
+
+def load_sent():
+    try:
+        return json.loads(open(SENT_FILE).read())
+    except Exception:
+        return {}
+
+def save_sent(sent):
+    os.makedirs(os.path.dirname(SENT_FILE), exist_ok=True)
+    with open(SENT_FILE, "w") as f:
+        json.dump(sent, f)
+
+def notify(summary, body, urgency="normal"):
+    subprocess.run([
+        "dunstify",
+        "-a", "Canvas",
+        "-u", urgency,
+        "-i", "x-office-calendar",
+        "-t", "10000",
+        summary, body,
+    ], check=False)
+
+def main():
+    try:
+        cache  = subprocess.check_output(["canvas-ical-fetch"], text=True).strip()
+        raw    = subprocess.check_output(["canvas-ical-parse", cache, "--days", "2"], text=True)
+        events = json.loads(raw)
+    except Exception as e:
+        print(f"canvas-notify error: {e}")
+        return
+
+    now  = datetime.now(timezone.utc)
+    sent = load_sent()
+    # Prune old entries (older than 3 days)
+    sent = {k: v for k, v in sent.items() if (now - datetime.fromisoformat(v)).days < 3}
+
+    for event in events:
+        dt      = datetime.fromisoformat(event["dt"])
+        summary = event["summary"]
+        delta   = dt - now
+
+        for threshold, label, urgency in THRESHOLDS:
+            key = f"{summary}:{label}"
+            if delta <= threshold and key not in sent:
+                due_str = dt.astimezone().strftime("%a %b %d %I:%M %p")
+                notify(f" {summary}", f"{label.capitalize()} — {due_str}", urgency)
+                sent[key] = now.isoformat()
+
+    save_sent(sent)
+
+if __name__ == "__main__":
+    main()
+

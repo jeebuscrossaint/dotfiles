@@ -1,0 +1,10 @@
+#!/bin/sh
+# Waybar temperature — Linux uses /sys/class/thermal, OpenBSD uses sysctl
+if [ -d /sys/class/thermal ]; then
+    temp=$(cat /sys/class/thermal/thermal_zone*/temp 2>/dev/null | sort -n | tail -1)
+    if [ -n "$temp" ]; then
+        printf '%d°C\n' $((temp / 1000))
+    fi
+else
+    sysctl -n hw.sensors.cpu0.temp0 2>/dev/null | sed 's/ degC/°C/'
+fi

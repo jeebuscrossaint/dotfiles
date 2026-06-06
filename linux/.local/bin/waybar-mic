@@ -1,0 +1,19 @@
+#!/bin/sh
+# Waybar mic widget — works with wpctl (Linux) or sndioctl (OpenBSD)
+if command -v wpctl > /dev/null 2>&1; then
+    wpctl get-volume @DEFAULT_AUDIO_SOURCE@ | awk '{
+        muted = ($3 == "[MUTED]")
+        vol = int($2 * 100)
+        if (muted) printf "{\"text\":\"󰍭\",\"class\":\"muted\"}\n"
+        else printf "{\"text\":\"󰍬 %d%%\"}\n", vol
+    }'
+else
+    level=$(sndioctl -n input.level 2>/dev/null || echo 0)
+    mute=$(sndioctl -n input.mute 2>/dev/null || echo 0)
+    vol=$(awk "BEGIN{printf \"%d\", $level*100}")
+    if [ "$mute" = "1" ]; then
+        printf '{"text":"󰍭","class":"muted"}\n'
+    else
+        printf '{"text":"󰍬 %d%%"}\n' "$vol"
+    fi
+fi

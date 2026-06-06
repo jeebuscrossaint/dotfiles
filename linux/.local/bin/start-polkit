@@ -1,0 +1,14 @@
+#!/bin/sh
+# Start the first available polkit authentication agent
+for agent in \
+    /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 \
+    /usr/libexec/polkit-gnome-authentication-agent-1 \
+    /usr/local/libexec/polkit-gnome-authentication-agent-1 \
+    /usr/lib/mate-polkit/polkit-mate-authentication-agent-1 \
+    /usr/local/libexec/polkit-mate-authentication-agent-1 \
+    lxpolkit \
+    xfce-polkit; do
+    if [ -x "$agent" ] || command -v "$agent" > /dev/null 2>&1; then
+        exec "$agent"
+    fi
+done

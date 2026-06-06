@@ -1,0 +1,55 @@
+#!/bin/sh
+# Cross-platform battery widget: /sys on Linux, apm on OpenBSD
+
+if command -v apm > /dev/null 2>&1; then
+    # OpenBSD
+    pct=$(apm -l)
+    ac=$(apm -a)   # 0=discharging 1=AC 2=backup
+    st=$(apm -b)   # 0=high 1=low 2=critical 3=charging 4=absent
+    mins=$(apm -m)
+
+    case "$st" in
+        3) icon="󰂄"; state="Charging" ;;
+        0) icon="󰁹"; state="Full" ;;
+        1) icon="󰁻"; state="Low" ;;
+        2) icon="󰂎"; state="Critical" ;;
+        *) icon="󰂑"; state="Unknown" ;;
+    esac
+    [ "$ac" = "1" ] && icon="󰚥" && state="AC"
+
+    if [ "$mins" -lt 9999 ] 2>/dev/null && [ "$ac" != "1" ]; then
+        h=$((mins / 60))
+        m=$((mins % 60))
+        time_str="${h}h ${m}m remaining"
+    else
+        time_str=""
+    fi
+
+    tooltip="${pct}% — ${state}${time_str:+ | $time_str}"
+    printf '{"text":"%s %d%%","tooltip":"%s"}\n' "$icon" "$pct" "$tooltip"
+else
+    # Linux — read from sysfs
+    bat=$(ls /sys/class/power_supply/BAT*/capacity 2>/dev/null | head -1)
+    if [ -z "$bat" ]; then
+        printf '{"text":""}\n'
+        exit 0
+    fi
+    batdir=$(dirname "$bat")
+    pct=$(cat "$bat")
+    status=$(cat "$batdir/status" 2>/dev/null || echo "Unknown")
+
+    case "$status" in
+        Charging)    icon="󰂄" ;;
+        Full)        icon="󰁹" ;;
+        Discharging)
+            if   [ "$pct" -ge 90 ]; then icon="󰂂"
+            elif [ "$pct" -ge 70 ]; then icon="󰂀"
+            elif [ "$pct" -ge 50 ]; then icon="󰁾"
+            elif [ "$pct" -ge 30 ]; then icon="󰁼"
+            elif [ "$pct" -ge 15 ]; then icon="󰁺"
+            else icon="󰂎"; fi ;;
+        *)           icon="󰂑" ;;
+    esac
+
+    printf '{"text":"%s %d%%","tooltip":"%d%% — %s"}\n' "$icon" "$pct" "$pct" "$status"
+fi

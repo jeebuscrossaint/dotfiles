@@ -1,0 +1,63 @@
+#!/usr/bin/env python3
+# waybar-canvas — waybar custom module showing next Canvas assignment
+
+import json
+import os
+import subprocess
+import sys
+from datetime import datetime, timezone, timedelta
+
+def human_delta(dt):
+    now   = datetime.now(timezone.utc)
+    delta = dt - now
+    s     = int(delta.total_seconds())
+    if s < 0:
+        return "overdue"
+    if s < 3600:
+        return f"{s // 60}m"
+    if s < 86400:
+        h = s // 3600
+        m = (s % 3600) // 60
+        return f"{h}h {m}m" if m else f"{h}h"
+    d = s // 86400
+    h = (s % 86400) // 3600
+    return f"{d}d {h}h" if h else f"{d}d"
+
+def main():
+    try:
+        cache = subprocess.check_output(["canvas-ical-fetch"], text=True).strip()
+        raw   = subprocess.check_output(["canvas-ical-parse", cache, "--days", "30"], text=True)
+        events = json.loads(raw)
+    except Exception as e:
+        print(json.dumps({"text": "", "tooltip": f"error: {e}"}))
+        return
+
+    if not events:
+        print(json.dumps({"text": "", "tooltip": "no upcoming assignments"}))
+        return
+
+    now = datetime.now(timezone.utc)
+    next_event = events[0]
+    dt = datetime.fromisoformat(next_event["dt"])
+    delta = human_delta(dt)
+    summary = next_event["summary"]
+    if len(summary) > 30:
+        summary = summary[:28] + "…"
+
+    overdue = dt < now
+    css_class = "overdue" if overdue else ("urgent" if (dt - now) < timedelta(hours=24) else "")
+
+    tooltip_lines = []
+    for e in events[:8]:
+        edt = datetime.fromisoformat(e["dt"])
+        d   = human_delta(edt)
+        tooltip_lines.append(f"{d:>6}  {e['summary']}")
+
+    print(json.dumps({
+        "text":    f"  {summary} ({delta})",
+        "tooltip": "\n".join(tooltip_lines),
+        "class":   css_class,
+    }))
+
+if __name__ == "__main__":
+    main()

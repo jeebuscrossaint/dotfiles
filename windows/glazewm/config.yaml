@@ -1,0 +1,140 @@
+# GlazeWM config — mirrors Sway layout
+
+general:
+  config_reload_on_change: true
+  focus_follows_cursor: false
+  toggle_workspace_on_refocus: false
+  cursor_follows_focus: false
+
+gaps:
+  scale_with_dpi: true
+  inner_gap: "15px"
+  outer_gap:
+    top: "5px"
+    right: "5px"
+    bottom: "16px"
+    left: "5px"
+
+window_effects:
+  focused_window:
+    border:
+      enabled: true
+      color: "#ffffff"
+      width: "2px"
+  other_windows:
+    border:
+      enabled: true
+      color: "#333333"
+      width: "2px"
+
+window_behavior:
+  initial_focus_mode: "focused-process"
+  state_defaults:
+    floating:
+      centered: true
+      shown_on_top: true
+    fullscreen:
+      maximized: false
+      shown_on_top: false
+
+workspaces:
+  - name: "1"
+  - name: "2"
+  - name: "3"
+  - name: "4"
+  - name: "5"
+  - name: "6"
+  - name: "7"
+  - name: "8"
+  - name: "9"
+
+window_rules:
+  - commands: ["set-floating"]
+    match:
+      - window_process: { equals: "Taskmgr" }
+      - window_process: { equals: "SnippingTool" }
+      - window_title: { regex: "Picture.in.Picture" }
+      - window_class: { equals: "ApplicationFrameWindow" }
+
+keybindings:
+  # Apps
+  - bindings: ["LWin+Q"]
+    commands: ["shell-exec wt"]
+  - bindings: ["LWin+C"]
+    commands: ["close"]
+
+  # Layout
+  - bindings: ["LWin+F"]
+    commands: ["toggle-fullscreen"]
+  - bindings: ["LWin+Shift+V"]
+    commands: ["toggle-floating --centered"]
+
+  # Focus — arrow keys
+  - bindings: ["LWin+Left"]
+    commands: ["focus --direction left"]
+  - bindings: ["LWin+Right"]
+    commands: ["focus --direction right"]
+  - bindings: ["LWin+Up"]
+    commands: ["focus --direction up"]
+  - bindings: ["LWin+Down"]
+    commands: ["focus --direction down"]
+
+  # Move — arrow keys
+  - bindings: ["LWin+Shift+Left"]
+    commands: ["move --direction left"]
+  - bindings: ["LWin+Shift+Right"]
+    commands: ["move --direction right"]
+  - bindings: ["LWin+Shift+Up"]
+    commands: ["move --direction up"]
+  - bindings: ["LWin+Shift+Down"]
+    commands: ["move --direction down"]
+
+  # Resize
+  - bindings: ["LWin+R+Left"]
+    commands: ["resize --width -20px"]
+  - bindings: ["LWin+R+Right"]
+    commands: ["resize --width +20px"]
+  - bindings: ["LWin+R+Up"]
+    commands: ["resize --height -20px"]
+  - bindings: ["LWin+R+Down"]
+    commands: ["resize --height +20px"]
+
+  # Workspaces
+  - bindings: ["LWin+1"]
+    commands: ["focus --workspace 1"]
+  - bindings: ["LWin+2"]
+    commands: ["focus --workspace 2"]
+  - bindings: ["LWin+3"]
+    commands: ["focus --workspace 3"]
+  - bindings: ["LWin+4"]
+    commands: ["focus --workspace 4"]
+  - bindings: ["LWin+5"]
+    commands: ["focus --workspace 5"]
+  - bindings: ["LWin+6"]
+    commands: ["focus --workspace 6"]
+  - bindings: ["LWin+7"]
+    commands: ["focus --workspace 7"]
+  - bindings: ["LWin+8"]
+    commands: ["focus --workspace 8"]
+  - bindings: ["LWin+9"]
+    commands: ["focus --workspace 9"]
+
+  # Move to workspace
+  - bindings: ["LWin+Shift+1"]
+    commands: ["move --workspace 1"]
+  - bindings: ["LWin+Shift+2"]
+    commands: ["move --workspace 2"]
+  - bindings: ["LWin+Shift+3"]
+    commands: ["move --workspace 3"]
+  - bindings: ["LWin+Shift+4"]
+    commands: ["move --workspace 4"]
+  - bindings: ["LWin+Shift+5"]
+    commands: ["move --workspace 5"]
+  - bindings: ["LWin+Shift+6"]
+    commands: ["move --workspace 6"]
+  - bindings: ["LWin+Shift+7"]
+    commands: ["move --workspace 7"]
+  - bindings: ["LWin+Shift+8"]
+    commands: ["move --workspace 8"]
+  - bindings: ["LWin+Shift+9"]
+    commands: ["move --workspace 9"]

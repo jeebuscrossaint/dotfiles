@@ -1,0 +1,36 @@
+# coat labwc theme: Vesper
+# FormalSnake (https://github.com/formalsnake)
+
+border.width: 2
+
+# Active window
+window.active.title.bg.color: #232323
+window.active.label.text.color: #D5D5D5
+window.active.button.unpressed.image.color: #D5D5D5
+window.active.button.hover.image.color: #8EAAAA
+window.active.border.color: #8EAAAA
+
+# Inactive window
+window.inactive.title.bg.color: #101010
+window.inactive.label.text.color: #333333
+window.inactive.button.unpressed.image.color: #333333
+window.inactive.button.hover.image.color: #333333
+window.inactive.border.color: #222222
+
+# Padding
+padding.height: 2
+padding.width: 4
+
+# Menu
+menu.items.bg.color: #232323
+menu.items.text.color: #B7B7B7
+menu.items.active.bg.color: #8EAAAA
+menu.items.active.text.color: #101010
+menu.border.width: 1
+menu.border.color: #222222
+
+# OSD
+osd.bg.color: #232323
+osd.border.color: #8EAAAA
+osd.border.width: 1
+osd.label.text.color: #B7B7B7

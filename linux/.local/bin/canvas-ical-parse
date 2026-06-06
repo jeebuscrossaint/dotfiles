@@ -1,0 +1,98 @@
+#!/usr/bin/env python3
+# canvas-ical-parse — parse Canvas iCal file, return upcoming events as JSON
+# Usage: canvas-ical-parse <path-to-ics> [--days N]  (default: 14 days)
+
+import json
+import re
+import sys
+from datetime import datetime, timezone, timedelta
+
+try:
+    from zoneinfo import ZoneInfo
+except ImportError:
+    ZoneInfo = None
+
+def parse_dt(raw):
+    """Parse an iCal datetime property line value to UTC datetime."""
+    # raw may be "DTSTART;TZID=America/New_York:20260401T235900" or "DTSTART:20260401T235900Z"
+    tzid = None
+    match = re.search(r"TZID=([^:;]+)", raw)
+    if match:
+        tzid = match.group(1)
+    value = raw.split(":")[-1].strip()
+
+    if len(value) == 8:  # DATE only e.g. 20260401
+        dt = datetime.strptime(value, "%Y%m%d").replace(hour=23, minute=59, tzinfo=timezone.utc)
+        return dt
+
+    try:
+        if value.endswith("Z"):
+            return datetime.strptime(value, "%Y%m%dT%H%M%SZ").replace(tzinfo=timezone.utc)
+        dt = datetime.strptime(value, "%Y%m%dT%H%M%S")
+        if tzid and ZoneInfo:
+            try:
+                dt = dt.replace(tzinfo=ZoneInfo(tzid))
+                return dt.astimezone(timezone.utc)
+            except Exception:
+                pass
+        return dt.replace(tzinfo=timezone.utc)
+    except ValueError:
+        return None
+
+def parse_events(ics_path):
+    with open(ics_path, encoding="utf-8", errors="replace") as f:
+        raw = f.read()
+
+    # Unfold continuation lines
+    raw = re.sub(r"\r?\n[ \t]", "", raw)
+
+    events = []
+    for block in re.split(r"BEGIN:VEVENT", raw)[1:]:
+        end = block.find("END:VEVENT")
+        block = block[:end] if end != -1 else block
+
+        props = {}
+        for line in block.splitlines():
+            if ":" in line:
+                key = line.split(":")[0].split(";")[0].upper()
+                props[key] = line
+
+        summary = props.get("SUMMARY", "SUMMARY:").split(":", 1)[-1].strip()
+        url     = props.get("URL", "URL:").split(":", 1)[-1].strip()
+
+        dt = None
+        for key in ("DUE", "DTSTART"):
+            if key in props:
+                dt = parse_dt(props[key])
+                if dt:
+                    break
+
+        if dt and summary:
+            events.append({"summary": summary, "dt": dt.isoformat(), "url": url})
+
+    events.sort(key=lambda e: e["dt"])
+    return events
+
+def main():
+    args = sys.argv[1:]
+    if not args:
+        print("usage: canvas-ical-parse <file.ics> [--days N]", file=sys.stderr)
+        sys.exit(1)
+
+    ics_path = args[0]
+    days = 14
+    if "--days" in args:
+        days = int(args[args.index("--days") + 1])
+
+    now    = datetime.now(timezone.utc)
+    cutoff = now + timedelta(days=days)
+
+    events = [
+        e for e in parse_events(ics_path)
+        if now <= datetime.fromisoformat(e["dt"]) <= cutoff
+    ]
+
+    print(json.dumps(events, indent=2))
+
+if __name__ == "__main__":
+    main()

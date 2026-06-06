@@ -1,0 +1,129 @@
+{
+    "layer": "top",
+    "position": "bottom",
+    "height": 27,
+    "spacing": 0,
+    "fixed-center": true,
+
+    "modules-left": ["sway/workspaces", "sway/window", "custom/weather", "custom/mpris", "custom/canvas"],
+    "modules-center": ["clock"],
+    "modules-right": ["custom/network", "custom/bluetooth", "cpu", "custom/temp", "memory", "custom/battery", "custom/mic", "custom/volume"],
+
+    "sway/window": {
+        "max-length": 50,
+        "separate-outputs": true
+    },
+
+    "sway/workspaces": {
+        "format": "{name}",
+        "on-click": "activate",
+        "sort-by-number": true,
+        "persistent-workspaces": {}
+    },
+
+    "clock": {
+        "interval": 1,
+        "format": "{:%A, %B %e  %H:%M:%S}",
+        "tooltip-format": "<tt><small>{calendar}</small></tt>",
+        "calendar": {
+            "mode": "month",
+            "mode-mon-col": 3,
+            "weeks-pos": "right",
+            "on-scroll": 1,
+            "on-click-right": "mode",
+            "format": {
+                "months": "<b>{}</b>",
+                "days": "<b>{}</b>",
+                "weeks": "<b>W{}</b>",
+                "weekdays": "<b>{}</b>",
+                "today": "<b><u>{}</u></b>"
+            }
+        },
+        "actions": {
+            "on-click-right": "mode",
+            "on-scroll-up": "shift_up",
+            "on-scroll-down": "shift_down"
+        }
+    },
+
+    "custom/weather": {
+        "format": "{}",
+        "tooltip": true,
+        "interval": 300,
+        "exec": "wttrbar --fahrenheit --mph --nerd",
+        "return-type": "json"
+    },
+
+    "custom/network": {
+        "exec": "waybar-network",
+        "return-type": "json",
+        "interval": 10,
+        "on-click": "sh -c 'command -v nm-connection-editor && nm-connection-editor'"
+    },
+
+    "custom/bluetooth": {
+        "exec": "waybar-bluetooth",
+        "return-type": "json",
+        "interval": 10,
+        "on-click": "sh -c 'command -v blueman-manager && blueman-manager'"
+    },
+
+    "cpu": {
+        "interval": 5,
+        "format": "󰻠 {usage}%",
+        "tooltip-format": "CPU: {usage}%\nLoad: {load}"
+    },
+
+    "custom/temp": {
+        "exec": "waybar-temp",
+        "interval": 5,
+        "format": " {}"
+    },
+
+    "memory": {
+        "interval": 10,
+        "format": "󰍛 {percentage}%",
+        "tooltip-format": "RAM: {used:0.1f}G / {total:0.1f}G\nSwap: {swapUsed:0.1f}G / {swapTotal:0.1f}G"
+    },
+
+    "custom/battery": {
+        "exec": "waybar-battery",
+        "return-type": "json",
+        "interval": 30
+    },
+
+    "custom/volume": {
+        "exec": "waybar-volume",
+        "return-type": "json",
+        "interval": 0,
+        "signal": 1,
+        "on-click": "volumectl toggle-mute",
+        "on-scroll-up": "volumectl up",
+        "on-scroll-down": "volumectl down"
+    },
+
+    "custom/mpris": {
+        "format": "{}",
+        "exec": "waybar-mpris",
+        "return-type": "json",
+        "interval": 0,
+        "on-click": "playerctl play-pause",
+        "on-scroll-up": "playerctl next",
+        "on-scroll-down": "playerctl previous",
+        "max-length": 35
+    },
+
+    "custom/canvas": {
+        "exec": "waybar-canvas",
+        "return-type": "json",
+        "interval": 300
+    },
+
+    "custom/mic": {
+        "exec": "waybar-mic",
+        "return-type": "json",
+        "interval": 0,
+        "signal": 2,
+        "on-click": "volumectl -m toggle-mute"
+    }
+}

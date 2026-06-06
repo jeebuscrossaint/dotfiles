@@ -1,0 +1,21 @@
+#!/bin/sh
+# Bluetooth widget — outputs empty JSON on systems without bluetoothctl
+
+if ! command -v bluetoothctl > /dev/null 2>&1; then
+    printf '{"text":""}\n'
+    exit 0
+fi
+
+powered=$(bluetoothctl show 2>/dev/null | awk '/Powered:/{print $2}')
+if [ "$powered" != "yes" ]; then
+    printf '{"text":"󰂲","tooltip":"Bluetooth off"}\n'
+    exit 0
+fi
+
+connected=$(bluetoothctl devices Connected 2>/dev/null | head -1)
+if [ -n "$connected" ]; then
+    name=$(echo "$connected" | cut -d' ' -f3-)
+    printf '{"text":"󰂱 %s","tooltip":"Connected: %s"}\n' "$name" "$name"
+else
+    printf '{"text":"󰂯","tooltip":"Bluetooth on, no devices"}\n'
+fi

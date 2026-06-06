@@ -1,0 +1,5 @@
+*coat*
+!/linux/.config/coat/
+!/linux/.config/coat/coat.yaml
+linux/.config/coat/schemes/
+dots-hyprland

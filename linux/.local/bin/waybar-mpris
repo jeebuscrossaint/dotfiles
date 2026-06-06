@@ -1,0 +1,12 @@
+#!/bin/sh
+# Persistent mpris widget — loops so waybar always has a live process
+while true; do
+    if playerctl status >/dev/null 2>&1; then
+        playerctl metadata --format \
+            '{"text":"󰝚 {{title}} — {{artist}}","tooltip":"{{title}}\n{{artist}}\n{{album}}"}' \
+            --follow 2>/dev/null
+    fi
+    # player gone or not running — emit blank and wait before retrying
+    printf '{"text":""}\n'
+    sleep 3
+done

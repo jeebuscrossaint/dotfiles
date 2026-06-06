@@ -1,0 +1,45 @@
+# ~/.config/coat/coat.yaml
+
+# The 'enabled' key triggers STATE_ENABLED and expects a sequence (list)
+enabled:
+  - fish
+  - foot
+  - helix
+  - fuzzel
+  - ranger
+  - bat
+  - btop
+  - dunst
+  - zathura
+  - gtk
+  - vesktop
+  - sway
+  - qt
+  - waybar
+  - labwc
+  - swaylock
+  - kde
+  - firefox
+  - mpv
+  - vscode
+  
+# The 'scheme' key is a top-level scalar
+scheme: vesper
+prefer_base24: false
+
+opacity:
+  terminal: 0.7
+  applications: 1.0
+  desktop: 1.0
+  popups: 1.0
+
+# The 'font' key triggers in_font_section and expects a mapping (dictionary)
+font:
+  emoji: "Noto Color Emoji"
+  monospace: "UbuntuMono Nerd Font Mono"
+  sansserif: "UbuntuMono Nerd Font"
+  serif: "UbuntuMono Nerd Font"
+  sizes:
+    terminal: 14
+    desktop: 14
+    popups: 14
