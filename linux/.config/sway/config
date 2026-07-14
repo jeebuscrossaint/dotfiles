@@ -67,6 +67,7 @@ bindsym $mod+l exec swaylock
 bindsym $mod+Delete exec wlboard
 bindsym $mod+p exec toggle-waybar
 bindsym $mod+Shift+s exec swayscreenshot
+bindsym $mod+Shift+e exec swayscreenshot-edit
 
 # Focus
 bindsym $mod+Left focus left
@@ -163,27 +164,27 @@ exec /usr/libexec/xdg-desktop-portal
 
 # SwayFX
 # SwayFX effects
-corner_radius 0
-smart_corner_radius enable
+#corner_radius 0
+#smart_corner_radius enable
 
-blur disable
-blur_passes 2
-blur_radius 3
-blur_xray disable
+#blur disable
+#blur_passes 2
+#blur_radius 3
+#blur_xray disable
 
-shadows disable
-shadows_on_csd enable
-shadow_blur_radius 10
-shadow_color $base00
-shadow_inactive_color $base00
-shadow_offset 0 0
+#shadows disable
+#shadows_on_csd enable
+#shadow_blur_radius 10
+#shadow_color $base00
+#shadow_inactive_color $base00
+#shadow_offset 0 0
 
-default_dim_inactive 0.0
-dim_inactive_colors.unfocused $base00
-dim_inactive_colors.urgent $base08
+#default_dim_inactive 0.0
+#dim_inactive_colors.unfocused $base00
+#dim_inactive_colors.urgent $base08
 
-titlebar_separator disable
-scratchpad_minimize disable
+#titlebar_separator disable
+#scratchpad_minimize disable
 
 #layer_effects "waybar" {
 #    blur enable
@@ -192,9 +193,9 @@ scratchpad_minimize disable
  #   corner_radius 8
 #}
 
-layer_effects "notifications" {
-   blur enable
-   shadows enable
-   corner_radius 8
-}
+#layer_effects "notifications" {
+#   blur enable
+#   shadows enable
+#   corner_radius 8
+#}
 
