@@ -4,17 +4,20 @@
 
 set -g fish_greeting
 
-# Coat theme — only re-apply when theme file has changed
-if test -f ~/.config/fish/themes/coat.theme
-    if not test -f ~/.config/fish/themes/.coat.applied; or test ~/.config/fish/themes/coat.theme -nt ~/.config/fish/themes/.coat.applied
-        fish_config theme choose coat
-        touch ~/.config/fish/themes/.coat.applied
+# Coat theme — only re-apply when theme file has changed (interactive only)
+if status is-interactive
+    if test -f ~/.config/fish/themes/coat.theme
+        if not test -f ~/.config/fish/themes/.coat.applied; or test ~/.config/fish/themes/coat.theme -nt ~/.config/fish/themes/.coat.applied
+            fish_config theme choose coat
+            touch ~/.config/fish/themes/.coat.applied
+        end
     end
 end
 
-set -x EDITOR hx
+set -x EDITOR helix
 set -x LANG en_US.UTF-8
 set -x LC_ALL en_US.UTF-8
+set -x SWAY_UNSUPPORTED_GPU true
 
 ########################################
 # Environment variables
@@ -70,6 +73,20 @@ end
 # Startup
 ########################################
 
-if command -q fastfetch
-    fastfetch
+if status is-interactive
+    # Keep paru's AUR completion cache fresh (paru's own generator corrupts it,
+    # so CompletionInterval is pinned huge in paru.conf). Refresh in the
+    # background at most weekly; never blocks the prompt.
+    if test -x ~/.local/bin/refresh-paru-completions
+        set -l pc ~/.cache/paru/packages.aur
+        set -l stale (find $pc -mtime +7 2>/dev/null)
+        if not test -f $pc; or test -n "$stale"
+            ~/.local/bin/refresh-paru-completions >/dev/null 2>&1 &
+            disown
+        end
+    end
+
+    if command -q fastfetch
+        fastfetch
+    end
 end

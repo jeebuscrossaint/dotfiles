@@ -7,7 +7,7 @@ client.focused $base0D $base00 $base0D $base0D $base0C
 
 set $mod Mod4
 set $menu fuzzel
-set $term footclient
+set $term foot
 
 xwayland enable
 
@@ -149,7 +149,6 @@ bar {
 
 # Startup
 exec dbus-update-activation-environment --all
-exec foot --server
 exec autotiling-rs
 exec swayidle -w -C ~/.config/swayidle/config
 exec env GTK_USE_PORTAL=0 waybar -c ~/.config/waybar/config.json -s ~/.config/waybar/style.css
@@ -158,15 +157,18 @@ exec sh -c 'command -v nm-applet && nm-applet'
 exec dbus-update-activation-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=sway
 exec start-polkit
 exec canvas-notify
-exec gentoo-pipewire-launcher 
 exec /usr/libexec/xdg-desktop-portal-wlr
 exec /usr/libexec/xdg-desktop-portal
+#exec /usr/bin/pipewire
+#exec /usr/bin/pipewire-pulse
+#exec /usr/bin/wireplumber
+exec artix-pipewire-launcher
+exec nvibrant 1023 1023 1023 1023
 
 # SwayFX
 # SwayFX effects
 #corner_radius 0
 #smart_corner_radius enable
-
 #blur disable
 #blur_passes 2
 #blur_radius 3
@@ -190,7 +192,7 @@ exec /usr/libexec/xdg-desktop-portal
 #    blur enable
 #    blur_ignore_transparent enable
 #    shadows enable
- #   corner_radius 8
+#   corner_radius 8
 #}
 
 #layer_effects "notifications" {
