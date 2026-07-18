@@ -2,7 +2,6 @@
 
 eval $(dbus-launch --sh-syntax --exit-with-session)
 dbus-update-activation-environment DBUS_SESSION_BUS_ADDRESS WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=labwc &
-foot --server &
 swayidle -w -C ~/.config/swayidle/config &
 start-waybar &
 dunst &
