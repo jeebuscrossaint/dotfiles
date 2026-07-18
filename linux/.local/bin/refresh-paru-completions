@@ -1,0 +1,27 @@
+#!/bin/sh
+# Regenerate paru's AUR completion cache CORRECTLY.
+#
+# Why this exists: paru v2.1.0 writes a corrupted (compressed) blob into
+# ~/.cache/paru/packages.aur but reads it back as plaintext, so `paru -S <TAB>`
+# spews binary garbage. We bypass paru's broken generator and fetch the plain
+# AUR package list ourselves. paru.conf sets CompletionInterval huge so paru
+# never regenerates (and never re-corrupts) this file.
+
+set -eu
+
+cache="${XDG_CACHE_HOME:-$HOME/.cache}/paru/packages.aur"
+url="https://aur.archlinux.org/packages.gz"
+
+mkdir -p "$(dirname "$cache")"
+tmp="$(mktemp "${cache}.XXXXXX")"
+trap 'rm -f "$tmp"' EXIT
+
+# Download + decompress to a temp file, then swap in atomically.
+if curl -fsS "$url" | gzip -d > "$tmp" && [ -s "$tmp" ]; then
+    mv -f "$tmp" "$cache"
+    trap - EXIT
+    echo "refresh-paru-completions: updated $cache ($(wc -l < "$cache") packages)"
+else
+    echo "refresh-paru-completions: download failed, kept existing cache" >&2
+    exit 1
+fi
