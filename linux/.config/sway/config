@@ -3,7 +3,7 @@
 include ~/.config/sway/coat-theme
 
 # Override: dark titlebar bg matching terminal
-client.focused $base0D $base00 $base0D $base0D $base0C
+client.focused $base0D $base00 $base0D $base0C $base0C
 
 set $mod Mod4
 set $menu fuzzel
@@ -164,6 +164,7 @@ exec /usr/libexec/xdg-desktop-portal
 #exec /usr/bin/wireplumber
 exec artix-pipewire-launcher
 exec nvibrant 1023 1023 1023 1023
+exec refresh-paru-completions
 
 # SwayFX
 # SwayFX effects
