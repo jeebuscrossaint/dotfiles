@@ -6,153 +6,130 @@
     min-height: 0;
     box-shadow: none;
     outline: none;
-    transition: color 0.15s ease, background 0.15s ease;
+    font-family: "Lilex Nerd Font Mono";
+    transition: color 0.2s ease, background 0.2s ease;
 }
 
-/* Floating, translucent, rounded "island" bar. The translucency is frosted by
-   Hyprland's `layerrule = blur, waybar`; on sway it just looks semi-transparent. */
+/* Transparent bar — every module floats as its own rounded "island".
+   Hyprland's `layerrule = blur, waybar` frosts the translucent islands and
+   `ignorezero` keeps the gaps between them fully see-through. */
 window#waybar {
-    background: alpha(@base00, 0.78);
+    background: transparent;
     color: @base05;
-    border-radius: 14px;
-    margin: 6px 10px 0 10px;
-    border: 1px solid alpha(@base03, 0.6);
 }
 
-/* Give the edge module groups a little breathing room from the rounded corners */
-.modules-left  { margin-left: 8px; }
-.modules-right { margin-right: 8px; }
+/* Shared island look for every module group. Covers both standard and
+   custom/* module names so whatever your config renders gets styled. */
+#workspaces,
+#window,
+#clock,
+#custom-weather,
+#custom-mpris,
+#custom-canvas,
+#network,
+#custom-network,
+#bluetooth,
+#custom-bluetooth,
+#cpu,
+#custom-gpu,
+#temperature,
+#custom-temp,
+#memory,
+#battery,
+#custom-battery,
+#wireplumber,
+#custom-volume,
+#custom-mic,
+#tray,
+#custom-updates {
+    background: alpha(@base00, 0.72);
+    border: 1px solid alpha(@base03, 0.5);
+    border-radius: 12px;
+    margin: 4px 3px;
+    padding: 2px 12px;
+    color: @base05;
+}
 
+/* Edge islands hug the screen a touch less */
+.modules-left  { margin-left: 6px; }
+.modules-right { margin-right: 6px; }
+
+/* Workspaces: island container holding pill-shaped buttons */
+#workspaces {
+    padding: 2px 4px;
+}
 #workspaces button {
     padding: 0 8px;
-    margin: 3px 2px;
+    margin: 2px 2px;
     border-radius: 8px;
     color: @base04;
     background: transparent;
-    transition: all 0.15s ease;
+    transition: all 0.2s ease;
 }
-
 #workspaces button:hover {
     color: @base05;
-    background: @base02;
+    background: alpha(@base02, 0.8);
 }
-
 #workspaces button.active {
     color: @base00;
     background: @base0D;
     font-weight: bold;
 }
-
 #workspaces button.urgent {
     color: @base00;
     background: @base08;
 }
-
 #workspaces button.occupied:not(.active) {
     color: @base05;
 }
 
-#window,
-#clock,
-#custom-weather,
-#custom-mpris,
-#network,
-#network.wifi,
-#network.ethernet,
-#network.disconnected,
-#network.connected,
-#bluetooth,
-#bluetooth.connected,
-#bluetooth.off,
-#bluetooth.disabled,
-#cpu,
-#custom-gpu,
-#temperature,
-#temperature.critical,
-#memory,
-#battery,
-#battery.charging,
-#battery.plugged,
-#battery.warning,
-#battery.critical,
-#wireplumber,
-#wireplumber.muted,
-#custom-mic,
-#tray,
-#custom-updates {
-    padding: 0 12px;
-    color: @base05;
-    background: transparent;
-    border-bottom: none;
-}
+/* Subtle per-module accent tints (icons/text pop against the dark island) */
+#clock          { color: @base0D; }
+#battery        { color: @base0B; }
+#custom-battery { color: @base0B; }
+#cpu            { color: @base0E; }
+#memory         { color: @base0C; }
+#temperature    { color: @base0A; }
+#custom-temp    { color: @base0A; }
+#custom-mpris   { color: @base0E; }
+#network        { color: @base0C; }
+#custom-network { color: @base0C; }
+#bluetooth      { color: @base0D; }
+#custom-weather { color: @base0A; }
 
-#network.disconnected {
-    color: @base08;
-    background: transparent;
-}
-
-#bluetooth.off,
-#bluetooth.disabled {
-    color: @base03;
-    background: transparent;
-}
-
-#temperature.critical {
-    color: @base08;
-    background: transparent;
-    animation: pulse-warn 0.8s ease-in-out infinite alternate;
-}
-
-#battery.warning:not(.charging) {
-    color: @base07;
-    background: transparent;
-}
-
+/* State overrides — keep the island, just recolor (or tint for alarms) */
+#network.disconnected               { color: @base08; }
+#bluetooth.off, #bluetooth.disabled { color: @base03; }
+#battery.charging, #battery.plugged { color: @base0B; }
+#battery.warning:not(.charging)     { color: @base09; }
 #battery.critical:not(.charging) {
     color: @base08;
-    background: transparent;
-    animation: none;
+    background: alpha(@base08, 0.15);
+    border-color: alpha(@base08, 0.5);
+    animation: pulse-warn 0.9s ease-in-out infinite alternate;
 }
-
-#wireplumber.muted {
+#temperature.critical {
     color: @base08;
-    background: transparent;
+    background: alpha(@base08, 0.15);
+    border-color: alpha(@base08, 0.5);
+    animation: pulse-warn 0.8s ease-in-out infinite alternate;
 }
+#wireplumber.muted { color: @base08; }
+#custom-mic.muted  { color: @base08; }
 
-#custom-mic.muted {
-    color: @base08;
-    background: transparent;
-}
-
-#tray > .passive {
-    -gtk-icon-effect: dim;
-}
-
+#tray > .passive { -gtk-icon-effect: dim; }
 #tray > .needs-attention {
     -gtk-icon-effect: highlight;
-    background: @base08;
+    background: alpha(@base08, 0.2);
 }
 
 tooltip {
-    background: @base01;
+    background: alpha(@base01, 0.96);
     border: 1px solid @base03;
-    transition: none;
-    opacity: 1;
+    border-radius: 10px;
 }
-
-tooltip label {
-    color: @base05;
-}
-
-@keyframes blink {
-    to {
-        color: @base00;
-        background: @base08;
-    }
-}
+tooltip label { color: @base05; }
 
 @keyframes pulse-warn {
-    to {
-        opacity: 0.5;
-    }
+    to { opacity: 0.55; }
 }
