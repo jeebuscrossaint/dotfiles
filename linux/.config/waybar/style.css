@@ -138,8 +138,15 @@ tooltip {
     background: alpha(@base01, 0.96);
     border: 1px solid @base03;
     border-radius: 10px;
+    /* GTK3 tooltips need transitions/animation off or they fail to appear
+       (the global `* { transition }` rule above otherwise breaks them). */
+    transition: none;
+    opacity: 1;
 }
-tooltip label { color: @base05; }
+tooltip label {
+    color: @base05;
+    padding: 4px;
+}
 
 @keyframes pulse-warn {
     to { opacity: 0.55; }
