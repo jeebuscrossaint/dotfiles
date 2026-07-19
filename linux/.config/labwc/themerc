@@ -1,36 +1,36 @@
-# coat labwc theme: Noche
-# Teshre
+# coat labwc theme: Monokai Vivid
+# FredHappyface (https://github.com/fredHappyface)
 
 border.width: 2
 
 # Active window
-window.active.title.bg.color: #181C2C
-window.active.label.text.color: #E6ECFA
-window.active.button.unpressed.image.color: #E6ECFA
-window.active.button.hover.image.color: #7AA0E8
-window.active.border.color: #7AA0E8
+window.active.title.bg.color: #323232
+window.active.label.text.color: #FFFFFF
+window.active.button.unpressed.image.color: #FFFFFF
+window.active.button.hover.image.color: #0442FE
+window.active.border.color: #0442FE
 
 # Inactive window
-window.inactive.title.bg.color: #0C0E16
-window.inactive.label.text.color: #5A6178
-window.inactive.button.unpressed.image.color: #5A6178
-window.inactive.button.hover.image.color: #5A6178
-window.inactive.border.color: #232A40
+window.inactive.title.bg.color: #121212
+window.inactive.label.text.color: #525252
+window.inactive.button.unpressed.image.color: #525252
+window.inactive.button.hover.image.color: #525252
+window.inactive.border.color: #424242
 
 # Padding
 padding.height: 2
 padding.width: 4
 
 # Menu
-menu.items.bg.color: #181C2C
-menu.items.text.color: #CBD4EC
-menu.items.active.bg.color: #7AA0E8
-menu.items.active.text.color: #0C0E16
+menu.items.bg.color: #323232
+menu.items.text.color: #DFDFDF
+menu.items.active.bg.color: #0442FE
+menu.items.active.text.color: #121212
 menu.border.width: 1
-menu.border.color: #232A40
+menu.border.color: #424242
 
 # OSD
-osd.bg.color: #181C2C
-osd.border.color: #7AA0E8
+osd.bg.color: #323232
+osd.border.color: #0442FE
 osd.border.width: 1
-osd.label.text.color: #CBD4EC
+osd.label.text.color: #DFDFDF
