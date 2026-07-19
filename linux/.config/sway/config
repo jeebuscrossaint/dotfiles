@@ -68,6 +68,7 @@ bindsym $mod+Delete exec wlboard
 bindsym $mod+p exec toggle-waybar
 bindsym $mod+Shift+s exec swayscreenshot
 bindsym $mod+Shift+e exec swayscreenshot-edit
+bindsym $mod+v exec cliphist list | fuzzel --dmenu | cliphist decode | wl-copy
 
 # Focus
 bindsym $mod+Left focus left
@@ -153,6 +154,9 @@ exec autotiling-rs
 exec swayidle -w -C ~/.config/swayidle/config
 exec env GTK_USE_PORTAL=0 waybar -c ~/.config/waybar/config.json -s ~/.config/waybar/style.css
 exec dunst
+# Clipboard history (cliphist) — watch both text and images; recall with $mod+v
+exec wl-paste --type text --watch cliphist store
+exec wl-paste --type image --watch cliphist store
 exec sh -c 'command -v nm-applet && nm-applet'
 exec dbus-update-activation-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=sway
 exec start-polkit
