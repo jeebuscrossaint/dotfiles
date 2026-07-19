@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+# Waybar custom/coat module — shows the active coat scheme and switches it.
+#   (no arg) : print JSON status for waybar
+#   menu     : fuzzel picker of every scheme  ->  coat set
+#   random   : jump to a random scheme
+# After a switch, waybar is sent SIGUSR2 so it reloads its colours immediately.
+
+yaml="$HOME/.config/coat/coat.yaml"
+current() { grep -m1 '^scheme:' "$yaml" | awk '{print $2}'; }
+
+case "${1:-status}" in
+  menu)
+    pick=$(coat list --no-preview 2>/dev/null | awk '/Slug:/{print $2}' \
+           | fuzzel --dmenu --prompt "coat ❯ ")
+    if [ -n "$pick" ]; then
+      coat set "$pick" >/dev/null 2>&1
+      pkill -SIGUSR2 waybar 2>/dev/null
+    fi
+    ;;
+  random)
+    coat random -y >/dev/null 2>&1
+    pkill -SIGUSR2 waybar 2>/dev/null
+    ;;
+  *)
+    s=$(current)
+    printf '{"text":"󰏘 %s","tooltip":"coat scheme: %s\\nclick: pick  •  right-click: random"}\n' "$s" "$s"
+    ;;
+esac

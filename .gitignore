@@ -1,5 +1,6 @@
 *coat*
 !/linux/.config/coat/
 !/linux/.config/coat/coat.yaml
+!/linux/.local/bin/waybar-coat
 linux/.config/coat/schemes/
 dots-hyprland
