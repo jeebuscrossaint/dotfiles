@@ -22,10 +22,14 @@ window#waybar {
    custom module names so whatever your config renders gets styled. */
 #workspaces,
 #window,
+#submap,
 #clock,
 #custom-weather,
 #custom-mpris,
 #custom-canvas,
+#custom-coat,
+#idle_inhibitor,
+#custom-notifications,
 #network,
 #custom-network,
 #bluetooth,
@@ -96,6 +100,13 @@ window#waybar {
 #custom-network { color: @base0C; }
 #bluetooth      { color: @base0D; }
 #custom-weather { color: @base0A; }
+#custom-coat    { color: @base0E; }
+#idle_inhibitor { color: @base0B; }
+#submap         { color: @base09; font-weight: bold; }
+
+/* Notification states */
+#custom-notifications.unread { color: @base0A; }
+#custom-notifications.dnd    { color: @base08; }
 
 /* State overrides — keep the island, just recolor (or tint for alarms) */
 #network.disconnected               { color: @base08; }

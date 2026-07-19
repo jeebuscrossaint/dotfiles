@@ -5,9 +5,9 @@
     "spacing": 0,
     "fixed-center": true,
 
-    "modules-left": ["hyprland/workspaces", "hyprland/window", "custom/weather", "custom/mpris", "custom/canvas"],
+    "modules-left": ["hyprland/workspaces", "hyprland/window", "hyprland/submap", "custom/weather", "custom/mpris", "custom/canvas"],
     "modules-center": ["clock"],
-    "modules-right": ["custom/network", "custom/bluetooth", "cpu", "custom/temp", "memory", "custom/battery", "custom/mic", "custom/volume"],
+    "modules-right": ["custom/network", "custom/bluetooth", "cpu", "custom/temp", "memory", "custom/battery", "custom/mic", "custom/volume", "custom/coat", "idle_inhibitor", "custom/notifications", "tray"],
 
     "hyprland/window": {
         "max-length": 50,
@@ -18,6 +18,40 @@
         "format": "{name}",
         "on-click": "activate",
         "sort-by-number": true
+    },
+
+    "hyprland/submap": {
+        "format": "  {}",
+        "tooltip": false
+    },
+
+    "idle_inhibitor": {
+        "format": "{icon}",
+        "format-icons": { "activated": "󰅶", "deactivated": "󰛊" },
+        "tooltip-format-activated": "Idle inhibited (caffeine on)",
+        "tooltip-format-deactivated": "Idle allowed"
+    },
+
+    "tray": {
+        "icon-size": 16,
+        "spacing": 8
+    },
+
+    "custom/coat": {
+        "exec": "waybar-coat",
+        "return-type": "json",
+        "interval": 5,
+        "on-click": "waybar-coat menu",
+        "on-click-right": "waybar-coat random"
+    },
+
+    "custom/notifications": {
+        "exec": "waybar-notifications",
+        "return-type": "json",
+        "interval": 2,
+        "on-click": "dunstctl set-paused toggle",
+        "on-click-right": "dunstctl history-pop",
+        "on-click-middle": "dunstctl close-all"
     },
 
     "clock": {
