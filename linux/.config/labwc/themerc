@@ -1,36 +1,36 @@
-# coat labwc theme: OneDark Dark
-# olimorris (https://github.com/olimorris)
+# coat labwc theme: Tokyodark Terminal
+# Tiagovla (https://github.com/tiagovla/)
 
 border.width: 2
 
 # Active window
-window.active.title.bg.color: #1C1F24
-window.active.label.text.color: #C8CCD4
-window.active.button.unpressed.image.color: #C8CCD4
-window.active.button.hover.image.color: #61AFEF
-window.active.border.color: #61AFEF
+window.active.title.bg.color: #1A1B2A
+window.active.label.text.color: #A0A8CD
+window.active.button.unpressed.image.color: #A0A8CD
+window.active.button.hover.image.color: #7199EE
+window.active.border.color: #7199EE
 
 # Inactive window
-window.inactive.title.bg.color: #000000
-window.inactive.label.text.color: #434852
-window.inactive.button.unpressed.image.color: #434852
-window.inactive.button.hover.image.color: #434852
-window.inactive.border.color: #2C313A
+window.inactive.title.bg.color: #11121D
+window.inactive.label.text.color: #282C34
+window.inactive.button.unpressed.image.color: #282C34
+window.inactive.button.hover.image.color: #282C34
+window.inactive.border.color: #212234
 
 # Padding
 padding.height: 2
 padding.width: 4
 
 # Menu
-menu.items.bg.color: #1C1F24
-menu.items.text.color: #ABB2BF
-menu.items.active.bg.color: #61AFEF
-menu.items.active.text.color: #000000
+menu.items.bg.color: #1A1B2A
+menu.items.text.color: #A0A8CD
+menu.items.active.bg.color: #7199EE
+menu.items.active.text.color: #11121D
 menu.border.width: 1
-menu.border.color: #2C313A
+menu.border.color: #212234
 
 # OSD
-osd.bg.color: #1C1F24
-osd.border.color: #61AFEF
+osd.bg.color: #1A1B2A
+osd.border.color: #7199EE
 osd.border.width: 1
-osd.label.text.color: #ABB2BF
+osd.label.text.color: #A0A8CD
