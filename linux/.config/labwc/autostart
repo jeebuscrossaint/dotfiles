@@ -6,6 +6,10 @@ swayidle -w -C ~/.config/swayidle/config &
 start-waybar &
 dunst &
 
+# Clipboard history (cliphist) — watch both text and images; recall with W-v
+wl-paste --type text --watch cliphist store &
+wl-paste --type image --watch cliphist store &
+
 command -v nm-applet && nm-applet &
 
 start-polkit &
