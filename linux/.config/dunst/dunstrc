@@ -57,8 +57,9 @@
     always_run_script = true
     title = Dunst
     class = Dunst
-    corner_radius = 10
+    corner_radius = 12
     corners = all
+    highlight = "#7199EE"
     ignore_dbusclose = false
     mouse_left_click = close_current
     mouse_middle_click = do_action, close_current
@@ -75,19 +76,19 @@
     gap_size = 6
 
 [urgency_low]
-    background = "#11121D"
+    background = "#11121De6"
     foreground = "#4A5057"
     frame_color = "#282C34"
     timeout = 4
 
 [urgency_normal]
-    background = "#11121D"
+    background = "#11121De6"
     foreground = "#A0A8CD"
     frame_color = "#212234"
     timeout = 6
 
 [urgency_critical]
-    background = "#11121D"
+    background = "#11121De6"
     foreground = "#EE6D85"
     frame_color = "#EE6D85"
     timeout = 0
