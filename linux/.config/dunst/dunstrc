@@ -59,7 +59,7 @@
     class = Dunst
     corner_radius = 12
     corners = all
-    highlight = "#7199EE"
+    highlight = "#7199EE, #38A89D, #A485DD"
     ignore_dbusclose = false
     mouse_left_click = close_current
     mouse_middle_click = do_action, close_current
