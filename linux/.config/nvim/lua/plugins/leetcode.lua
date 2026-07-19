@@ -27,6 +27,7 @@ return {
     "nvim-telescope/telescope.nvim",
     "nvim-lua/plenary.nvim",
     "MunifTanjim/nui.nvim",
+    "3rd/image.nvim", -- inline problem images (only active in kitty; see images.lua)
   },
   opts = {
     -- Default language for new solutions. You're doing C++/Python — pick one;
@@ -34,7 +35,9 @@ return {
     lang = "cpp",
     -- Where solution files are stored (created if missing).
     storage = { home = vim.fn.stdpath("data") .. "/leetcode" },
-    -- No terminal image support needed; keeps it dependency-light.
-    image_support = false,
+    -- Render problem diagrams inline — but only when running inside kitty, which
+    -- is the only terminal here that supports the graphics protocol. In Neovide
+    -- or foot this is false and images stay as (openable) links.
+    image_support = vim.env.KITTY_WINDOW_ID ~= nil,
   },
 }

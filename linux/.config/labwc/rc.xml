@@ -24,7 +24,7 @@
 
     <default />
 
-    <keybind key="W-q"><action name="Execute" command="foot"/></keybind>
+    <keybind key="W-q"><action name="Execute" command="kitty"/></keybind>
     <keybind key="W-d"><action name="Execute" command="fuzzel"/></keybind>
     <keybind key="W-c"><action name="Close"/></keybind>
     <keybind key="W-S-c"><action name="Reconfigure"/></keybind>
