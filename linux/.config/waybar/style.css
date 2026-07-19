@@ -9,13 +9,24 @@
     transition: color 0.15s ease, background 0.15s ease;
 }
 
+/* Floating, translucent, rounded "island" bar. The translucency is frosted by
+   Hyprland's `layerrule = blur, waybar`; on sway it just looks semi-transparent. */
 window#waybar {
-    background: @base00;
+    background: alpha(@base00, 0.78);
     color: @base05;
+    border-radius: 14px;
+    margin: 6px 10px 0 10px;
+    border: 1px solid alpha(@base03, 0.6);
 }
+
+/* Give the edge module groups a little breathing room from the rounded corners */
+.modules-left  { margin-left: 8px; }
+.modules-right { margin-right: 8px; }
 
 #workspaces button {
     padding: 0 8px;
+    margin: 3px 2px;
+    border-radius: 8px;
     color: @base04;
     background: transparent;
     transition: all 0.15s ease;
