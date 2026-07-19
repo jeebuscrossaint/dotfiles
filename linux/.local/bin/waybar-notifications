@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+# Waybar custom/notifications — dunst unread count + Do-Not-Disturb state.
+#   click        : toggle DND (pause/unpause)
+#   right-click  : re-show the last dismissed notification
+#   middle-click : clear all
+count=$(dunstctl count waiting 2>/dev/null || echo 0)
+paused=$(dunstctl is-paused 2>/dev/null || echo false)
+
+if [ "$paused" = "true" ]; then
+  icon="󰂛"; cls="dnd";    tip="Do Not Disturb\\n${count} waiting"
+elif [ "${count:-0}" -gt 0 ] 2>/dev/null; then
+  icon="󰂚 ${count}"; cls="unread"; tip="${count} notification(s)\\nclick: DND • right: last • middle: clear"
+else
+  icon="󰂜"; cls="none";   tip="No notifications\\nclick: DND"
+fi
+printf '{"text":"%s","class":"%s","tooltip":"%s"}\n' "$icon" "$cls" "$tip"
