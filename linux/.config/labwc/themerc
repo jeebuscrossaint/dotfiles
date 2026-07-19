@@ -1,36 +1,36 @@
-# coat labwc theme: Monokai Vivid
-# FredHappyface (https://github.com/fredHappyface)
+# coat labwc theme: OneDark Dark
+# olimorris (https://github.com/olimorris)
 
 border.width: 2
 
 # Active window
-window.active.title.bg.color: #323232
-window.active.label.text.color: #FFFFFF
-window.active.button.unpressed.image.color: #FFFFFF
-window.active.button.hover.image.color: #0442FE
-window.active.border.color: #0442FE
+window.active.title.bg.color: #1C1F24
+window.active.label.text.color: #C8CCD4
+window.active.button.unpressed.image.color: #C8CCD4
+window.active.button.hover.image.color: #61AFEF
+window.active.border.color: #61AFEF
 
 # Inactive window
-window.inactive.title.bg.color: #121212
-window.inactive.label.text.color: #525252
-window.inactive.button.unpressed.image.color: #525252
-window.inactive.button.hover.image.color: #525252
-window.inactive.border.color: #424242
+window.inactive.title.bg.color: #000000
+window.inactive.label.text.color: #434852
+window.inactive.button.unpressed.image.color: #434852
+window.inactive.button.hover.image.color: #434852
+window.inactive.border.color: #2C313A
 
 # Padding
 padding.height: 2
 padding.width: 4
 
 # Menu
-menu.items.bg.color: #323232
-menu.items.text.color: #DFDFDF
-menu.items.active.bg.color: #0442FE
-menu.items.active.text.color: #121212
+menu.items.bg.color: #1C1F24
+menu.items.text.color: #ABB2BF
+menu.items.active.bg.color: #61AFEF
+menu.items.active.text.color: #000000
 menu.border.width: 1
-menu.border.color: #424242
+menu.border.color: #2C313A
 
 # OSD
-osd.bg.color: #323232
-osd.border.color: #0442FE
+osd.bg.color: #1C1F24
+osd.border.color: #61AFEF
 osd.border.width: 1
-osd.label.text.color: #DFDFDF
+osd.label.text.color: #ABB2BF
