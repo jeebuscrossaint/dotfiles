@@ -7,7 +7,7 @@ client.focused $base0D $base00 $base0D $base0C $base0C
 
 set $mod Mod4
 set $menu fuzzel
-set $term foot
+set $term kitty
 
 xwayland enable
 
