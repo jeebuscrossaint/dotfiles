@@ -5,20 +5,19 @@
     "spacing": 0,
     "fixed-center": true,
 
-    "modules-left": ["sway/workspaces", "sway/window", "custom/weather", "custom/mpris", "custom/canvas"],
+    "modules-left": ["hyprland/workspaces", "hyprland/window", "custom/weather", "custom/mpris", "custom/canvas"],
     "modules-center": ["clock"],
     "modules-right": ["custom/network", "custom/bluetooth", "cpu", "custom/temp", "memory", "custom/battery", "custom/mic", "custom/volume"],
 
-    "sway/window": {
+    "hyprland/window": {
         "max-length": 50,
         "separate-outputs": true
     },
 
-    "sway/workspaces": {
+    "hyprland/workspaces": {
         "format": "{name}",
         "on-click": "activate",
-        "sort-by-number": true,
-        "persistent-workspaces": {}
+        "sort-by-number": true
     },
 
     "clock": {

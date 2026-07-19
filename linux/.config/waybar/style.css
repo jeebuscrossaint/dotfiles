@@ -19,7 +19,7 @@ window#waybar {
 }
 
 /* Shared island look for every module group. Covers both standard and
-   custom/* module names so whatever your config renders gets styled. */
+   custom module names so whatever your config renders gets styled. */
 #workspaces,
 #window,
 #clock,
