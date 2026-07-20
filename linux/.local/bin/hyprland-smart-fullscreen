@@ -45,6 +45,6 @@ adjust   # handle the window that already exists at startup
 
 socat -U - "UNIX-CONNECT:$sock" 2>/dev/null | while read -r line; do
     case "${line%%>>*}" in
-        openwindow|closewindow|movewindowv2|changefloatingmode|workspacev2) adjust ;;
+        openwindow|closewindow|movewindow|movewindowv2|changefloatingmode|workspace|workspacev2|activewindowv2|focusedmon|focusedmonv2) adjust ;;
     esac
 done
