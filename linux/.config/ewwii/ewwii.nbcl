@@ -1,23 +1,185 @@
-Poll "micon" {
+# data sources — all shell; ewwii just draws
+
+Poll "time" {
+  interval = "1s"
+  cmd = "date +%H:%M"
   initial = ""
+}
+Poll "date" {
+  interval = "60s"
+  cmd = "date '+%a %b %d'"
+  initial = ""
+}
+Poll "ws" {
+  interval = "500ms"
+  cmd = "hyprctl activeworkspace -j | jq -r .id"
+  initial = "1"
+}
+Poll "window" {
+  interval = "500ms"
+  cmd = "hyprctl activewindow -j | jq -r .title 2>/dev/null | sed 's/^null$//' | cut -c1-48"
+  initial = ""
+}
+Poll "cpu" {
+  interval = "2s"
+  cmd = "printf '󰻠 %s%%' $(ewwii-cpu)"
+  initial = "0"
+}
+Poll "mem" {
+  interval = "3s"
+  cmd = "free | awk '/Mem:/{print int($3/$2*100)}' | sed 's/^/󰍛 /;s/$/%/'"
+  initial = "0"
+}
+Poll "temp" {
+  interval = "3s"
+  cmd = "waybar-temp | sed 's/^/ /'"
+  initial = ""
+}
+Poll "bat" {
+  interval = "30s"
+  cmd = "waybar-battery | jq -r .text"
+  initial = ""
+}
+Poll "vol" {
+  interval = "1s"
+  cmd = "waybar-volume | jq -r .text"
+  initial = ""
+}
+Poll "net" {
+  interval = "10s"
+  cmd = "waybar-network | jq -r .text"
+  initial = ""
+}
+Poll "bt" {
+  interval = "10s"
+  cmd = "waybar-bluetooth | jq -r .text"
+  initial = ""
+}
+
+Poll "micon" {
   interval = "1s"
   cmd = "playerctl status 2>/dev/null | grep -q Playing && echo  || echo "
-}
-
-Listen "mtitle" {
-  initial = "Nothing playing"
-  cmd = "playerctl --follow metadata --format '{{title}}' 2>/dev/null"
-}
-
-Listen "martist" {
   initial = ""
-  cmd = "playerctl --follow metadata --format '{{artist}}' 2>/dev/null"
 }
-
+Listen "mtitle" {
+  cmd = "playerctl --follow metadata --format '{{title}}' 2>/dev/null"
+  initial = "Nothing playing"
+}
+Listen "martist" {
+  cmd = "playerctl --follow metadata --format '{{artist}}' 2>/dev/null"
+  initial = ""
+}
 Poll "mpos" {
-  initial = "0"
   interval = "1s"
   cmd = "ewwii-player-pos"
+  initial = "0"
+}
+
+# bar components
+
+component Workspaces () {
+  Box {
+    class = global("ws").template("ws-box active-{ws}")
+    orientation = "h"
+    space_evenly = false
+    halign = "start"
+    spacing = 4
+    for i in 1..6 {
+      Button {
+        class = "ws-btn ws-${i}"
+        onclick = "hyprctl dispatch workspace ${i}"
+        label = "${i}"
+      }
+    }
+  }
+}
+
+component SysCluster () {
+  Box {
+    class = "sys-box"
+    orientation = "h"
+    space_evenly = false
+    halign = "end"
+    spacing = 14
+    Label {
+      class = "mod cpu"
+      text = global("cpu")
+    }
+    Label {
+      class = "mod mem"
+      text = global("mem")
+    }
+    Label {
+      class = "mod temp"
+      text = global("temp")
+    }
+    Label {
+      class = "mod vol"
+      text = global("vol")
+    }
+    Label {
+      class = "mod net"
+      text = global("net")
+    }
+    Label {
+      class = "mod bt"
+      text = global("bt")
+    }
+    Label {
+      class = "mod bat"
+      text = global("bat")
+    }
+  }
+}
+
+component Bar () {
+  Box {
+    class = "bar"
+    orientation = "h"
+    Box {
+      halign = "start"
+      hexpand = true
+      space_evenly = false
+      spacing = 12
+      Workspaces {}
+      Label {
+        class = "win-title"
+        text = global("window")
+        limit_width = 48
+      }
+    }
+    Box {
+      halign = "center"
+      space_evenly = false
+      Label {
+        class = "clock"
+        text = global("time")
+      }
+    }
+    Box {
+      halign = "end"
+      hexpand = true
+      space_evenly = false
+      SysCluster {}
+    }
+  }
+}
+
+# windows
+
+Window "bar" {
+  monitor = 0
+  windowtype = "dock"
+  exclusive = true
+  geometry = {
+    x = "0%"
+    y = "0px"
+    width = "100%"
+    height = "34px"
+    anchor = "bottom center"
+  }
+  reserve = { side = "bottom" distance = "34px" }
+  Bar {}
 }
 
 Window "music" {
@@ -30,35 +192,29 @@ Window "music" {
     height = "132px"
     anchor = "bottom right"
   }
-
   Box {
     class = "music-card"
     orientation = "v"
     spacing = 12
-
     Box {
       orientation = "h"
       spacing = 14
       halign = "start"
-
       Label {
         class = "music-glyph"
         text = ""
       }
-
       Box {
         orientation = "v"
         spacing = 2
         valign = "center"
         halign = "start"
-
         Label {
           class = "music-title"
           text = global("mtitle")
           limit_width = 24
           xalign = 0.0
         }
-
         Label {
           class = "music-artist"
           text = global("martist")
@@ -67,7 +223,6 @@ Window "music" {
         }
       }
     }
-
     Scale {
       class = "music-bar"
       value = global("mpos")
@@ -76,25 +231,21 @@ Window "music" {
       onchange = "ewwii-player-seek {}"
       draw_value = false
     }
-
     Box {
       class = "music-controls"
       orientation = "h"
       spacing = 24
       halign = "center"
-
       Button {
         class = "ctrl"
         onclick = "playerctl previous"
         label = ""
       }
-
       Button {
         class = "ctrl play"
         onclick = "playerctl play-pause"
         label = global("micon")
       }
-
       Button {
         class = "ctrl"
         onclick = "playerctl next"

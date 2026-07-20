@@ -1,66 +1,63 @@
-// ewwii styling — dark frosted card, blue accent (tweak to taste).
+// ewwii styling. Dark, blue-accented (tweak to taste).
 
+// ── bar ────────────────────────────────────────────────────────────────────
+.bar {
+  background-color: rgba(17, 18, 29, 0.92);
+  color: #a0a8cd;
+  font-size: 13px;
+  padding: 0 12px;
+}
+
+.ws-btn {
+  color: #4a5057;
+  background-color: transparent;
+  border-radius: 8px;
+  padding: 0 9px;
+  margin: 4px 2px;
+  transition: all 130ms ease;
+}
+.ws-btn:hover {
+  color: #a0a8cd;
+  background-color: rgba(255, 255, 255, 0.06);
+}
+// active workspace highlight — the container gets .active-N (from the "ws" var),
+// so the matching .ws-N button lights up.
+.active-1 .ws-1,
+.active-2 .ws-2,
+.active-3 .ws-3,
+.active-4 .ws-4,
+.active-5 .ws-5 {
+  color: #11121d;
+  background-color: #7199ee;
+  font-weight: bold;
+}
+
+.win-title { color: #7199ee; margin-left: 6px; }
+.clock     { color: #e8e8f0; font-weight: bold; }
+
+.mod { padding: 0 2px; }
+.mod.cpu  { color: #a485dd; }
+.mod.mem  { color: #38a89d; }
+.mod.temp { color: #d7a65f; }
+.mod.vol  { color: #7199ee; }
+.mod.net  { color: #38a89d; }
+.mod.bt   { color: #7199ee; }
+.mod.bat  { color: #95c561; }
+
+// ── music popup ($mod+N) ─────────────────────────────────────────────────────
 .music-card {
   background-color: rgba(26, 27, 42, 0.92);
   border: 1px solid rgba(113, 153, 238, 0.45);
   border-radius: 16px;
   padding: 16px 20px;
 }
-
-.music-glyph {
-  font-size: 34px;
-  color: #7199ee;
-  margin-right: 6px;
-}
-
-.music-title {
-  font-size: 15px;
-  font-weight: bold;
-  color: #e8e8f0;
-}
-
-.music-artist {
-  font-size: 12px;
-  color: #a0a8cd;
-}
-
-// GTK Scale internals: trough (track), highlight (filled), slider (handle)
-.music-bar trough {
-  background-color: rgba(255, 255, 255, 0.12);
-  border-radius: 8px;
-  min-height: 6px;
-}
-
-.music-bar highlight {
-  background-color: #7199ee;
-  border-radius: 8px;
-}
-
-.music-bar slider {
-  background-color: #e8e8f0;
-  border-radius: 50%;
-  min-width: 10px;
-  min-height: 10px;
-  margin: -4px;
-}
-
-.music-controls {
-  margin-top: 2px;
-}
-
-.ctrl {
-  font-size: 18px;
-  color: #c8cce0;
-  background-color: transparent;
-  border: none;
-  padding: 4px 10px;
-}
-
-.ctrl:hover {
-  color: #7199ee;
-}
-
-.ctrl.play {
-  font-size: 22px;
-  color: #e8e8f0;
-}
+.music-glyph  { font-size: 34px; color: #7199ee; margin-right: 6px; }
+.music-title  { font-size: 15px; font-weight: bold; color: #e8e8f0; }
+.music-artist { font-size: 12px; color: #a0a8cd; }
+.music-bar trough    { background-color: rgba(255,255,255,0.12); border-radius: 8px; min-height: 6px; }
+.music-bar highlight { background-color: #7199ee; border-radius: 8px; }
+.music-bar slider    { background-color: #e8e8f0; border-radius: 50%; min-width: 10px; min-height: 10px; margin: -4px; }
+.music-controls { margin-top: 2px; }
+.ctrl        { font-size: 18px; color: #c8cce0; background-color: transparent; border: none; padding: 4px 10px; }
+.ctrl:hover  { color: #7199ee; }
+.ctrl.play   { font-size: 22px; color: #e8e8f0; }
