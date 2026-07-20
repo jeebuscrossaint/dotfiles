@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+# Seek the current track to a percentage (0-100), given by the ewwii Scale's
+# onchange. Converts % -> seconds using mpris:length (microseconds).
+pct="$1"
+len=$(playerctl metadata mpris:length 2>/dev/null)
+[ -z "$pct" ] || [ -z "$len" ] && exit 0
+sec=$(awk "BEGIN { printf \"%.0f\", $pct / 100 * $len / 1000000 }")
+playerctl position "$sec" 2>/dev/null

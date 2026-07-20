@@ -1,0 +1,66 @@
+// ewwii styling — dark frosted card, blue accent (tweak to taste).
+
+.music-card {
+  background-color: rgba(26, 27, 42, 0.92);
+  border: 1px solid rgba(113, 153, 238, 0.45);
+  border-radius: 16px;
+  padding: 16px 20px;
+}
+
+.music-glyph {
+  font-size: 34px;
+  color: #7199ee;
+  margin-right: 6px;
+}
+
+.music-title {
+  font-size: 15px;
+  font-weight: bold;
+  color: #e8e8f0;
+}
+
+.music-artist {
+  font-size: 12px;
+  color: #a0a8cd;
+}
+
+// GTK Scale internals: trough (track), highlight (filled), slider (handle)
+.music-bar trough {
+  background-color: rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  min-height: 6px;
+}
+
+.music-bar highlight {
+  background-color: #7199ee;
+  border-radius: 8px;
+}
+
+.music-bar slider {
+  background-color: #e8e8f0;
+  border-radius: 50%;
+  min-width: 10px;
+  min-height: 10px;
+  margin: -4px;
+}
+
+.music-controls {
+  margin-top: 2px;
+}
+
+.ctrl {
+  font-size: 18px;
+  color: #c8cce0;
+  background-color: transparent;
+  border: none;
+  padding: 4px 10px;
+}
+
+.ctrl:hover {
+  color: #7199ee;
+}
+
+.ctrl.play {
+  font-size: 22px;
+  color: #e8e8f0;
+}

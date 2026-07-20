@@ -1,0 +1,105 @@
+Poll "micon" {
+  initial = ""
+  interval = "1s"
+  cmd = "playerctl status 2>/dev/null | grep -q Playing && echo  || echo "
+}
+
+Listen "mtitle" {
+  initial = "Nothing playing"
+  cmd = "playerctl --follow metadata --format '{{title}}' 2>/dev/null"
+}
+
+Listen "martist" {
+  initial = ""
+  cmd = "playerctl --follow metadata --format '{{artist}}' 2>/dev/null"
+}
+
+Poll "mpos" {
+  initial = "0"
+  interval = "1s"
+  cmd = "ewwii-player-pos"
+}
+
+Window "music" {
+  monitor = 0
+  stacking = "overlay"
+  geometry = {
+    x = "16px"
+    y = "56px"
+    width = "360px"
+    height = "132px"
+    anchor = "bottom right"
+  }
+
+  Box {
+    class = "music-card"
+    orientation = "v"
+    spacing = 12
+
+    Box {
+      orientation = "h"
+      spacing = 14
+      halign = "start"
+
+      Label {
+        class = "music-glyph"
+        text = ""
+      }
+
+      Box {
+        orientation = "v"
+        spacing = 2
+        valign = "center"
+        halign = "start"
+
+        Label {
+          class = "music-title"
+          text = global("mtitle")
+          limit_width = 24
+          xalign = 0.0
+        }
+
+        Label {
+          class = "music-artist"
+          text = global("martist")
+          limit_width = 28
+          xalign = 0.0
+        }
+      }
+    }
+
+    Scale {
+      class = "music-bar"
+      value = global("mpos")
+      min = 0
+      max = 100
+      onchange = "ewwii-player-seek {}"
+      draw_value = false
+    }
+
+    Box {
+      class = "music-controls"
+      orientation = "h"
+      spacing = 24
+      halign = "center"
+
+      Button {
+        class = "ctrl"
+        onclick = "playerctl previous"
+        label = ""
+      }
+
+      Button {
+        class = "ctrl play"
+        onclick = "playerctl play-pause"
+        label = global("micon")
+      }
+
+      Button {
+        class = "ctrl"
+        onclick = "playerctl next"
+        label = ""
+      }
+    }
+  }
+}
