@@ -68,7 +68,7 @@ window#waybar {
     border-radius: 8px;
     color: @base04;
     background: transparent;
-    transition: all 0.2s ease;
+    transition: all 0.09s ease;
 }
 #workspaces button:hover {
     color: @base05;
