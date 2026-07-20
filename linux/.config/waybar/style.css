@@ -76,8 +76,11 @@ window#waybar {
 }
 #workspaces button.active {
     color: @base00;
-    background: @base0D;
     font-weight: bold;
+    /* flowing multi-color gradient — the active workspace stays "alive" */
+    background: linear-gradient(90deg, @base0D, @base0C, @base0E, @base0D);
+    background-size: 300% 100%;
+    animation: ws-flow 4s linear infinite;
 }
 #workspaces button.urgent {
     color: @base00;
@@ -150,4 +153,33 @@ tooltip label {
 
 @keyframes pulse-warn {
     to { opacity: 0.55; }
+}
+
+@keyframes ws-flow {
+    0%   { background-position: 0% 50%; }
+    100% { background-position: 300% 50%; }
+}
+
+/* Modules react to the mouse — accent glow on hover */
+#clock:hover,
+#cpu:hover,
+#memory:hover,
+#temperature:hover,
+#custom-temp:hover,
+#battery:hover,
+#custom-battery:hover,
+#network:hover,
+#custom-network:hover,
+#bluetooth:hover,
+#custom-bluetooth:hover,
+#custom-volume:hover,
+#wireplumber:hover,
+#custom-mic:hover,
+#custom-weather:hover,
+#custom-mpris:hover,
+#custom-coat:hover,
+#idle_inhibitor:hover,
+#custom-notifications:hover {
+    background: alpha(@base0D, 0.18);
+    border-color: alpha(@base0D, 0.55);
 }
