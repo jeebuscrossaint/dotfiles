@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+# Stream the active Hyprland workspace id, updating instantly on events (for
+# ewwii's Listen). Falls back to nothing if socat/jq/hyprland missing.
+[ -n "$HYPRLAND_INSTANCE_SIGNATURE" ] || exit 0
+sock="$XDG_RUNTIME_DIR/hypr/$HYPRLAND_INSTANCE_SIGNATURE/.socket2.sock"
+cur() { hyprctl activeworkspace -j 2>/dev/null | jq -r .id; }
+cur
+command -v socat >/dev/null || exit 0
+socat -U - "UNIX-CONNECT:$sock" 2>/dev/null | while read -r line; do
+  case "${line%%>>*}" in
+    workspace|workspacev2|focusedmon|focusedmonv2|createworkspacev2) cur ;;
+  esac
+done

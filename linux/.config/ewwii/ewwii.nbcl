@@ -10,14 +10,12 @@ Poll "date" {
   cmd = "date '+%a %b %d'"
   initial = ""
 }
-Poll "ws" {
-  interval = "500ms"
-  cmd = "hyprctl activeworkspace -j | jq -r .id"
+Listen "ws" {
+  cmd = "ewwii-hypr-ws"
   initial = "1"
 }
-Poll "window" {
-  interval = "500ms"
-  cmd = "hyprctl activewindow -j | jq -r .title 2>/dev/null | sed 's/^null$//' | cut -c1-48"
+Listen "window" {
+  cmd = "ewwii-hypr-window"
   initial = ""
 }
 Poll "cpu" {
@@ -113,17 +111,30 @@ component SysCluster () {
       class = "mod temp"
       text = global("temp")
     }
-    Label {
-      class = "mod vol"
-      text = global("vol")
+    EventBox {
+      cursor = "pointer"
+      onclick = "volumectl toggle-mute"
+      onscroll = "volumectl {}"
+      Label {
+        class = "mod vol"
+        text = global("vol")
+      }
     }
-    Label {
-      class = "mod net"
-      text = global("net")
+    EventBox {
+      cursor = "pointer"
+      onclick = "nm-connection-editor"
+      Label {
+        class = "mod net"
+        text = global("net")
+      }
     }
-    Label {
-      class = "mod bt"
-      text = global("bt")
+    EventBox {
+      cursor = "pointer"
+      onclick = "blueman-manager"
+      Label {
+        class = "mod bt"
+        text = global("bt")
+      }
     }
     Label {
       class = "mod bat"
