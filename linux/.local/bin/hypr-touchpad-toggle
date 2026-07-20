@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+# Toggle the laptop touchpad on/off (bound to XF86TouchpadToggle / fn+F10).
+# Hyprland has no state query for device:enabled, so we track it with a flag.
+tp=$(hyprctl devices -j | jq -r '.mice[] | select(.name | test("touchpad"; "i")) | .name' | head -1)
+[ -z "$tp" ] && exit 0
+
+flag="${XDG_RUNTIME_DIR:-/tmp}/touchpad-off"
+if [ -f "$flag" ]; then
+    hyprctl keyword "device[$tp]:enabled" true && rm -f "$flag"
+    command -v notify-send >/dev/null && notify-send -t 1200 "󰟸  Touchpad" "enabled"
+else
+    hyprctl keyword "device[$tp]:enabled" false && touch "$flag"
+    command -v notify-send >/dev/null && notify-send -t 1200 "󰤳  Touchpad" "disabled"
+fi
