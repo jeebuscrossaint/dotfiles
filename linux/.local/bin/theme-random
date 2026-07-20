@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+# Pick a random coat scheme, apply it everywhere, and notify. (Hyprland keybind.)
+coat random -y >/dev/null 2>&1
+scheme=$(grep -m1 '^scheme:' "$HOME/.config/coat/coat.yaml" | awk '{print $2}')
+command -v notify-send >/dev/null && notify-send -t 2000 "󰏘  Theme" "switched to $scheme"

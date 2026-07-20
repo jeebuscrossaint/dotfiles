@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+# Fuzzel picker over all coat schemes; apply the choice everywhere + notify.
+pick=$(coat list --no-preview 2>/dev/null | awk '/Slug:/{print $2}' | fuzzel --dmenu --prompt "theme ❯ ")
+[ -n "$pick" ] || exit 0
+coat set "$pick" >/dev/null 2>&1
+command -v notify-send >/dev/null && notify-send -t 2000 "󰏘  Theme" "switched to $pick"
