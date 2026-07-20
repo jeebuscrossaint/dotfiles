@@ -2,6 +2,7 @@
 
 # The 'enabled' key triggers STATE_ENABLED and expects a sequence (list)
 enabled:
+  - ashell
   - fish
   - foot
   - kitty
@@ -27,7 +28,7 @@ enabled:
   - code-oss
   
 # The 'scheme' key is a top-level scalar
-scheme: tokyodark-terminal
+scheme: dark-plus
 prefer_base24: false
 
 opacity:
@@ -39,9 +40,9 @@ opacity:
 # The 'font' key triggers in_font_section and expects a mapping (dictionary)
 font:
   emoji: "Noto Color Emoji"
-  monospace: "Lilex Nerd Font Mono"
-  sansserif: "Lilex Nerd Font Mono"
-  serif: "Lilex Nerd Font Mono"
+  monospace: "SauceCodePro Nerd Font Mono"
+  sansserif: "SauceCodePro Nerd Font Mono"
+  serif: "SauceCodePro Nerd Font Mono"
   sizes:
     terminal: 11
     desktop: 11
