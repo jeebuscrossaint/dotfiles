@@ -1,0 +1,76 @@
+# ashell — themed to the current coat scheme (dark-plus). Islands + animations.
+
+position = "Bottom"
+layer = "Top"
+outputs = "All"
+
+[osd]
+enabled = true          # on-screen volume/brightness overlay
+
+[animations]
+enabled = true          # bar width, menu open/close, toast slides
+
+[modules]
+left   = ["Workspaces", "WindowTitle"]
+center = ["Tempo"]
+right  = ["MediaPlayer", ["SystemInfo", "Settings"], "Tray"]
+
+[workspaces]
+visibility_mode = "All"
+enable_workspace_filling = true
+
+[window_title]
+mode = "Title"
+truncate_title_after_length = 48
+
+[tempo]
+format = "%H:%M"
+date_format = "%A, %B %d"
+
+[system_info.cpu]
+warn_threshold = 70
+alert_threshold = 90
+[system_info.memory]
+warn_threshold = 70
+alert_threshold = 90
+[system_info.temperature]
+warn_threshold = 75
+alert_threshold = 90
+
+[updates]
+check_cmd = "checkupdates 2>/dev/null | wc -l"
+update_cmd = "kitty -e paru -Syu"
+interval = 3600
+
+[settings]
+enable_tooltips = true
+
+# ── appearance ───────────────────────────────────────────────────────────────
+[appearance]
+font_name = "Lilex Nerd Font Mono"
+background = "#0e0e0e"
+text = "#c5c5c5"
+workspace_colors = ["#2472c8", "#11a8cd", "#bc3fbc", "#0dbc79", "#e5e510"]
+
+[appearance.bar]
+surface = "transparent"     # island style
+opacity = 0.85
+
+[appearance.primary]
+base = "#2472c8"
+strong = "#3b8eea"
+weak = "#1a5a9e"
+text = "#0e0e0e"
+
+[appearance.secondary]
+base = "#bc3fbc"
+
+[appearance.success]
+base = "#0dbc79"
+
+[appearance.danger]
+base = "#cd3131"
+
+[appearance.menu]
+opacity = 0.95
+backdrop_blur = true
