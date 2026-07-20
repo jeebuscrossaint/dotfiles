@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 # Smart fullscreen for Hyprland: when a workspace holds exactly one tiled window,
-# auto-maximize it (fullscreen mode 1 — fills the work area, keeps the bar, no
-# border/shadow). When a second window appears, the maximized one drops back to
-# tiling. Runs as a daemon (exec-once in hyprland.conf) on Hyprland's event
-# socket. Deps: socat, jq.
+# put it in true fullscreen (mode 0 — covers the whole monitor, bar hidden).
+# When a second window appears, it drops back to tiling. Runs as a daemon
+# (exec-once in hyprland.conf) on Hyprland's event socket. Deps: socat, jq.
+# (Prefer keeping the bar visible? Change `fullscreen 0` -> `fullscreen 1`.)
 
 [ -n "$HYPRLAND_INSTANCE_SIGNATURE" ] || exit 0
 command -v socat >/dev/null && command -v jq >/dev/null || exit 0
@@ -28,7 +28,7 @@ adjust() {
 
     if [ "$n" = "1" ] && [ "$fs" = "false" ]; then
         # lone tiled window → maximize it (it is the focused one)
-        hyprctl dispatch fullscreen 1 >/dev/null 2>&1
+        hyprctl dispatch fullscreen 0 >/dev/null 2>&1
     elif [ "${n:-0}" -gt 1 ] 2>/dev/null && [ "$fs" = "true" ]; then
         # a second window joined while one was maximized → drop it back to tiling,
         # targeting the maximized window by address and restoring focus after.
@@ -36,7 +36,7 @@ adjust() {
             | jq -r ".[] | select(.workspace.id==$ws and (.fullscreen != 0 and .fullscreen != false)) | .address" | head -1)
         active=$(hyprctl activewindow -j 2>/dev/null | jq -r '.address')
         [ -n "$fsaddr" ] && [ "$fsaddr" != "null" ] && hyprctl --batch \
-            "dispatch focuswindow address:$fsaddr ; dispatch fullscreen 1 ; dispatch focuswindow address:$active" >/dev/null 2>&1
+            "dispatch focuswindow address:$fsaddr ; dispatch fullscreen 0 ; dispatch focuswindow address:$active" >/dev/null 2>&1
     fi
     return 0
 }
