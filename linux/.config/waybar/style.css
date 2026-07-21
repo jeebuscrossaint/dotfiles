@@ -7,7 +7,10 @@
     box-shadow: none;
     outline: none;
     font-family: "Lilex Nerd Font Mono";
-    transition: color 0.2s ease, background 0.2s ease;
+    /* NOTE: no `transition` here on purpose. A global transition on `*` also
+       targets the tooltip window's inner box/label and makes GTK's fade-in
+       stick at opacity 0, so tooltips never appear. Transitions live on the
+       specific module selectors below instead. */
 }
 
 /* Transparent bar — every module floats as its own rounded "island".
@@ -44,6 +47,7 @@ window#waybar {
 #wireplumber,
 #custom-volume,
 #custom-mic,
+#power-profiles-daemon,
 #tray,
 #custom-updates {
     background: alpha(@base00, 0.72);
@@ -52,6 +56,7 @@ window#waybar {
     margin: 4px 3px;
     padding: 2px 12px;
     color: @base05;
+    transition: color 0.2s ease, background 0.2s ease, border-color 0.2s ease;
 }
 
 /* Edge islands hug the screen a touch less */
@@ -107,6 +112,12 @@ window#waybar {
 #idle_inhibitor { color: @base0B; }
 #submap         { color: @base09; font-weight: bold; }
 
+/* Power profile: color by active mode */
+#power-profiles-daemon             { color: @base0A; }
+#power-profiles-daemon.performance { color: @base08; }
+#power-profiles-daemon.balanced    { color: @base0D; }
+#power-profiles-daemon.power-saver { color: @base0B; }
+
 /* Notification states */
 #custom-notifications.unread { color: @base0A; }
 #custom-notifications.dnd    { color: @base08; }
@@ -137,14 +148,17 @@ window#waybar {
     background: alpha(@base08, 0.2);
 }
 
+/* Tooltips: keep everything static (no transition/opacity animation) so GTK's
+   popup shows immediately. `tooltip *` covers the inner box + label too. */
+tooltip,
+tooltip * {
+    transition: none;
+    opacity: 1;
+}
 tooltip {
     background: alpha(@base01, 0.96);
     border: 1px solid @base03;
     border-radius: 10px;
-    /* GTK3 tooltips need transitions/animation off or they fail to appear
-       (the global `* { transition }` rule above otherwise breaks them). */
-    transition: none;
-    opacity: 1;
 }
 tooltip label {
     color: @base05;
@@ -172,6 +186,7 @@ tooltip label {
 #custom-network:hover,
 #bluetooth:hover,
 #custom-bluetooth:hover,
+#power-profiles-daemon:hover,
 #custom-volume:hover,
 #wireplumber:hover,
 #custom-mic:hover,
