@@ -1,0 +1,13 @@
+#!/bin/sh
+# Live battery power draw for waybar. Pure sysfs reads (current_now * voltage_now)
+# — no hardware polling, negligible cost. Shows watts on battery; "AC" when plugged.
+b=/sys/class/power_supply/BAT1
+ac=$(cat /sys/class/power_supply/ACAD/online 2>/dev/null)
+cn=$(cat "$b/current_now" 2>/dev/null || echo 0)
+vn=$(cat "$b/voltage_now" 2>/dev/null || echo 0)
+w=$(awk "BEGIN{printf \"%.1f\", ($cn/1e6)*($vn/1e6)}")
+if [ "$ac" = "1" ]; then
+    printf '{"text":"󰚥 AC","tooltip":"On AC power"}\n'
+else
+    printf '{"text":"󱐋 %sW","tooltip":"Battery draw: %s W"}\n' "$w" "$w"
+fi
