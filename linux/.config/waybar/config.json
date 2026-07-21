@@ -7,7 +7,7 @@
 
     "modules-left": ["hyprland/workspaces", "hyprland/window", "hyprland/submap", "custom/weather", "custom/mpris", "custom/canvas"],
     "modules-center": ["clock"],
-    "modules-right": ["custom/network", "custom/bluetooth", "power-profiles-daemon", "cpu", "custom/temp", "memory", "custom/battery", "backlight", "custom/mic", "custom/volume", "custom/coat", "idle_inhibitor", "custom/notifications", "tray"],
+    "modules-right": ["custom/network", "custom/bluetooth", "custom/updates", "power-profiles-daemon", "custom/gpu", "cpu", "custom/temp", "memory", "disk", "custom/power", "custom/battery", "backlight", "custom/mic", "custom/volume", "custom/coat", "idle_inhibitor", "custom/notifications", "tray"],
 
     "hyprland/window": {
         "max-length": 50,
@@ -51,6 +51,32 @@
         "on-scroll-up": "brightnessctl -d intel_backlight set +5%",
         "on-scroll-down": "brightnessctl -d intel_backlight set 5%-",
         "tooltip-format": "Brightness {percent}% — scroll to adjust"
+    },
+
+    "custom/power": {
+        "exec": "waybar-power",
+        "return-type": "json",
+        "interval": 5
+    },
+
+    "custom/gpu": {
+        "exec": "waybar-gpu",
+        "return-type": "json",
+        "interval": 10
+    },
+
+    "custom/updates": {
+        "exec": "waybar-updates",
+        "return-type": "json",
+        "interval": 3600,
+        "on-click": "kitty -e paru -Syu"
+    },
+
+    "disk": {
+        "interval": 60,
+        "path": "/",
+        "format": "󰋊 {percentage_used}%",
+        "tooltip-format": "Disk: {used} / {total} used ({percentage_used}%)"
     },
 
     "tray": {

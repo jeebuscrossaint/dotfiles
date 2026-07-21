@@ -49,6 +49,8 @@ window#waybar {
 #custom-mic,
 #power-profiles-daemon,
 #backlight,
+#custom-power,
+#disk,
 #tray,
 #custom-updates {
     background: alpha(@base00, 0.72);
@@ -118,6 +120,15 @@ window#waybar {
 #power-profiles-daemon.performance { color: @base08; }
 #power-profiles-daemon.balanced    { color: @base0D; }
 #power-profiles-daemon.power-saver { color: @base0B; }
+
+/* New modules */
+#custom-power   { color: @base0B; }              /* live battery draw */
+#disk           { color: @base0C; }
+#custom-gpu             { color: @base04; }       /* dGPU: dim when asleep... */
+#custom-gpu.asleep      { color: @base0B; }       /* green = sleeping (good)  */
+#custom-gpu.active      { color: @base09; }       /* orange = awake & drawing */
+#custom-updates             { color: @base0A; }
+#custom-updates.has-updates { color: @base0A; }
 
 /* Notification states */
 #custom-notifications.unread { color: @base0A; }
@@ -223,6 +234,10 @@ menu menuitem arrow {
 #custom-bluetooth:hover,
 #power-profiles-daemon:hover,
 #backlight:hover,
+#custom-power:hover,
+#custom-gpu:hover,
+#custom-updates:hover,
+#disk:hover,
 #custom-volume:hover,
 #wireplumber:hover,
 #custom-mic:hover,

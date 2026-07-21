@@ -1,0 +1,15 @@
+#!/bin/sh
+# RTX 4070 state for waybar. Reads the PM runtime_status from sysfs, which is a
+# pure kernel-state read and does NOT wake the GPU. nvidia-smi is called ONLY
+# when the GPU is already awake — so this module never wakes the dGPU or costs
+# battery while it sleeps (which is ~all the time).
+dev=/sys/bus/pci/devices/0000:01:00.0/power/runtime_status
+st=$(cat "$dev" 2>/dev/null)
+if [ "$st" = "suspended" ]; then
+    printf '{"text":"󰤄 dGPU","tooltip":"RTX 4070: asleep (D3cold, ~0W)","class":"asleep"}\n'
+else
+    line=$(nvidia-smi --query-gpu=power.draw,utilization.gpu --format=csv,noheader,nounits 2>/dev/null | head -1)
+    w=$(echo "$line" | awk -F',' '{gsub(/ /,"",$1); printf "%.0f", $1}')
+    u=$(echo "$line" | awk -F',' '{gsub(/ /,"",$2); print $2}')
+    printf '{"text":"󰢮 %sW","tooltip":"RTX 4070: ACTIVE — %s%% util, %s W","class":"active"}\n' "${w:-?}" "${u:-?}" "${w:-?}"
+fi
