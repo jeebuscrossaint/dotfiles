@@ -27,7 +27,7 @@ enabled:
   - code-oss
   
 # The 'scheme' key is a top-level scalar
-scheme: oxocarbon-dark
+scheme: edge-dark
 prefer_base24: false
 
 opacity:
