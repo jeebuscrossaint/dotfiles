@@ -7,7 +7,7 @@
 
     "modules-left": ["hyprland/workspaces", "hyprland/window", "hyprland/submap", "custom/weather", "custom/mpris", "custom/canvas"],
     "modules-center": ["clock"],
-    "modules-right": ["custom/network", "custom/bluetooth", "power-profiles-daemon", "cpu", "custom/temp", "memory", "custom/battery", "custom/mic", "custom/volume", "custom/coat", "idle_inhibitor", "custom/notifications", "tray"],
+    "modules-right": ["custom/network", "custom/bluetooth", "power-profiles-daemon", "cpu", "custom/temp", "memory", "custom/battery", "backlight", "custom/mic", "custom/volume", "custom/coat", "idle_inhibitor", "custom/notifications", "tray"],
 
     "hyprland/window": {
         "max-length": 50,
@@ -42,6 +42,15 @@
             "balanced": "󰾅",
             "power-saver": "󰌪"
         }
+    },
+
+    "backlight": {
+        "device": "intel_backlight",
+        "format": "{icon} {percent}%",
+        "format-icons": ["󰃞", "󰃟", "󰃠"],
+        "on-scroll-up": "brightnessctl -d intel_backlight set +5%",
+        "on-scroll-down": "brightnessctl -d intel_backlight set 5%-",
+        "tooltip-format": "Brightness {percent}% — scroll to adjust"
     },
 
     "tray": {

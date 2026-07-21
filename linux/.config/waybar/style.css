@@ -48,6 +48,7 @@ window#waybar {
 #custom-volume,
 #custom-mic,
 #power-profiles-daemon,
+#backlight,
 #tray,
 #custom-updates {
     background: alpha(@base00, 0.72);
@@ -109,6 +110,7 @@ window#waybar {
 #custom-weather { color: @base0A; }
 #custom-coat    { color: @base0E; }
 #idle_inhibitor { color: @base0B; }
+#backlight      { color: @base0A; }
 #submap         { color: @base09; font-weight: bold; }
 
 /* Power profile: color by active mode */
@@ -220,6 +222,7 @@ menu menuitem arrow {
 #bluetooth:hover,
 #custom-bluetooth:hover,
 #power-profiles-daemon:hover,
+#backlight:hover,
 #custom-volume:hover,
 #wireplumber:hover,
 #custom-mic:hover,
