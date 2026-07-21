@@ -82,10 +82,9 @@ window#waybar {
 #workspaces button.active {
     color: @base00;
     font-weight: bold;
-    /* flowing multi-color gradient — the active workspace stays "alive" */
-    background: linear-gradient(90deg, @base0D, @base0C, @base0E, @base0D);
-    background-size: 300% 100%;
-    animation: ws-flow 4s linear infinite;
+    /* static multi-color gradient — animating it forced waybar to redraw at
+       60fps forever (wasted CPU/battery). Static keeps the look, no redraw. */
+    background: linear-gradient(90deg, @base0D, @base0C, @base0E);
 }
 #workspaces button.urgent {
     color: @base00;
@@ -206,11 +205,6 @@ menu menuitem arrow {
 
 @keyframes pulse-warn {
     to { opacity: 0.55; }
-}
-
-@keyframes ws-flow {
-    0%   { background-position: 0% 50%; }
-    100% { background-position: 300% 50%; }
 }
 
 /* Modules react to the mouse — accent glow on hover */
