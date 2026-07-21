@@ -7,7 +7,7 @@
 
     "modules-left": ["hyprland/workspaces", "hyprland/window", "hyprland/submap", "custom/weather", "custom/mpris", "custom/canvas"],
     "modules-center": ["clock"],
-    "modules-right": ["custom/network", "custom/bluetooth", "cpu", "custom/temp", "memory", "custom/battery", "custom/mic", "custom/volume", "custom/coat", "idle_inhibitor", "custom/notifications", "tray"],
+    "modules-right": ["custom/network", "custom/bluetooth", "power-profiles-daemon", "cpu", "custom/temp", "memory", "custom/battery", "custom/mic", "custom/volume", "custom/coat", "idle_inhibitor", "custom/notifications", "tray"],
 
     "hyprland/window": {
         "max-length": 50,
@@ -30,6 +30,18 @@
         "format-icons": { "activated": "󰅶", "deactivated": "󰛊" },
         "tooltip-format-activated": "Idle inhibited (caffeine on)",
         "tooltip-format-deactivated": "Idle allowed"
+    },
+
+    "power-profiles-daemon": {
+        "format": "{icon}",
+        "tooltip": true,
+        "tooltip-format": "Power profile: {profile}\nDriver: {driver}\nClick to cycle",
+        "format-icons": {
+            "default": "󰈐",
+            "performance": "󰓅",
+            "balanced": "󰾅",
+            "power-saver": "󰌪"
+        }
     },
 
     "tray": {
