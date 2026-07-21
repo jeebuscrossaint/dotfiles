@@ -1,36 +1,36 @@
-# coat labwc theme: Tokyodark Terminal
-# Tiagovla (https://github.com/tiagovla/)
+# coat labwc theme: Catppuccin Mocha
+# https://github.com/catppuccin/catppuccin
 
 border.width: 2
 
 # Active window
-window.active.title.bg.color: #1A1B2A
-window.active.label.text.color: #A0A8CD
-window.active.button.unpressed.image.color: #A0A8CD
-window.active.button.hover.image.color: #7199EE
-window.active.border.color: #7199EE
+window.active.title.bg.color: #181825
+window.active.label.text.color: #B4BEFE
+window.active.button.unpressed.image.color: #B4BEFE
+window.active.button.hover.image.color: #89B4FA
+window.active.border.color: #89B4FA
 
 # Inactive window
-window.inactive.title.bg.color: #11121D
-window.inactive.label.text.color: #282C34
-window.inactive.button.unpressed.image.color: #282C34
-window.inactive.button.hover.image.color: #282C34
-window.inactive.border.color: #212234
+window.inactive.title.bg.color: #1E1E2E
+window.inactive.label.text.color: #45475A
+window.inactive.button.unpressed.image.color: #45475A
+window.inactive.button.hover.image.color: #45475A
+window.inactive.border.color: #313244
 
 # Padding
 padding.height: 2
 padding.width: 4
 
 # Menu
-menu.items.bg.color: #1A1B2A
-menu.items.text.color: #A0A8CD
-menu.items.active.bg.color: #7199EE
-menu.items.active.text.color: #11121D
+menu.items.bg.color: #181825
+menu.items.text.color: #CDD6F4
+menu.items.active.bg.color: #89B4FA
+menu.items.active.text.color: #1E1E2E
 menu.border.width: 1
-menu.border.color: #212234
+menu.border.color: #313244
 
 # OSD
-osd.bg.color: #1A1B2A
-osd.border.color: #7199EE
+osd.bg.color: #181825
+osd.border.color: #89B4FA
 osd.border.width: 1
-osd.label.text.color: #A0A8CD
+osd.label.text.color: #CDD6F4
