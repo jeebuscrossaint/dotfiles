@@ -14,7 +14,7 @@ if status is-interactive
     end
 end
 
-set -x EDITOR helix
+set -x EDITOR nvim
 set -x LANG en_US.UTF-8
 set -x LC_ALL en_US.UTF-8
 set -x SWAY_UNSUPPORTED_GPU true
@@ -45,6 +45,8 @@ alias cl="clear"
 alias 11="ping 1.1.1.1"
 alias xcopy="wl-copy"
 alias ls="lsd"
+alias vi="nvim"
+alias vim="nvim"
 #alias doas="sudo"
 
 ########################################
