@@ -165,6 +165,45 @@ tooltip label {
     padding: 4px;
 }
 
+/* ── Tray right-click menus (dbusmenu popups rendered by waybar) ──────────
+   e.g. right-clicking nm-applet / blueman in the tray. Styled to match the
+   island look instead of the flat adw-gtk3 rectangle. */
+menu {
+    background-color: alpha(@base00, 0.98);
+    border: 1px solid alpha(@base03, 0.6);
+    border-radius: 12px;
+    padding: 6px;
+}
+menu menuitem {
+    padding: 7px 14px;
+    margin: 1px 0;
+    border-radius: 8px;
+    color: @base05;
+    background-color: transparent;
+    min-height: 20px;
+    transition: background-color 0.15s ease, color 0.15s ease;
+}
+menu menuitem:hover,
+menu menuitem:focus {
+    background-color: alpha(@base0D, 0.22);
+    color: @base05;
+}
+menu menuitem:disabled {
+    color: alpha(@base05, 0.38);
+}
+menu separator {
+    background-color: alpha(@base03, 0.5);
+    min-height: 1px;
+    margin: 5px 8px;
+}
+menu menuitem check:checked,
+menu menuitem radio:checked {
+    color: @base0B;
+}
+menu menuitem arrow {
+    color: @base04;
+}
+
 @keyframes pulse-warn {
     to { opacity: 0.55; }
 }

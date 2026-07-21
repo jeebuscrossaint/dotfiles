@@ -1,7 +1,7 @@
 {
     "layer": "top",
     "position": "top",
-    "height": 34,
+    "height": 36,
     "spacing": 0,
     "fixed-center": true,
 
@@ -140,7 +140,7 @@
     "custom/volume": {
         "exec": "waybar-volume",
         "return-type": "json",
-        "interval": 0,
+        "interval": "once",
         "signal": 1,
         "on-click": "volumectl toggle-mute",
         "on-scroll-up": "volumectl up",
@@ -167,7 +167,7 @@
     "custom/mic": {
         "exec": "waybar-mic",
         "return-type": "json",
-        "interval": 0,
+        "interval": "once",
         "signal": 2,
         "on-click": "volumectl -m toggle-mute"
     }
