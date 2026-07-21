@@ -1,16 +1,21 @@
 #!/bin/sh
 # ProMotion-style refresh switching for the eDP OLED: 240Hz on AC, 60Hz on
-# battery (~1.6W / ~10% idle saving on this panel). Polls the AC state and only
-# reconfigures the monitor when it actually changes, so it's essentially free.
-# Started from hyprland.conf (exec-once). To disable: remove that line + kill it.
+# battery (~1.6W / ~10% idle saving on this panel).
+#
+# Polls the AC state AND the panel's *actual* refresh rate, so it also
+# self-heals whenever something resets the rate — e.g. `coat apply hyprland`
+# reloads hyprland.conf, which re-pins @240 — within ~10s, no manual rerun.
+# Started from hyprland.conf (exec-once). Disable: remove that line + kill it.
 AC=/sys/class/power_supply/ACAD/online
-last=""
 while :; do
     on=$(cat "$AC" 2>/dev/null)
-    if [ "$on" != "$last" ]; then
-        [ "$on" = "1" ] && rate=240 || rate=60
-        hyprctl keyword monitor "eDP-1,2560x1600@${rate},0x0,1,bitdepth,10" >/dev/null 2>&1
-        last="$on"
+    [ "$on" = "1" ] && want=240 || want=60
+    cur=$(hyprctl monitors -j 2>/dev/null | grep -oE '"refreshRate": *[0-9]+' | head -1 | grep -oE '[0-9]+$')
+    # Only two modes (60/240); compare against a 150 midpoint so a panel that
+    # reports 239.99 for "240" doesn't cause endless reconfigure churn.
+    if { [ "$want" = 240 ] && [ "${cur:-0}" -lt 150 ]; } || \
+       { [ "$want" = 60 ]  && [ "${cur:-999}" -gt 150 ]; }; then
+        hyprctl keyword monitor "eDP-1,2560x1600@${want},0x0,1,bitdepth,10" >/dev/null 2>&1
     fi
     sleep 10
 done
