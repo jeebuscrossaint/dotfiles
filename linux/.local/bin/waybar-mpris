@@ -2,8 +2,12 @@
 # Persistent mpris widget — loops so waybar always has a live process
 while true; do
     if playerctl status >/dev/null 2>&1; then
+        # Rich pango-markup tooltip: title/artist/album, then player · status ·
+        # position, then a controls legend. GTK tooltips are passive (no buttons),
+        # so the real controls are click = play/pause and scroll = prev/next,
+        # wired in the waybar config's custom/mpris block.
         playerctl metadata --format \
-            '{"text":"󰝚 {{title}} — {{artist}}","tooltip":"{{title}}\n{{artist}}\n{{album}}"}' \
+            '{"text":"󰝚 {{title}} — {{artist}}","tooltip":"<b>{{markup_escape(title)}}</b>\n{{markup_escape(artist)}}\n<i>{{markup_escape(album)}}</i>\n\n{{playerName}}  ·  {{status}}  ·  {{duration(position)}}/{{duration(mpris:length)}}\n\n<small> scroll prev/next    click play/pause</small>"}' \
             --follow 2>/dev/null
     fi
     # player gone or not running — emit blank and wait before retrying
