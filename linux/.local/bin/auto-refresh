@@ -1,0 +1,16 @@
+#!/bin/sh
+# ProMotion-style refresh switching for the eDP OLED: 240Hz on AC, 60Hz on
+# battery (~1.6W / ~10% idle saving on this panel). Polls the AC state and only
+# reconfigures the monitor when it actually changes, so it's essentially free.
+# Started from hyprland.conf (exec-once). To disable: remove that line + kill it.
+AC=/sys/class/power_supply/ACAD/online
+last=""
+while :; do
+    on=$(cat "$AC" 2>/dev/null)
+    if [ "$on" != "$last" ]; then
+        [ "$on" = "1" ] && rate=240 || rate=60
+        hyprctl keyword monitor "eDP-1,2560x1600@${rate},0x0,1,bitdepth,10" >/dev/null 2>&1
+        last="$on"
+    fi
+    sleep 10
+done
