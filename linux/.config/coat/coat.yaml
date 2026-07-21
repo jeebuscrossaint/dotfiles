@@ -28,7 +28,7 @@ enabled:
   - code-oss
   
 # The 'scheme' key is a top-level scalar
-scheme: dark-plus
+scheme: catppuccin-mocha
 prefer_base24: false
 
 opacity:
