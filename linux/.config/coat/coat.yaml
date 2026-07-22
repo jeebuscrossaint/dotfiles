@@ -25,9 +25,9 @@ enabled:
   - firefox
   - mpv
   - code-oss
-  
+
 # The 'scheme' key is a top-level scalar
-scheme: pinky
+scheme: shaman
 prefer_base24: false
 
 opacity:
