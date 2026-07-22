@@ -1,36 +1,36 @@
-# coat labwc theme: pinky
-# Benjamin (https://github.com/b3nj5m1n)
+# coat labwc theme: Shaman
+# FredHappyface (https://github.com/fredHappyface)
 
 border.width: 2
 
 # Active window
-window.active.title.bg.color: #1B181B
-window.active.label.text.color: #F7F3F7
-window.active.button.unpressed.image.color: #F7F3F7
-window.active.button.hover.image.color: #00FFFF
-window.active.border.color: #00FFFF
+window.active.title.bg.color: #012026
+window.active.label.text.color: #58FAD6
+window.active.button.unpressed.image.color: #58FAD6
+window.active.button.hover.image.color: #449985
+window.active.border.color: #449985
 
 # Inactive window
-window.inactive.title.bg.color: #171517
-window.inactive.label.text.color: #383338
-window.inactive.button.unpressed.image.color: #383338
-window.inactive.button.hover.image.color: #383338
-window.inactive.border.color: #1D1B1D
+window.inactive.title.bg.color: #001014
+window.inactive.label.text.color: #394751
+window.inactive.button.unpressed.image.color: #394751
+window.inactive.button.hover.image.color: #394751
+window.inactive.border.color: #374350
 
 # Padding
 padding.height: 2
 padding.width: 4
 
 # Menu
-menu.items.bg.color: #1B181B
-menu.items.text.color: #F5F5F5
-menu.items.active.bg.color: #00FFFF
-menu.items.active.text.color: #171517
+menu.items.bg.color: #012026
+menu.items.text.color: #3D5053
+menu.items.active.bg.color: #449985
+menu.items.active.text.color: #001014
 menu.border.width: 1
-menu.border.color: #1D1B1D
+menu.border.color: #374350
 
 # OSD
-osd.bg.color: #1B181B
-osd.border.color: #00FFFF
+osd.bg.color: #012026
+osd.border.color: #449985
 osd.border.width: 1
-osd.label.text.color: #F5F5F5
+osd.label.text.color: #3D5053
