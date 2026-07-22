@@ -1,0 +1,4 @@
+name = macOS
+description = macOS (apple_cursor v2.0.1) — converted to hyprcursor
+version = 2.0.1
+cursors_directory = hyprcursors
