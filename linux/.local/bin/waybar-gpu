@@ -7,7 +7,7 @@
 #   suspended = D3cold (~0W)   |   active = something's using it (or not re-slept)
 st=$(cat /sys/bus/pci/devices/0000:01:00.0/power/runtime_status 2>/dev/null)
 if [ "$st" = "suspended" ]; then
-    printf '{"text":"󰤄 dGPU","tooltip":"RTX 4070: asleep (D3cold, ~0W)","class":"asleep"}\n'
+    printf '{"text":"󰤄","tooltip":"RTX 4070: asleep (D3cold, ~0W)","class":"asleep"}\n'
 else
-    printf '{"text":"󰢮 dGPU","tooltip":"RTX 4070: awake — something is using it (or it has not re-suspended yet). Run nvidia-smi to see what.","class":"active"}\n'
+    printf '{"text":"󰢮","tooltip":"RTX 4070: awake — something is using it (or it has not re-suspended yet). Run nvidia-smi to see what.","class":"active"}\n'
 fi

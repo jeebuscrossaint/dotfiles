@@ -15,7 +15,7 @@ fi
 connected=$(bluetoothctl devices Connected 2>/dev/null | head -1)
 if [ -n "$connected" ]; then
     name=$(echo "$connected" | cut -d' ' -f3-)
-    printf '{"text":"󰂱 %s","tooltip":"Connected: %s"}\n' "$name" "$name"
+    printf '{"text":"󰂱","tooltip":"Connected: %s"}\n' "$name"
 else
     printf '{"text":"󰂯","tooltip":"Bluetooth on, no devices"}\n'
 fi

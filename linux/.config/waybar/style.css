@@ -1,167 +1,177 @@
 @import "coat-theme.css";
 
+/* ── macOS menu bar ──────────────────────────────────────────────────────────
+   One continuous frosted strip flush to the top edge. The bar is translucent
+   and Hyprland's `layerrule = match:namespace waybar, blur on` frosts it into
+   real glass. Modules are inline text/icons like macOS "menu extras" — no
+   floating islands, no per-module borders. Icons are monochrome; colour appears
+   only on the active workspace and on alert states (battery critical, etc.). */
+
 * {
     border: none;
     border-radius: 0;
     min-height: 0;
     box-shadow: none;
     outline: none;
-    font-family: "Lilex Nerd Font Mono";
-    /* NOTE: no `transition` here on purpose. A global transition on `*` also
-       targets the tooltip window's inner box/label and makes GTK's fade-in
-       stick at opacity 0, so tooltips never appear. Transitions live on the
-       specific module selectors below instead. */
+    /* Proportional nerd font = SF-Pro-ish text with icon glyphs intact. */
+    font-family: "Lilex Nerd Font Propo", "Lilex Nerd Font", sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    /* NOTE: no `transition` on `*` — it targets the tooltip's inner box too and
+       makes GTK's fade stick at opacity 0 (tooltips never appear). Per-module
+       transitions live on the selectors below instead. */
 }
 
-/* Transparent bar — every module floats as its own rounded "island".
-   Hyprland's `layerrule = blur, waybar` frosts the translucent islands and
-   `ignorezero` keeps the gaps between them fully see-through. */
+/* The bar: translucent + native blur = frosted glass. A whisper-thin bottom
+   hairline stands in for the macOS menu-bar separator. */
 window#waybar {
+    background: alpha(@base00, 0.55);
+    color: @base05;
+    border-bottom: 1px solid alpha(@base05, 0.06);
+}
+
+/* Every module inline: transparent, just horizontal padding for even spacing.
+   No island background / border / margin. */
+#custom-apple,
+#workspaces, #window, #submap, #clock, #custom-weather, #custom-mpris,
+#custom-canvas, #custom-coat, #idle_inhibitor, #custom-notifications,
+#network, #custom-network, #bluetooth, #custom-bluetooth, #cpu, #custom-gpu,
+#temperature, #custom-temp, #memory, #battery, #custom-battery, #wireplumber,
+#custom-volume, #custom-mic, #power-profiles-daemon, #backlight, #custom-power,
+#disk, #tray, #custom-updates {
     background: transparent;
-    color: @base05;
+    margin: 0;
+    padding: 0 7px;
+    color: alpha(@base05, 0.90);
+    transition: background 0.15s ease, color 0.15s ease;
 }
 
-/* Shared island look for every module group. Covers both standard and
-   custom module names so whatever your config renders gets styled. */
-#workspaces,
-#window,
-#submap,
-#clock,
-#custom-weather,
-#custom-mpris,
-#custom-canvas,
-#custom-coat,
-#idle_inhibitor,
-#custom-notifications,
-#network,
-#custom-network,
-#bluetooth,
-#custom-bluetooth,
-#cpu,
-#custom-gpu,
-#temperature,
-#custom-temp,
-#memory,
-#battery,
-#custom-battery,
-#wireplumber,
-#custom-volume,
-#custom-mic,
-#power-profiles-daemon,
-#backlight,
-#custom-power,
-#disk,
-#tray,
-#custom-updates {
-    background: alpha(@base00, 0.72);
-    border: 1px solid alpha(@base03, 0.5);
-    border-radius: 12px;
-    margin: 4px 3px;
-    padding: 2px 12px;
-    color: @base05;
-    transition: color 0.2s ease, background 0.2s ease, border-color 0.2s ease;
-}
-
-/* Edge islands hug the screen a touch less */
-.modules-left  { margin-left: 6px; }
+/* Pull the very edges in a touch */
+.modules-left  { margin-left: 2px; }
 .modules-right { margin-right: 6px; }
 
-/* Workspaces: island container holding pill-shaped buttons */
-#workspaces {
-    padding: 2px 4px;
+/* Apple logo: the leftmost "menu", bold and bright like macOS */
+#custom-apple {
+    color: @base05;
+    font-size: 14px;
+    padding: 0 10px 0 8px;
 }
+#custom-apple:hover { background: alpha(@base05, 0.10); }
+
+/* Window title = the "app name": brighter + heavier, like the bold app menu */
+#window { color: @base05; font-weight: 600; }
+window#waybar.empty #window { color: transparent; }
+
+/* Clock: pure white, the far-right menu extra */
+#clock { color: @base05; font-weight: 600; padding: 0 12px 0 8px; }
+
+/* Submap indicator keeps a hint of colour so it stands out when active */
+#submap { color: @base09; font-weight: 600; }
+
+/* Workspaces: small pill buttons; the active one is an accent-filled selection
+   like a macOS highlighted menu item. */
+#workspaces { padding: 0 4px; }
 #workspaces button {
     padding: 0 8px;
-    margin: 2px 2px;
-    border-radius: 8px;
-    color: @base04;
+    margin: 5px 2px;
+    border-radius: 6px;
+    color: alpha(@base05, 0.55);
     background: transparent;
-    transition: all 0.09s ease;
+    transition: all 0.12s ease;
 }
 #workspaces button:hover {
     color: @base05;
-    background: alpha(@base02, 0.8);
+    background: alpha(@base05, 0.10);
 }
 #workspaces button.active {
     color: @base00;
-    font-weight: bold;
-    /* static multi-color gradient — animating it forced waybar to redraw at
-       60fps forever (wasted CPU/battery). Static keeps the look, no redraw. */
-    background: linear-gradient(90deg, @base0D, @base0C, @base0E);
+    font-weight: 600;
+    background: @base0D;   /* accent-filled selection */
 }
 #workspaces button.urgent {
     color: @base00;
     background: @base08;
 }
 #workspaces button.occupied:not(.active) {
-    color: @base05;
+    color: alpha(@base05, 0.82);
 }
 
-/* Subtle per-module accent tints (icons/text pop against the dark island) */
-#clock          { color: @base0D; }
-#battery        { color: @base0B; }
-#custom-battery { color: @base0B; }
-#cpu            { color: @base0E; }
-#memory         { color: @base0C; }
-#temperature    { color: @base0A; }
-#custom-temp    { color: @base0A; }
-#custom-mpris   { color: @base0E; }
-#network        { color: @base0C; }
-#custom-network { color: @base0C; }
-#bluetooth      { color: @base0D; }
-#custom-weather { color: @base0A; }
-#custom-coat    { color: @base0E; }
-#idle_inhibitor { color: @base0B; }
-#backlight      { color: @base0A; }
-#submap         { color: @base09; font-weight: bold; }
+/* Hover: subtle full-height translucent highlight, macOS menu-item style */
+#window:hover,
+#clock:hover,
+#submap:hover,
+#custom-weather:hover,
+#custom-mpris:hover,
+#custom-canvas:hover,
+#custom-coat:hover,
+#idle_inhibitor:hover,
+#custom-notifications:hover,
+#network:hover,
+#custom-network:hover,
+#bluetooth:hover,
+#custom-bluetooth:hover,
+#cpu:hover,
+#custom-gpu:hover,
+#temperature:hover,
+#custom-temp:hover,
+#memory:hover,
+#battery:hover,
+#custom-battery:hover,
+#wireplumber:hover,
+#custom-volume:hover,
+#custom-mic:hover,
+#power-profiles-daemon:hover,
+#backlight:hover,
+#custom-power:hover,
+#disk:hover,
+#custom-updates:hover {
+    background: alpha(@base05, 0.10);
+}
 
-/* Power profile: color by active mode */
-#power-profiles-daemon             { color: @base0A; }
+/* ── Functional state colours only (everything else stays monochrome) ─────── */
 #power-profiles-daemon.performance { color: @base08; }
-#power-profiles-daemon.balanced    { color: @base0D; }
+#power-profiles-daemon.balanced    { color: alpha(@base05, 0.90); }
 #power-profiles-daemon.power-saver { color: @base0B; }
 
-/* New modules */
-#custom-power   { color: @base0B; }              /* live battery draw */
-#disk           { color: @base0C; }
-#custom-gpu             { color: @base04; }       /* dGPU: dim when asleep... */
-#custom-gpu.asleep      { color: @base0B; }       /* green = sleeping (good)  */
-#custom-gpu.active      { color: @base09; }       /* orange = awake & drawing */
-#custom-updates             { color: @base0A; }
-#custom-updates.has-updates { color: @base0A; }
+#custom-gpu.asleep { color: @base0B; }   /* green = dGPU sleeping (good) */
+#custom-gpu.active { color: @base09; }   /* orange = dGPU awake & drawing */
 
-/* Notification states */
-#custom-notifications.unread { color: @base0A; }
+#custom-updates.has-updates { color: @base09; }
+
+#custom-notifications.unread { color: @base09; }
 #custom-notifications.dnd    { color: @base08; }
 
-/* State overrides — keep the island, just recolor (or tint for alarms) */
 #network.disconnected               { color: @base08; }
-#bluetooth.off, #bluetooth.disabled { color: @base03; }
+#bluetooth.off, #bluetooth.disabled { color: alpha(@base05, 0.40); }
+
 #battery.charging, #battery.plugged { color: @base0B; }
 #battery.warning:not(.charging)     { color: @base09; }
 #battery.critical:not(.charging) {
     color: @base08;
-    background: alpha(@base08, 0.15);
-    border-color: alpha(@base08, 0.5);
     animation: pulse-warn 0.9s ease-in-out infinite alternate;
 }
-#temperature.critical {
+#temperature.critical, #custom-temp.critical {
     color: @base08;
-    background: alpha(@base08, 0.15);
-    border-color: alpha(@base08, 0.5);
     animation: pulse-warn 0.8s ease-in-out infinite alternate;
 }
-#wireplumber.muted { color: @base08; }
-#custom-mic.muted  { color: @base08; }
+#wireplumber.muted, #custom-volume.muted, #custom-mic.muted {
+    color: alpha(@base05, 0.40);
+}
 
+@keyframes pulse-warn {
+    to { opacity: 0.5; }
+}
+
+/* Tray icons */
 #tray > .passive { -gtk-icon-effect: dim; }
 #tray > .needs-attention {
     -gtk-icon-effect: highlight;
-    background: alpha(@base08, 0.2);
+    background: alpha(@base08, 0.20);
+    border-radius: 6px;
 }
 
-/* Tooltips: keep everything static (no transition/opacity animation) so GTK's
-   popup shows immediately. `tooltip *` covers the inner box + label too. */
+/* Tooltips: static (no transition/opacity animation) so GTK shows them at once.
+   Styled as a rounded macOS-y popover. */
 tooltip,
 tooltip * {
     transition: none;
@@ -169,7 +179,7 @@ tooltip * {
 }
 tooltip {
     background: alpha(@base01, 0.96);
-    border: 1px solid @base03;
+    border: 1px solid alpha(@base03, 0.7);
     border-radius: 10px;
 }
 tooltip label {
@@ -177,9 +187,7 @@ tooltip label {
     padding: 4px;
 }
 
-/* ── Tray right-click menus (dbusmenu popups rendered by waybar) ──────────
-   e.g. right-clicking nm-applet / blueman in the tray. Styled to match the
-   island look instead of the flat adw-gtk3 rectangle. */
+/* ── Tray right-click menus (dbusmenu popups) — macOS-style popover ────────── */
 menu {
     background-color: alpha(@base00, 0.98);
     border: 1px solid alpha(@base03, 0.6);
@@ -214,38 +222,4 @@ menu menuitem radio:checked {
 }
 menu menuitem arrow {
     color: @base04;
-}
-
-@keyframes pulse-warn {
-    to { opacity: 0.55; }
-}
-
-/* Modules react to the mouse — accent glow on hover */
-#clock:hover,
-#cpu:hover,
-#memory:hover,
-#temperature:hover,
-#custom-temp:hover,
-#battery:hover,
-#custom-battery:hover,
-#network:hover,
-#custom-network:hover,
-#bluetooth:hover,
-#custom-bluetooth:hover,
-#power-profiles-daemon:hover,
-#backlight:hover,
-#custom-power:hover,
-#custom-gpu:hover,
-#custom-updates:hover,
-#disk:hover,
-#custom-volume:hover,
-#wireplumber:hover,
-#custom-mic:hover,
-#custom-weather:hover,
-#custom-mpris:hover,
-#custom-coat:hover,
-#idle_inhibitor:hover,
-#custom-notifications:hover {
-    background: alpha(@base0D, 0.18);
-    border-color: alpha(@base0D, 0.55);
 }

@@ -9,7 +9,7 @@ paused=$(dunstctl is-paused 2>/dev/null || echo false)
 if [ "$paused" = "true" ]; then
   icon="󰂛"; cls="dnd";    tip="Do Not Disturb\\n${count} waiting"
 elif [ "${count:-0}" -gt 0 ] 2>/dev/null; then
-  icon="󰂚 ${count}"; cls="unread"; tip="${count} notification(s)\\nclick: DND • right: last • middle: clear"
+  icon="󰂚"; cls="unread"; tip="${count} notification(s)\\nclick: DND • right: last • middle: clear"
 else
   icon="󰂜"; cls="none";   tip="No notifications\\nclick: DND"
 fi
