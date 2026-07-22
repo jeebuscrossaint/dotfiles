@@ -1,36 +1,36 @@
-# coat labwc theme: Shaman
-# FredHappyface (https://github.com/fredHappyface)
+# coat labwc theme: Rosé Pine Moon
+# Emilia Dunfelt <edun@dunfelt.se>
 
 border.width: 2
 
 # Active window
-window.active.title.bg.color: #012026
-window.active.label.text.color: #58FAD6
-window.active.button.unpressed.image.color: #58FAD6
-window.active.button.hover.image.color: #449985
-window.active.border.color: #449985
+window.active.title.bg.color: #2A273F
+window.active.label.text.color: #56526E
+window.active.button.unpressed.image.color: #56526E
+window.active.button.hover.image.color: #C4A7E7
+window.active.border.color: #C4A7E7
 
 # Inactive window
-window.inactive.title.bg.color: #001014
-window.inactive.label.text.color: #394751
-window.inactive.button.unpressed.image.color: #394751
-window.inactive.button.hover.image.color: #394751
-window.inactive.border.color: #374350
+window.inactive.title.bg.color: #232136
+window.inactive.label.text.color: #6E6A86
+window.inactive.button.unpressed.image.color: #6E6A86
+window.inactive.button.hover.image.color: #6E6A86
+window.inactive.border.color: #393552
 
 # Padding
 padding.height: 2
 padding.width: 4
 
 # Menu
-menu.items.bg.color: #012026
-menu.items.text.color: #3D5053
-menu.items.active.bg.color: #449985
-menu.items.active.text.color: #001014
+menu.items.bg.color: #2A273F
+menu.items.text.color: #E0DEF4
+menu.items.active.bg.color: #C4A7E7
+menu.items.active.text.color: #232136
 menu.border.width: 1
-menu.border.color: #374350
+menu.border.color: #393552
 
 # OSD
-osd.bg.color: #012026
-osd.border.color: #449985
+osd.bg.color: #2A273F
+osd.border.color: #C4A7E7
 osd.border.width: 1
-osd.label.text.color: #3D5053
+osd.label.text.color: #E0DEF4
