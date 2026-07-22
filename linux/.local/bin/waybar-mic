@@ -5,7 +5,7 @@ if command -v wpctl > /dev/null 2>&1; then
         muted = ($3 == "[MUTED]")
         vol = int($2 * 100)
         if (muted) printf "{\"text\":\"󰍭\",\"class\":\"muted\"}\n"
-        else printf "{\"text\":\"󰍬 %d%%\"}\n", vol
+        else printf "{\"text\":\"󰍬\"}\n", vol
     }'
 else
     level=$(sndioctl -n input.level 2>/dev/null || echo 0)
@@ -14,6 +14,6 @@ else
     if [ "$mute" = "1" ]; then
         printf '{"text":"󰍭","class":"muted"}\n'
     else
-        printf '{"text":"󰍬 %d%%"}\n' "$vol"
+        printf '{"text":"󰍬"}\n' "$vol"
     fi
 fi

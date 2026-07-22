@@ -8,5 +8,5 @@ tot=$((off + aur))
 if [ "$tot" -eq 0 ]; then
     printf '{"text":"","tooltip":"System up to date"}\n'
 else
-    printf '{"text":"󰚰 %s","tooltip":"%s repo + %s AUR update(s) — click to update","class":"has-updates"}\n' "$tot" "$off" "$aur"
+    printf '{"text":"󰚰","tooltip":"%s repo + %s AUR update(s) — click to update","class":"has-updates"}\n' "$off" "$aur"
 fi

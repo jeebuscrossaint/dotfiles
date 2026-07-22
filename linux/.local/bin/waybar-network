@@ -7,7 +7,7 @@ if command -v iwgetid > /dev/null 2>&1; then
     if [ -n "$ssid" ]; then
         quality=$(awk 'NR==3{gsub(/\./,"",$3); print int($3*100/70)}' /proc/net/wireless 2>/dev/null)
         [ -z "$quality" ] && quality="?"
-        printf '{"text":" %s %s%%","tooltip":"%s\\n%s%% signal"}\n' "$ssid" "$quality" "$ssid" "$quality"
+        printf '{"text":"󰤨","tooltip":"%s\\n%s%% signal"}\n' "$ssid" "$quality"
     elif ip link 2>/dev/null | grep -q "state UP"; then
         ip=$(ip -4 addr show scope global 2>/dev/null | awk '/inet/{print $2}' | head -1)
         printf '{"text":"󰈀","tooltip":"Ethernet\\n%s"}\n' "$ip"

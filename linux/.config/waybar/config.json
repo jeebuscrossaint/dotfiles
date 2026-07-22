@@ -1,13 +1,13 @@
 {
     "layer": "top",
     "position": "top",
-    "height": 36,
+    "height": 28,
     "spacing": 0,
     "fixed-center": true,
 
     "modules-left": ["hyprland/workspaces", "hyprland/window", "hyprland/submap", "custom/weather", "custom/mpris", "custom/canvas"],
-    "modules-center": ["clock"],
-    "modules-right": ["custom/network", "custom/bluetooth", "custom/updates", "power-profiles-daemon", "custom/gpu", "cpu", "custom/temp", "memory", "disk", "custom/power", "custom/battery", "backlight", "custom/mic", "custom/volume", "custom/coat", "idle_inhibitor", "custom/notifications", "tray"],
+    "modules-center": [],
+    "modules-right": ["custom/network", "custom/bluetooth", "custom/updates", "power-profiles-daemon", "custom/gpu", "cpu", "custom/temp", "memory", "disk", "custom/power", "custom/battery", "backlight", "custom/mic", "custom/volume", "custom/coat", "idle_inhibitor", "custom/notifications", "tray", "clock"],
 
     "hyprland/window": {
         "max-length": 50,
@@ -46,7 +46,7 @@
 
     "backlight": {
         "device": "intel_backlight",
-        "format": "{icon} {percent}%",
+        "format": "{icon}",
         "format-icons": ["󰃞", "󰃟", "󰃠"],
         "on-scroll-up": "brightnessctl -d intel_backlight set +5%",
         "on-scroll-down": "brightnessctl -d intel_backlight set 5%-",
@@ -75,7 +75,7 @@
     "disk": {
         "interval": 60,
         "path": "/",
-        "format": "󰋊 {percentage_used}%",
+        "format": "󰋊",
         "tooltip-format": "Disk: {used} / {total} used ({percentage_used}%)"
     },
 
@@ -102,8 +102,8 @@
     },
 
     "clock": {
-        "interval": 1,
-        "format": "{:%A, %B %e  %H:%M:%S}",
+        "interval": 10,
+        "format": "{:%a %b %e  %I:%M %p}",
         "tooltip-format": "<tt><small>{calendar}</small></tt>",
         "calendar": {
             "mode": "month",
@@ -130,7 +130,7 @@
         "format": "{}",
         "tooltip": true,
         "interval": 300,
-        "exec": "wttrbar --fahrenheit --mph --nerd",
+        "exec": "wttrbar --fahrenheit --mph --nerd --custom-indicator '{ICON}'",
         "return-type": "json"
     },
 
@@ -150,19 +150,19 @@
 
     "cpu": {
         "interval": 5,
-        "format": "󰻠 {usage}%",
+        "format": "󰻠",
         "tooltip-format": "CPU: {usage}%\nLoad: {load}"
     },
 
     "custom/temp": {
         "exec": "waybar-temp",
         "interval": 5,
-        "format": " {}"
+        "format": ""
     },
 
     "memory": {
         "interval": 10,
-        "format": "󰍛 {percentage}%",
+        "format": "󰍛",
         "tooltip-format": "RAM: {used:0.1f}G / {total:0.1f}G\nSwap: {swapUsed:0.1f}G / {swapTotal:0.1f}G"
     },
 

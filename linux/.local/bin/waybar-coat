@@ -23,6 +23,6 @@ case "${1:-status}" in
     ;;
   *)
     s=$(current)
-    printf '{"text":"󰏘 %s","tooltip":"coat scheme: %s\\nclick: pick  •  right-click: random"}\n' "$s" "$s"
+    printf '{"text":"󰏘","tooltip":"coat scheme: %s\\nclick: pick  •  right-click: random"}\n' "$s"
     ;;
 esac
