@@ -27,7 +27,7 @@ enabled:
   - code-oss
 
 # The 'scheme' key is a top-level scalar
-scheme: shaman
+scheme: rose-pine-moon
 prefer_base24: false
 
 opacity:
