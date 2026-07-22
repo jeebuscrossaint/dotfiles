@@ -21,58 +21,45 @@ window#waybar {
     color: @base05;
 }
 
-/* ── Islands ──────────────────────────────────────────────────────────────
-   Modules are grouped by subject (see the group entries in config.json) so
-   the bar shows a few larger islands instead of ~20 tiny ones. The island look
-   — opaque background, border, rounding, soft drop shadow (like the window
-   shadows) — lives on the GROUP CONTAINERS and the few standalone modules.
-   The modules INSIDE a group are transparent and just add spacing. */
+/* Shared island look for every module group. Covers both standard and
+   custom module names so whatever your config renders gets styled. */
 #workspaces,
 #window,
 #submap,
 #clock,
-#feed,
-#net,
-#sys,
-#power,
-#output,
-#util {
-    background: @base00;                            /* opaque */
+#custom-weather,
+#custom-mpris,
+#custom-canvas,
+#custom-coat,
+#idle_inhibitor,
+#custom-notifications,
+#network,
+#custom-network,
+#bluetooth,
+#custom-bluetooth,
+#cpu,
+#custom-gpu,
+#temperature,
+#custom-temp,
+#memory,
+#battery,
+#custom-battery,
+#wireplumber,
+#custom-volume,
+#custom-mic,
+#power-profiles-daemon,
+#backlight,
+#custom-power,
+#disk,
+#tray,
+#custom-updates {
+    background: alpha(@base00, 0.72);
     border: 1px solid alpha(@base03, 0.5);
     border-radius: 12px;
-    margin: 5px 3px;
+    margin: 4px 3px;
+    padding: 2px 12px;
     color: @base05;
-    box-shadow: 0 2px 8px 0 alpha(@base00, 0.55);   /* soft shadow, matches windows */
     transition: color 0.2s ease, background 0.2s ease, border-color 0.2s ease;
-}
-
-/* Standalone text modules keep comfortable inner padding */
-#window,
-#submap,
-#clock { padding: 2px 12px; }
-
-/* Group islands: slim edge padding; the modules inside supply their own */
-#feed,
-#net,
-#sys,
-#power,
-#output,
-#util { padding: 2px 4px; }
-
-/* Modules inside a group: no island of their own — transparent, just padding
-   and a rounded hover target. */
-#feed > *,
-#net > *,
-#sys > *,
-#power > *,
-#output > *,
-#util > * {
-    background: transparent;
-    border: none;
-    box-shadow: none;
-    margin: 0;
-    border-radius: 8px;
-    padding: 2px 9px;
 }
 
 /* Edge islands hug the screen a touch less */
