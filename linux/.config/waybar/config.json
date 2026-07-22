@@ -5,9 +5,16 @@
     "spacing": 0,
     "fixed-center": true,
 
-    "modules-left": ["hyprland/workspaces", "hyprland/window", "hyprland/submap", "custom/weather", "custom/mpris", "custom/canvas"],
+    "modules-left": ["hyprland/workspaces", "hyprland/window", "hyprland/submap", "group/feed"],
     "modules-center": ["clock"],
-    "modules-right": ["custom/network", "custom/bluetooth", "custom/updates", "power-profiles-daemon", "custom/gpu", "cpu", "custom/temp", "memory", "disk", "custom/power", "custom/battery", "backlight", "custom/mic", "custom/volume", "custom/coat", "idle_inhibitor", "custom/notifications", "tray"],
+    "modules-right": ["group/net", "group/sys", "group/power", "group/output", "group/util"],
+
+    "group/feed":   { "orientation": "horizontal", "modules": ["custom/weather", "custom/mpris", "custom/canvas"] },
+    "group/net":    { "orientation": "horizontal", "modules": ["custom/network", "custom/bluetooth"] },
+    "group/sys":    { "orientation": "horizontal", "modules": ["custom/gpu", "cpu", "custom/temp", "memory", "disk"] },
+    "group/power":  { "orientation": "horizontal", "modules": ["power-profiles-daemon", "custom/power", "custom/battery"] },
+    "group/output": { "orientation": "horizontal", "modules": ["backlight", "custom/mic", "custom/volume"] },
+    "group/util":   { "orientation": "horizontal", "modules": ["custom/updates", "custom/coat", "idle_inhibitor", "custom/notifications", "tray"] },
 
     "hyprland/window": {
         "max-length": 50,
