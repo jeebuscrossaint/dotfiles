@@ -27,7 +27,7 @@ enabled:
   - code-oss
 
 # The 'scheme' key is a top-level scalar
-scheme: rose-pine-moon
+scheme: operator-mono-dark
 prefer_base24: false
 
 opacity:
@@ -39,9 +39,9 @@ opacity:
 # The 'font' key triggers in_font_section and expects a mapping (dictionary)
 font:
   emoji: "Noto Color Emoji"
-  monospace: "SauceCodePro Nerd Font Mono"
-  sansserif: "SauceCodePro Nerd Font Mono"
-  serif: "SauceCodePro Nerd Font Mono"
+  monospace: "SFMono Nerd Font Mono"
+  sansserif: "SFMono Nerd Font Mono"
+  serif: "SFMono Nerd Font Mono"
   sizes:
     terminal: 11
     desktop: 11
