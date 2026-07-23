@@ -2,6 +2,7 @@
 
 # The 'enabled' key triggers STATE_ENABLED and expects a sequence (list)
 enabled:
+  - avizo
   - fish
   - foot
   - kitty
@@ -27,7 +28,7 @@ enabled:
   - code-oss
 
 # The 'scheme' key is a top-level scalar
-scheme: operator-mono-dark
+scheme: catppuccin-mocha
 prefer_base24: false
 
 opacity:
