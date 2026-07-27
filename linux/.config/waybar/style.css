@@ -33,7 +33,7 @@ window#waybar {
 /* Every module inline: transparent, just horizontal padding for even spacing.
    No island background / border / margin. */
 #custom-apple,
-#workspaces, #window, #submap, #clock, #custom-weather, #custom-mpris,
+#workspaces, #window, #submap, #clock, #custom-weather,
 #custom-canvas, #custom-coat, #idle_inhibitor, #custom-notifications,
 #network, #custom-network, #bluetooth, #custom-bluetooth, #cpu,
 #temperature, #custom-temp, #memory, #battery, #custom-battery, #wireplumber,
@@ -101,7 +101,6 @@ window#waybar.empty #window { color: transparent; }
 #clock:hover,
 #submap:hover,
 #custom-weather:hover,
-#custom-mpris:hover,
 #custom-canvas:hover,
 #custom-coat:hover,
 #idle_inhibitor:hover,
