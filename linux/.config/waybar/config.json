@@ -7,7 +7,7 @@
 
     "modules-left": ["hyprland/workspaces", "hyprland/window", "hyprland/submap", "custom/weather", "custom/mpris", "custom/canvas"],
     "modules-center": [],
-    "modules-right": ["custom/network", "custom/bluetooth", "custom/updates", "custom/gpu", "cpu", "custom/temp", "memory", "disk", "custom/power", "custom/battery", "backlight", "custom/mic", "custom/volume", "custom/coat", "idle_inhibitor", "custom/notifications", "tray", "clock"],
+    "modules-right": ["custom/network", "custom/bluetooth", "custom/updates", "cpu", "custom/temp", "memory", "disk", "custom/power", "custom/battery", "backlight", "custom/mic", "custom/volume", "custom/coat", "idle_inhibitor", "custom/notifications", "tray", "clock"],
 
     "hyprland/window": {
         "max-length": 50,
@@ -45,12 +45,6 @@
         "exec": "waybar-power",
         "return-type": "json",
         "interval": 5
-    },
-
-    "custom/gpu": {
-        "exec": "waybar-gpu",
-        "return-type": "json",
-        "interval": 10
     },
 
     "custom/updates": {
