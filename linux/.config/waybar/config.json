@@ -5,7 +5,7 @@
     "spacing": 0,
     "fixed-center": true,
 
-    "modules-left": ["hyprland/workspaces", "hyprland/window", "hyprland/submap", "custom/weather", "custom/mpris", "custom/canvas"],
+    "modules-left": ["hyprland/workspaces", "hyprland/window", "hyprland/submap", "custom/weather", "custom/canvas"],
     "modules-center": [],
     "modules-right": ["custom/network", "custom/bluetooth", "custom/updates", "cpu", "custom/temp", "memory", "disk", "custom/power", "custom/battery", "backlight", "custom/mic", "custom/volume", "custom/coat", "idle_inhibitor", "custom/notifications", "tray", "clock"],
 
@@ -162,17 +162,6 @@
         "on-click": "volumectl toggle-mute",
         "on-scroll-up": "volumectl up",
         "on-scroll-down": "volumectl down"
-    },
-
-    "custom/mpris": {
-        "format": "{}",
-        "exec": "waybar-mpris",
-        "return-type": "json",
-        "interval": 0,
-        "on-click": "playerctl play-pause",
-        "on-scroll-up": "playerctl next",
-        "on-scroll-down": "playerctl previous",
-        "max-length": 35
     },
 
     "custom/canvas": {
