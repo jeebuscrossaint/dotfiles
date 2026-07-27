@@ -27,7 +27,7 @@ enabled:
   - vscode
 
 # The 'scheme' key is a top-level scalar
-scheme: lichen-chartreuse-dark
+scheme: shaman
 prefer_base24: false
 
 # Material-You-style perceptual regularization. Colours are converted to Oklch,
@@ -36,16 +36,19 @@ prefer_base24: false
 # visibly distinct no matter which of the ~700 schemes is loaded.
 normalize:
   enabled: true
-  strength: 0.6        # 0.0 = raw scheme, 1.0 = fully standardized
+  strength: 1.0        # 0.0 = raw scheme, 1.0 = fully standardized
   ramp: true           # also retone base00..base07, not just the accents
+  ramp_contrast: 1.35  # >1 = blacks blacker, whites whiter
+  accent_lightness: 0.78   # brights brighter (default 0.72 on dark schemes)
+  accent_chroma: 0.155     # brights more vivid (default 0.13)
   min_hue_sep: 20      # degrees; pushes crowded accents apart
   contrast_floor: 7.0  # WCAG ratio base05 must clear against base00
 
 opacity:
-  terminal: 0.75
+  terminal: 1.0
   applications: 1.0
   desktop: 1.0
-  popups: 0.75
+  popups: 1.0
 
 # The 'font' key triggers in_font_section and expects a mapping (dictionary)
 font:

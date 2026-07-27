@@ -1,36 +1,36 @@
-# coat labwc theme: Lichen Chartreuse Dark
-# Aaron Colichia (https://aaron.colichia.org/)
+# coat labwc theme: Shaman
+# FredHappyface (https://github.com/fredHappyface)
 
 border.width: 2
 
 # Active window
-window.active.title.bg.color: #1D1F1B
-window.active.label.text.color: #F4F4F2
-window.active.button.unpressed.image.color: #F4F4F2
-window.active.button.hover.image.color: #53B1D7
-window.active.border.color: #53B1D7
+window.active.title.bg.color: #000C10
+window.active.label.text.color: #FFFFFF
+window.active.button.unpressed.image.color: #FFFFFF
+window.active.button.hover.image.color: #00D3C5
+window.active.border.color: #00D3C5
 
 # Inactive window
-window.inactive.title.bg.color: #11120F
-window.inactive.label.text.color: #616A5B
-window.inactive.button.unpressed.image.color: #616A5B
-window.inactive.button.hover.image.color: #616A5B
-window.inactive.border.color: #2E4011
+window.inactive.title.bg.color: #000101
+window.inactive.label.text.color: #3A4852
+window.inactive.button.unpressed.image.color: #3A4852
+window.inactive.button.hover.image.color: #3A4852
+window.inactive.border.color: #131E29
 
 # Padding
 padding.height: 2
 padding.width: 4
 
 # Menu
-menu.items.bg.color: #1D1F1B
-menu.items.text.color: #C2C7BC
-menu.items.active.bg.color: #53B1D7
-menu.items.active.text.color: #11120F
+menu.items.bg.color: #000C10
+menu.items.text.color: #BDD3D6
+menu.items.active.bg.color: #00D3C5
+menu.items.active.text.color: #000101
 menu.border.width: 1
-menu.border.color: #2E4011
+menu.border.color: #131E29
 
 # OSD
-osd.bg.color: #1D1F1B
-osd.border.color: #53B1D7
+osd.bg.color: #000C10
+osd.border.color: #00D3C5
 osd.border.width: 1
-osd.label.text.color: #C2C7BC
+osd.label.text.color: #BDD3D6
