@@ -37,7 +37,7 @@ window#waybar {
 #custom-canvas, #custom-coat, #idle_inhibitor, #custom-notifications,
 #network, #custom-network, #bluetooth, #custom-bluetooth, #cpu, #custom-gpu,
 #temperature, #custom-temp, #memory, #battery, #custom-battery, #wireplumber,
-#custom-volume, #custom-mic, #power-profiles-daemon, #backlight, #custom-power,
+#custom-volume, #custom-mic, #backlight, #custom-power,
 #disk, #tray, #custom-updates {
     background: transparent;
     margin: 0;
@@ -120,7 +120,6 @@ window#waybar.empty #window { color: transparent; }
 #wireplumber:hover,
 #custom-volume:hover,
 #custom-mic:hover,
-#power-profiles-daemon:hover,
 #backlight:hover,
 #custom-power:hover,
 #disk:hover,
@@ -129,10 +128,6 @@ window#waybar.empty #window { color: transparent; }
 }
 
 /* ── Functional state colours only (everything else stays monochrome) ─────── */
-#power-profiles-daemon.performance { color: @base08; }
-#power-profiles-daemon.balanced    { color: alpha(@base05, 0.90); }
-#power-profiles-daemon.power-saver { color: @base0B; }
-
 #custom-gpu.asleep { color: @base0B; }   /* green = dGPU sleeping (good) */
 #custom-gpu.active { color: @base09; }   /* orange = dGPU awake & drawing */
 

@@ -7,7 +7,7 @@
 
     "modules-left": ["hyprland/workspaces", "hyprland/window", "hyprland/submap", "custom/weather", "custom/mpris", "custom/canvas"],
     "modules-center": [],
-    "modules-right": ["custom/network", "custom/bluetooth", "custom/updates", "power-profiles-daemon", "custom/gpu", "cpu", "custom/temp", "memory", "disk", "custom/power", "custom/battery", "backlight", "custom/mic", "custom/volume", "custom/coat", "idle_inhibitor", "custom/notifications", "tray", "clock"],
+    "modules-right": ["custom/network", "custom/bluetooth", "custom/updates", "custom/gpu", "cpu", "custom/temp", "memory", "disk", "custom/power", "custom/battery", "backlight", "custom/mic", "custom/volume", "custom/coat", "idle_inhibitor", "custom/notifications", "tray", "clock"],
 
     "hyprland/window": {
         "max-length": 50,
@@ -30,18 +30,6 @@
         "format-icons": { "activated": "󰅶", "deactivated": "󰛊" },
         "tooltip-format-activated": "Idle inhibited (caffeine on)",
         "tooltip-format-deactivated": "Idle allowed"
-    },
-
-    "power-profiles-daemon": {
-        "format": "{icon}",
-        "tooltip": true,
-        "tooltip-format": "Power profile: {profile}\nDriver: {driver}\nClick to cycle",
-        "format-icons": {
-            "default": "󰈐",
-            "performance": "󰓅",
-            "balanced": "󰾅",
-            "power-saver": "󰌪"
-        }
     },
 
     "backlight": {
