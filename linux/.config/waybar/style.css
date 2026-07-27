@@ -35,7 +35,7 @@ window#waybar {
 #custom-apple,
 #workspaces, #window, #submap, #clock, #custom-weather, #custom-mpris,
 #custom-canvas, #custom-coat, #idle_inhibitor, #custom-notifications,
-#network, #custom-network, #bluetooth, #custom-bluetooth, #cpu, #custom-gpu,
+#network, #custom-network, #bluetooth, #custom-bluetooth, #cpu,
 #temperature, #custom-temp, #memory, #battery, #custom-battery, #wireplumber,
 #custom-volume, #custom-mic, #backlight, #custom-power,
 #disk, #tray, #custom-updates {
@@ -111,7 +111,6 @@ window#waybar.empty #window { color: transparent; }
 #bluetooth:hover,
 #custom-bluetooth:hover,
 #cpu:hover,
-#custom-gpu:hover,
 #temperature:hover,
 #custom-temp:hover,
 #memory:hover,
@@ -128,9 +127,6 @@ window#waybar.empty #window { color: transparent; }
 }
 
 /* ── Functional state colours only (everything else stays monochrome) ─────── */
-#custom-gpu.asleep { color: @base0B; }   /* green = dGPU sleeping (good) */
-#custom-gpu.active { color: @base09; }   /* orange = dGPU awake & drawing */
-
 #custom-updates.has-updates { color: @base09; }
 
 #custom-notifications.unread { color: @base09; }
