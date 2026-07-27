@@ -27,8 +27,19 @@ enabled:
   - vscode
 
 # The 'scheme' key is a top-level scalar
-scheme: later-this-evening
+scheme: lichen-chartreuse-dark
 prefer_base24: false
+
+# Material-You-style perceptual regularization. Colours are converted to Oklch,
+# their hue is kept (that's the scheme's identity) and their lightness/chroma are
+# snapped toward fixed per-slot targets, so accents end up equally readable and
+# visibly distinct no matter which of the ~700 schemes is loaded.
+normalize:
+  enabled: true
+  strength: 0.6        # 0.0 = raw scheme, 1.0 = fully standardized
+  ramp: true           # also retone base00..base07, not just the accents
+  min_hue_sep: 20      # degrees; pushes crowded accents apart
+  contrast_floor: 7.0  # WCAG ratio base05 must clear against base00
 
 opacity:
   terminal: 0.75
@@ -39,9 +50,9 @@ opacity:
 # The 'font' key triggers in_font_section and expects a mapping (dictionary)
 font:
   emoji: "Noto Color Emoji"
-  monospace: "SFMono Nerd Font Mono"
-  sansserif: "SFMono Nerd Font Mono"
-  serif: "SFMono Nerd Font Mono"
+  monospace: "SauceCodePro Nerd Font Mono"
+  sansserif: "SauceCodePro Nerd Font Mono"
+  serif: "SauceCodePro Nerd Font Mono"
   sizes:
     terminal: 11
     desktop: 11

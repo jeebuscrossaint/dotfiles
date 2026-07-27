@@ -5,14 +5,7 @@
    and Hyprland's `layerrule = match:namespace waybar, blur on` frosts it into
    real glass. Modules are inline text/icons like macOS "menu extras" — no
    floating islands, no per-module borders. Icons are monochrome; colour appears
-   only on the active workspace and on alert states (battery critical, etc.).
-
-   LIGHT-ON-DARK INVERTED: the panel is the scheme's lightest shade (base07) at
-   partial alpha so the blur reads as frosted white glass, and all text is base00
-   — the darkest colour in the scheme. Because base08-base0F are tuned for a dark
-   background, every accent used on the bar is passed through GTK's `shade()` to
-   darken it enough to stay legible on the light panel. If you ever flip back to
-   a dark bar, drop the shade() wrappers along with it. */
+   only on the active workspace and on alert states (battery critical, etc.). */
 
 * {
     border: none;
@@ -32,9 +25,9 @@
 /* The bar: translucent + native blur = frosted glass. A whisper-thin bottom
    hairline stands in for the macOS menu-bar separator. */
 window#waybar {
-    background: alpha(@base07, 0.72);
-    color: @base00;
-    border-bottom: 1px solid alpha(@base00, 0.12);
+    background: alpha(@base00, 0.55);
+    color: @base05;
+    border-bottom: 1px solid alpha(@base05, 0.06);
 }
 
 /* Every module inline: transparent, just horizontal padding for even spacing.
@@ -49,7 +42,7 @@ window#waybar {
     background: transparent;
     margin: 0;
     padding: 0 7px;
-    color: alpha(@base00, 0.88);
+    color: alpha(@base05, 0.90);
     transition: background 0.15s ease, color 0.15s ease;
 }
 
@@ -57,23 +50,23 @@ window#waybar {
 .modules-left  { margin-left: 2px; }
 .modules-right { margin-right: 6px; }
 
-/* Apple logo: the leftmost "menu", bold and dark like macOS */
+/* Apple logo: the leftmost "menu", bold and bright like macOS */
 #custom-apple {
-    color: @base00;
+    color: @base05;
     font-size: 14px;
     padding: 0 10px 0 8px;
 }
-#custom-apple:hover { background: alpha(@base00, 0.10); }
+#custom-apple:hover { background: alpha(@base05, 0.10); }
 
-/* Window title = the "app name": full-strength + heavier, like the bold app menu */
-#window { color: @base00; font-weight: 600; }
+/* Window title = the "app name": brighter + heavier, like the bold app menu */
+#window { color: @base05; font-weight: 600; }
 window#waybar.empty #window { color: transparent; }
 
-/* Clock: full-strength ink, the far-right menu extra */
-#clock { color: @base00; font-weight: 600; padding: 0 12px 0 8px; }
+/* Clock: pure white, the far-right menu extra */
+#clock { color: @base05; font-weight: 600; padding: 0 12px 0 8px; }
 
 /* Submap indicator keeps a hint of colour so it stands out when active */
-#submap { color: shade(@base09, 0.55); font-weight: 600; }
+#submap { color: @base09; font-weight: 600; }
 
 /* Workspaces: small pill buttons; the active one is an accent-filled selection
    like a macOS highlighted menu item. */
@@ -82,26 +75,25 @@ window#waybar.empty #window { color: transparent; }
     padding: 0 8px;
     margin: 5px 2px;
     border-radius: 6px;
-    color: alpha(@base00, 0.50);
+    color: alpha(@base05, 0.55);
     background: transparent;
     transition: all 0.12s ease;
 }
 #workspaces button:hover {
-    color: @base00;
-    background: alpha(@base00, 0.10);
+    color: @base05;
+    background: alpha(@base05, 0.10);
 }
 #workspaces button.active {
-    color: @base07;
+    color: @base00;
     font-weight: 600;
-    /* darkened accent fill + light text = macOS highlighted menu item */
-    background: shade(@base0D, 0.62);
+    background: @base0D;   /* accent-filled selection */
 }
 #workspaces button.urgent {
-    color: @base07;
-    background: shade(@base08, 0.85);
+    color: @base00;
+    background: @base08;
 }
 #workspaces button.occupied:not(.active) {
-    color: alpha(@base00, 0.78);
+    color: alpha(@base05, 0.82);
 }
 
 /* Hover: subtle full-height translucent highlight, macOS menu-item style */
@@ -130,32 +122,30 @@ window#waybar.empty #window { color: transparent; }
 #custom-power:hover,
 #disk:hover,
 #custom-updates:hover {
-    background: alpha(@base00, 0.10);
+    background: alpha(@base05, 0.10);
 }
 
-/* ── Functional state colours only (everything else stays monochrome) ────────
-   All shade()d down: the raw base08-base0F are picked for a dark background and
-   go pastel-invisible on the light panel. */
-#custom-updates.has-updates { color: shade(@base09, 0.55); }
+/* ── Functional state colours only (everything else stays monochrome) ─────── */
+#custom-updates.has-updates { color: @base09; }
 
-#custom-notifications.unread { color: shade(@base09, 0.55); }
-#custom-notifications.dnd    { color: shade(@base08, 0.85); }
+#custom-notifications.unread { color: @base09; }
+#custom-notifications.dnd    { color: @base08; }
 
-#network.disconnected               { color: shade(@base08, 0.85); }
-#bluetooth.off, #bluetooth.disabled { color: alpha(@base00, 0.32); }
+#network.disconnected               { color: @base08; }
+#bluetooth.off, #bluetooth.disabled { color: alpha(@base05, 0.40); }
 
-#battery.charging, #battery.plugged { color: shade(@base0B, 0.62); }
-#battery.warning:not(.charging)     { color: shade(@base09, 0.55); }
+#battery.charging, #battery.plugged { color: @base0B; }
+#battery.warning:not(.charging)     { color: @base09; }
 #battery.critical:not(.charging) {
-    color: shade(@base08, 0.85);
+    color: @base08;
     animation: pulse-warn 0.9s ease-in-out infinite alternate;
 }
 #temperature.critical, #custom-temp.critical {
-    color: shade(@base08, 0.85);
+    color: @base08;
     animation: pulse-warn 0.8s ease-in-out infinite alternate;
 }
 #wireplumber.muted, #custom-volume.muted, #custom-mic.muted {
-    color: alpha(@base00, 0.32);
+    color: alpha(@base05, 0.40);
 }
 
 @keyframes pulse-warn {
@@ -166,7 +156,7 @@ window#waybar.empty #window { color: transparent; }
 #tray > .passive { -gtk-icon-effect: dim; }
 #tray > .needs-attention {
     -gtk-icon-effect: highlight;
-    background: alpha(shade(@base08, 0.85), 0.28);
+    background: alpha(@base08, 0.20);
     border-radius: 6px;
 }
 
@@ -178,19 +168,19 @@ tooltip * {
     opacity: 1;
 }
 tooltip {
-    background: alpha(@base07, 0.97);
-    border: 1px solid alpha(@base00, 0.18);
+    background: alpha(@base01, 0.96);
+    border: 1px solid alpha(@base03, 0.7);
     border-radius: 10px;
 }
 tooltip label {
-    color: @base00;
+    color: @base05;
     padding: 4px;
 }
 
 /* ── Tray right-click menus (dbusmenu popups) — macOS-style popover ────────── */
 menu {
-    background-color: alpha(@base07, 0.98);
-    border: 1px solid alpha(@base00, 0.18);
+    background-color: alpha(@base00, 0.98);
+    border: 1px solid alpha(@base03, 0.6);
     border-radius: 12px;
     padding: 6px;
 }
@@ -198,28 +188,28 @@ menu menuitem {
     padding: 7px 14px;
     margin: 1px 0;
     border-radius: 8px;
-    color: @base00;
+    color: @base05;
     background-color: transparent;
     min-height: 20px;
     transition: background-color 0.15s ease, color 0.15s ease;
 }
 menu menuitem:hover,
 menu menuitem:focus {
-    background-color: shade(@base0D, 0.62);
-    color: @base07;
+    background-color: alpha(@base0D, 0.22);
+    color: @base05;
 }
 menu menuitem:disabled {
-    color: alpha(@base00, 0.36);
+    color: alpha(@base05, 0.38);
 }
 menu separator {
-    background-color: alpha(@base00, 0.15);
+    background-color: alpha(@base03, 0.5);
     min-height: 1px;
     margin: 5px 8px;
 }
 menu menuitem check:checked,
 menu menuitem radio:checked {
-    color: shade(@base0B, 0.62);
+    color: @base0B;
 }
 menu menuitem arrow {
-    color: alpha(@base00, 0.55);
+    color: @base04;
 }
