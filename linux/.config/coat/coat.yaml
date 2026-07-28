@@ -27,7 +27,7 @@ enabled:
   - vscode
 
 # The 'scheme' key is a top-level scalar
-scheme: square
+scheme: edge-dark
 prefer_base24: false
 
 # Material-You-style perceptual regularization. Colours are converted to Oklch,
@@ -36,7 +36,11 @@ prefer_base24: false
 # visibly distinct no matter which of the ~700 schemes is loaded.
 normalize:
   enabled: true
-  strength: 1.0        # 0.0 = raw scheme, 1.0 = fully standardized
+  # strength drives hue + chroma (the scheme's character); lightness_strength
+  # drives tone (brightness + legibility). Splitting them keeps the uniform
+  # brightness while letting each scheme's saturation stay its own.
+  strength: 0.45
+  lightness_strength: 1.0
   ramp: true           # also retone base00..base07, not just the accents
   # 1.0 = tuned baseline. Raising this pushes base00/base07 toward pure
   # black/white, which kills whatever tint the scheme gave them (Shaman's
