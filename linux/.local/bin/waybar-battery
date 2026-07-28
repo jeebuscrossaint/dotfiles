@@ -9,13 +9,13 @@ if command -v apm > /dev/null 2>&1; then
     mins=$(apm -m)
 
     case "$st" in
-        3) icon="󰂄"; state="Charging" ;;
-        0) icon="󰁹"; state="Full" ;;
-        1) icon="󰁻"; state="Low" ;;
-        2) icon="󰂎"; state="Critical" ;;
-        *) icon="󰂑"; state="Unknown" ;;
+        3) icon=""; state="Charging" ;;
+        0) icon=""; state="Full" ;;
+        1) icon=""; state="Low" ;;
+        2) icon=""; state="Critical" ;;
+        *) icon=""; state="Unknown" ;;
     esac
-    [ "$ac" = "1" ] && icon="󰚥" && state="AC"
+    [ "$ac" = "1" ] && icon="" && state="AC"
 
     if [ "$mins" -lt 9999 ] 2>/dev/null && [ "$ac" != "1" ]; then
         h=$((mins / 60))
@@ -38,17 +38,22 @@ else
     pct=$(cat "$bat")
     status=$(cat "$batdir/status" 2>/dev/null || echo "Unknown")
 
+    # Font Awesome battery glyphs — drawn horizontally, unlike the upright
+    # Material Design set. Charging shows a bolt since FA has no sideways
+    # charging battery.
     case "$status" in
-        Charging)    icon="󰂄" ;;
-        Full)        icon="󰁹" ;;
+        Charging)    icon="" ;;
+        Full)        icon="" ;;
+        # ASUS charge-limit parks the battery here whenever it is on AC and has
+        # hit its threshold — without this it falls through to the unknown "?".
+        "Not charging") icon="" ;;
         Discharging)
-            if   [ "$pct" -ge 90 ]; then icon="󰂂"
-            elif [ "$pct" -ge 70 ]; then icon="󰂀"
-            elif [ "$pct" -ge 50 ]; then icon="󰁾"
-            elif [ "$pct" -ge 30 ]; then icon="󰁼"
-            elif [ "$pct" -ge 15 ]; then icon="󰁺"
-            else icon="󰂎"; fi ;;
-        *)           icon="󰂑" ;;
+            if   [ "$pct" -ge 88 ]; then icon=""
+            elif [ "$pct" -ge 63 ]; then icon=""
+            elif [ "$pct" -ge 38 ]; then icon=""
+            elif [ "$pct" -ge 13 ]; then icon=""
+            else icon=""; fi ;;
+        *)           icon="" ;;
     esac
 
     printf '{"text":"%s %d%%","tooltip":"%d%% — %s"}\n' "$icon" "$pct" "$pct" "$status"
