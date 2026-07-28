@@ -1,36 +1,36 @@
-# coat labwc theme: Shaman
-# FredHappyface (https://github.com/fredHappyface)
+# coat labwc theme: Windows 10
+# Fergus Collins (https://github.com/ferguscollins)
 
 border.width: 2
 
 # Active window
-window.active.title.bg.color: #032329
-window.active.label.text.color: #BCFFEC
-window.active.button.unpressed.image.color: #BCFFEC
-window.active.button.hover.image.color: #00C5B8
-window.active.border.color: #00C5B8
+window.active.title.bg.color: #1E1E1E
+window.active.label.text.color: #EEEEEE
+window.active.button.unpressed.image.color: #EEEEEE
+window.active.button.hover.image.color: #7EA9FF
+window.active.border.color: #7EA9FF
 
 # Inactive window
-window.inactive.title.bg.color: #011217
-window.inactive.label.text.color: #414F59
-window.inactive.button.unpressed.image.color: #414F59
-window.inactive.button.hover.image.color: #414F59
-window.inactive.border.color: #242F3B
+window.inactive.title.bg.color: #0F0F0F
+window.inactive.label.text.color: #4D4D4D
+window.inactive.button.unpressed.image.color: #4D4D4D
+window.inactive.button.hover.image.color: #4D4D4D
+window.inactive.border.color: #2E2E2E
 
 # Padding
 padding.height: 2
 padding.width: 4
 
 # Menu
-menu.items.bg.color: #032329
-menu.items.text.color: #A0B6B9
-menu.items.active.bg.color: #00C5B8
-menu.items.active.text.color: #011217
+menu.items.bg.color: #1E1E1E
+menu.items.text.color: #CECECE
+menu.items.active.bg.color: #7EA9FF
+menu.items.active.text.color: #0F0F0F
 menu.border.width: 1
-menu.border.color: #242F3B
+menu.border.color: #2E2E2E
 
 # OSD
-osd.bg.color: #032329
-osd.border.color: #00C5B8
+osd.bg.color: #1E1E1E
+osd.border.color: #7EA9FF
 osd.border.width: 1
-osd.label.text.color: #A0B6B9
+osd.label.text.color: #CECECE
