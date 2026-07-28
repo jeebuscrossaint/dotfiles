@@ -4,33 +4,33 @@
 border.width: 2
 
 # Active window
-window.active.title.bg.color: #000C10
-window.active.label.text.color: #FFFFFF
-window.active.button.unpressed.image.color: #FFFFFF
-window.active.button.hover.image.color: #00D3C5
-window.active.border.color: #00D3C5
+window.active.title.bg.color: #032329
+window.active.label.text.color: #BCFFEC
+window.active.button.unpressed.image.color: #BCFFEC
+window.active.button.hover.image.color: #00C5B8
+window.active.border.color: #00C5B8
 
 # Inactive window
-window.inactive.title.bg.color: #000101
-window.inactive.label.text.color: #3A4852
-window.inactive.button.unpressed.image.color: #3A4852
-window.inactive.button.hover.image.color: #3A4852
-window.inactive.border.color: #131E29
+window.inactive.title.bg.color: #011217
+window.inactive.label.text.color: #414F59
+window.inactive.button.unpressed.image.color: #414F59
+window.inactive.button.hover.image.color: #414F59
+window.inactive.border.color: #242F3B
 
 # Padding
 padding.height: 2
 padding.width: 4
 
 # Menu
-menu.items.bg.color: #000C10
-menu.items.text.color: #BDD3D6
-menu.items.active.bg.color: #00D3C5
-menu.items.active.text.color: #000101
+menu.items.bg.color: #032329
+menu.items.text.color: #A0B6B9
+menu.items.active.bg.color: #00C5B8
+menu.items.active.text.color: #011217
 menu.border.width: 1
-menu.border.color: #131E29
+menu.border.color: #242F3B
 
 # OSD
-osd.bg.color: #000C10
-osd.border.color: #00D3C5
+osd.bg.color: #032329
+osd.border.color: #00C5B8
 osd.border.width: 1
-osd.label.text.color: #BDD3D6
+osd.label.text.color: #A0B6B9

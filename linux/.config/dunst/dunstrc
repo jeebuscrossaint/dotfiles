@@ -59,7 +59,7 @@
     class = Dunst
     corner_radius = 12
     corners = all
-    highlight = "#00D3C5, #9EC952, #85BBFF"
+    highlight = "#00C5B8, #94BB52, #6DAEFF"
     ignore_dbusclose = false
     mouse_left_click = close_current
     mouse_middle_click = do_action, close_current
@@ -67,7 +67,7 @@
 
     # Frame
     frame_width = 1
-    frame_color = "#131E29"
+    frame_color = "#242F3B"
     separator_color = frame
     separator_height = 1
     padding = 12
@@ -76,19 +76,19 @@
     gap_size = 6
 
 [urgency_low]
-    background = "#000101e6"
-    foreground = "#708289"
-    frame_color = "#3A4852"
+    background = "#011217e6"
+    foreground = "#697B81"
+    frame_color = "#414F59"
     timeout = 4
 
 [urgency_normal]
-    background = "#000101e6"
-    foreground = "#FFFFFF"
-    frame_color = "#131E29"
+    background = "#011217e6"
+    foreground = "#BCFFEC"
+    frame_color = "#242F3B"
     timeout = 6
 
 [urgency_critical]
-    background = "#000101e6"
-    foreground = "#FF968B"
-    frame_color = "#FF968B"
+    background = "#011217e6"
+    foreground = "#F6857B"
+    frame_color = "#F6857B"
     timeout = 0
