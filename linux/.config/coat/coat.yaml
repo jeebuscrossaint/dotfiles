@@ -27,7 +27,7 @@ enabled:
   - vscode
 
 # The 'scheme' key is a top-level scalar
-scheme: shaman
+scheme: windows-10
 prefer_base24: false
 
 # Material-You-style perceptual regularization. Colours are converted to Oklch,
@@ -46,7 +46,11 @@ normalize:
   accent_lightness: 0.74   # slight lift over the 0.72 default
   accent_chroma: 0.14      # slight vividness bump over the 0.13 default
   min_hue_sep: 20      # degrees; pushes crowded accents apart
-  contrast_floor: 7.0  # WCAG ratio base05 must clear against base00
+  # WCAG ratio base05 must clear against base00. Dark schemes naturally land
+  # around 9:1 while light schemes hit ~18:1, which is why dark themes feel
+  # washed out by comparison — this floor closes that gap. Only lifts base05,
+  # so it doesn't flatten tinted backgrounds the way ramp_contrast does.
+  contrast_floor: 12.0
 
 opacity:
   terminal: 1.0
