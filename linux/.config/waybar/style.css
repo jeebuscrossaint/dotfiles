@@ -79,7 +79,7 @@ window#waybar.empty #window { color: transparent; }
     padding: 0 8px;
     /* The one place with a real vertical gap: this margin is the inset between
        the pill and the bar edge. Lower = taller pill, tighter bar. */
-    margin: 2px 2px;
+    margin: 3px 2px;
     border-radius: 6px;
     color: alpha(@base05, 0.55);
     background: transparent;
