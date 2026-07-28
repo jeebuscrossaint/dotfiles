@@ -20,7 +20,7 @@
        purely (bar height - line height) / 2 from GTK centring. Raising this
        against a fixed `height` in config.json is what tightens that gap. */
     font-size: 15px;
-    font-weight: 500;
+    font-weight: 400;
     /* NOTE: no `transition` on `*` — it targets the tooltip's inner box too and
        makes GTK's fade stick at opacity 0 (tooltips never appear). Per-module
        transitions live on the selectors below instead. */
@@ -63,14 +63,14 @@ window#waybar {
 #custom-apple:hover { background: alpha(@base05, 0.10); }
 
 /* Window title = the "app name": brighter + heavier, like the bold app menu */
-#window { color: @base05; font-weight: 600; }
+#window { color: @base05; }
 window#waybar.empty #window { color: transparent; }
 
 /* Clock: pure white, the far-right menu extra */
-#clock { color: @base05; font-weight: 600; padding: 0 12px 0 8px; }
+#clock { color: @base05; padding: 0 12px 0 8px; }
 
 /* Submap indicator keeps a hint of colour so it stands out when active */
-#submap { color: @base09; font-weight: 600; }
+#submap { color: @base09; }
 
 /* Workspaces: small pill buttons; the active one is an accent-filled selection
    like a macOS highlighted menu item. */
@@ -91,7 +91,8 @@ window#waybar.empty #window { color: transparent; }
 }
 #workspaces button.active {
     color: @base00;
-    font-weight: 600;
+    /* No bold anywhere in the bar — the accent fill alone marks the active
+       workspace. */
     background: @base0D;   /* accent-filled selection */
 }
 #workspaces button.urgent {
