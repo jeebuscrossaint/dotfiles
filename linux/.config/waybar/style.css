@@ -41,7 +41,7 @@ window#waybar {
 #custom-canvas, #custom-coat, #idle_inhibitor, #custom-notifications,
 #network, #custom-network, #bluetooth, #custom-bluetooth, #cpu,
 #temperature, #custom-temp, #memory, #battery, #custom-battery, #wireplumber,
-#custom-volume, #custom-mic, #backlight, #custom-power,
+#custom-power,
 #disk, #tray, #custom-updates {
     background: transparent;
     margin: 0;
@@ -122,9 +122,6 @@ window#waybar.empty #window { color: transparent; }
 #battery:hover,
 #custom-battery:hover,
 #wireplumber:hover,
-#custom-volume:hover,
-#custom-mic:hover,
-#backlight:hover,
 #custom-power:hover,
 #disk:hover,
 #custom-updates:hover {
@@ -150,7 +147,7 @@ window#waybar.empty #window { color: transparent; }
     color: @base08;
     animation: pulse-warn 0.8s ease-in-out infinite alternate;
 }
-#wireplumber.muted, #custom-volume.muted, #custom-mic.muted {
+#wireplumber.muted {
     color: alpha(@base05, 0.40);
 }
 
