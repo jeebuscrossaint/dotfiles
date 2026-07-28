@@ -27,7 +27,7 @@ enabled:
   - vscode
 
 # The 'scheme' key is a top-level scalar
-scheme: windows-10
+scheme: square
 prefer_base24: false
 
 # Material-You-style perceptual regularization. Colours are converted to Oklch,
