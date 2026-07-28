@@ -27,34 +27,14 @@ enabled:
   - vscode
 
 # The 'scheme' key is a top-level scalar
-scheme: edge-dark
+scheme: evenok-dark
 prefer_base24: false
 
-# Material-You-style perceptual regularization. Colours are converted to Oklch,
-# their hue is kept (that's the scheme's identity) and their lightness/chroma are
-# snapped toward fixed per-slot targets, so accents end up equally readable and
-# visibly distinct no matter which of the ~700 schemes is loaded.
+# Evens out whatever scheme is loaded: uniform brightness, legible text,
+# accents that stay distinct. Defaults are tuned; `coat docs normalize` lists
+# the knobs if one ever needs touching.
 normalize:
   enabled: true
-  # strength drives hue + chroma (the scheme's character); lightness_strength
-  # drives tone (brightness + legibility). Splitting them keeps the uniform
-  # brightness while letting each scheme's saturation stay its own.
-  strength: 0.45
-  lightness_strength: 1.0
-  ramp: true           # also retone base00..base07, not just the accents
-  # 1.0 = tuned baseline. Raising this pushes base00/base07 toward pure
-  # black/white, which kills whatever tint the scheme gave them (Shaman's
-  # teal-cast black and mint white both die by ~1.15). Leave at 1.0 unless
-  # the scheme is already monochrome.
-  ramp_contrast: 1.0
-  accent_lightness: 0.74   # slight lift over the 0.72 default
-  accent_chroma: 0.14      # slight vividness bump over the 0.13 default
-  min_hue_sep: 20      # degrees; pushes crowded accents apart
-  # WCAG ratio base05 must clear against base00. Dark schemes naturally land
-  # around 9:1 while light schemes hit ~18:1, which is why dark themes feel
-  # washed out by comparison — this floor closes that gap. Only lifts base05,
-  # so it doesn't flatten tinted backgrounds the way ramp_contrast does.
-  contrast_floor: 12.0
 
 opacity:
   terminal: 1.0
