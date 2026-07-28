@@ -15,8 +15,11 @@
     outline: none;
     /* Proportional nerd font = SF-Pro-ish text with icon glyphs intact. */
     font-family: "Lilex Nerd Font Propo", "Lilex Nerd Font", sans-serif;
-    /* 2560x1600 at scale 1.0 — this panel is dense, so 12px read as tiny. */
-    font-size: 13px;
+    /* 2560x1600 at scale 1.0 — this panel is dense, so 12px read as tiny.
+       Modules carry no vertical padding, so the gap above/below the glyphs is
+       purely (bar height - line height) / 2 from GTK centring. Raising this
+       against a fixed `height` in config.json is what tightens that gap. */
+    font-size: 15px;
     font-weight: 500;
     /* NOTE: no `transition` on `*` — it targets the tooltip's inner box too and
        makes GTK's fade stick at opacity 0 (tooltips never appear). Per-module
@@ -54,7 +57,7 @@ window#waybar {
 /* Apple logo: the leftmost "menu", bold and bright like macOS */
 #custom-apple {
     color: @base05;
-    font-size: 15px;
+    font-size: 17px;
     padding: 0 10px 0 8px;
 }
 #custom-apple:hover { background: alpha(@base05, 0.10); }
@@ -74,9 +77,9 @@ window#waybar.empty #window { color: transparent; }
 #workspaces { padding: 0 4px; }
 #workspaces button {
     padding: 0 8px;
-    /* Vertical margin keeps the pill centred as the bar height changes —
-       bump this with `height` in config.json, not independently. */
-    margin: 7px 2px;
+    /* The one place with a real vertical gap: this margin is the inset between
+       the pill and the bar edge. Lower = taller pill, tighter bar. */
+    margin: 4px 2px;
     border-radius: 6px;
     color: alpha(@base05, 0.55);
     background: transparent;
