@@ -38,9 +38,13 @@ normalize:
   enabled: true
   strength: 1.0        # 0.0 = raw scheme, 1.0 = fully standardized
   ramp: true           # also retone base00..base07, not just the accents
-  ramp_contrast: 1.35  # >1 = blacks blacker, whites whiter
-  accent_lightness: 0.78   # brights brighter (default 0.72 on dark schemes)
-  accent_chroma: 0.155     # brights more vivid (default 0.13)
+  # 1.0 = tuned baseline. Raising this pushes base00/base07 toward pure
+  # black/white, which kills whatever tint the scheme gave them (Shaman's
+  # teal-cast black and mint white both die by ~1.15). Leave at 1.0 unless
+  # the scheme is already monochrome.
+  ramp_contrast: 1.0
+  accent_lightness: 0.74   # slight lift over the 0.72 default
+  accent_chroma: 0.14      # slight vividness bump over the 0.13 default
   min_hue_sep: 20      # degrees; pushes crowded accents apart
   contrast_floor: 7.0  # WCAG ratio base05 must clear against base00
 
