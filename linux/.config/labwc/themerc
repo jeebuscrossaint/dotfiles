@@ -1,36 +1,36 @@
-# coat labwc theme: Square
-# FredHappyface (https://github.com/fredHappyface)
+# coat labwc theme: Edge Dark
+# cjayross (https://github.com/cjayross), Tinted Theming (https://github.com/tinted-theming)
 
 border.width: 2
 
 # Active window
-window.active.title.bg.color: #1E1E1E
-window.active.label.text.color: #EEEEEE
-window.active.button.unpressed.image.color: #EEEEEE
-window.active.button.hover.image.color: #64AFFF
-window.active.border.color: #64AFFF
+window.active.title.bg.color: #1D1E21
+window.active.label.text.color: #EDEEEF
+window.active.button.unpressed.image.color: #EDEEEF
+window.active.button.hover.image.color: #65B2F0
+window.active.border.color: #65B2F0
 
 # Inactive window
-window.inactive.title.bg.color: #0F0F0F
-window.inactive.label.text.color: #4D4D4D
-window.inactive.button.unpressed.image.color: #4D4D4D
-window.inactive.button.hover.image.color: #4D4D4D
-window.inactive.border.color: #2E2E2E
+window.inactive.title.bg.color: #0F0F11
+window.inactive.label.text.color: #4B4D50
+window.inactive.button.unpressed.image.color: #4B4D50
+window.inactive.button.hover.image.color: #4B4D50
+window.inactive.border.color: #2C2E31
 
 # Padding
 padding.height: 2
 padding.width: 4
 
 # Menu
-menu.items.bg.color: #1E1E1E
-menu.items.text.color: #CECECE
-menu.items.active.bg.color: #64AFFF
-menu.items.active.text.color: #0F0F0F
+menu.items.bg.color: #1D1E21
+menu.items.text.color: #CBCED1
+menu.items.active.bg.color: #65B2F0
+menu.items.active.text.color: #0F0F11
 menu.border.width: 1
-menu.border.color: #2E2E2E
+menu.border.color: #2C2E31
 
 # OSD
-osd.bg.color: #1E1E1E
-osd.border.color: #64AFFF
+osd.bg.color: #1D1E21
+osd.border.color: #65B2F0
 osd.border.width: 1
-osd.label.text.color: #CECECE
+osd.label.text.color: #CBCED1
