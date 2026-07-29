@@ -66,6 +66,8 @@ bindsym $mod+Shift+c reload
 bindsym $mod+l exec swaylock
 bindsym $mod+Delete exec wlboard
 bindsym $mod+p exec toggle-waybar
+bindsym $mod+t exec theme-pick                  # fuzzel coat scheme picker
+bindsym $mod+Shift+t exec theme-random          # random coat scheme
 bindsym $mod+Shift+s exec swayscreenshot
 bindsym $mod+Shift+e exec swayscreenshot-edit
 bindsym $mod+v exec cliphist list | fuzzel --dmenu | cliphist decode | wl-copy
@@ -116,18 +118,29 @@ bindsym $mod+Shift+0 move container to workspace number 10
 # Layout
 bindsym $mod+Shift+v floating toggle
 bindsym $mod+f fullscreen
+bindsym $mod+m fullscreen                       # muscle memory (same as $mod+f)
 bindsym $mod+r mode "resize"
+bindsym $mod+backslash split toggle             # flip the split direction
+bindsym $mod+g layout toggle split tabbed       # tabbed window group
+bindsym $mod+Tab focus next sibling             # cycle tabs within the group
 
-# Media keys
-bindsym XF86AudioRaiseVolume exec volumectl up
-bindsym XF86AudioLowerVolume exec volumectl down
-bindsym XF86AudioMute exec volumectl toggle-mute
-bindsym XF86AudioMicMute exec volumectl -m toggle-mute
+# Scratchpad (hyprland's special:magic workspace)
+bindsym $mod+grave scratchpad show
+bindsym $mod+Shift+grave move scratchpad
+
+# Media keys — avizo OSD (avizo-service started below)
+# Absolute paths: ~/.local/bin/volumectl (the wpctl/sndioctl wrapper) shadows
+# avizo's /usr/bin/volumectl on PATH, and only avizo's draws the OSD.
+bindsym XF86AudioRaiseVolume exec /usr/bin/volumectl -u up
+bindsym XF86AudioLowerVolume exec /usr/bin/volumectl -u down
+bindsym XF86AudioMute exec /usr/bin/volumectl toggle-mute
+bindsym XF86AudioMicMute exec /usr/bin/volumectl -m toggle-mute
 bindsym XF86Launch3 exec playerctl play-pause
 bindsym XF86AudioPlay exec playerctl play-pause
 bindsym XF86TouchpadToggle input type:touchpad events toggle enabled disabled
-bindsym XF86MonBrightnessUp exec brightnessctl set +5%
-bindsym XF86MonBrightnessDown exec brightnessctl set 5%-
+# -D intel_backlight: the OLED panel is on the Intel card, not nvidia_0.
+bindsym XF86MonBrightnessUp exec lightctl -D intel_backlight up
+bindsym XF86MonBrightnessDown exec lightctl -D intel_backlight down
 
 # Resize mode
 mode "resize" {
@@ -152,8 +165,9 @@ bar {
 exec dbus-update-activation-environment --all
 exec autotiling-rs
 exec swayidle -w -C ~/.config/swayidle/config
-exec env GTK_USE_PORTAL=0 waybar -c ~/.config/waybar/config.json -s ~/.config/waybar/style.css
+exec env GTK_USE_PORTAL=0 waybar -c ~/.config/waybar/config-sway.json -s ~/.config/waybar/style.css
 exec dunst
+exec avizo-service   # volume/brightness OSD (themed by coat)
 # Clipboard history (cliphist) — watch both text and images; recall with $mod+v
 exec wl-paste --type text --watch cliphist store
 exec wl-paste --type image --watch cliphist store
