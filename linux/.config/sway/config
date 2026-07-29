@@ -16,14 +16,10 @@ set $term foot
 xwayland enable
 
 # Window appearance
-# `normal`, not `pixel`: pixel draws a bare border with no titlebar. Floating
-# windows need their own directive — default_border does not cover them.
-default_border normal 2
-default_floating_border normal 2
-titlebar_border_thickness 2
-# Titlebar height is font size + this padding, not a settable height. The font
-# comes from coat's sway module (`font pango:...` in coat-theme).
-titlebar_padding 8 4
+# `pixel`, not `normal`: normal draws a titlebar. Floating windows need their
+# own directive — default_border does not cover them.
+default_border pixel 2
+default_floating_border pixel 2
 hide_edge_borders smart
 
 # Gaps
