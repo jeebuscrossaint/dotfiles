@@ -1,0 +1,15 @@
+#!/bin/sh
+# Single-instance swaylock.
+#
+# swayidle can ask for a lock from more than one event for a single lid close
+# (before-sleep fires on the way down, and the idle timeout that accumulated
+# while suspended fires on the way back up). Bare `swaylock` happily stacks a
+# second lock surface behind the first, so you unlock, see the desktop for a
+# beat, and get prompted again. Bail out if one is already up.
+#
+# -f matters as much as the guard: swayidle runs with -w, so it waits for the
+# command to exit. Without -f, swaylock never exits until you type your
+# password, which blocks swayidle for the whole suspend and leaves it to
+# replay the stale idle timeout the moment you unlock.
+pgrep -x swaylock >/dev/null 2>&1 && exit 0
+exec swaylock -f "$@"

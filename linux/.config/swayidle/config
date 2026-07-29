@@ -1,3 +1,10 @@
-timeout 300 'swaylock'
+# swayidle — started from sway's config with `-w` (wait for each command to
+# finish before moving on).
+#
+# Every lock goes through `swaylock-once`, never bare `swaylock`: it adds -f and
+# refuses to stack a second lock surface. Both matter, see the comments in that
+# script. Calling `swaylock` directly here is what caused the double password
+# prompt after a lid close/open cycle.
+timeout 300 'swaylock-once'
 timeout 600 'swaymsg "output * dpms off"' resume 'swaymsg "output * dpms on"'
-before-sleep 'swaylock'
+before-sleep 'swaylock-once'
