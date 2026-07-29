@@ -4,13 +4,9 @@
 enabled:
   - avizo
   - fish
-  - foot
   - kitty
-  - helix
   - neovim
-  - hyprland
   - fuzzel
-  - ranger
   - bat
   - btop
   - dunst
@@ -19,25 +15,23 @@ enabled:
   - vesktop
   - sway
   - waybar
-  - labwc
   - swaylock
-  - kde
   - firefox
   - mpv
   - vscode
 
 # The 'scheme' key is a top-level scalar
-scheme: evenok-dark
+scheme: catppuccin-mocha
 prefer_base24: false
 
 # Evens out whatever scheme is loaded: uniform brightness, legible text,
 # accents that stay distinct. Defaults are tuned; `coat docs normalize` lists
 # the knobs if one ever needs touching.
 normalize:
-  enabled: true
+  enabled: false
 
 opacity:
-  terminal: 1.0
+  terminal: 0.85
   applications: 1.0
   desktop: 1.0
   popups: 1.0
@@ -45,9 +39,9 @@ opacity:
 # The 'font' key triggers in_font_section and expects a mapping (dictionary)
 font:
   emoji: "Noto Color Emoji"
-  monospace: "SauceCodePro Nerd Font Mono"
-  sansserif: "SauceCodePro Nerd Font Mono"
-  serif: "SauceCodePro Nerd Font Mono"
+  monospace: "CaskaydiaCove Nerd Font Mono"
+  sansserif: "CaskaydiaCove Nerd Font Mono"
+  serif: "CaskaydiaCove Nerd Font Mono"
   sizes:
     terminal: 11
     desktop: 11
