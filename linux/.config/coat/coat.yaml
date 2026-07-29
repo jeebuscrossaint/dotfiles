@@ -2,7 +2,10 @@
 
 # The 'enabled' key triggers STATE_ENABLED and expects a sequence (list)
 enabled:
-  - avizo
+  # avizo was retired 2026-07-28 in favour of swayosd (which also does the
+  # caps/num-lock indicators). The avizo module still exists in coat — re-add
+  # it here to go back.
+  - swayosd
   - fish
   - kitty
   - neovim

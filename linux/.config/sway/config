@@ -137,19 +137,28 @@ bindsym $mod+Tab focus next sibling             # cycle tabs within the group
 bindsym $mod+grave scratchpad show
 bindsym $mod+Shift+grave move scratchpad
 
-# Media keys — avizo OSD (avizo-service started below)
-# Absolute paths: ~/.local/bin/volumectl (the wpctl/sndioctl wrapper) shadows
-# avizo's /usr/bin/volumectl on PATH, and only avizo's draws the OSD.
-bindsym XF86AudioRaiseVolume exec /usr/bin/volumectl -u up
-bindsym XF86AudioLowerVolume exec /usr/bin/volumectl -u down
-bindsym XF86AudioMute exec /usr/bin/volumectl toggle-mute
-bindsym XF86AudioMicMute exec /usr/bin/volumectl -m toggle-mute
-bindsym XF86Launch3 exec playerctl play-pause
-bindsym XF86AudioPlay exec playerctl play-pause
+# Media keys — swayosd OSD (swayosd-server started below).
+# swayosd-client both performs the change and draws the OSD, so there's no
+# separate volumectl/lightctl step. ~/.local/bin/volumectl is left alone.
+bindsym XF86AudioRaiseVolume exec swayosd-client --output-volume raise
+bindsym XF86AudioLowerVolume exec swayosd-client --output-volume lower
+bindsym XF86AudioMute exec swayosd-client --output-volume mute-toggle
+bindsym XF86AudioMicMute exec swayosd-client --input-volume mute-toggle
+bindsym XF86Launch3 exec swayosd-client --playerctl play-pause
+bindsym XF86AudioPlay exec swayosd-client --playerctl play-pause
 bindsym XF86TouchpadToggle input type:touchpad events toggle enabled disabled
-# -D intel_backlight: the OLED panel is on the Intel card, not nvidia_0.
-bindsym XF86MonBrightnessUp exec lightctl -D intel_backlight up
-bindsym XF86MonBrightnessDown exec lightctl -D intel_backlight down
+# --device intel_backlight: the OLED panel is on the Intel card, not nvidia_0.
+bindsym XF86MonBrightnessUp exec swayosd-client --brightness raise --device intel_backlight
+bindsym XF86MonBrightnessDown exec swayosd-client --brightness lower --device intel_backlight
+
+# Lock-key indicators. A compositor bind is all this needs — the OSD only
+# *displays* the state, the key still toggles it normally. --release so the
+# state has already flipped by the time swayosd-client reads it.
+# (swayosd-libinput-backend would catch these without a bind, but it wants root
+# and a service unit: its D-Bus activation file is Exec=/bin/false + a systemd
+# reference, so it can't self-activate on Artix.)
+bindsym --release Caps_Lock exec swayosd-client --caps-lock
+bindsym --release Num_Lock exec swayosd-client --num-lock
 
 # Resize mode
 mode "resize" {
@@ -175,7 +184,7 @@ exec dbus-update-activation-environment --all
 exec autotiling-rs
 exec swayidle -w -C ~/.config/swayidle/config
 exec dunst
-exec avizo-service   # volume/brightness OSD (themed by coat)
+exec swayosd-server   # volume/brightness/lock-key OSD (themed by coat)
 # Workspace overview. exec_always, not exec: the fifo lives in $XDG_RUNTIME_DIR
 # and the script is idempotent, so it survives reloads cleanly.
 exec_always sov-daemon
