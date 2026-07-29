@@ -180,7 +180,12 @@ exec /usr/libexec/xdg-desktop-portal
 #exec /usr/bin/pipewire
 #exec /usr/bin/pipewire-pulse
 #exec /usr/bin/wireplumber
-exec artix-pipewire-launcher
+# `restart`, not bare: the launcher bails at "already running" if it sees ANY
+# pipewire process, and never reaches its wireplumber line. A pipewire left over
+# from a previous session holds unlinked sockets in a deleted runtime dir, so it
+# looks alive but nothing can connect and no session manager ever starts —
+# silently dead audio. restart kills the stale stack and brings up all three.
+exec artix-pipewire-launcher restart
 exec nvibrant 1023 1023 1023 1023
 exec refresh-paru-completions
 
