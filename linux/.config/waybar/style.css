@@ -107,39 +107,35 @@ window#waybar.empty #window {
     color: @base09;
 }
 
-/* Workspaces: small pill buttons; the active one is an accent-filled selection
-   like a macOS highlighted menu item. */
+/* Workspaces: bare numbers, no pill. State is carried entirely by the colour of
+   the digit itself — inactive dim, occupied brighter, active accent. */
 #workspaces {
     padding: 0 4px;
 }
 
 #workspaces button {
     padding: 0 8px;
-    /* The one place with a real vertical gap: this margin is the inset between
-       the pill and the bar edge. Lower = taller pill, tighter bar. */
     margin: 3px 2px;
-    border-radius: 6px;
     color: alpha(@base05, 0.55);
     background: transparent;
-    transition: all 0.12s ease;
+    transition: color 0.12s ease;
 }
 
 #workspaces button:hover {
     color: @base05;
-    background: alpha(@base05, 0.10);
+    background: transparent;
 }
 
 #workspaces button.active {
-    color: @base00;
-    /* No bold anywhere in the bar — the accent fill alone marks the active
+    /* No bold anywhere in the bar — the accent colour alone marks the active
        workspace. */
-    background: @base0D;
-    /* accent-filled selection */
+    color: @base0D;
+    background: transparent;
 }
 
 #workspaces button.urgent {
-    color: @base00;
-    background: @base08;
+    color: @base08;
+    background: transparent;
 }
 
 #workspaces button.occupied:not(.active) {
