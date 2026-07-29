@@ -14,6 +14,10 @@ enabled:
   - gtk
   - vesktop
   - sway
+  # swaybar must come after sway: it is the module that runs `swaymsg reload`,
+  # so sway's coat-theme has to be on disk by the time it fires.
+  - swaybar
+  - tofi
   - waybar
   - swaylock
   - firefox

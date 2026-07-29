@@ -1,0 +1,10 @@
+#!/bin/sh
+# Tell the sov daemon to show (1) or hide (0) the workspace overview.
+# Used by the $mod+o press/release binds in ~/.config/sway/config.
+#
+# Non-blocking write: if sov-daemon isn't running there is no reader on the
+# fifo, and a plain `echo >` would hang the sway exec forever.
+FIFO="${XDG_RUNTIME_DIR:-/tmp}/sov.fifo"
+[ -p "$FIFO" ] || exit 0
+printf '%s\n' "${1:-0}" > "$FIFO" &
+exit 0
