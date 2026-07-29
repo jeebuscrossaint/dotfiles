@@ -11,14 +11,19 @@ client.focused $base0D $base00 $base0D $base0C $base0C
 
 set $mod Mod4
 set $menu tofi-drun
-set $term kitty
+set $term foot
 
 xwayland enable
 
 # Window appearance
-default_border pixel 2
-#default_border normal 2
+# `normal`, not `pixel`: pixel draws a bare border with no titlebar. Floating
+# windows need their own directive — default_border does not cover them.
+default_border normal 2
+default_floating_border normal 2
 titlebar_border_thickness 2
+# Titlebar height is font size + this padding, not a settable height. The font
+# comes from coat's sway module (`font pango:...` in coat-theme).
+titlebar_padding 8 4
 hide_edge_borders smart
 
 # Gaps
@@ -76,10 +81,6 @@ bindsym $mod+Shift+s exec swayscreenshot
 bindsym $mod+Shift+e exec swayscreenshot-edit   # region -> satty annotator
 bindsym $mod+Shift+p exec grimpicker -n -c      # pick a color, copy hex, notify
 bindsym $mod+v exec cliphist list | tofi --prompt-text "clip ❯ " | cliphist decode | wl-copy
-
-# Workspace overview (sov) — held, not toggled: shows while $mod+o is down.
-bindsym --no-repeat $mod+o exec sov-show 1
-bindsym --release $mod+o exec sov-show 0
 
 # Focus
 bindsym $mod+Left focus left
@@ -185,9 +186,6 @@ exec autotiling-rs
 exec swayidle -w -C ~/.config/swayidle/config
 exec dunst
 exec swayosd-server   # volume/brightness/lock-key OSD (themed by coat)
-# Workspace overview. exec_always, not exec: the fifo lives in $XDG_RUNTIME_DIR
-# and the script is idempotent, so it survives reloads cleanly.
-exec_always sov-daemon
 # Clipboard history (cliphist) — watch both text and images; recall with $mod+v
 # wl-clip-persist keeps a selection readable after the source app exits.
 # `regular` only, not `both`: with the primary selection included it re-offers

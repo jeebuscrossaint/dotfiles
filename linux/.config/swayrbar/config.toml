@@ -30,7 +30,7 @@ format = "󰻠 {cpu_usage:{:.0}}%  󰍛 {mem_usage:{:.0}}%  󰬺 {load_avg_1:{:.
 html_escape = false
 
 [modules.on_click]
-Left = ["kitty", "-e", "btop"]
+Left = ["foot", "btop"]
 
 [[modules]]
 name = "battery"
