@@ -165,7 +165,7 @@ bar {
 exec dbus-update-activation-environment --all
 exec autotiling-rs
 exec swayidle -w -C ~/.config/swayidle/config
-exec env GTK_USE_PORTAL=0 waybar -c ~/.config/waybar/config-sway.json -s ~/.config/waybar/style.css
+exec env GTK_USE_PORTAL=0 waybar -c ~/.config/waybar/config.json -s ~/.config/waybar/style.css
 exec dunst
 exec avizo-service   # volume/brightness OSD (themed by coat)
 # Clipboard history (cliphist) — watch both text and images; recall with $mod+v
