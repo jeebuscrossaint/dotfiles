@@ -1,3 +1,12 @@
 #!/bin/sh
+# Region screenshot -> satty annotator (was swappy).
+#
+# satty expands ~ and chrono format specifiers in --output-filename itself, so
+# the timestamp doesn't need building here. Ctrl+S saves, Ctrl+C copies;
+# --early-exit closes the window once one of those happens.
 mkdir -p ~/Pictures/Screenshots
-grim -g "$(slurp)" - | swappy -f -
+grim -g "$(slurp)" - | satty \
+    --filename - \
+    --output-filename '~/Pictures/Screenshots/%Y%m%d_%H%M%S.png' \
+    --copy-command wl-copy \
+    --early-exit
