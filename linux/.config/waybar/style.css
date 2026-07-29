@@ -26,10 +26,9 @@
        transitions live on the selectors below instead. */
 }
 
-/* The bar: translucent + native blur = frosted glass. A whisper-thin bottom
-   hairline stands in for the macOS menu-bar separator. */
+/* The bar: solid fill with a thin bottom hairline separator. */
 window#waybar {
-    background: alpha(@base00, 0.55);
+    background: @base00;
     color: @base05;
     border-bottom: 1px solid alpha(@base05, 0.06);
 }
@@ -37,12 +36,30 @@ window#waybar {
 /* Every module inline: transparent, just horizontal padding for even spacing.
    No island background / border / margin. */
 #custom-apple,
-#workspaces, #window, #submap, #clock, #custom-weather,
-#custom-canvas, #custom-coat, #idle_inhibitor, #custom-notifications,
-#network, #custom-network, #bluetooth, #custom-bluetooth, #cpu,
-#temperature, #custom-temp, #memory, #battery, #custom-battery, #wireplumber,
+#workspaces,
+#window,
+#submap,
+#clock,
+#custom-weather,
+#custom-canvas,
+#custom-coat,
+#idle_inhibitor,
+#custom-notifications,
+#network,
+#custom-network,
+#bluetooth,
+#custom-bluetooth,
+#cpu,
+#temperature,
+#custom-temp,
+#memory,
+#battery,
+#custom-battery,
+#wireplumber,
 #custom-power,
-#disk, #tray, #custom-updates {
+#disk,
+#tray,
+#custom-updates {
     background: transparent;
     margin: 0;
     padding: 0 7px;
@@ -51,8 +68,13 @@ window#waybar {
 }
 
 /* Pull the very edges in a touch */
-.modules-left  { margin-left: 2px; }
-.modules-right { margin-right: 6px; }
+.modules-left {
+    margin-left: 2px;
+}
+
+.modules-right {
+    margin-right: 6px;
+}
 
 /* Apple logo: the leftmost "menu", bold and bright like macOS */
 #custom-apple {
@@ -60,21 +82,37 @@ window#waybar {
     font-size: 17px;
     padding: 0 10px 0 8px;
 }
-#custom-apple:hover { background: alpha(@base05, 0.10); }
+
+#custom-apple:hover {
+    background: alpha(@base05, 0.10);
+}
 
 /* Window title = the "app name": brighter + heavier, like the bold app menu */
-#window { color: @base05; }
-window#waybar.empty #window { color: transparent; }
+#window {
+    color: @base05;
+}
+
+window#waybar.empty #window {
+    color: transparent;
+}
 
 /* Clock: pure white, the far-right menu extra */
-#clock { color: @base05; padding: 0 12px 0 8px; }
+#clock {
+    color: @base05;
+    padding: 0 12px 0 8px;
+}
 
 /* Submap indicator keeps a hint of colour so it stands out when active */
-#submap { color: @base09; }
+#submap {
+    color: @base09;
+}
 
 /* Workspaces: small pill buttons; the active one is an accent-filled selection
    like a macOS highlighted menu item. */
-#workspaces { padding: 0 4px; }
+#workspaces {
+    padding: 0 4px;
+}
+
 #workspaces button {
     padding: 0 8px;
     /* The one place with a real vertical gap: this margin is the inset between
@@ -85,20 +123,25 @@ window#waybar.empty #window { color: transparent; }
     background: transparent;
     transition: all 0.12s ease;
 }
+
 #workspaces button:hover {
     color: @base05;
     background: alpha(@base05, 0.10);
 }
+
 #workspaces button.active {
     color: @base00;
     /* No bold anywhere in the bar — the accent fill alone marks the active
        workspace. */
-    background: @base0D;   /* accent-filled selection */
+    background: @base0D;
+    /* accent-filled selection */
 }
+
 #workspaces button.urgent {
     color: @base00;
     background: @base08;
 }
+
 #workspaces button.occupied:not(.active) {
     color: alpha(@base05, 0.82);
 }
@@ -130,35 +173,63 @@ window#waybar.empty #window { color: transparent; }
 }
 
 /* ── Functional state colours only (everything else stays monochrome) ─────── */
-#custom-updates.has-updates { color: @base09; }
+#custom-updates.has-updates {
+    color: @base09;
+}
 
-#custom-notifications.unread { color: @base09; }
-#custom-notifications.dnd    { color: @base08; }
+#custom-notifications.unread {
+    color: @base09;
+}
 
-#network.disconnected               { color: @base08; }
-#bluetooth.off, #bluetooth.disabled { color: alpha(@base05, 0.40); }
+#custom-notifications.dnd {
+    color: @base08;
+}
 
-#battery.charging, #battery.plugged { color: @base0B; }
-#battery.warning:not(.charging)     { color: @base09; }
+#network.disconnected {
+    color: @base08;
+}
+
+#bluetooth.off,
+#bluetooth.disabled {
+    color: alpha(@base05, 0.40);
+}
+
+#battery.charging,
+#battery.plugged {
+    color: @base0B;
+}
+
+#battery.warning:not(.charging) {
+    color: @base09;
+}
+
 #battery.critical:not(.charging) {
     color: @base08;
     animation: pulse-warn 0.9s ease-in-out infinite alternate;
 }
-#temperature.critical, #custom-temp.critical {
+
+#temperature.critical,
+#custom-temp.critical {
     color: @base08;
     animation: pulse-warn 0.8s ease-in-out infinite alternate;
 }
+
 #wireplumber.muted {
     color: alpha(@base05, 0.40);
 }
 
 @keyframes pulse-warn {
-    to { opacity: 0.5; }
+    to {
+        opacity: 0.5;
+    }
 }
 
 /* Tray icons */
-#tray > .passive { -gtk-icon-effect: dim; }
-#tray > .needs-attention {
+#tray>.passive {
+    -gtk-icon-effect: dim;
+}
+
+#tray>.needs-attention {
     -gtk-icon-effect: highlight;
     background: alpha(@base08, 0.20);
     border-radius: 6px;
@@ -171,11 +242,13 @@ tooltip * {
     transition: none;
     opacity: 1;
 }
+
 tooltip {
     background: alpha(@base01, 0.96);
     border: 1px solid alpha(@base03, 0.7);
     border-radius: 10px;
 }
+
 tooltip label {
     color: @base05;
     padding: 4px;
@@ -188,6 +261,7 @@ menu {
     border-radius: 12px;
     padding: 6px;
 }
+
 menu menuitem {
     padding: 7px 14px;
     margin: 1px 0;
@@ -197,23 +271,28 @@ menu menuitem {
     min-height: 20px;
     transition: background-color 0.15s ease, color 0.15s ease;
 }
+
 menu menuitem:hover,
 menu menuitem:focus {
     background-color: alpha(@base0D, 0.22);
     color: @base05;
 }
+
 menu menuitem:disabled {
     color: alpha(@base05, 0.38);
 }
+
 menu separator {
     background-color: alpha(@base03, 0.5);
     min-height: 1px;
     margin: 5px 8px;
 }
+
 menu menuitem check:checked,
 menu menuitem radio:checked {
     color: @base0B;
 }
+
 menu menuitem arrow {
     color: @base04;
 }
