@@ -184,7 +184,10 @@ exec dbus-update-activation-environment --all
 exec autotiling-rs
 exec swayidle -w -C ~/.config/swayidle/config
 exec dunst
-exec swayosd-server   # volume/brightness/lock-key OSD (themed by coat)
+# Supervised, not a bare `exec swayosd-server`: if the server dies mid-session
+# every media key silently stops working (swayosd-client just fails), and `exec`
+# never fires again to bring it back. See the script for the coat interaction.
+exec swayosd-supervise   # volume/brightness/lock-key OSD (themed by coat)
 # Clipboard history (cliphist) — watch both text and images; recall with $mod+v
 # wl-clip-persist keeps a selection readable after the source app exits.
 # `regular` only, not `both`: with the primary selection included it re-offers
