@@ -11,5 +11,28 @@
 # command to exit. Without -f, swaylock never exits until you type your
 # password, which blocks swayidle for the whole suspend and leaves it to
 # replay the stale idle timeout the moment you unlock.
+#
+# -C points at coat's generated fragment, which holds colours + font and nothing
+# else. swaylock has no include directive and reads exactly one config file, so
+# the look comes from -C and everything behavioural is a flag here; a CLI flag
+# beats the config file either way.
+#
+# The effects flags (screenshots/blur/vignette/fade-in/clock) need the
+# swaylock-effects fork. Plain swaylock exits with an error on them rather than
+# ignoring them, which would mean no lock screen at all — so if you ever drop
+# back to upstream swaylock, strip that block.
 pgrep -x swaylock >/dev/null 2>&1 && exit 0
-exec swaylock -f "$@"
+exec swaylock -f \
+    -C "$HOME/.config/swaylock/coat-theme.conf" \
+    --show-failed-attempts \
+    --indicator-radius=110 \
+    --indicator-thickness=8 \
+    --indicator-caps-lock \
+    --screenshots \
+    --effect-blur=7x5 \
+    --effect-vignette=0.4:0.4 \
+    --fade-in=0.3 \
+    --clock \
+    --timestr=%H:%M \
+    --datestr='%A, %B %d' \
+    "$@"
