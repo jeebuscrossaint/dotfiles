@@ -1,0 +1,10 @@
+# zathura — PDF viewer. Colours and font come from coat via the include below;
+# behaviour and bindings live here, since coat no longer writes this file.
+#
+# The include is resolved relative to this file, and zathura applies it where the
+# line appears — so anything set after it here overrides the theme.
+include coat-theme
+
+# Draw a placeholder while a page renders, using the theme's
+# render-loading-bg/fg (set in coat-theme).
+set render-loading true
