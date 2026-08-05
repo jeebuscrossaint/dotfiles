@@ -22,14 +22,13 @@ enabled:
   # so sway's coat-theme has to be on disk by the time it fires.
   - swaybar
   - tofi
-  - waybar
   - swaylock
   - firefox
   - mpv
   - vscode
 
 # The 'scheme' key is a top-level scalar
-scheme: kanagawa-dragon
+scheme: brewer
 prefer_base24: false
 
 # Evens out whatever scheme is loaded: uniform brightness, legible text,

@@ -10,7 +10,9 @@
   <theme>
     <name></name>
     <cornerRadius>0</cornerRadius>
-    <keepBorder>yes</keepBorder>
+    <!-- Barless/decorationless: <core><decoration>none</decoration> already drops
+         titlebars, and keepBorder=no drops the leftover 1px frame with them. -->
+    <keepBorder>no</keepBorder>
     <font place="ActiveWindow">
       <name>Terminess Nerd Font Mono</name>
       <size>10</size>
@@ -29,7 +31,6 @@
     <keybind key="W-c"><action name="Close"/></keybind>
     <keybind key="W-S-c"><action name="Reconfigure"/></keybind>
     <keybind key="W-l"><action name="Execute" command="swaylock"/></keybind>
-    <keybind key="W-p"><action name="Execute" command="toggle-waybar"/></keybind>
     <keybind key="W-Delete"><action name="Execute" command="wlboard"/></keybind>
     <keybind key="W-v"><action name="Execute" command="sh -c 'cliphist list | fuzzel --dmenu | cliphist decode | wl-copy'"/></keybind>
 

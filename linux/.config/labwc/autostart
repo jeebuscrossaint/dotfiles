@@ -3,7 +3,6 @@
 eval $(dbus-launch --sh-syntax --exit-with-session)
 dbus-update-activation-environment DBUS_SESSION_BUS_ADDRESS WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=labwc &
 swayidle -w -C ~/.config/swayidle/config &
-start-waybar &
 dunst &
 
 # Clipboard history (cliphist) — watch both text and images; recall with W-v
@@ -15,4 +14,6 @@ command -v nm-applet && nm-applet &
 start-polkit &
 canvas-notify &
 
-gentoo-pipewire-launcher &
+# `restart` is required: the bare launcher skips WirePlumber, which leaves audio
+# looking alive with no sinks. Same reason sway.fish uses it.
+artix-pipewire-launcher restart &

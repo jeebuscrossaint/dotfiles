@@ -2,7 +2,7 @@
 
 ![arch](misc/preview_arch.png) ![openbsd](misc/preview_openbsd.png) ![windows](misc/preview_windows.png)
 
-sway · foot · fish · helix · fuzzel · waybar · coat · glazewm
+sway · swaybar · foot · fish · nvim · tofi · coat · glazewm
 
 arch linux · openbsd · windows 11
 
@@ -16,7 +16,7 @@ cd ~/.dotfiles && stow linux
 coat apply
 ```
 
-set canvas url for the assignment waybar module:
+set canvas url for assignment notifications (`canvas-notify`):
 ```sh
 echo "YOUR_URL" > ~/.config/canvas/ical-url
 ```

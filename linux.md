@@ -17,18 +17,20 @@ stow -D linux              # Remove symlinks
 ```
 linux/.config/      # All XDG config files
   bat/
-  bto
+  btop/
+  coat/
   dunst/
   fish/
-  helix/
-  i3/
+  foot/
+  gtk-3.0/
+  gtk-4.0/
   kitty/
   labwc/
-  mango/
-  rofi/
+  nvim/
+  paru/
   sway/
-  swaylock/
-  starship.toml
+  swayidle/
+  swayrbar/
 
 windows/
   starship.toml
@@ -45,9 +47,9 @@ Place your Linux configuration files here.
 ```
 linux/
 ├── .config/          # XDG config directory files
-│   ├── i3/          # i3 window manager config
-│   ├── rofi/        # rofi launcher config
-│   ├── kitty/       # kitty terminal config
+│   ├── sway/        # sway compositor config
+│   ├── swayrbar/    # swaybar status line config
+│   ├── foot/        # foot terminal config
 │   └── ...          # any other .config programs
 ├── .bashrc          # bash configuration
 ├── .zshrc           # zsh configuration
@@ -58,8 +60,8 @@ linux/
 
 1. Copy your config directories into `.config/`:
    ```sh
-   cp -r ~/.config/i3 linux/.config/
-   cp -r ~/.config/rofi linux/.config/
+   cp -r ~/.config/sway linux/.config/
+   cp -r ~/.config/foot linux/.config/
    ```
 
 2. Copy standalone dotfiles into `linux/`:
