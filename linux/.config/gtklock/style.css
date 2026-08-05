@@ -1,0 +1,11 @@
+/* gtklock styling — ours. Colours and font come from coat's generated fragment
+ * below; add overrides after the @import and they win.
+ *
+ * Selector warning: gtklock's GtkBuilder ids (#clock-label, #input-field,
+ * #unlock-button, …) do NOT work as CSS selectors. GTK3 does not turn a builder
+ * id into a CSS name and gtklock sets a name on the window only, so those
+ * selectors match nothing at all. Style by widget type (window, label, entry,
+ * button) and by the classes gtklock does set: .focused on the monitor holding
+ * the form, .hidden while idle.
+ */
+@import url("coat-theme.css");
