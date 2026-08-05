@@ -24,13 +24,15 @@ linux/.config/      # All XDG config files
   foot/
   gtk-3.0/
   gtk-4.0/
-  kitty/
+  gtklock/
   labwc/
   nvim/
   paru/
   sway/
   swayidle/
   swayrbar/
+  tofi/
+  zathura/
 
 windows/
   starship.toml
