@@ -68,10 +68,10 @@ bindsym $mod+q exec $term
 bindsym $mod+d exec $menu
 bindsym $mod+c kill
 bindsym $mod+Shift+c reload
-# swaylock-once, not swaylock: single-instance guard + -f, so a manual lock
+# gtklock-once, not bare gtklock: single-instance guard + -d, so a manual lock
 # can't stack with one swayidle is already putting up. Same for swayidle's own
 # invocations in ~/.config/swayidle/config.
-bindsym $mod+l exec swaylock-once
+bindsym $mod+l exec gtklock-once
 bindsym $mod+Delete exec wlboard
 bindsym $mod+p exec swaymsg bar mode toggle     # show/hide swaybar
 bindsym $mod+t exec theme-pick                  # tofi coat scheme picker

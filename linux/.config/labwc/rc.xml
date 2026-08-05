@@ -26,13 +26,13 @@
 
     <default />
 
-    <!-- Same tools as sway: foot, tofi-drun, swaylock-once (single-instance, so a
+    <!-- Same tools as sway: foot, tofi-drun, gtklock-once (single-instance, so a
          lid close can't stack two prompts), and wlboard for the clipboard. -->
     <keybind key="W-q"><action name="Execute" command="foot"/></keybind>
     <keybind key="W-d"><action name="Execute" command="tofi-drun"/></keybind>
     <keybind key="W-c"><action name="Close"/></keybind>
     <keybind key="W-S-c"><action name="Reconfigure"/></keybind>
-    <keybind key="W-l"><action name="Execute" command="swaylock-once"/></keybind>
+    <keybind key="W-l"><action name="Execute" command="gtklock-once"/></keybind>
     <keybind key="W-Delete"><action name="Execute" command="wlboard"/></keybind>
     <keybind key="W-v"><action name="Execute" command="wlboard"/></keybind>
 
