@@ -1,2 +1,4 @@
 #!/bin/sh
-cliphist list | rofi -dmenu | cliphist decode | wl-copy
+# tofi, not rofi: rofi is not installed — tofi is the launcher everywhere else
+# (sway's $menu is tofi-drun, theme-pick uses tofi).
+cliphist list | tofi --prompt-text "clip ❯ " | cliphist decode | wl-copy

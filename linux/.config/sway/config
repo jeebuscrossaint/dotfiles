@@ -236,12 +236,6 @@ exec refresh-paru-completions
 #titlebar_separator disable
 #scratchpad_minimize disable
 
-#layer_effects "waybar" {
-#    blur enable
-#    blur_ignore_transparent enable
-#    shadows enable
-#   corner_radius 8
-#}
 
 #layer_effects "notifications" {
 #   blur enable

@@ -53,10 +53,3 @@ else
             ;;
     esac
 fi
-
-# Signal waybar to refresh volume or mic widget instantly
-if [ "$MIC" = "1" ]; then
-    pkill -RTMIN+2 waybar 2>/dev/null
-else
-    pkill -RTMIN+1 waybar 2>/dev/null
-fi
