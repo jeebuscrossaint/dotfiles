@@ -8,9 +8,10 @@ enabled:
   - swayosd
   - fish
   - foot
+  # kitty is not the daily terminal (foot is) but stays themed: nvim's image.nvim
+  # backend is kitty-only, so leetcode diagrams and inline images need it.
   - kitty
   - neovim
-  - fuzzel
   - bat
   - btop
   - dunst
