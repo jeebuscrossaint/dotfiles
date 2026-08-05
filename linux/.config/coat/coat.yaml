@@ -3,14 +3,11 @@
 # The 'enabled' key triggers STATE_ENABLED and expects a sequence (list)
 enabled:
   # avizo was retired 2026-07-28 in favour of swayosd (which also does the
-  # caps/num-lock indicators). The avizo module still exists in coat — re-add
-  # it here to go back.
+  # caps/num-lock indicators). The avizo module was deleted from coat outright on
+  # 2026-08-05, so going back means restoring it there first.
   - swayosd
   - fish
   - foot
-  # kitty is not the daily terminal (foot is) but stays themed: nvim's image.nvim
-  # backend is kitty-only, so leetcode diagrams and inline images need it.
-  - kitty
   - neovim
   - bat
   - btop
