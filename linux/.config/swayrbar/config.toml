@@ -34,6 +34,11 @@
 # Dropped on purpose, not forgotten: pending-update count, dGPU power state and
 # ACPI platform profile. All three were built and working — `git show 827bbfb`
 # has them if they ever look useful again.
+#
+# NO [modules.on_click] ANYWHERE, deliberately. This bar displays and does not
+# act: no launching pavucontrol/btop/nmtui, no scroll-to-change volume or
+# brightness. Do not add handlers back module-by-module — the point is that
+# nothing on the bar is a control surface.
 
 refresh_interval = 1000
 
@@ -53,11 +58,6 @@ instance = "media"
 format = "$HOME/.config/swayrbar/barstat media"
 html_escape = true
 
-[modules.on_click]
-Left = ["playerctl", "play-pause"]
-Right = ["playerctl", "next"]
-Middle = ["playerctl", "previous"]
-
 # ------------------------------------------------------------------- network
 
 [[modules]]
@@ -65,9 +65,6 @@ name = "cmd"
 instance = "net"
 format = "$HOME/.config/swayrbar/barstat net"
 html_escape = false
-
-[modules.on_click]
-Left = ["foot", "btop"]
 
 # The wifi module registers under the name `nmcli`, NOT `wifi` — `name = "wifi"`
 # logs "Unknown module name" and is silently dropped. {bars} is a ▂▄▆█ glyph
@@ -79,9 +76,6 @@ instance = "0"
 format = "󰖩 {name}{bars}"
 html_escape = false
 
-[modules.on_click]
-Left = ["foot", "nmtui"]
-
 # --------------------------------------------------------------------- system
 
 [[modules]]
@@ -89,9 +83,6 @@ name = "cmd"
 instance = "disk"
 format = "$HOME/.config/swayrbar/barstat disk"
 html_escape = false
-
-[modules.on_click]
-Left = ["foot", "btop"]
 
 # Only load_avg_1 is shown: three averages cost ~15 columns and the 5/15-minute
 # figures never say anything the 1-minute one and the CPU% haven't already.
@@ -101,18 +92,12 @@ instance = "0"
 format = "󰻠 {cpu_usage:{:.0}}%  󰍛 {mem_usage:{:.0}}%  󰬺 {load_avg_1:{:.2}}"
 html_escape = false
 
-[modules.on_click]
-Left = ["foot", "btop"]
-
 # Silent below 1%.
 [[modules]]
 name = "cmd"
 instance = "swap"
 format = "$HOME/.config/swayrbar/barstat swap"
 html_escape = false
-
-[modules.on_click]
-Left = ["foot", "btop"]
 
 # ------------------------------------------------------------------- thermals
 
@@ -137,10 +122,6 @@ instance = "bl"
 format = "$HOME/.config/swayrbar/barstat bl"
 html_escape = false
 
-[modules.on_click]
-WheelUp = ["brightnessctl", "set", "5%+"]
-WheelDown = ["brightnessctl", "set", "5%-"]
-
 # wpctl, not pactl: this box is pipewire, so wireplumber is the native source of
 # truth rather than the pulse compatibility shim. {volume} is already an integer
 # percent and {muted} expands to " muted".
@@ -149,12 +130,6 @@ name = "wpctl"
 instance = "0"
 format = "󰕾 {volume:{:3}}%{muted}"
 html_escape = true
-
-[modules.on_click]
-Left = ["pavucontrol"]
-Right = ["wpctl", "set-mute", "@DEFAULT_AUDIO_SINK@", "toggle"]
-WheelUp = ["wpctl", "set-volume", "@DEFAULT_AUDIO_SINK@", "2%+"]
-WheelDown = ["wpctl", "set-volume", "@DEFAULT_AUDIO_SINK@", "2%-"]
 
 # Replaces swayrbar's built-in `battery` module. That one could only offer a
 # bare percentage here: with the ASUS 80% charge threshold in play the kernel
