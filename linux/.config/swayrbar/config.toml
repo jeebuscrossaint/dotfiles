@@ -184,5 +184,5 @@ html_escape = false
 [[modules]]
 name = "date"
 instance = "0"
-format = "󰃰 %a %b %-d  %-I:%M %p"
+format = "󰃰 %a %b %-d  %-I:%M:%S %p"
 html_escape = false
