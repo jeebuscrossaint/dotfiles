@@ -20,17 +20,20 @@
 #
 # 0.5.0 has no per-module refresh interval, so EVERY module re-runs once a
 # second. barstat is built around that: sysfs reads via shell builtins, and
-# cache-with-background-refresh for the three fields that need a subprocess.
-# All twelve fields together cost ~30ms of CPU per second.
+# cache-with-background-refresh for the two fields that need a subprocess.
+# All nine fields together cost ~20ms of CPU per second.
 #
 # A cmd module that prints nothing is dropped by swaybar, separator included —
-# that is how media/updates/swap/fan hide themselves when idle.
+# that is how media/swap/fan hide themselves when idle.
 #
 # Modules swayrbar offers that are deliberately unused: `ppd` (needs
-# power-profiles-daemon on DBus — not a thing on runit; barstat's `prof` reads
-# /sys/firmware/acpi/platform_profile directly instead), `mpd` (no mpd
+# power-profiles-daemon on DBus — not a thing on runit), `mpd` (no mpd
 # installed; renders a permanent "disconnected"), `battery` (superseded by
 # barstat's `bat` — see below), `pactl` (this box is pipewire, so wpctl).
+#
+# Dropped on purpose, not forgotten: pending-update count, dGPU power state and
+# ACPI platform profile. All three were built and working — `git show 827bbfb`
+# has them if they ever look useful again.
 
 refresh_interval = 1000
 
@@ -54,17 +57,6 @@ html_escape = true
 Left = ["playerctl", "play-pause"]
 Right = ["playerctl", "next"]
 Middle = ["playerctl", "previous"]
-
-# Silent at zero. Counts against the local sync db, so it reflects the last
-# `pacman -Sy` rather than the live repos — no network in the refresh loop.
-[[modules]]
-name = "cmd"
-instance = "updates"
-format = "$HOME/.config/swayrbar/barstat updates"
-html_escape = false
-
-[modules.on_click]
-Left = ["foot", "paru", "-Syu"]
 
 # ------------------------------------------------------------------- network
 
@@ -135,20 +127,6 @@ html_escape = false
 name = "cmd"
 instance = "fan"
 format = "$HOME/.config/swayrbar/barstat fan"
-html_escape = false
-
-# Reads only the PCI runtime_status on the common path — the 4070 is suspended
-# almost always and polling nvidia-smi would wake it every second.
-[[modules]]
-name = "cmd"
-instance = "gpu"
-format = "$HOME/.config/swayrbar/barstat gpu"
-html_escape = false
-
-[[modules]]
-name = "cmd"
-instance = "prof"
-format = "$HOME/.config/swayrbar/barstat prof"
 html_escape = false
 
 # --------------------------------------------------------------------- power

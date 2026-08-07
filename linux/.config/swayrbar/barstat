@@ -9,14 +9,13 @@
 #
 # COST: 0.5.0 has no per-module refresh interval, so every module re-runs on the
 # global refresh_interval (1s). Everything below therefore reads sysfs/procfs
-# through shell builtins only — no cat/awk/grep in the hot path. The three
-# fields that genuinely need a subprocess (df, pacman, playerctl) go through
-# cache(), which serves the last value instantly and refreshes in the
-# background.
+# through shell builtins only — no cat/awk/grep in the hot path. The two fields
+# that genuinely need a subprocess (df, playerctl) go through cache(), which
+# serves the last value instantly and refreshes in the background.
 #
 # EMPTY OUTPUT: printing nothing makes swaybar drop the block entirely,
-# separator included. That is how the conditional fields (fan, swap, updates,
-# media) disappear when they have nothing to say.
+# separator included. That is how the conditional fields (fan, swap, media)
+# disappear when they have nothing to say.
 #
 # Hwmon numbering is NOT stable across boots — /sys/class/hwmon/hwmon7 is
 # coretemp today and something else after the next kernel update. Everything
@@ -110,15 +109,6 @@ media)
 	printf '%s %s' "$icon" "$text"
 	;;
 
-# ------------------------------------------------------------------- updates
-# `pacman -Qu` compares against the local sync db, so it costs no network and
-# only reflects what a previous -Sy pulled in. Conditional: silent at zero.
-updates)
-	n=$(cache updates 1800 "pacman -Qu 2>/dev/null | wc -l")
-	[ -z "$n" ] || [ "$n" -eq 0 ] 2>/dev/null && exit 0
-	printf '󰚰 %s' "$n"
-	;;
-
 # ----------------------------------------------------------------------- net
 # Throughput needs a delta, so the previous counters live in $STATE/net.
 # Skips lo/tailscale/docker — tailscale0 double-counts whatever wlan0 carries.
@@ -182,7 +172,9 @@ swap)
 	;;
 
 # --------------------------------------------------------------------- temps
-# CPU package + NVMe. The dGPU is deliberately not here — see `gpu`.
+# CPU package + NVMe. Not the dGPU: reading its temperature means nvidia-smi,
+# which *wakes the card* out of runtime suspend — a real battery cost to pay
+# once a second for a number that reads 0% almost always.
 temp)
 	out=
 	hwmon coretemp && { rd "$HW/temp1_input"; [ -n "$RD" ] && out="󰔏 $((RD / 1000))°"; }
@@ -202,35 +194,6 @@ fan)
 	rd "$HW/fan2_input"; gpu=${RD:-0}
 	[ "$cpu" -eq 0 ] && [ "$gpu" -eq 0 ] && exit 0
 	printf '󰈐 %d/%d' "$cpu" "$gpu"
-	;;
-
-# ----------------------------------------------------------------------- gpu
-# The RTX 4070 sits runtime-suspended almost always, and *touching nvidia-smi
-# wakes it* — that is a real battery cost, so the common path reads only the
-# PCI runtime_status, which is free. nvidia-smi runs only once the card is
-# already awake, where the cost no longer matters.
-gpu)
-	dev=
-	for d in /sys/bus/pci/devices/*; do
-		rd "$d/vendor"
-		[ "$RD" = 0x10de ] || continue
-		rd "$d/class"
-		case "$RD" in 0x0300*) dev=$d; break ;; esac
-	done
-	[ -z "$dev" ] && exit 0
-	rd "$dev/power/runtime_status"
-	[ "$RD" = suspended ] && { printf '󰢮 zz'; exit 0; }
-	printf '󰢮 %s' "$(cache gpu 5 "nvidia-smi --query-gpu=temperature.gpu,utilization.gpu --format=csv,noheader,nounits | tr -d ' ' | sed 's/,/° /;s/$/%/'")"
-	;;
-
-# ------------------------------------------------------------------- profile
-prof)
-	rd /sys/firmware/acpi/platform_profile
-	case "$RD" in
-	quiet) printf '󰾆 quiet' ;;
-	balanced) printf '󰾅 bal' ;;
-	performance) printf '󰓅 perf' ;;
-	esac
 	;;
 
 # ----------------------------------------------------------------- backlight
