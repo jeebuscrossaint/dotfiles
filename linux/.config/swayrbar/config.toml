@@ -8,14 +8,33 @@
 #
 # `window` is deliberately FIRST. swayrbar can't truncate titles, and when the
 # status line overflows swaybar clips from the left, so a 200-character Firefox
-# title eats itself instead of shoving the clock off the screen.
+# title eats itself instead of shoving the clock off the screen. With the module
+# set below that title is the only elastic element left — everything after it is
+# fixed-width by design.
+#
+# THE cmd MODULE WORKS. The previous note here claimed it was broken in 0.5.0;
+# it was being fed the wrong config shape. There is no {output} placeholder and
+# no [modules.cmd] table — `format` IS the shell command, run through `sh -c`,
+# and its stdout becomes the block text verbatim. Every cmd module below calls
+# ~/.config/swayrbar/barstat, which documents its own cost model.
+#
+# 0.5.0 has no per-module refresh interval, so EVERY module re-runs once a
+# second. barstat is built around that: sysfs reads via shell builtins, and
+# cache-with-background-refresh for the three fields that need a subprocess.
+# All twelve fields together cost ~30ms of CPU per second.
+#
+# A cmd module that prints nothing is dropped by swaybar, separator included —
+# that is how media/updates/swap/fan hide themselves when idle.
 #
 # Modules swayrbar offers that are deliberately unused: `ppd` (needs
-# power-profiles-daemon on DBus — not a thing on runit), `mpd` (no mpd
-# installed; renders a permanent "disconnected"), `cmd` (would not emit output
-# for any config shape tried — assumed broken in 0.5.0).
+# power-profiles-daemon on DBus — not a thing on runit; barstat's `prof` reads
+# /sys/firmware/acpi/platform_profile directly instead), `mpd` (no mpd
+# installed; renders a permanent "disconnected"), `battery` (superseded by
+# barstat's `bat` — see below), `pactl` (this box is pipewire, so wpctl).
 
 refresh_interval = 1000
+
+# ---------------------------------------------------------------- foreground
 
 [[modules]]
 name = "window"
@@ -23,29 +42,40 @@ instance = "0"
 format = "󰖯 {title}"
 html_escape = true
 
+# Silent when nothing is playing. html_escape MUST stay true here: the block is
+# pango markup and track titles are full of & and <.
 [[modules]]
-name = "wttr.in"
-instance = "0"
-format = "?format=%c+%t"
+name = "cmd"
+instance = "media"
+format = "$HOME/.config/swayrbar/barstat media"
+html_escape = true
+
+[modules.on_click]
+Left = ["playerctl", "play-pause"]
+Right = ["playerctl", "next"]
+Middle = ["playerctl", "previous"]
+
+# Silent at zero. Counts against the local sync db, so it reflects the last
+# `pacman -Sy` rather than the live repos — no network in the refresh loop.
+[[modules]]
+name = "cmd"
+instance = "updates"
+format = "$HOME/.config/swayrbar/barstat updates"
 html_escape = false
 
+[modules.on_click]
+Left = ["foot", "paru", "-Syu"]
+
+# ------------------------------------------------------------------- network
+
 [[modules]]
-name = "sysinfo"
-instance = "0"
-format = "󰻠 {cpu_usage:{:.0}}%  󰍛 {mem_usage:{:.0}}%  󰬺 {load_avg_1:{:.2}} {load_avg_5:{:.2}} {load_avg_15:{:.2}}"
+name = "cmd"
+instance = "net"
+format = "$HOME/.config/swayrbar/barstat net"
 html_escape = false
 
 [modules.on_click]
 Left = ["foot", "btop"]
-
-[[modules]]
-name = "battery"
-instance = "0"
-# {state} is omitted on purpose: with the ASUS charge threshold in play the
-# kernel reports "Unknown" rather than Discharging/Full most of the time.
-# {state_of_health} is also skipped — it drifts over months, not seconds.
-format = "󰁹 {state_of_charge:{:.0}}%"
-html_escape = false
 
 # The wifi module registers under the name `nmcli`, NOT `wifi` — `name = "wifi"`
 # logs "Unknown module name" and is silently dropped. {bars} is a ▂▄▆█ glyph
@@ -59,6 +89,79 @@ html_escape = false
 
 [modules.on_click]
 Left = ["foot", "nmtui"]
+
+# --------------------------------------------------------------------- system
+
+[[modules]]
+name = "cmd"
+instance = "disk"
+format = "$HOME/.config/swayrbar/barstat disk"
+html_escape = false
+
+[modules.on_click]
+Left = ["foot", "btop"]
+
+# Only load_avg_1 is shown: three averages cost ~15 columns and the 5/15-minute
+# figures never say anything the 1-minute one and the CPU% haven't already.
+[[modules]]
+name = "sysinfo"
+instance = "0"
+format = "󰻠 {cpu_usage:{:.0}}%  󰍛 {mem_usage:{:.0}}%  󰬺 {load_avg_1:{:.2}}"
+html_escape = false
+
+[modules.on_click]
+Left = ["foot", "btop"]
+
+# Silent below 1%.
+[[modules]]
+name = "cmd"
+instance = "swap"
+format = "$HOME/.config/swayrbar/barstat swap"
+html_escape = false
+
+[modules.on_click]
+Left = ["foot", "btop"]
+
+# ------------------------------------------------------------------- thermals
+
+[[modules]]
+name = "cmd"
+instance = "temp"
+format = "$HOME/.config/swayrbar/barstat temp"
+html_escape = false
+
+# Silent while both fans are stopped, which is most of the time.
+[[modules]]
+name = "cmd"
+instance = "fan"
+format = "$HOME/.config/swayrbar/barstat fan"
+html_escape = false
+
+# Reads only the PCI runtime_status on the common path — the 4070 is suspended
+# almost always and polling nvidia-smi would wake it every second.
+[[modules]]
+name = "cmd"
+instance = "gpu"
+format = "$HOME/.config/swayrbar/barstat gpu"
+html_escape = false
+
+[[modules]]
+name = "cmd"
+instance = "prof"
+format = "$HOME/.config/swayrbar/barstat prof"
+html_escape = false
+
+# --------------------------------------------------------------------- power
+
+[[modules]]
+name = "cmd"
+instance = "bl"
+format = "$HOME/.config/swayrbar/barstat bl"
+html_escape = false
+
+[modules.on_click]
+WheelUp = ["brightnessctl", "set", "5%+"]
+WheelDown = ["brightnessctl", "set", "5%-"]
 
 # wpctl, not pactl: this box is pipewire, so wireplumber is the native source of
 # truth rather than the pulse compatibility shim. {volume} is already an integer
@@ -74,6 +177,31 @@ Left = ["pavucontrol"]
 Right = ["wpctl", "set-mute", "@DEFAULT_AUDIO_SINK@", "toggle"]
 WheelUp = ["wpctl", "set-volume", "@DEFAULT_AUDIO_SINK@", "2%+"]
 WheelDown = ["wpctl", "set-volume", "@DEFAULT_AUDIO_SINK@", "2%-"]
+
+# Replaces swayrbar's built-in `battery` module. That one could only offer a
+# bare percentage here: with the ASUS 80% charge threshold in play the kernel
+# reports status "Not charging" rather than Discharging/Full, so {state} was
+# permanently useless. barstat derives the state from AC-online + current_now
+# instead, and adds draw in watts and a real time-to-empty.
+[[modules]]
+name = "cmd"
+instance = "bat"
+format = "$HOME/.config/swayrbar/barstat bat"
+html_escape = false
+
+# ---------------------------------------------------------------------- time
+
+[[modules]]
+name = "cmd"
+instance = "up"
+format = "$HOME/.config/swayrbar/barstat up"
+html_escape = false
+
+[[modules]]
+name = "wttr.in"
+instance = "0"
+format = "?format=%c+%t"
+html_escape = false
 
 [[modules]]
 name = "date"
