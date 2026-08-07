@@ -23,12 +23,11 @@ enabled:
   # gtklock replaced swaylock 2026-08-05: swaylock reads one config with no
   # include, so coat couldn't theme it without owning the whole file.
   - gtklock
-  - firefox
   - mpv
   - vscode
 
 # The 'scheme' key is a top-level scalar
-scheme: brewer
+scheme: elementary
 prefer_base24: false
 
 # Evens out whatever scheme is loaded: uniform brightness, legible text,

@@ -28,7 +28,7 @@ install nerd fonts on openbsd (or anywhere without packages):
 
 ---
 
-**extensions:** uBlock Origin · SponsorBlock · BetterCanvas · Return YouTube Dislike · Proton Pass · Dark Reader
+**extensions:** uBlock Origin · SponsorBlock · BetterCanvas · Return YouTube Dislike · Proton Pass · Dark Reader , Adaptive Tab Bar Color, Imagus
 
 **wallpapers**
 
