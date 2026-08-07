@@ -1,0 +1,327 @@
+#!/bin/sh
+# barstat — data sources for swayrbar's `cmd` modules.
+#
+# HOW cmd WORKS (swayrbar 0.5.0): the module's `format` string is handed
+# verbatim to `sh -c` and whatever it prints on stdout becomes the block's
+# full_text. There is no {output} placeholder and no [modules.cmd] table —
+# feeding it either yields an empty block, which is why cmd was previously
+# written off as broken here. It is not.
+#
+# COST: 0.5.0 has no per-module refresh interval, so every module re-runs on the
+# global refresh_interval (1s). Everything below therefore reads sysfs/procfs
+# through shell builtins only — no cat/awk/grep in the hot path. The three
+# fields that genuinely need a subprocess (df, pacman, playerctl) go through
+# cache(), which serves the last value instantly and refreshes in the
+# background.
+#
+# EMPTY OUTPUT: printing nothing makes swaybar drop the block entirely,
+# separator included. That is how the conditional fields (fan, swap, updates,
+# media) disappear when they have nothing to say.
+#
+# Hwmon numbering is NOT stable across boots — /sys/class/hwmon/hwmon7 is
+# coretemp today and something else after the next kernel update. Everything
+# here resolves sensors by their `name` file at call time.
+
+STATE="${XDG_RUNTIME_DIR:-/tmp}/swayrbar"
+[ -d "$STATE" ] || mkdir -p "$STATE"
+
+# ---------------------------------------------------------------- primitives
+
+# rd <file> -> RD, empty if unreadable. Builtin `read`, no fork.
+rd() { RD=; [ -r "$1" ] && read -r RD <"$1"; return 0; }
+
+# Monotonic seconds. `date +%s` would fork; /proc/uptime is a builtin read and
+# is immune to clock jumps, which matters for the cache TTLs.
+now() { read -r NOW _ </proc/uptime; NOW=${NOW%.*}; }
+
+# Same clock in centiseconds, for `net` — swayrbar can fire a cmd module twice
+# inside one second, and whole-second resolution turns that into a divide-by-
+# zero-shaped dead end. Leading zeros are stripped by hand: POSIX arithmetic
+# reads "05" as octal.
+now_cs() {
+	read -r _u _ </proc/uptime
+	_f=${_u#*.}
+	_f=${_f#0}
+	NOWCS=$((${_u%.*} * 100 + ${_f:-0}))
+}
+
+# hwmon <name> -> HW=/sys/class/hwmon/hwmonN
+hwmon() {
+	HW=
+	for _d in /sys/class/hwmon/hwmon*; do
+		rd "$_d/name"
+		[ "$RD" = "$1" ] && { HW=$_d; return 0; }
+	done
+	return 1
+}
+
+# cache <key> <ttl_seconds> <shell command>
+# Prints the cached value immediately and, if stale, kicks off a detached
+# refresh. stdout/stderr of the refresh MUST go to /dev/null: swayrbar reads
+# until stdout closes, and an inherited fd would hang the whole bar for as long
+# as the background job runs.
+cache() {
+	_f=$STATE/$1
+	now
+	_exp=0
+	_val=
+	[ -r "$_f" ] && { read -r _exp; read -r _val; } <"$_f"
+	if [ "$NOW" -ge "$_exp" ]; then
+		(
+			_out=$(eval "$3" 2>/dev/null)
+			printf '%s\n%s\n' "$((NOW + $2))" "$_out" >"$_f.new" &&
+				mv -f "$_f.new" "$_f"
+		) >/dev/null 2>&1 &
+	fi
+	printf '%s' "$_val"
+}
+
+# hb <bytes-per-second> -> 1.2M / 340K / 12B
+hb() {
+	if [ "$1" -ge 1048576 ]; then
+		printf '%d.%dM' "$(($1 / 1048576))" "$(($1 % 1048576 * 10 / 1048576))"
+	elif [ "$1" -ge 1024 ]; then
+		printf '%dK' "$(($1 / 1024))"
+	else
+		printf '%dB' "$1"
+	fi
+}
+
+case "$1" in
+
+# --------------------------------------------------------------------- media
+# Conditional: silent when no player is running. html_escape must be ON for
+# this module — track titles are full of & and <.
+media)
+	# playerctl's --format does not expand escapes, so \t is not available as a
+	# separator. {{status}} is a single bare word, so splitting on the first
+	# space is unambiguous and leaves the title free to contain anything.
+	out=$(cache media 3 "playerctl metadata --format '{{status}} {{artist}} - {{title}}'")
+	[ -z "$out" ] && exit 0
+	status=${out%% *}
+	text=${out#* }
+	text=${text# - }
+	case "$status" in
+	Playing) icon='󰐊' ;;
+	Paused) icon='󰏤' ;;
+	*) exit 0 ;;
+	esac
+	[ "${#text}" -gt 42 ] && text="$(printf '%.41s' "$text")…"
+	printf '%s %s' "$icon" "$text"
+	;;
+
+# ------------------------------------------------------------------- updates
+# `pacman -Qu` compares against the local sync db, so it costs no network and
+# only reflects what a previous -Sy pulled in. Conditional: silent at zero.
+updates)
+	n=$(cache updates 1800 "pacman -Qu 2>/dev/null | wc -l")
+	[ -z "$n" ] || [ "$n" -eq 0 ] 2>/dev/null && exit 0
+	printf '󰚰 %s' "$n"
+	;;
+
+# ----------------------------------------------------------------------- net
+# Throughput needs a delta, so the previous counters live in $STATE/net.
+# Skips lo/tailscale/docker — tailscale0 double-counts whatever wlan0 carries.
+net)
+	iface=
+	for d in /sys/class/net/*; do
+		case "${d##*/}" in lo | tailscale* | docker* | veth* | virbr*) continue ;; esac
+		rd "$d/operstate"
+		[ "$RD" = up ] && { iface=${d##*/}; break; }
+	done
+	[ -z "$iface" ] && { printf '󰤭'; exit 0; }
+
+	rd "/sys/class/net/$iface/statistics/rx_bytes"; rx=$RD
+	rd "/sys/class/net/$iface/statistics/tx_bytes"; tx=$RD
+	now_cs
+
+	# State carries the last computed rates as well as the raw counters. Without
+	# that, any invocation landing too close to the previous one has nothing to
+	# report and the block flatlines at "—" — which is exactly what it did,
+	# because swayrbar does not honour refresh_interval strictly for cmd.
+	prev_t=0 prev_rx=0 prev_tx=0 rrx=-1 rtx=-1
+	[ -r "$STATE/net" ] && read -r prev_t prev_rx prev_tx rrx rtx <"$STATE/net"
+
+	dt=$((NOWCS - prev_t))
+	# Recompute only over a real interval. >30s means a suspend/resume gap and
+	# rx<prev means the counters reset; both make the average meaningless.
+	if [ "$dt" -ge 50 ] && [ "$dt" -le 3000 ] && [ "$rx" -ge "$prev_rx" ]; then
+		rrx=$(((rx - prev_rx) * 100 / dt))
+		rtx=$(((tx - prev_tx) * 100 / dt))
+		printf '%s %s %s %s %s\n' "$NOWCS" "$rx" "$tx" "$rrx" "$rtx" >"$STATE/net"
+	elif [ "$dt" -lt 0 ] || [ "$dt" -gt 3000 ]; then
+		# Clock went backwards or the gap is unusable — reseed and report unknown.
+		printf '%s %s %s -1 -1\n' "$NOWCS" "$rx" "$tx" >"$STATE/net"
+		rrx=-1 rtx=-1
+	fi
+
+	[ "$rrx" -lt 0 ] && { printf '󰇚 — 󰕒 —'; exit 0; }
+	printf '󰇚 %s 󰕒 %s' "$(hb "$rrx")" "$(hb "$rtx")"
+	;;
+
+# ---------------------------------------------------------------------- disk
+disk)
+	printf '󰋊 %s' "$(cache disk 60 "df -h --output=pcent,avail / | tail -1 | tr -s ' ' | sed 's/^ //;s/ /  /'")"
+	;;
+
+# ---------------------------------------------------------------------- swap
+# Conditional: silent until swap is actually in use. Anything above ~0 on a
+# 15G box is worth seeing.
+swap)
+	total=0 free=0
+	while read -r k v _; do
+		case "$k" in
+		SwapTotal:) total=$v ;;
+		SwapFree:) free=$v; break ;;
+		esac
+	done </proc/meminfo
+	[ "$total" -eq 0 ] && exit 0
+	pct=$(((total - free) * 100 / total))
+	[ "$pct" -lt 1 ] && exit 0
+	printf '󰓡 %d%%' "$pct"
+	;;
+
+# --------------------------------------------------------------------- temps
+# CPU package + NVMe. The dGPU is deliberately not here — see `gpu`.
+temp)
+	out=
+	hwmon coretemp && { rd "$HW/temp1_input"; [ -n "$RD" ] && out="󰔏 $((RD / 1000))°"; }
+	hwmon nvme && {
+		rd "$HW/temp1_input"
+		[ -n "$RD" ] && out="$out${out:+  }󰋊 $((RD / 1000))°"
+	}
+	printf '%s' "$out"
+	;;
+
+# ---------------------------------------------------------------------- fans
+# Conditional: silent when both fans are stopped, which is most of the time on
+# this box. fan3 (mid_fan) is omitted — it reports nonsense at idle.
+fan)
+	hwmon asus || exit 0
+	rd "$HW/fan1_input"; cpu=${RD:-0}
+	rd "$HW/fan2_input"; gpu=${RD:-0}
+	[ "$cpu" -eq 0 ] && [ "$gpu" -eq 0 ] && exit 0
+	printf '󰈐 %d/%d' "$cpu" "$gpu"
+	;;
+
+# ----------------------------------------------------------------------- gpu
+# The RTX 4070 sits runtime-suspended almost always, and *touching nvidia-smi
+# wakes it* — that is a real battery cost, so the common path reads only the
+# PCI runtime_status, which is free. nvidia-smi runs only once the card is
+# already awake, where the cost no longer matters.
+gpu)
+	dev=
+	for d in /sys/bus/pci/devices/*; do
+		rd "$d/vendor"
+		[ "$RD" = 0x10de ] || continue
+		rd "$d/class"
+		case "$RD" in 0x0300*) dev=$d; break ;; esac
+	done
+	[ -z "$dev" ] && exit 0
+	rd "$dev/power/runtime_status"
+	[ "$RD" = suspended ] && { printf '󰢮 zz'; exit 0; }
+	printf '󰢮 %s' "$(cache gpu 5 "nvidia-smi --query-gpu=temperature.gpu,utilization.gpu --format=csv,noheader,nounits | tr -d ' ' | sed 's/,/° /;s/$/%/'")"
+	;;
+
+# ------------------------------------------------------------------- profile
+prof)
+	rd /sys/firmware/acpi/platform_profile
+	case "$RD" in
+	quiet) printf '󰾆 quiet' ;;
+	balanced) printf '󰾅 bal' ;;
+	performance) printf '󰓅 perf' ;;
+	esac
+	;;
+
+# ----------------------------------------------------------------- backlight
+bl)
+	for d in /sys/class/backlight/*; do
+		case "${d##*/}" in nvidia*) continue ;; esac
+		rd "$d/brightness"; cur=$RD
+		rd "$d/max_brightness"; max=$RD
+		[ -n "$max" ] && [ "$max" -gt 0 ] && printf '󰃠 %d%%' "$((cur * 100 / max))"
+		exit 0
+	done
+	;;
+
+# ------------------------------------------------------------------- battery
+# Replaces swayrbar's built-in battery module, which could only show a bare
+# percentage: with the ASUS 80% charge threshold in play the kernel reports
+# status "Not charging" rather than Discharging/Full, so the built-in {state}
+# was useless. Deriving state from AC-online + current_now instead gives a
+# truthful reading, plus draw in watts and real time-to-empty.
+bat)
+	bat=
+	for d in /sys/class/power_supply/*; do
+		rd "$d/type"
+		[ "$RD" = Battery ] || continue
+		rd "$d/scope"
+		# Skips peripheral batteries: the Logitech mouse also reports Battery.
+		[ "$RD" = Device ] && continue
+		bat=$d
+		break
+	done
+	[ -z "$bat" ] && exit 0
+
+	ac=0
+	for d in /sys/class/power_supply/*; do
+		rd "$d/type"
+		[ "$RD" = Mains ] || continue
+		rd "$d/online"
+		[ "$RD" = 1 ] && { ac=1; break; }
+	done
+
+	rd "$bat/capacity"; pct=${RD:-0}
+	rd "$bat/current_now"; cur=${RD:-0}
+	rd "$bat/voltage_now"; volt=${RD:-0}
+	rd "$bat/charge_now"; qnow=${RD:-0}
+	rd "$bat/charge_full"; qfull=${RD:-0}
+	rd "$bat/charge_control_end_threshold"; thr=${RD:-100}
+
+	# µA × µV / 1e12 = W. Kept in deciwatts so sh integer math keeps one decimal.
+	dw=$((cur / 1000 * (volt / 1000) * 10 / 1000000))
+
+	if [ "$ac" = 1 ] && [ "$cur" -eq 0 ]; then
+		# On AC, drawing nothing: either full or parked at the threshold.
+		[ "$pct" -ge "$((thr - 2))" ] && [ "$thr" -lt 100 ] &&
+			{ printf '󰂅 %d%% held' "$pct"; exit 0; }
+		printf '󰂅 %d%%' "$pct"
+		exit 0
+	fi
+
+	if [ "$ac" = 1 ]; then
+		eta=
+		[ "$cur" -gt 0 ] && [ "$qfull" -gt "$qnow" ] &&
+			eta=$(((qfull - qnow) * 60 / cur))
+		printf '󰂄 %d%% %d.%dW' "$pct" "$((dw / 10))" "$((dw % 10))"
+		[ -n "$eta" ] && printf ' %dh%02dm' "$((eta / 60))" "$((eta % 60))"
+		exit 0
+	fi
+
+	# Discharging. Icon tracks the level in 10% steps.
+	set -- 󰂎 󰁺 󰁻 󰁼 󰁽 󰁾 󰁿 󰂀 󰂁 󰂂 󰁹
+	i=$((pct / 10 + 1))
+	eval "icon=\${$i}"
+	printf '%s %d%% %d.%dW' "$icon" "$pct" "$((dw / 10))" "$((dw % 10))"
+	[ "$cur" -gt 0 ] && {
+		eta=$((qnow * 60 / cur))
+		printf ' %dh%02dm' "$((eta / 60))" "$((eta % 60))"
+	}
+	;;
+
+# -------------------------------------------------------------------- uptime
+up)
+	read -r s _ </proc/uptime
+	s=${s%.*}
+	d=$((s / 86400))
+	h=$((s % 86400 / 3600))
+	m=$((s % 3600 / 60))
+	if [ "$d" -gt 0 ]; then printf '󰅐 %dd%dh' "$d" "$h"
+	else printf '󰅐 %dh%02dm' "$h" "$m"; fi
+	;;
+
+*)
+	echo "barstat: unknown field '$1'" >&2
+	exit 1
+	;;
+esac
