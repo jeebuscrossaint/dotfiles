@@ -49,6 +49,6 @@ font:
   sansserif: "Iosevka Nerd Font Mono"
   serif: "Iosevka Nerd Font Mono"
   sizes:
-    terminal: 11
-    desktop: 11
-    popups: 11
+    terminal: 14
+    desktop: 14
+    popups: 14
