@@ -27,7 +27,7 @@ enabled:
   - vscode
 
 # The 'scheme' key is a top-level scalar
-scheme: elementary
+scheme: jellybeans
 prefer_base24: false
 
 # Evens out whatever scheme is loaded: uniform brightness, legible text,
@@ -45,9 +45,9 @@ opacity:
 # The 'font' key triggers in_font_section and expects a mapping (dictionary)
 font:
   emoji: "Noto Color Emoji"
-  monospace: "CaskaydiaCove Nerd Font Mono"
-  sansserif: "CaskaydiaCove Nerd Font Mono"
-  serif: "CaskaydiaCove Nerd Font Mono"
+  monospace: "Iosevka Nerd Font Mono"
+  sansserif: "Iosevka Nerd Font Mono"
+  serif: "Iosevka Nerd Font Mono"
   sizes:
     terminal: 11
     desktop: 11
