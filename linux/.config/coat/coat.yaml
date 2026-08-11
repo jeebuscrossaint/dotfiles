@@ -27,7 +27,7 @@ enabled:
   - vscode
 
 # The 'scheme' key is a top-level scalar
-scheme: jellybeans
+scheme: gruvbox-dark-pale
 prefer_base24: false
 
 # Evens out whatever scheme is loaded: uniform brightness, legible text,
