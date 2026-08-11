@@ -2,10 +2,15 @@
 
 # The 'enabled' key triggers STATE_ENABLED and expects a sequence (list)
 enabled:
-  # avizo was retired 2026-07-28 in favour of swayosd (which also does the
-  # caps/num-lock indicators). The avizo module was deleted from coat outright on
-  # 2026-08-05, so going back means restoring it there first.
-  - swayosd
+  # No OSD module here on purpose. avizo was retired 2026-07-28 for swayosd, and
+  # swayosd itself was retired 2026-08-11: theming a GTK app that only reads its
+  # stylesheet at startup meant coat's apply_swayosd hook had to KILL the server,
+  # which raced ~/.local/bin/swayosd-supervise and left the media keys silently
+  # dead. The OSD is now a dunst notification (~/.local/bin/osd), so the `dunst`
+  # module below themes it for free and there is no hook to break. coat still
+  # SHIPS a swayosd module (modules.rs apply_swayosd + templates/swayosd.tera);
+  # it is inert while it is off this list, and re-adding it re-adds the kill.
+  # avizo has no module left at all — going back there means restoring it first.
   - fish
   - foot
   - neovim
@@ -27,7 +32,7 @@ enabled:
   - vscode
 
 # The 'scheme' key is a top-level scalar
-scheme: gruvbox-dark-pale
+scheme: nocturnal-winter
 prefer_base24: false
 
 # Evens out whatever scheme is loaded: uniform brightness, legible text,

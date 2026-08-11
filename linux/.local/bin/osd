@@ -1,0 +1,200 @@
+#!/bin/sh
+# osd — perform a volume/brightness/lock-key change and draw the on-screen
+# display as a dunst notification.
+#
+# Replaces swayosd, retired 2026-08-11. swayosd needed a long-lived
+# swayosd-server holding a DBus name and styled by a GTK stylesheet, and GTK
+# only re-reads that stylesheet on startup — so coat's only way to restyle it
+# was to kill the server on every theme change. That raced the supervisor
+# keeping it alive (~/.local/bin/swayosd-supervise, deleted with this), and when
+# the race went the wrong way swayosd-client had no server to talk to and failed
+# SILENTLY: every media key stopped working until the next login, which felt
+# exactly like the audio dying.
+#
+# dunst is already running for notifications and already themed by coat through
+# a drop-in it can reload in place, so the OSD now costs no extra process and
+# survives `coat apply` for free. There is nothing to supervise.
+#
+# Usage:
+#   osd volume up|down|mute
+#   osd mic mute
+#   osd brightness up|down
+#   osd capslock|numlock
+#   osd playpause
+#
+# Every popup is drawn by the [osd] rule in ~/.config/dunst/dunstrc, which puts
+# them all under one stack tag: mashing the volume key updates a single popup in
+# place instead of stacking five and shoving real notifications off screen.
+
+SINK=@DEFAULT_AUDIO_SINK@
+SOURCE=@DEFAULT_AUDIO_SOURCE@
+
+# The OLED panel is on the Intel card, not nvidia_0.
+BACKLIGHT=intel_backlight
+
+VOL_STEP=5
+VOL_MAX=1.5 # wpctl ceiling (150%), matching ~/.local/bin/volumectl
+BL_STEP=5   # percent of max_brightness per keypress
+BL_MIN=1    # never step the backlight to 0 — that is a black screen
+
+usage() {
+	echo "usage: osd {volume up|down|mute | mic mute | brightness up|down | capslock | numlock | playpause}" >&2
+	exit 2
+}
+
+# show <text> [value 0-100]
+# The `value` hint is what dunst draws its progress bar from, so passing it
+# turns the popup into a level meter. Omit it for the on/off states.
+show() {
+	if [ -n "$2" ]; then
+		dunstify -a osd -h "int:value:$2" "$1"
+	else
+		dunstify -a osd "$1"
+	fi
+}
+
+# vol_state <target> -> VOL (integer percent), MUTED (0|1)
+# `wpctl get-volume` prints "Volume: 0.42", or "Volume: 0.42 [MUTED]" when muted.
+vol_state() {
+	_out=$(wpctl get-volume "$1" 2>/dev/null) || return 1
+	case $_out in
+	*MUTED*) MUTED=1 ;;
+	*) MUTED=0 ;;
+	esac
+	_raw=${_out#*: }
+	_raw=${_raw%% *}
+	# awk, not shell arithmetic: wpctl reports a float and sh has no floats.
+	VOL=$(awk -v v="$_raw" 'BEGIN { printf "%d", v * 100 + 0.5 }')
+}
+
+case "$1" in
+
+# -------------------------------------------------------------------- volume
+volume)
+	case "$2" in
+	up) wpctl set-volume -l "$VOL_MAX" "$SINK" "${VOL_STEP}%+" ;;
+	down) wpctl set-volume "$SINK" "${VOL_STEP}%-" ;;
+	mute) wpctl set-mute "$SINK" toggle ;;
+	*) usage ;;
+	esac
+
+	# Read the level back rather than tracking it: wpctl clamps at both ends and
+	# the sink can also be changed from elsewhere (swayrbar shows the same value).
+	vol_state "$SINK" || exit 1
+
+	if [ "$MUTED" = 1 ] || [ "$VOL" -eq 0 ]; then
+		icon='󰝟'
+	elif [ "$VOL" -ge 66 ]; then
+		icon='󰕾'
+	elif [ "$VOL" -ge 33 ]; then
+		icon='󰖀'
+	else
+		icon='󰕿'
+	fi
+
+	# Muted still gets a bar, emptied: the popup then reads as "silenced" at a
+	# glance instead of just losing a widget.
+	if [ "$MUTED" = 1 ]; then
+		show "$icon  muted" 0
+	else
+		show "$icon  $VOL%" "$VOL"
+	fi
+	;;
+
+# ----------------------------------------------------------------------- mic
+mic)
+	case "$2" in
+	mute) wpctl set-mute "$SOURCE" toggle ;;
+	*) usage ;;
+	esac
+	vol_state "$SOURCE" || exit 1
+	if [ "$MUTED" = 1 ]; then
+		show '󰍭  mic muted'
+	else
+		show '󰍬  mic on'
+	fi
+	;;
+
+# ---------------------------------------------------------------- brightness
+brightness)
+	# Read through sysfs, write through brightnessctl: reading is two builtin
+	# reads with no fork, but writing needs brightnessctl's udev/seat privileges.
+	read -r cur <"/sys/class/backlight/$BACKLIGHT/brightness" || exit 1
+	read -r max <"/sys/class/backlight/$BACKLIGHT/max_brightness" || exit 1
+	[ "$max" -gt 0 ] || exit 1
+
+	# Stepping in raw units, not `brightnessctl set 5%-`: percentage steps round
+	# against each other, so up-then-down does not return to where it started.
+	step=$((max * BL_STEP / 100))
+	[ "$step" -lt 1 ] && step=1
+	floor=$((max * BL_MIN / 100))
+	[ "$floor" -lt 1 ] && floor=1
+
+	case "$2" in
+	up)
+		new=$((cur + step))
+		[ "$new" -gt "$max" ] && new=$max
+		;;
+	down)
+		new=$((cur - step))
+		[ "$new" -lt "$floor" ] && new=$floor
+		;;
+	*) usage ;;
+	esac
+
+	brightnessctl -q -d "$BACKLIGHT" set "$new" || exit 1
+	pct=$((new * 100 / max))
+	if [ "$pct" -ge 50 ]; then icon='󰃠'; else icon='󰃞'; fi
+	show "$icon  $pct%" "$pct"
+	;;
+
+# ------------------------------------------------------------------ lock keys
+# Display only — the key still toggles the state itself, this just reports it.
+# sway drives the keyboard LED through libinput, so the kernel LED is the source
+# of truth. Bound with --release in sway's config because on key *press* the
+# state has not flipped yet. Three keyboards expose these LEDs here (built-in
+# plus two consumer-control devices); any one of them lit means the mode is on.
+capslock | numlock)
+	on=0
+	for f in /sys/class/leds/*::"$1"/brightness; do
+		[ -r "$f" ] || continue
+		read -r v <"$f"
+		[ "$v" -gt 0 ] && {
+			on=1
+			break
+		}
+	done
+
+	case "$1" in
+	capslock) icon='󰘲' label='caps lock' ;;
+	numlock) icon='󰎠' label='num lock' ;;
+	esac
+
+	if [ "$on" = 1 ]; then
+		show "$icon  $label on"
+	else
+		show "$icon  $label off"
+	fi
+	;;
+
+# --------------------------------------------------------------------- media
+playpause)
+	playerctl play-pause 2>/dev/null || exit 0
+	# playerctl keeps reporting the pre-toggle status for a moment after the
+	# call, so give the player a beat to settle before asking what it did. The
+	# key press has already taken effect — this only delays the popup.
+	sleep 0.2
+	status=$(playerctl status 2>/dev/null) || exit 0
+	text=$(playerctl metadata --format '{{artist}} - {{title}}' 2>/dev/null)
+	text=${text# - }
+	[ "${#text}" -gt 48 ] && text=$(printf '%.47s…' "$text")
+	case $status in
+	Playing) icon='󰐊' ;;
+	Paused) icon='󰏤' ;;
+	*) exit 0 ;;
+	esac
+	show "$icon  ${text:-$status}"
+	;;
+
+*) usage ;;
+esac

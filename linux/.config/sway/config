@@ -15,8 +15,8 @@ xwayland enable
 # Window appearance
 # `normal`, so windows get a titlebar. Floating windows need their own
 # directive — default_border does not cover them.
-default_border normal 2
-default_floating_border normal 2
+default_border normal 1
+default_floating_border normal 1
 # `none`, not `smart`: hide_edge_borders smart is an alias for `smart_borders
 # smart` + `hide_edge_borders none`, so it would switch smart borders back on.
 hide_edge_borders none
@@ -139,28 +139,28 @@ bindsym $mod+Tab focus next sibling             # cycle tabs within the group
 bindsym $mod+grave scratchpad show
 bindsym $mod+Shift+grave move scratchpad
 
-# Media keys — swayosd OSD (swayosd-server started below).
-# swayosd-client both performs the change and draws the OSD, so there's no
-# separate volumectl/lightctl step. ~/.local/bin/volumectl is left alone.
-bindsym XF86AudioRaiseVolume exec swayosd-client --output-volume raise
-bindsym XF86AudioLowerVolume exec swayosd-client --output-volume lower
-bindsym XF86AudioMute exec swayosd-client --output-volume mute-toggle
-bindsym XF86AudioMicMute exec swayosd-client --input-volume mute-toggle
-bindsym XF86Launch3 exec swayosd-client --playerctl play-pause
-bindsym XF86AudioPlay exec swayosd-client --playerctl play-pause
+# Media keys. ~/.local/bin/osd both performs the change and draws the OSD as a
+# dunst notification — swayosd was retired 2026-08-11 because coat could only
+# restyle it by killing its server, which raced the supervisor keeping that
+# server alive and left the media keys silently dead. There is nothing to start
+# for this: dunst is already running. ~/.local/bin/volumectl is left alone.
+bindsym XF86AudioRaiseVolume exec osd volume up
+bindsym XF86AudioLowerVolume exec osd volume down
+bindsym XF86AudioMute exec osd volume mute
+bindsym XF86AudioMicMute exec osd mic mute
+bindsym XF86Launch3 exec osd playpause
+bindsym XF86AudioPlay exec osd playpause
 bindsym XF86TouchpadToggle input type:touchpad events toggle enabled disabled
-# --device intel_backlight: the OLED panel is on the Intel card, not nvidia_0.
-bindsym XF86MonBrightnessUp exec swayosd-client --brightness raise --device intel_backlight
-bindsym XF86MonBrightnessDown exec swayosd-client --brightness lower --device intel_backlight
+# The backlight device is intel_backlight, set in the script: the OLED panel is
+# on the Intel card, not nvidia_0.
+bindsym XF86MonBrightnessUp exec osd brightness up
+bindsym XF86MonBrightnessDown exec osd brightness down
 
 # Lock-key indicators. A compositor bind is all this needs — the OSD only
 # *displays* the state, the key still toggles it normally. --release so the
-# state has already flipped by the time swayosd-client reads it.
-# (swayosd-libinput-backend would catch these without a bind, but it wants root
-# and a service unit: its D-Bus activation file is Exec=/bin/false + a systemd
-# reference, so it can't self-activate on Artix.)
-bindsym --release Caps_Lock exec swayosd-client --caps-lock
-bindsym --release Num_Lock exec swayosd-client --num-lock
+# state has already flipped by the time the script reads the keyboard LED.
+bindsym --release Caps_Lock exec osd capslock
+bindsym --release Num_Lock exec osd numlock
 
 # Resize mode
 mode "resize" {
@@ -185,11 +185,7 @@ mode "resize" {
 exec dbus-update-activation-environment --all
 exec autotiling-rs
 exec swayidle -w -C ~/.config/swayidle/config
-exec dunst
-# Supervised, not a bare `exec swayosd-server`: if the server dies mid-session
-# every media key silently stops working (swayosd-client just fails), and `exec`
-# never fires again to bring it back. See the script for the coat interaction.
-exec swayosd-supervise   # volume/brightness/lock-key OSD (themed by coat)
+exec dunst   # also draws the media-key OSD — see the media keys section above
 # Clipboard history (cliphist) — watch both text and images; recall with $mod+v
 # wl-clip-persist keeps a selection readable after the source app exits.
 # `regular` only, not `both`: with the primary selection included it re-offers
