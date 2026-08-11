@@ -6,9 +6,6 @@ include ~/.config/sway/coat-theme
 # inside `bar { }`, so a colors-only fragment can't be spliced in.
 include ~/.config/sway/coat-bar
 
-# Override: dark titlebar bg matching terminal
-client.focused $base0D $base00 $base0D $base0C $base0C
-
 set $mod Mod4
 set $menu tofi-drun
 set $term foot
@@ -16,10 +13,10 @@ set $term foot
 xwayland enable
 
 # Window appearance
-# `pixel`, not `normal`: normal draws a titlebar. Floating windows need their
-# own directive — default_border does not cover them.
-default_border pixel 2
-default_floating_border pixel 2
+# `normal`, so windows get a titlebar. Floating windows need their own
+# directive — default_border does not cover them.
+default_border normal 2
+default_floating_border normal 2
 hide_edge_borders smart
 
 # Gaps
