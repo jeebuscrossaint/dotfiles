@@ -17,13 +17,18 @@ xwayland enable
 # directive — default_border does not cover them.
 default_border normal 2
 default_floating_border normal 2
-hide_edge_borders smart
+# `none`, not `smart`: hide_edge_borders smart is an alias for `smart_borders
+# smart` + `hide_edge_borders none`, so it would switch smart borders back on.
+hide_edge_borders none
 
 # Gaps
 gaps inner 0
 gaps outer 0
 smart_gaps on
-smart_borders on
+# off: sway has no smart *titlebars*, so a lone window kept its titlebar while
+# smart_borders stripped the frame around it — titlebar and no border looked
+# broken. Borders are on always now, matching the titlebar.
+smart_borders off
 
 # Input
 input type:touchpad {
