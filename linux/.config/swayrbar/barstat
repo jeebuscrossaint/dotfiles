@@ -283,6 +283,44 @@ up)
 	else printf '󰅐 %dh%02dm' "$h" "$m"; fi
 	;;
 
+# ------------------------------------------------------------------- all
+# Every field on one line, for a bar that takes a single status string on
+# stdin (dwl's bar patch) rather than one block per module like swaybar.
+#
+# Takes an optional field list -- `barstat all temp fan bl` -- so a caller can
+# emit groups in a chosen order while still paying for only one shell.
+#
+# Re-runs this script once per field via the same case below, but in ONE shell
+# rather than one process per module -- so it costs less than the swayrbar
+# setup did, not more. Empty fields are skipped along with their separator,
+# preserving the "silent when idle" behaviour swaybar gave us for free.
+all)
+	out=
+	shift
+	[ $# -gt 0 ] || set -- media net disk swap temp fan bl vol bat up
+	for f in "$@"; do
+		v=$("$0" "$f") || continue
+		[ -n "$v" ] || continue
+		if [ -n "$out" ]; then out="$out  $v"; else out="$v"; fi
+	done
+	printf '%s' "$out"
+	;;
+
+# ------------------------------------------------------------------- volume
+# slstatus' vol_perc is sndio-only (OpenBSD/FreeBSD), so Linux needs this.
+# wpctl, not pactl: this box is pipewire. One fork, but only when the field is
+# actually asked for -- and inside `all` it shares the caller's shell.
+vol)
+	v=$(wpctl get-volume @DEFAULT_AUDIO_SINK@ 2>/dev/null) || exit 0
+	case $v in
+	*MUTED*) printf '\xf3\xb0\x9d\xba muted' ;;
+	*)      set -- $v
+		pct=$(printf '%s' "$2" | tr -d '.')
+		pct=$((10#${pct:-0}))
+		printf '\xf3\xb0\x95\xbe %d%%' "$pct" ;;
+	esac
+	;;
+
 *)
 	echo "barstat: unknown field '$1'" >&2
 	exit 1
