@@ -1,0 +1,173 @@
+From 31c8493d7f2a863949a91cd14769e28894f259e7 Mon Sep 17 00:00:00 2001
+From: Viktor Woloszczuk <viktor@woloszcz.uk>
+Date: Wed, 11 Mar 2026 19:41:02 +0000
+Subject: [PATCH] input device rules (v0.8)
+
+* customise input device handling
+* ignore unwanted input devices
+* configure a toggle for an input device
+---
+ config.def.h | 13 ++++++++++
+ dwl.c        | 68 ++++++++++++++++++++++++++++++++++++++++++++++++++--
+ 2 files changed, 79 insertions(+), 2 deletions(-)
+
+diff --git a/config.def.h b/config.def.h
+index 8a6eda0..4dbcfd1 100644
+--- a/config.def.h
++++ b/config.def.h
+@@ -56,6 +56,18 @@ static const struct xkb_rule_names xkb_rules = {
+ 	.options = NULL,
+ };
+ 
++/* input devices */
++static const InputRule inputrules[] = {
++	/* name                      kbcreate                 ptrcreate      */
++	/* ignore bad device - like a touchpad ;) */
++	{ "BAD DEVICE",              NULL,                    NULL                },
++	/* ungroup ydotool device - fixes a bug */
++	{ "ydotoold virtual device", createungroupedkeyboard, createpointer       },
++	/* put your touchpad name here to enable toggle touchpad */
++	{ "Elan Touchpad",           createkeyboard,          createtogglepointer },
++	{ NULL,                      createkeyboard,          createpointer       },
++};
++
+ static const int repeat_rate = 25;
+ static const int repeat_delay = 600;
+ 
+@@ -138,6 +150,7 @@ static const Key keys[] = {
+ 	{ MODKEY,                    XKB_KEY_space,       setlayout,        {0} },
+ 	{ MODKEY|WLR_MODIFIER_SHIFT, XKB_KEY_space,       togglefloating,   {0} },
+ 	{ MODKEY,                    XKB_KEY_e,           togglefullscreen, {0} },
++	{ MODKEY,                    XKB_KEY_u,           togglepointer,    {0} },
+ 	{ MODKEY,                    XKB_KEY_0,           view,             {.ui = ~0} },
+ 	{ MODKEY|WLR_MODIFIER_SHIFT, XKB_KEY_parenright,  tag,              {.ui = ~0} },
+ 	{ MODKEY,                    XKB_KEY_comma,       focusmon,         {.i = WLR_DIRECTION_LEFT} },
+diff --git a/dwl.c b/dwl.c
+index 44f3ad9..42557fe 100644
+--- a/dwl.c
++++ b/dwl.c
+@@ -141,6 +141,12 @@ typedef struct {
+ 	uint32_t resize; /* configure serial of a pending resize */
+ } Client;
+ 
++typedef struct {
++	const char *name;
++	void (*kbcreate)(struct wlr_keyboard *);
++	void (*ptrcreate)(struct wlr_pointer *);
++} InputRule;
++
+ typedef struct {
+ 	uint32_t mod;
+ 	xkb_keysym_t keysym;
+@@ -268,6 +274,8 @@ static void createnotify(struct wl_listener *listener, void *data);
+ static void createpointer(struct wlr_pointer *pointer);
+ static void createpointerconstraint(struct wl_listener *listener, void *data);
+ static void createpopup(struct wl_listener *listener, void *data);
++static void createtogglepointer(struct wlr_pointer *pointer);
++static void createungroupedkeyboard(struct wlr_keyboard *keyboard);
+ static void cursorconstrain(struct wlr_pointer_constraint_v1 *constraint);
+ static void cursorframe(struct wl_listener *listener, void *data);
+ static void cursorwarptohint(void);
+@@ -336,6 +344,7 @@ static void tagmon(const Arg *arg);
+ static void tile(Monitor *m);
+ static void togglefloating(const Arg *arg);
+ static void togglefullscreen(const Arg *arg);
++static void togglepointer(const Arg *arg);
+ static void toggletag(const Arg *arg);
+ static void toggleview(const Arg *arg);
+ static void unlocksession(struct wl_listener *listener, void *data);
+@@ -406,6 +415,8 @@ static struct wlr_box sgeom;
+ static struct wl_list mons;
+ static Monitor *selmon;
+ 
++static struct libinput_device *togglepointerdevice = NULL;
++
+ /* global event handlers */
+ static struct wl_listener cursor_axis = {.notify = axisnotify};
+ static struct wl_listener cursor_button = {.notify = buttonpress};
+@@ -1199,6 +1210,33 @@ createpopup(struct wl_listener *listener, void *data)
+ 	LISTEN_STATIC(&popup->base->surface->events.commit, commitpopup);
+ }
+ 
++void
++createtogglepointer(struct wlr_pointer *pointer)
++{
++	struct libinput_device *device;
++
++	createpointer(pointer);
++
++	if (wlr_input_device_is_libinput(&pointer->base)
++			&& (device = wlr_libinput_get_device_handle(&pointer->base))) {
++		togglepointerdevice = device;
++	}
++}
++
++void
++createungroupedkeyboard(struct wlr_keyboard *keyboard)
++{
++	/* for keyboards that need their own keyboard group */
++	KeyboardGroup *group = createkeyboardgroup();
++
++	/* Set the keymap to match the group keymap */
++	wlr_keyboard_set_keymap(keyboard, group->wlr_group->keyboard.keymap);
++	LISTEN(&keyboard->base.events.destroy, &group->destroy, destroykeyboardgroup);
++
++	/* Add the new keyboard to the group */
++	wlr_keyboard_group_add_keyboard(group->wlr_group, keyboard);
++}
++
+ void
+ cursorconstrain(struct wlr_pointer_constraint_v1 *constraint)
+ {
+@@ -1582,13 +1620,27 @@ inputdevice(struct wl_listener *listener, void *data)
+ 	 * available. */
+ 	struct wlr_input_device *device = data;
+ 	uint32_t caps;
++	const InputRule *r;
+ 
+ 	switch (device->type) {
+ 	case WLR_INPUT_DEVICE_KEYBOARD:
+-		createkeyboard(wlr_keyboard_from_input_device(device));
++		for (r = inputrules; r < END(inputrules); r++) {
++			if (!r->name || strstr(device->name, r->name)) {
++				if (r->kbcreate)
++					r->kbcreate(wlr_keyboard_from_input_device(device));
++				break;
++			}
++		}
++
+ 		break;
+ 	case WLR_INPUT_DEVICE_POINTER:
+-		createpointer(wlr_pointer_from_input_device(device));
++		for (r = inputrules; r < END(inputrules); r++) {
++			if (!r->name || strstr(device->name, r->name)) {
++				if (r->ptrcreate)
++					r->ptrcreate(wlr_pointer_from_input_device(device));
++				break;
++			}
++		}
+ 		break;
+ 	default:
+ 		/* TODO handle other input device types */
+@@ -2760,6 +2812,18 @@ togglefullscreen(const Arg *arg)
+ 		setfullscreen(sel, !sel->isfullscreen);
+ }
+ 
++void
++togglepointer(const Arg *arg)
++{
++	if (!togglepointerdevice)
++		return;
++
++	libinput_device_config_send_events_set_mode(
++		togglepointerdevice,
++		libinput_device_config_send_events_get_mode(togglepointerdevice) ^ LIBINPUT_CONFIG_SEND_EVENTS_DISABLED
++	);
++}
++
+ void
+ toggletag(const Arg *arg)
+ {
+-- 
+2.53.0
+

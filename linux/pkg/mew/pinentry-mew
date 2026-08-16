@@ -1,0 +1,16 @@
+#!/bin/sh
+# ported from pinentry-dmenu
+
+echo 'OK Pleased to meet you'
+
+while read -r stdin; do 
+	case $stdin in
+		*BYE*) exit ;;
+		*SETDESC*) KEYNAME=${stdin#*:%0A%22}; KEYNAME=${KEYNAME%\%22\%0A*}; KEYID=${stdin#*ID }; KEYID=${KEYID%,*} ;;
+		*GETPIN*) printf 'D %s\n' $(mew -P -p "pinentry: $KEYNAME ($KEYID) ${error:+$error }$prompt") ;;
+		*SETERROR*) error="${stdin#*\ }"; ;;
+		*SETPROMPT*) prompt="${stdin#*\ }"; ;;
+	esac
+
+	echo OK
+done

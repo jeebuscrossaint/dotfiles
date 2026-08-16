@@ -1,0 +1,113 @@
+From de93d300e4c014965b1bbd0202feb2f130426153 Mon Sep 17 00:00:00 2001
+From: jeebuscrossaint <thediamond270@gmail.com>
+Date: Sat, 15 Aug 2026 21:26:40 -0400
+Subject: [PATCH 07/29] patch: decklayout - master visible, stack becomes
+ monocle deck
+
+---
+ config.def.h |  2 ++
+ dwl.c        | 61 ++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 63 insertions(+)
+
+diff --git a/config.def.h b/config.def.h
+index bbde955..f2fc471 100644
+--- a/config.def.h
++++ b/config.def.h
+@@ -51,6 +51,7 @@ static const Layout layouts[] = {
+ 	{ "===",      bstackhoriz },
+ 	{ "|M|",      centeredmaster },
+ 	{ "###",      gaplessgrid },
++	{ "[E]",      deck },
+ };
+ 
+ /* monitors */
+@@ -159,6 +160,7 @@ static const Key keys[] = {
+ 	{ MODKEY,                    XKB_KEY_o,           setlayout,        {.v = &layouts[4]} },
+ 	{ MODKEY,                    XKB_KEY_c,           setlayout,        {.v = &layouts[3]} },
+ 	{ MODKEY,                    XKB_KEY_g,           setlayout,        {.v = &layouts[3]} },
++	{ MODKEY,                    XKB_KEY_a,           setlayout,        {.v = &layouts[3]} },
+ 	{ MODKEY,                    XKB_KEY_space,       setlayout,        {0} },
+ 	{ MODKEY|WLR_MODIFIER_SHIFT, XKB_KEY_space,       togglefloating,   {0} },
+ 	{ MODKEY,                    XKB_KEY_e,           togglefullscreen, {0} },
+diff --git a/dwl.c b/dwl.c
+index 3f35359..b43ead4 100644
+--- a/dwl.c
++++ b/dwl.c
+@@ -316,6 +316,7 @@ static void destroylayersurfacenotify(struct wl_listener *listener, void *data);
+ static void destroylock(SessionLock *lock, int unlocked);
+ static void destroylocksurface(struct wl_listener *listener, void *data);
+ static void destroynotify(struct wl_listener *listener, void *data);
++static void deck(Monitor *m);
+ static void destroypointerconstraint(struct wl_listener *listener, void *data);
+ static void destroysessionlock(struct wl_listener *listener, void *data);
+ static void destroykeyboardgroup(struct wl_listener *listener, void *data);
+@@ -2240,6 +2241,66 @@ monocle(Monitor *m)
+ 		wlr_scene_node_raise_to_top(&c->scene->node);
+ }
+ 
++void
++deck(Monitor *m)
++{
++	unsigned int mw, my;
++	int i, n = 0;
++	Client *c;
++
++	/* count tiled clients */
++	wl_list_for_each(c, &clients, link)
++
++		/* if (VISIBLEON(c, m) && !c->isfloating && !c->isfullscreen) */
++		if (VISIBLEON(c, m) && !c->isfloating)
++			n++;
++	if (n == 0)
++		return;
++
++	/* set master width */
++	if (n > m->nmaster)
++		mw = m->nmaster ? (int)roundf(m->w.width * m->mfact) : 0;
++	else
++		mw = m->w.width;
++
++	/* update layout symbol with number of stack windows */
++	/* use the following rules to count only the windows on the deck
++	if (n > m->nmaster)
++		snprintf(m->ltsymbol, sizeof m->ltsymbol, "[%d]", n - m->nmaster);
++	else
++		snprintf(m->ltsymbol, sizeof m->ltsymbol, "[%d]", n);  */
++
++	/* or this one to count all windows on the tag */
++	snprintf(m->ltsymbol, sizeof m->ltsymbol, "[%d]", n);
++
++	i = my = 0;
++	wl_list_for_each(c, &clients, link) {
++		/* if (!VISIBLEON(c, m) || c->isfloating || c->isfullscreen) */
++		if (!VISIBLEON(c, m) || c->isfloating)
++			continue;
++
++		if (i < m->nmaster) {
++			/* master clients */
++			resize(c, (struct wlr_box){
++				.x = m->w.x,
++				.y = m->w.y + my,
++				.width = mw,
++				.height = (m->w.height - my) / (MIN(n, m->nmaster) - i)
++			}, 0);
++			my += c->geom.height;
++		} else {
++			/* deck clients: overlap in stack area */
++			resize(c, (struct wlr_box){
++				.x = m->w.x + mw,
++				.y = m->w.y,
++				.width = m->w.width - mw,
++				.height = m->w.height
++			}, 0);
++		}
++		i++;
++	}
++}
++
+ void
+ motionabsolute(struct wl_listener *listener, void *data)
+ {
+-- 
+2.55.0
+

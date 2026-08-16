@@ -1,0 +1,216 @@
+diff --git a/client.h b/client.h
+index dabea35..3a31c25 100644
+--- a/client.h
++++ b/client.h
+@@ -319,6 +319,12 @@ client_set_border_color(Client *c, const float color[static 4])
+ 		wlr_scene_rect_set_color(c->border[i], color);
+ }
+ 
++static inline void
++client_set_dimmer_state(Client *c, const int dim)
++{
++	wlr_scene_node_set_enabled(&c->dimmer->node, DIMOPT && !c->neverdim && dim);
++}
++
+ static inline void
+ client_set_fullscreen(Client *c, int fullscreen)
+ {
+diff --git a/config.def.h b/config.def.h
+index 22d2171..4ca21c9 100644
+--- a/config.def.h
++++ b/config.def.h
+@@ -10,6 +10,7 @@ static const unsigned int borderpx         = 1;  /* border pixel of windows */
+ static const float rootcolor[]             = COLOR(0x222222ff);
+ static const float bordercolor[]           = COLOR(0x444444ff);
+ static const float focuscolor[]            = COLOR(0x005577ff);
++static const float unfocuseddim[]            = COLOR(0x00000088);
+ static const float urgentcolor[]           = COLOR(0xff0000ff);
+ /* This conforms to the xdg-protocol. Set the alpha to zero to restore the old behavior */
+ static const float fullscreen_bg[]         = {0.1f, 0.1f, 0.1f, 1.0f}; /* You can also use glsl colors */
+@@ -22,10 +23,11 @@ static int log_level = WLR_ERROR;
+ 
+ /* NOTE: ALWAYS keep a rule declared even if you don't use rules (e.g leave at least one example) */
+ static const Rule rules[] = {
+-	/* app_id             title       tags mask     isfloating   monitor */
+-	/* examples: */
+-	{ "Gimp_EXAMPLE",     NULL,       0,            1,           -1 }, /* Start on currently visible tags floating, not tiled */
+-	{ "firefox_EXAMPLE",  NULL,       1 << 8,       0,           -1 }, /* Start on ONLY tag "9" */
++	/* app_id     title       tags mask     isfloating   neverdim      monitor */
++	/* examples:
++	{ "Gimp_example",     NULL,       0,            1,           0,            -1 },
++	*/
++	{ "firefox_example",  NULL,       1 << 8,       0,           1,		   -1 },
+ };
+ 
+ /* layout(s) */
+@@ -140,8 +142,9 @@ static const Key keys[] = {
+ 	{ MODKEY,                    XKB_KEY_f,          setlayout,      {.v = &layouts[1]} },
+ 	{ MODKEY,                    XKB_KEY_m,          setlayout,      {.v = &layouts[2]} },
+ 	{ MODKEY,                    XKB_KEY_space,      setlayout,      {0} },
++	{ MODKEY, 		     XKB_KEY_apostrophe, toggledimming,  {0} },
+ 	{ MODKEY|WLR_MODIFIER_SHIFT, XKB_KEY_space,      togglefloating, {0} },
+-	{ MODKEY,                    XKB_KEY_e,         togglefullscreen, {0} },
++	{ MODKEY,                    XKB_KEY_e,          togglefullscreen, {0} },
+ 	{ MODKEY,                    XKB_KEY_0,          view,           {.ui = ~0} },
+ 	{ MODKEY|WLR_MODIFIER_SHIFT, XKB_KEY_parenright, tag,            {.ui = ~0} },
+ 	{ MODKEY,                    XKB_KEY_comma,      focusmon,       {.i = WLR_DIRECTION_LEFT} },
+@@ -172,5 +175,6 @@ static const Key keys[] = {
+ static const Button buttons[] = {
+ 	{ MODKEY, BTN_LEFT,   moveresize,     {.ui = CurMove} },
+ 	{ MODKEY, BTN_MIDDLE, togglefloating, {0} },
++	{ MODKEY|ShiftMask, BTN_MIDDLE, toggledimmingclient, {0} },
+ 	{ MODKEY, BTN_RIGHT,  moveresize,     {.ui = CurResize} },
+ };
+diff --git a/dwl.c b/dwl.c
+index dc0c861..dcc3ece 100644
+--- a/dwl.c
++++ b/dwl.c
+@@ -112,6 +112,7 @@ typedef struct {
+ 	Monitor *mon;
+ 	struct wlr_scene_tree *scene;
+ 	struct wlr_scene_rect *border[4]; /* top, bottom, left, right */
++	struct wlr_scene_rect *dimmer;
+ 	struct wlr_scene_tree *scene_surface;
+ 	struct wl_list link;
+ 	struct wl_list flink;
+@@ -141,7 +142,7 @@ typedef struct {
+ #endif
+ 	unsigned int bw;
+ 	uint32_t tags;
+-	int isfloating, isurgent, isfullscreen;
++	int isfloating, isurgent, isfullscreen, neverdim;
+ 	uint32_t resize; /* configure serial of a pending resize */
+ } Client;
+ 
+@@ -231,6 +232,7 @@ typedef struct {
+ 	const char *title;
+ 	uint32_t tags;
+ 	int isfloating;
++	int neverdim;
+ 	int monitor;
+ } Rule;
+ 
+@@ -338,6 +340,8 @@ static void startdrag(struct wl_listener *listener, void *data);
+ static void tag(const Arg *arg);
+ static void tagmon(const Arg *arg);
+ static void tile(Monitor *m);
++static void toggledimming(const Arg *arg);
++static void toggledimmingclient(const Arg *arg);
+ static void togglefloating(const Arg *arg);
+ static void togglefullscreen(const Arg *arg);
+ static void toggletag(const Arg *arg);
+@@ -410,6 +414,7 @@ static struct wlr_output_layout *output_layout;
+ static struct wlr_box sgeom;
+ static struct wl_list mons;
+ static Monitor *selmon;
++static int DIMOPT = 1;
+ 
+ #ifdef XWAYLAND
+ static void activatex11(struct wl_listener *listener, void *data);
+@@ -466,6 +471,7 @@ applyrules(Client *c)
+ 		if ((!r->title || strstr(title, r->title))
+ 				&& (!r->id || strstr(appid, r->id))) {
+ 			c->isfloating = r->isfloating;
++			c->neverdim = r-> neverdim;
+ 			newtags |= r->tags;
+ 			i = 0;
+ 			wl_list_for_each(m, &mons, link) {
+@@ -1365,8 +1371,10 @@ focusclient(Client *c, int lift)
+ 
+ 		/* Don't change border color if there is an exclusive focus or we are
+ 		 * handling a drag operation */
+-		if (!exclusive_focus && !seat->drag)
++		if (!exclusive_focus && !seat->drag) {
+ 			client_set_border_color(c, focuscolor);
++			client_set_dimmer_state(c, 0);
++		}
+ 	}
+ 
+ 	/* Deactivate old client if focus is changing */
+@@ -1384,7 +1392,7 @@ focusclient(Client *c, int lift)
+ 		 * and probably other clients */
+ 		} else if (old_c && !client_is_unmanaged(old_c) && (!c || !client_wants_focus(c))) {
+ 			client_set_border_color(old_c, bordercolor);
+-
++			client_set_dimmer_state(old_c, 1);
+ 			client_activate_surface(old, 0);
+ 		}
+ 	}
+@@ -1681,8 +1689,7 @@ void
+ mapnotify(struct wl_listener *listener, void *data)
+ {
+ 	/* Called when the surface is mapped, or ready to display on-screen. */
+-	Client *p = NULL;
+-	Client *w, *c = wl_container_of(listener, c, map);
++	Client *p, *w, *d, *c = wl_container_of(listener, c, map);
+ 	Monitor *m;
+ 	int i;
+ 
+@@ -1716,6 +1723,10 @@ mapnotify(struct wl_listener *listener, void *data)
+ 		c->border[i]->node.data = c;
+ 	}
+ 
++	c->dimmer = wlr_scene_rect_create(c->scene, 0, 0, unfocuseddim);
++	c->dimmer->node.data = c;
++	client_set_dimmer_state(c, 1);
++
+ 	/* Initialize client geometry with room for border */
+ 	client_set_tiled(c, WLR_EDGE_TOP | WLR_EDGE_BOTTOM | WLR_EDGE_LEFT | WLR_EDGE_RIGHT);
+ 	c->geom.width += 2 * c->bw;
+@@ -1734,6 +1745,10 @@ mapnotify(struct wl_listener *listener, void *data)
+ 		setmon(c, p->mon, p->tags);
+ 	} else {
+ 		applyrules(c);
++		d = focustop(selmon);
++		if (d) {
++			client_set_dimmer_state(d, 0);
++		}
+ 	}
+ 	printstatus();
+ 
+@@ -2160,7 +2175,7 @@ resize(Client *c, struct wlr_box geo, int interact)
+ 	c->geom = geo;
+ 	applybounds(c, bbox);
+ 
+-	/* Update scene-graph, including borders */
++	/* Update scene-graph, including borders and dimmer*/
+ 	wlr_scene_node_set_position(&c->scene->node, c->geom.x, c->geom.y);
+ 	wlr_scene_node_set_position(&c->scene_surface->node, c->bw, c->bw);
+ 	wlr_scene_rect_set_size(c->border[0], c->geom.width, c->bw);
+@@ -2170,6 +2185,8 @@ resize(Client *c, struct wlr_box geo, int interact)
+ 	wlr_scene_node_set_position(&c->border[1]->node, 0, c->geom.height - c->bw);
+ 	wlr_scene_node_set_position(&c->border[2]->node, 0, c->bw);
+ 	wlr_scene_node_set_position(&c->border[3]->node, c->geom.width - c->bw, c->bw);
++	wlr_scene_rect_set_size(c->dimmer, c->geom.width - 2*c->bw, c-> geom.height - 2*c->bw);
++	wlr_scene_node_set_position(&c->dimmer->node, c->bw, c->bw);
+ 
+ 	/* this is a no-op if size hasn't changed */
+ 	c->resize = client_set_size(c, c->geom.width - 2 * c->bw,
+@@ -2681,6 +2698,27 @@ tile(Monitor *m)
+ 	}
+ }
+ 
++void toggledimming(const Arg *arg)
++{
++   Client *c;
++   DIMOPT ^= 1;
++   wl_list_for_each(c, &clients, link)
++   {
++       client_set_dimmer_state(c, 1);
++   }
++   c = focustop(selmon);
++   if (c)
++	client_set_dimmer_state(c, 0);
++}
++
++void
++toggledimmingclient(const Arg *arg)
++{
++	Client *sel = focustop(selmon);
++	if (sel)
++        sel -> neverdim ^= 1;
++}
++
+ void
+ togglefloating(const Arg *arg)
+ {

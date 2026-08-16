@@ -1,0 +1,81 @@
+From 1513c816f834b1620313e69318e2789aa2f091d0 Mon Sep 17 00:00:00 2001
+From: Ferdinand Bachmann <ferdinand.bachmann@yrlf.at>
+Date: Wed, 26 Mar 2025 17:18:17 +0100
+Subject: [PATCH] startup: implement wayland socket handover (wl-restart --env
+ mechanism)
+
+---
+ dwl.c | 46 +++++++++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 45 insertions(+), 1 deletion(-)
+
+diff --git a/dwl.c b/dwl.c
+index 4816159..2f2ed02 100644
+--- a/dwl.c
++++ b/dwl.c
+@@ -11,6 +11,7 @@
+ #include <sys/wait.h>
+ #include <time.h>
+ #include <unistd.h>
++#include <fcntl.h>
+ #include <wayland-server-core.h>
+ #include <wlr/backend.h>
+ #include <wlr/backend/libinput.h>
+@@ -2232,11 +2233,54 @@ resize(Client *c, struct wlr_box geo, int interact)
+ 	wlr_scene_subsurface_tree_set_clip(&c->scene_surface->node, &clip);
+ }
+ 
++static const char*
++perform_socket_handover(void)
++{
++	char *socket_name = NULL;
++	int socket_fd = -1;
++
++	/* Parse wayland socket handover environment variables */
++	if (getenv("WAYLAND_SOCKET_NAME")) {
++		socket_name = getenv("WAYLAND_SOCKET_NAME");
++		unsetenv("WAYLAND_SOCKET_NAME");
++	}
++
++	if (getenv("WAYLAND_SOCKET_FD")) {
++		socket_fd = atoi(getenv("WAYLAND_SOCKET_FD"));
++		unsetenv("WAYLAND_SOCKET_FD");
++		fcntl(socket_fd, F_SETFD, FD_CLOEXEC);
++	}
++
++	/* Warn if either environment variable is missing */
++	if (!socket_name && socket_fd == -1) {
++		return NULL;
++	} else if (!socket_name) {
++		fprintf(stderr, "Wayland socket handover failed, missing WAYLAND_SOCKET_FD\n");
++		return NULL;
++	} else if (socket_fd == -1) {
++		fprintf(stderr, "Wayland socket handover failed, missing WAYLAND_SOCKET_NAME\n");
++		return NULL;
++	}
++
++	/* Add socket to the Wayland display */
++	if (wl_display_add_socket_fd(dpy, socket_fd) < 0) {
++		fprintf(stderr, "Wayland socket handover failed, failed to add socket FD to display\n");
++		return NULL;
++	}
++
++	return socket_name;
++}
++
+ void
+ run(char *startup_cmd)
+ {
++	/* Attempt Wayland socket handover. */
++	const char *socket = perform_socket_handover();
++
+ 	/* Add a Unix socket to the Wayland display. */
+-	const char *socket = wl_display_add_socket_auto(dpy);
++	if (!socket)
++		socket = wl_display_add_socket_auto(dpy);
++
+ 	if (!socket)
+ 		die("startup: display_add_socket_auto");
+ 	setenv("WAYLAND_DISPLAY", socket, 1);
+-- 
+2.49.0
+

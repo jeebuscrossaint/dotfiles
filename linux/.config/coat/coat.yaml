@@ -21,10 +21,12 @@ enabled:
   - gtk
   - vesktop
   - sway
+  - dwl
   # swaybar must come after sway: it is the module that runs `swaymsg reload`,
   # so sway's coat-theme has to be on disk by the time it fires.
   - swaybar
   - tofi
+  - mew
   # gtklock replaced swaylock 2026-08-05: swaylock reads one config with no
   # include, so coat couldn't theme it without owning the whole file.
   - gtklock
@@ -32,7 +34,7 @@ enabled:
   - vscode
 
 # The 'scheme' key is a top-level scalar
-scheme: nocturnal-winter
+scheme: framer
 prefer_base24: false
 
 # Evens out whatever scheme is loaded: uniform brightness, legible text,
@@ -50,10 +52,10 @@ opacity:
 # The 'font' key triggers in_font_section and expects a mapping (dictionary)
 font:
   emoji: "Noto Color Emoji"
-  monospace: "Iosevka Nerd Font Mono"
-  sansserif: "Iosevka Nerd Font Mono"
-  serif: "Iosevka Nerd Font Mono"
+  monospace: "MartianMono Nerd Font Mono"
+  sansserif: "MartianMono Nerd Font Mono"
+  serif: "MartianMono Nerd Font Mono"
   sizes:
-    terminal: 14
-    desktop: 14
-    popups: 14
+    terminal: 12
+    desktop: 10
+    popups: 12

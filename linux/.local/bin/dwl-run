@@ -1,0 +1,24 @@
+#!/bin/sh
+# dwl-run — start a dwl session from a TTY.
+#
+# The bar patch reads its status text from dwl's OWN stdin, one line per update,
+# so slstatus is piped in rather than started from dwl's autostart[] array. That
+# is also why this is a script and not just `exec dwl`.
+#
+# XDG_CURRENT_DESKTOP matters for the portal: xdg-desktop-portal picks a backend
+# by matching this against the portal's UseIn= field, and the wlr backend
+# advertises wlroots. Getting it wrong is the usual cause of a screenshare
+# picker that never appears.
+
+export XDG_CURRENT_DESKTOP=wlroots
+export XDG_SESSION_TYPE=wayland
+
+# Qt/GTK/Firefox all default to X11 under XWayland unless told otherwise.
+export QT_QPA_PLATFORM=wayland
+export MOZ_ENABLE_WAYLAND=1
+export _JAVA_AWT_WM_NONREPARENTING=1
+
+# dwl inherits this process's environment; dbus-update-activation-environment in
+# autostart[] then hands it to anything dbus launches later.
+
+exec slstatus -s | dwl "$@"

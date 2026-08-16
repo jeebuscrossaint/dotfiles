@@ -1,0 +1,74 @@
+From 3d79bd6a5cb78c534466b54dde7eac438f70b2a4 Mon Sep 17 00:00:00 2001
+From: jeebuscrossaint <thediamond270@gmail.com>
+Date: Sun, 16 Aug 2026 11:17:25 -0400
+Subject: [PATCH] config: mirror the swayrbar bar
+
+args[] reproduces the swayrbar module order. Fields swayrbar drew natively
+(wifi, cpu/mem/load, clock) use slstatus' C readers; the barstat-backed fields
+still come from barstat, grouped into four `all` calls so the order survives at
+4 forks/sec instead of the 9 the swayrbar setup paid.
+
+Volume comes from barstat, not vol_perc -- vol_perc is sndio-only and does
+nothing on Linux. Glyphs are lifted from the swayrbar config so the bar reads
+identically.
+
+Dropped: the window module (dwl's bar draws the title itself) and weather.
+---
+ config.def.h | 42 ++++++++++++++++++++++++++++++++++++++++--
+ 1 file changed, 40 insertions(+), 2 deletions(-)
+
+diff --git a/config.def.h b/config.def.h
+index 100093e..de6fd9c 100644
+--- a/config.def.h
++++ b/config.def.h
+@@ -64,7 +64,45 @@ static const char unknown_str[] = "n/a";
+  * wifi_essid          WiFi ESSID                      interface name (wlan0)
+  * wifi_perc           WiFi signal in percent          interface name (wlan0)
+  */
++/* Mirrors the swayrbar module order exactly (see ~/.config/swayrbar/config.toml).
++ *
++ * Split of labour: fields swayrbar drew with its OWN modules (wifi, cpu/mem/
++ * load, clock) use slstatus' native C readers -- no fork. Fields that came from
++ * ~/.config/swayrbar/barstat still come from barstat, grouped into four `all`
++ * calls so the order is preserved at 4 forks/sec rather than the 9 the swayrbar
++ * setup paid.
++ *
++ * Volume is a barstat field, not slstatus' vol_perc: vol_perc is sndio-only
++ * (OpenBSD/FreeBSD) and does nothing on Linux.
++ *
++ * Not carried over: the `window` module (dwl's bar draws the focused title
++ * itself) and the weather module (no slstatus equivalent, and it is a network
++ * call -- add a cached run_command if you miss it).
++ */
+ static const struct arg args[] = {
+-	/* function format          argument */
+-	{ datetime, "%s",           "%F %T" },
++	/* function     format            argument */
++
++	/* media, net */
++	{ run_command,  "%s",             "$HOME/.config/swayrbar/barstat all media net" },
++
++	/* wifi */
++	{ wifi_essid,   "  󰖩 %s",   "wlan0" },
++	{ wifi_perc,    " %s%%",      "wlan0" },
++
++	/* disk */
++	{ run_command,  "  %s",           "$HOME/.config/swayrbar/barstat all disk" },
++
++	/* cpu, memory, load */
++	{ cpu_perc,     "  󰻠 %s%%", NULL },
++	{ ram_perc,     "  󰍛 %s%%", NULL },
++	{ load_avg,     "  󰬺 %s",   NULL },
++
++	/* swap, temp, fan, backlight, volume */
++	{ run_command,  "  %s",           "$HOME/.config/swayrbar/barstat all swap temp fan bl vol" },
++
++	/* battery, uptime */
++	{ run_command,  "  %s",           "$HOME/.config/swayrbar/barstat all bat up" },
++
++	/* clock */
++	{ datetime,     "  󰃰 %s",   "%a %b %-d  %-I:%M:%S %p" },
+ };
+-- 
+2.55.0
+

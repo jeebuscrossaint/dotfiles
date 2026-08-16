@@ -1,0 +1,135 @@
+From 01ebeacf6032a879b693bb1a8ff08573bdb3d176 Mon Sep 17 00:00:00 2001
+From: jeebuscrossaint <thediamond270@gmail.com>
+Date: Sat, 15 Aug 2026 21:26:16 -0400
+Subject: [PATCH 05/29] patch: centeredmaster - master centered, stack splits
+ both sides
+
+Conflict: patch predates bar and wanted the old bordercolor/focuscolor float
+globals. Kept bar's colors[][3]; took only centeredmaster_always.
+---
+ config.def.h |  3 +++
+ dwl.c        | 73 ++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 76 insertions(+)
+
+diff --git a/config.def.h b/config.def.h
+index ff73c26..b032be2 100644
+--- a/config.def.h
++++ b/config.def.h
+@@ -11,6 +11,7 @@ static const int showbar                   = 1; /* 0 means no bar */
+ static const int topbar                    = 1; /* 0 means bottom bar */
+ static const char *fonts[]                 = {"monospace:size=10"};
+ static const float rootcolor[]             = COLOR(0x000000ff);
++static const int centeredmaster_always     = 0;  /* always center even if only 1 window */
+ /* This conforms to the xdg-protocol. Set the alpha to zero to restore the old behavior */
+ static const float fullscreen_bg[]         = {0.0f, 0.0f, 0.0f, 1.0f}; /* You can also use glsl colors */
+ static uint32_t colors[][3]                = {
+@@ -48,6 +49,7 @@ static const Layout layouts[] = {
+ 	{ "[\\]",     dwindle },
+ 	{ "TTT",      bstack },
+ 	{ "===",      bstackhoriz },
++	{ "|M|",      centeredmaster },
+ };
+ 
+ /* monitors */
+@@ -154,6 +156,7 @@ static const Key keys[] = {
+ 	{ MODKEY,                    XKB_KEY_r,           setlayout,        {.v = &layouts[3]} },
+ 	{ MODKEY,                    XKB_KEY_u,           setlayout,        {.v = &layouts[3]} },
+ 	{ MODKEY,                    XKB_KEY_o,           setlayout,        {.v = &layouts[4]} },
++	{ MODKEY,                    XKB_KEY_c,           setlayout,        {.v = &layouts[3]} },
+ 	{ MODKEY,                    XKB_KEY_space,       setlayout,        {0} },
+ 	{ MODKEY|WLR_MODIFIER_SHIFT, XKB_KEY_space,       togglefloating,   {0} },
+ 	{ MODKEY,                    XKB_KEY_e,           togglefullscreen, {0} },
+diff --git a/dwl.c b/dwl.c
+index 2dfbf32..0d0f52d 100644
+--- a/dwl.c
++++ b/dwl.c
+@@ -285,6 +285,7 @@ static Buffer *bufmon(Monitor *m);
+ static void bufrelease(struct wl_listener *listener, void *data);
+ static void btrtile(Monitor *m);
+ static void buttonpress(struct wl_listener *listener, void *data);
++static void centeredmaster(Monitor *m);
+ static void chvt(const Arg *arg);
+ static void checkidleinhibitor(struct wlr_surface *exclude);
+ static void cleanup(void);
+@@ -851,6 +852,78 @@ buttonpress(struct wl_listener *listener, void *data)
+ 			event->time_msec, event->button, event->state);
+ }
+ 
++void
++centeredmaster(Monitor *m)
++{
++	int i, n, h, mw, mx, my, oty, ety, tw;
++	Client *c;
++
++	n = 0;
++	wl_list_for_each(c, &clients, link)
++		if (VISIBLEON(c, m) && !c->isfloating && !c->isfullscreen)
++			n++;
++	if (n == 0)
++		return;
++
++	/* initialize areas */
++	if (centeredmaster_always) {
++		mw = m->w.width / 2;
++		mx = m->w.width / 4;
++	} else {
++		mw = m->w.width;
++		mx = 0;
++	}
++	my = 0;
++	tw = mw;
++
++	if (n > m->nmaster) {
++		/* go mfact box in the center if more than nmaster clients */
++		if (centeredmaster_always) {
++			mw = m->nmaster ? (int)roundf(m->w.width / 2) : 0;
++			tw = mw / 2;
++		} else {
++			mw = m->nmaster ? (int)roundf(m->w.width * m->mfact) : 0;
++			tw = m->w.width - mw;
++		}
++
++		if (n - m->nmaster > 1) {
++			/* only one client */
++			mx = (m->w.width - mw) / 2;
++			tw = (m->w.width - mw) / 2;
++		}
++	}
++
++	i = 0;
++	oty = 0;
++	ety = 0;
++	wl_list_for_each(c, &clients, link) {
++		if (!VISIBLEON(c, m) || c->isfloating || c->isfullscreen)
++			continue;
++		if (i < m->nmaster) {
++			/* nmaster clients are stacked vertically, in the center
++			 * of the screen */
++			h = (m->w.height - my) / (MIN(n, m->nmaster) - i);
++			resize(c, (struct wlr_box){.x = m->w.x + mx, .y = m->w.y + my, .width = mw,
++				   .height = h}, 0);
++			my += c->geom.height;
++		} else {
++			/* stack clients are stacked vertically */
++			if ((i - m->nmaster) % 2) {
++				h = (m->w.height - ety) / ( (1 + n - i) / 2);
++				resize(c, (struct wlr_box){.x = m->w.x, .y = m->w.y + ety, .width = tw,
++					   .height = h}, 0);
++				ety += c->geom.height;
++			} else {
++				h = (m->w.height - oty) / ((1 + n - i) / 2);
++				resize(c, (struct wlr_box){.x = m->w.x + mx + mw, .y = m->w.y + oty, .width = tw,
++					.height = h}, 0);
++				oty += c->geom.height;
++			}
++		}
++		i++;
++	}
++}
++
+ void
+ chvt(const Arg *arg)
+ {
+-- 
+2.55.0
+

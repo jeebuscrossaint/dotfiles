@@ -1,0 +1,256 @@
+From 09c708876afe3675f68f7b35c3f17263b134ceee Mon Sep 17 00:00:00 2001
+From: julmajustus <julmajustus@tutanota.com>
+Date: Thu, 21 May 2026 00:28:15 +0300
+Subject: [PATCH] simple_scratchpad: Spring update scratchpad V2
+
+- Added support for multiple scratchpads
+---
+ config.def.h        |  7 ++++
+ dwl.c               | 43 +++++++++++++++++++++--
+ simple_scratchpad.c | 85 +++++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 133 insertions(+), 2 deletions(-)
+ create mode 100644 simple_scratchpad.c
+
+diff --git a/config.def.h b/config.def.h
+index 8a6eda0..a527e09 100644
+--- a/config.def.h
++++ b/config.def.h
+@@ -14,6 +14,7 @@ static const float urgentcolor[]           = COLOR(0xff0000ff);
+ /* This conforms to the xdg-protocol. Set the alpha to zero to restore the old behavior */
+ static const float fullscreen_bg[]         = {0.0f, 0.0f, 0.0f, 1.0f}; /* You can also use glsl colors */
+ 
++#define SCRATCHPAD_COUNT 3
+ /* tagging - TAGCOUNT must be no greater than 31 */
+ #define TAGCOUNT (9)
+ 
+@@ -132,6 +133,9 @@ static const Key keys[] = {
+ 	{ MODKEY,                    XKB_KEY_Return,      zoom,             {0} },
+ 	{ MODKEY,                    XKB_KEY_Tab,         view,             {0} },
+ 	{ MODKEY|WLR_MODIFIER_SHIFT, XKB_KEY_c,           killclient,       {0} },
++	{ MODKEY|WLR_MODIFIER_SHIFT, XKB_KEY_z,           addscratchpad,    {0} },
++	{ MODKEY|WLR_MODIFIER_CTRL,  XKB_KEY_z,           togglescratchpad, {0} },
++	{ MODKEY,                    XKB_KEY_z,           removescratchpad, {0} },
+ 	{ MODKEY,                    XKB_KEY_t,           setlayout,        {.v = &layouts[0]} },
+ 	{ MODKEY,                    XKB_KEY_f,           setlayout,        {.v = &layouts[1]} },
+ 	{ MODKEY,                    XKB_KEY_m,           setlayout,        {.v = &layouts[2]} },
+@@ -144,6 +148,9 @@ static const Key keys[] = {
+ 	{ MODKEY,                    XKB_KEY_period,      focusmon,         {.i = WLR_DIRECTION_RIGHT} },
+ 	{ MODKEY|WLR_MODIFIER_SHIFT, XKB_KEY_less,        tagmon,           {.i = WLR_DIRECTION_LEFT} },
+ 	{ MODKEY|WLR_MODIFIER_SHIFT, XKB_KEY_greater,     tagmon,           {.i = WLR_DIRECTION_RIGHT} },
++	{ MODKEY|WLR_MODIFIER_LOGO,  XKB_KEY_1,           setscratchpad,    {.i = 0} },
++	{ MODKEY|WLR_MODIFIER_LOGO,  XKB_KEY_2,           setscratchpad,    {.i = 1} },
++	{ MODKEY|WLR_MODIFIER_LOGO,  XKB_KEY_3,           setscratchpad,    {.i = 2} },
+ 	TAGKEYS(          XKB_KEY_1, XKB_KEY_exclam,                        0),
+ 	TAGKEYS(          XKB_KEY_2, XKB_KEY_at,                            1),
+ 	TAGKEYS(          XKB_KEY_3, XKB_KEY_numbersign,                    2),
+diff --git a/dwl.c b/dwl.c
+index 44f3ad9..f54bbda 100644
+--- a/dwl.c
++++ b/dwl.c
+@@ -139,6 +139,7 @@ typedef struct {
+ 	uint32_t tags;
+ 	int isfloating, isurgent, isfullscreen;
+ 	uint32_t resize; /* configure serial of a pending resize */
++	struct wl_list link_temp;
+ } Client;
+ 
+ typedef struct {
+@@ -240,6 +241,7 @@ typedef struct {
+ } SessionLock;
+ 
+ /* function declarations */
++static void addscratchpad(const Arg *arg);
+ static void applybounds(Client *c, struct wlr_box *bbox);
+ static void applyrules(Client *c);
+ static void arrange(Monitor *m);
+@@ -314,6 +316,7 @@ static void printstatus(void);
+ static void powermgrsetmode(struct wl_listener *listener, void *data);
+ static void quit(const Arg *arg);
+ static void rendermon(struct wl_listener *listener, void *data);
++static void removescratchpad(const Arg *arg);
+ static void requestdecorationmode(struct wl_listener *listener, void *data);
+ static void requeststartdrag(struct wl_listener *listener, void *data);
+ static void requestmonstate(struct wl_listener *listener, void *data);
+@@ -327,6 +330,7 @@ static void setlayout(const Arg *arg);
+ static void setmfact(const Arg *arg);
+ static void setmon(Client *c, Monitor *m, uint32_t newtags);
+ static void setpsel(struct wl_listener *listener, void *data);
++static void setscratchpad(const Arg *arg);
+ static void setsel(struct wl_listener *listener, void *data);
+ static void setup(void);
+ static void spawn(const Arg *arg);
+@@ -336,6 +340,7 @@ static void tagmon(const Arg *arg);
+ static void tile(Monitor *m);
+ static void togglefloating(const Arg *arg);
+ static void togglefullscreen(const Arg *arg);
++static void togglescratchpad(const Arg *arg);
+ static void toggletag(const Arg *arg);
+ static void toggleview(const Arg *arg);
+ static void unlocksession(struct wl_listener *listener, void *data);
+@@ -455,6 +460,11 @@ static struct wlr_xwayland *xwayland;
+ /* attempt to encapsulate suck into one file */
+ #include "client.h"
+ 
++static struct wl_list scratchpad_clients[SCRATCHPAD_COUNT];
++static int scratchpad_visible[SCRATCHPAD_COUNT];
++static int scratchpad_sel = 0;
++#include "simple_scratchpad.c"
++
+ /* function implementations */
+ void
+ applybounds(Client *c, struct wlr_box *bbox)
+@@ -1328,10 +1338,21 @@ void
+ destroynotify(struct wl_listener *listener, void *data)
+ {
+ 	/* Called when the xdg_toplevel is destroyed. */
+-	Client *c = wl_container_of(listener, c, destroy);
++	Client *sc, *c = wl_container_of(listener, c, destroy);
+ 	wl_list_remove(&c->destroy.link);
+ 	wl_list_remove(&c->set_title.link);
+ 	wl_list_remove(&c->fullscreen.link);
++	/* Check if destroyed client was part of any scratchpad slot
++	 * and clean it from the list if so. */
++	for (int i = 0; i < SCRATCHPAD_COUNT; i++) {
++		wl_list_for_each(sc, &scratchpad_clients[i], link_temp) {
++			if (sc == c) {
++				wl_list_remove(&c->link_temp);
++				goto scratchpad_destroy_done;
++			}
++		}
++	}
++scratchpad_destroy_done:;
+ #ifdef XWAYLAND
+ 	if (c->type != XDGShell) {
+ 		wl_list_remove(&c->activate.link);
+@@ -2333,11 +2354,24 @@ setcursorshape(struct wl_listener *listener, void *data)
+ void
+ setfloating(Client *c, int floating)
+ {
+-	Client *p = client_get_parent(c);
++	Client *sc, *p = client_get_parent(c);
+ 	c->isfloating = floating;
+ 	/* If in floating layout do not change the client's layer */
+ 	if (!c->mon || !client_surface(c)->mapped || !c->mon->lt[c->mon->sellt]->arrange)
+ 		return;
++	/* Check if unfloated client was part of any scratchpad slot
++	 * and remove it from that slot if so */
++	if (!floating) {
++		for (int i = 0; i < SCRATCHPAD_COUNT; i++) {
++			wl_list_for_each(sc, &scratchpad_clients[i], link_temp) {
++				if (sc == c) {
++					wl_list_remove(&c->link_temp);
++					goto scratchpad_float_done;
++				}
++			}
++		}
++scratchpad_float_done:;
++	}
+ 	wlr_scene_node_reparent(&c->scene->node, layers[c->isfullscreen ||
+ 			(p && p->isfullscreen) ? LyrFS
+ 			: c->isfloating ? LyrFloat : LyrTile]);
+@@ -2554,6 +2588,11 @@ setup(void)
+ 	 */
+ 	wl_list_init(&clients);
+ 	wl_list_init(&fstack);
++	wl_list_init(&fstack);
++	for (int j = 0; j < SCRATCHPAD_COUNT; j++) {
++		wl_list_init(&scratchpad_clients[j]);
++		scratchpad_visible[j] = 1;
++	}
+ 
+ 	xdg_shell = wlr_xdg_shell_create(dpy, 6);
+ 	wl_signal_add(&xdg_shell->events.new_toplevel, &new_xdg_toplevel);
+diff --git a/simple_scratchpad.c b/simple_scratchpad.c
+new file mode 100644
+index 0000000..cd62d83
+--- /dev/null
++++ b/simple_scratchpad.c
+@@ -0,0 +1,85 @@
++/* ************************************************************************** */
++/*                                                 @@@            @@@@@@@@    */
++/*                                                  @@@          @@@@@@@@@@   */
++/*                                                   @@!         @@!   @@@@   */
++/*                                                    !@!        !@!  @!@!@   */
++/*   simple_scratchpad.c                               @!!       @!@ @! !@!   */
++/*                                                      !!!      !@!!!  !!!   */
++/*   By: julmajustus <julmajustus@tutanota.com>          !!:     !!:!   !!!   */
++/*                                                        ::!    :!:    !:!   */
++/*   Created: 2024/12/19 19:35:02 by jmakkone           ::    ::::::: ::   */
++/*   Updated: 2026/05/20 23:58:16 by julmajustus            : :   : : :  :    */
++/*                                                                            */
++/* ************************************************************************** */
++
++void
++addscratchpad(const Arg *arg)
++{
++	Client *cc, *c = focustop(selmon);
++
++	if (!c)
++		return;
++	/* Check if the added client is already a scratchpad client */
++	for (int i = 0; i < SCRATCHPAD_COUNT; i++) {
++		wl_list_for_each(cc, &scratchpad_clients[i], link_temp) {
++			if (cc == c)
++				return;
++		}
++	}
++	if (!c->isfloating) {
++		setfloating(c, 1);
++	}
++	wl_list_insert(&scratchpad_clients[scratchpad_sel], &c->link_temp);
++}
++
++void
++togglescratchpad(const Arg *arg)
++{
++	Client *c;
++	Monitor *m = selmon;
++
++	scratchpad_visible[scratchpad_sel] = !scratchpad_visible[scratchpad_sel];
++	if (scratchpad_visible[scratchpad_sel]) {
++		wl_list_for_each(c, &scratchpad_clients[scratchpad_sel], link_temp) {
++			c->mon = m;
++			c->tags = m->tagset[m->seltags];
++			arrange(m);
++			focusclient(c, 1);
++		}
++	} else {
++		wl_list_for_each(c, &scratchpad_clients[scratchpad_sel], link_temp) {
++			c->tags = 0;
++			focusclient(focustop(m), 1);
++			arrange(m);
++		}
++	}
++}
++
++void
++removescratchpad(const Arg *arg)
++{
++	Client *sc, *c = focustop(selmon);
++	if (!c)
++		return;
++	for (int i = 0; i < SCRATCHPAD_COUNT; i++) {
++		/* Check if c is in scratchpad_clients */
++		wl_list_for_each(sc, &scratchpad_clients[i], link_temp) {
++			if (sc == c) {
++				wl_list_remove(&c->link_temp);
++				return;
++			}
++		}
++	}
++}
++
++void
++setscratchpad(const Arg *arg)
++{
++	int idx = arg->i;
++
++	if (idx < 0)
++		idx = 0;
++	else if (idx >= SCRATCHPAD_COUNT)
++		idx = SCRATCHPAD_COUNT - 1;
++	scratchpad_sel = idx;
++}
+-- 
+2.53.0
+
