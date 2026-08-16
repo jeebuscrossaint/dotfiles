@@ -178,6 +178,11 @@ typedef struct {
 } Key;
 
 typedef struct {
+	int mode_index;
+	Key key;
+} Modekey;
+
+typedef struct {
 	struct wlr_keyboard_group *wlr_group;
 
 	int nsyms;
@@ -378,6 +383,7 @@ static void incohgaps(const Arg *arg);
 static void incovgaps(const Arg *arg);
 static void inputdevice(struct wl_listener *listener, void *data);
 static int keybinding(uint32_t mods, xkb_keysym_t sym);
+static int modekeybinding(uint32_t mods, xkb_keysym_t sym);
 static void keypress(struct wl_listener *listener, void *data);
 static void keypressmod(struct wl_listener *listener, void *data);
 static int keyrepeat(void *data);
@@ -427,6 +433,7 @@ static void setup(void);
 static void setratio_h(const Arg *arg);
 static void setratio_v(const Arg *arg);
 static void swapclients(const Arg *arg);
+static void focusdir(const Arg *arg);
 static void snail(Monitor *m);
 static void spawn(const Arg *arg);
 static void spawnorfocus(const Arg *arg);
@@ -463,6 +470,7 @@ static Monitor *xytomon(double x, double y);
 static void xytonode(double x, double y, struct wlr_surface **psurface,
 		Client **pc, LayerSurface **pl, double *nx, double *ny);
 static void zoom(const Arg *arg);
+static void entermode(const Arg *arg);
 static void bstack(Monitor *m);
 static void bstackhoriz(Monitor *m);
 
@@ -538,6 +546,9 @@ static const struct wlr_buffer_impl buffer_impl = {
 };
 static struct libinput_device *togglepointerdevice = NULL;
 static int enablegaps = 1;   /* enables gaps, used by togglegaps */
+
+static const int NORMAL = -1;
+static int active_mode_index = NORMAL;
 
 /* global event handlers */
 static struct wl_listener cursor_axis = {.notify = axisnotify};
@@ -2396,6 +2407,11 @@ keybinding(uint32_t mods, xkb_keysym_t sym)
 	 * processing.
 	 */
 	const Key *k;
+
+	if (active_mode_index >= 0) {
+		return modekeybinding(mods, sym);
+	}
+
 	for (k = keys; k < END(keys); k++) {
 		if (CLEANMASK(mods) == CLEANMASK(k->mod)
 				&& xkb_keysym_to_lower(sym) == xkb_keysym_to_lower(k->keysym)
@@ -2406,6 +2422,30 @@ keybinding(uint32_t mods, xkb_keysym_t sym)
 	}
 	return 0;
 }
+
+int
+modekeybinding(uint32_t mods, xkb_keysym_t sym)
+{
+	int handled = 0;
+	const Modekey *mk;
+	const Key *k;
+
+	for (mk = modekeys; mk < END(modekeys); mk++) {
+		if (active_mode_index != mk->mode_index) {
+			continue;
+		}
+
+		k = &mk->key;
+		if (CLEANMASK(mods) == CLEANMASK(k->mod) &&
+				sym == k->keysym && k->func) {
+			k->func(&k->arg);
+			handled = 1;
+		}
+	}
+
+	return handled;
+}
+
 
 void
 keypress(struct wl_listener *listener, void *data)
@@ -4634,6 +4674,13 @@ zoom(const Arg *arg)
 
 	focusclient(sel, 1);
 	arrange(selmon);
+}
+
+void
+entermode(const Arg *arg)
+{
+	active_mode_index = arg->i;
+	drawbar(selmon);
 }
 
 #ifdef XWAYLAND
