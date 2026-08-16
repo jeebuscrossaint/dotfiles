@@ -26,7 +26,6 @@ enabled:
   # so sway's coat-theme has to be on disk by the time it fires.
   - swaybar
   - tofi
-  - mew
   - wlock
   - tsubu
   # gtklock replaced swaylock 2026-08-05: swaylock reads one config with no

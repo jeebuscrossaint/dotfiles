@@ -22,14 +22,16 @@ static const int topbar                    = 1; /* 0 means bottom bar */
 #endif
 
 #ifndef COAT_THEMED
-#  define COAT_NORM_FG     0x747474ff  /* base03 */
+/* fg is bar-only (status text, layout symbol, tags, title); border is
+ * window-only. They differ on purpose -- see templates/dwl.tera in coat. */
+#  define COAT_NORM_FG     0xd0d0d0ff  /* base05 */
 #  define COAT_NORM_BG     0x181818ff  /* base00 */
-#  define COAT_NORM_BORDER 0x747474ff
-#  define COAT_SEL_FG      0xd0d0d0ff  /* base05 */
+#  define COAT_NORM_BORDER 0x747474ff  /* base03 */
+#  define COAT_SEL_FG      0x20bcfcff  /* base0D, accent */
 #  define COAT_SEL_BG      0x181818ff
-#  define COAT_SEL_BORDER  0xd0d0d0ff
-#  define COAT_URG_FG      0x181818ff
-#  define COAT_URG_BG      0xfd886bff  /* base08 */
+#  define COAT_SEL_BORDER  0xd0d0d0ff  /* base05 */
+#  define COAT_URG_FG      0xfd886bff  /* base08 */
+#  define COAT_URG_BG      0x181818ff
 #  define COAT_URG_BORDER  0xfd886bff
 #  define COAT_ROOTCOLOR   0x181818ff
 #endif
@@ -252,7 +254,7 @@ static const int cursor_timeout = 3; /* sway: hide_cursor 3000 */
  * If the third element is 'NULL', match on the first element instead */
 static const char *termcmd[] = { "foot", NULL, NULL };
 static const char *browsercmd[] = { "firefox", NULL, "Mozilla Firefox" };
-static const char *menucmd[] = { "mew-run", NULL };
+static const char *menucmd[] = { "tofi-drun", NULL };
 static const char *lockcmd[]    = { "gtklock-once", NULL };
 static const char *kbdcmd[]     = { "wlboard", NULL };
 static const char *themecmd[]   = { "theme-pick", NULL };
@@ -260,7 +262,7 @@ static const char *themerndcmd[]= { "theme-random", NULL };
 static const char *shotcmd[]    = { "swayscreenshot", NULL };
 static const char *shoteditcmd[]= { "swayscreenshot-edit", NULL };
 static const char *pickcmd[]    = { "grimpicker", "-n", "-c", NULL };
-static const char *clipcmd[]    = { "sh", "-c", "cliphist list | mew -i -p 'clip' | cliphist decode | wl-copy", NULL };
+static const char *clipcmd[]    = { "sh", "-c", "cliphist list | tofi --prompt-text 'clip \xe2\x9d\xaf ' | cliphist decode | wl-copy", NULL };
 
 static const Key keys[] = {
 	/* Note that Shift changes certain key codes: 2 -> at, etc. */
