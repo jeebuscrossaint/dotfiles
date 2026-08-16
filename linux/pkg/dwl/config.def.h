@@ -199,8 +199,19 @@ static const uint32_t send_events_mode = LIBINPUT_CONFIG_SEND_EVENTS_ENABLED;
 LIBINPUT_CONFIG_ACCEL_PROFILE_FLAT
 LIBINPUT_CONFIG_ACCEL_PROFILE_ADAPTIVE
 */
-static const enum libinput_config_accel_profile accel_profile = LIBINPUT_CONFIG_ACCEL_PROFILE_ADAPTIVE;
+/* Mice and other non-touchpad pointers. FLAT means no acceleration -- pointer
+ * travel is proportional to how far you move the mouse, always. This is what
+ * the sway config had (`input type:pointer { accel_profile flat }`); dwl
+ * defaults to ADAPTIVE, which accelerates and feels twitchier by comparison.
+ * accel_speed runs -1.0 (slowest) to 1.0 (fastest), 0.0 is neutral. */
+static const enum libinput_config_accel_profile accel_profile = LIBINPUT_CONFIG_ACCEL_PROFILE_FLAT;
 static const double accel_speed = 0.0;
+
+/* Touchpad, kept separate. The sway config only set flat for type:pointer and
+ * left the touchpad alone, and adaptive genuinely suits a touchpad better --
+ * flat makes crossing a 2560px screen a multi-swipe affair. */
+static const enum libinput_config_accel_profile touchpad_accel_profile = LIBINPUT_CONFIG_ACCEL_PROFILE_ADAPTIVE;
+static const double touchpad_accel_speed = 0.0;
 
 /* You can choose between:
 LIBINPUT_CONFIG_TAP_MAP_LRM -- 1/2/3 finger tap maps to left/right/middle
@@ -317,7 +328,9 @@ static const Key keys[] = {
 	{ MODKEY|WLR_MODIFIER_SHIFT, XKB_KEY_z,           addscratchpad,    {0} },
 	{ MODKEY|WLR_MODIFIER_CTRL,  XKB_KEY_z,           togglescratchpad, {0} },
 	{ MODKEY,                    XKB_KEY_z,           removescratchpad, {0} },
-	{ MODKEY,                    XKB_KEY_space,       setlayout,        {0} },
+	/* step through every layout in order; Ctrl goes backwards */
+	{ MODKEY,                    XKB_KEY_space,       cyclelayout,      {.i = +1} },
+	{ MODKEY|WLR_MODIFIER_CTRL,  XKB_KEY_space,       cyclelayout,      {.i = -1} },
 	{ MODKEY|WLR_MODIFIER_SHIFT, XKB_KEY_space,       togglefloating,   {0} },
 	{ MODKEY,                    XKB_KEY_e,           togglefullscreen, {0} },
 	/* sway bound fullscreen to $mod+f and $mod+m; f is free here since the
