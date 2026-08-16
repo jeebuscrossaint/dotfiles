@@ -169,8 +169,12 @@ static const InputRule inputrules[] = {
 	{ "BAD DEVICE",              NULL,                    NULL                },
 	/* ungroup ydotool device - fixes a bug */
 	{ "ydotoold virtual device", createungroupedkeyboard, createpointer       },
-	/* put your touchpad name here to enable toggle touchpad */
-	{ "Elan Touchpad",           createkeyboard,          createtogglepointer },
+	/* The device that XF86TouchpadToggle (and Super+Alt+v) turns on and off.
+	 * Matching is strstr, not strcmp -- dwl.c:2379 -- so the bare word matches
+	 * this machine's "ASUP1207:00 093A:3012 Touchpad" and stays portable. The
+	 * upstream placeholder here was "Elan Touchpad", which matches nothing on
+	 * this laptop: togglepointerdevice stayed NULL and both binds were no-ops. */
+	{ "Touchpad",                createkeyboard,          createtogglepointer },
 	{ NULL,                      createkeyboard,          createpointer       },
 };
 
@@ -301,6 +305,12 @@ static const Key keys[] = {
 	{ 0, XKB_KEY_XF86Launch3,           spawn, SHCMD("osd playpause") },
 	{ 0, XKB_KEY_XF86MonBrightnessUp,   spawn, SHCMD("osd brightness up") },
 	{ 0, XKB_KEY_XF86MonBrightnessDown, spawn, SHCMD("osd brightness down") },
+	/* sway: `bindsym XF86TouchpadToggle input type:touchpad events toggle`.
+	 * togglepointer flips send_events on the one device inputrules attached
+	 * createtogglepointer to -- "Elan Touchpad" above -- so the rule and this
+	 * bind have to name the same device to do anything. Same function as the
+	 * Super+Alt+v bind further down; this just wires up the hardware key. */
+	{ 0, XKB_KEY_XF86TouchpadToggle,    togglepointer, {0} },
 	{ MODKEY|WLR_MODIFIER_SHIFT, XKB_KEY_Return,      spawn,            {.v = termcmd} },
 	{ MODKEY,                    XKB_KEY_p,           togglebar,        {0} }, /* sway: $mod+p */
 	{ MODKEY|WLR_MODIFIER_SHIFT, XKB_KEY_b,           spawnorfocus,     {.v = browsercmd} },
