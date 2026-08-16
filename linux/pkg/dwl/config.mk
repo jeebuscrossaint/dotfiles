@@ -25,11 +25,11 @@ WLR_LIBS = `$(PKG_CONFIG) --libs wlroots-0.19`
 #	-I$(PWD)/wlroots/0.19/include/wlroots-0.19
 #WLR_LIBS = -Wl,-rpath,$(PWD)/wlroots/0.19/lib64 -L$(PWD)/wlroots/0.19/lib64 -lwlroots-0.19
 
-XWAYLAND =
-XLIBS =
-# Uncomment to build XWayland support
-#XWAYLAND = -DXWAYLAND
-#XLIBS = xcb xcb-icccm
+# XWayland is ON: the sway config had `xwayland enable`, and X11-only clients
+# still matter here -- Minecraft via LWJGL 2 opens an X display directly and
+# dies with "Could not open X display connection" without it.
+XWAYLAND = -DXWAYLAND
+XLIBS = xcb xcb-icccm
 
 # dwl itself only uses C99 features, but wlroots' headers use anonymous unions (C11).
 # To avoid warnings about them, we do not use -std=c99 and instead of using the
