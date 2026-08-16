@@ -5,6 +5,22 @@
 # so slstatus is piped in rather than started from dwl's autostart[] array. That
 # is also why this is a script and not just `exec dwl`.
 #
+# wl-restart keeps the Wayland socket alive across a dwl crash (the
+# wayland-socket-handover patch reads WAYLAND_SOCKET_NAME/WAYLAND_SOCKET_FD,
+# which is what --env sets) and brings dwl straight back instead of dropping you
+# to a TTY.
+#
+# Note on what that does and does not save: the SOCKET survives, but a client
+# only survives if it can reconnect to a restarted compositor, and in practice
+# only Qt6 does (with QT_WAYLAND_RECONNECT=1, set below). Firefox, foot, and
+# anything GTK or Electron still die. So this is crash recovery, not a free
+# restart -- editing config.h still costs you your windows.
+#
+# The whole pipeline is wrapped rather than just dwl: slstatus holds the write
+# end of the pipe, so if dwl alone were restarted slstatus would take SIGPIPE
+# the moment dwl died and the restarted dwl would read EOF -- a bar with no
+# status. Restarting the pipeline gives each dwl a fresh slstatus.
+#
 # XDG_CURRENT_DESKTOP matters for the portal: xdg-desktop-portal picks a backend
 # by matching this against the portal's UseIn= field, and the wlr backend
 # advertises wlroots. Getting it wrong is the usual cause of a screenshare
@@ -18,7 +34,14 @@ export QT_QPA_PLATFORM=wayland
 export MOZ_ENABLE_WAYLAND=1
 export _JAVA_AWT_WM_NONREPARENTING=1
 
+# The one toolkit that can reattach to a restarted compositor.
+export QT_WAYLAND_RECONNECT=1
+
 # dwl inherits this process's environment; dbus-update-activation-environment in
 # autostart[] then hands it to anything dbus launches later.
 
-exec slstatus -s | dwl "$@"
+if command -v wl-restart >/dev/null 2>&1; then
+	exec wl-restart --env -- sh -c 'slstatus -s | dwl "$@"' dwl-run "$@"
+else
+	exec sh -c 'slstatus -s | dwl "$@"' dwl-run "$@"
+fi

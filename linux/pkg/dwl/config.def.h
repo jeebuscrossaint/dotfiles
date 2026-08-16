@@ -162,8 +162,8 @@ static const InputRule inputrules[] = {
 	{ NULL,                      createkeyboard,          createpointer       },
 };
 
-static const int repeat_rate = 25;
-static const int repeat_delay = 600;
+static const int repeat_rate = 50;   /* matches the sway config */
+static const int repeat_delay = 200; /* matches the sway config */
 
 /* Trackpad */
 static const int tap_to_click = 1;
@@ -320,6 +320,9 @@ static const Key keys[] = {
 	{ MODKEY,                    XKB_KEY_space,       setlayout,        {0} },
 	{ MODKEY|WLR_MODIFIER_SHIFT, XKB_KEY_space,       togglefloating,   {0} },
 	{ MODKEY,                    XKB_KEY_e,           togglefullscreen, {0} },
+	/* sway bound fullscreen to $mod+f and $mod+m; f is free here since the
+	 * layouts moved to Super+Ctrl, so keep the muscle memory working. */
+	{ MODKEY,                    XKB_KEY_f,           togglefullscreen, {0} },
 	{ MODKEY,                    XKB_KEY_x,           toggleswallow,    {0} },
 	{ MODKEY|WLR_MODIFIER_SHIFT, XKB_KEY_A,           toggleautoswallow,{0} },
 	{ MODKEY|WLR_MODIFIER_ALT,   XKB_KEY_v,           togglepointer,    {0} },
