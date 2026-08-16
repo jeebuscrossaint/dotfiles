@@ -16,7 +16,7 @@
 PREFIX    ?= $(HOME)/.local
 MANPREFIX ?= $(PREFIX)/share/man
 
-SUBDIRS = dwl mew slstatus
+SUBDIRS = dwl mew slstatus tsubu widle wlock wawa
 
 # Packages each tree needs. wlroots is version-pinned: dwl 0.8 builds against
 # 0.19 specifically, and Artix ships 0.18/0.19/0.20 as coexisting packages, so
@@ -31,12 +31,29 @@ $(SUBDIRS):
 
 install: all
 	@for d in $(SUBDIRS); do \
-		echo "==> installing $$d into $(PREFIX)"; \
-		$(MAKE) --no-print-directory -C $$d install \
-			PREFIX="$(PREFIX)" MANPREFIX="$(MANPREFIX)" || exit 1; \
+		if $(MAKE) -nC $$d install >/dev/null 2>&1; then \
+			echo "==> installing $$d into $(PREFIX)"; \
+			$(MAKE) --no-print-directory -C $$d install \
+				PREFIX="$(PREFIX)" MANPREFIX="$(MANPREFIX)" >/dev/null || exit 1; \
+		else \
+			echo "==> installing $$d into $(PREFIX) (no install target, copying)"; \
+			mkdir -p "$(PREFIX)/bin" && cp -f "$$d/$$d" "$(PREFIX)/bin/" || exit 1; \
+		fi; \
 	done
 	@echo
 	@echo "installed. start the session from a TTY with:  dwl-run"
+	@echo
+	@echo "NOTE: wlock reads /etc/shadow, so it needs to be setuid root. Installed"
+	@echo "into $(PREFIX) it is owned by you and will refuse to lock, exiting with"
+	@echo "'getspnam failed'. It fails BEFORE engaging the lock, so it cannot lock"
+	@echo "you out -- but to actually use it run:"
+	@echo "    make install-wlock-suid      (this one does need root)"
+
+# wlock verifies passwords against /etc/shadow, which only root can read. This
+# is the one thing in this tree that cannot live in ~/.local.
+install-wlock-suid: wlock
+	sudo install -o root -g root -m 4755 wlock/wlock /usr/local/bin/wlock
+	@echo "wlock installed setuid root at /usr/local/bin/wlock"
 
 clean:
 	@for d in $(SUBDIRS); do $(MAKE) --no-print-directory -C $$d clean 2>/dev/null || true; done
@@ -56,4 +73,4 @@ deps:
 		echo "all build dependencies present"; \
 	fi
 
-.PHONY: all install clean deps $(SUBDIRS)
+.PHONY: all install install-wlock-suid clean deps $(SUBDIRS)

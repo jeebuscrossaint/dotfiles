@@ -1,0 +1,4 @@
+[submodule "drwl"]
+	path = drwl
+	url = https://codeberg.org/sewn/drwl
+	branch = hyphen

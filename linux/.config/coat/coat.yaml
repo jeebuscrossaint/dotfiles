@@ -27,6 +27,8 @@ enabled:
   - swaybar
   - tofi
   - mew
+  - wlock
+  - tsubu
   # gtklock replaced swaylock 2026-08-05: swaylock reads one config with no
   # include, so coat couldn't theme it without owning the whole file.
   - gtklock
