@@ -1,0 +1,2 @@
+# Nix flake lock file should be committed
+flake.lock linguist-generated=true

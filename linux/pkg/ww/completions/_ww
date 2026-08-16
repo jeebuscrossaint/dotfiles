@@ -1,0 +1,69 @@
+#compdef ww
+
+_ww() {
+    local curcontext="$curcontext" state line
+    typeset -A opt_args
+
+    local -a transitions
+    transitions=(
+        'none:No transition'
+        'fade:Smooth crossfade'
+        'slide-left:Slide from right to left'
+        'slide-right:Slide from left to right'
+        'slide-up:Slide from bottom to top'
+        'slide-down:Slide from top to bottom'
+        'zoom-in:Zoom in while fading'
+        'zoom-out:Zoom out while fading'
+        'circle-open:Circular reveal from random position'
+        'circle-close:Circular collapse from random position'
+        'wipe-left:Curtain wipe left to right'
+        'wipe-right:Curtain wipe right to left'
+        'wipe-up:Curtain wipe bottom to top'
+        'wipe-down:Curtain wipe top to bottom'
+        'dissolve:Random pixel dissolve'
+        'pixelate:Pixelate transition effect'
+    )
+
+    local -a modes
+    modes=(
+        'fit:Scale to fit with letterboxing'
+        'fill:Scale to fill, crop if needed'
+        'stretch:Stretch to fill, ignore aspect ratio'
+        'center:No scaling, center image'
+        'tile:Repeat image to fill screen'
+    )
+
+    _arguments -C \
+        '(-o --output)'{-o,--output}'[Set wallpaper for specific output]:output:->outputs' \
+        '(-m --mode)'{-m,--mode}'[Scaling mode]:mode:->modes' \
+        '(-c --color)'{-c,--color}'[Solid color or letterbox color]:color' \
+        '(-l --loop)'{-l,--loop}'[Loop animated wallpapers]' \
+        '(-S --slideshow)'{-S,--slideshow}'[Slideshow mode]' \
+        '(-i --interval)'{-i,--interval}'[Slideshow interval in seconds]:seconds' \
+        '(-r --random)'{-r,--random}'[Random slideshow order]' \
+        '(-R --recursive)'{-R,--recursive}'[Scan directories recursively]' \
+        '(-t --transition)'{-t,--transition}'[Transition effect]:transition:->transitions' \
+        '(-d --duration)'{-d,--duration}'[Transition duration in seconds]:seconds' \
+        '(-f --fps)'{-f,--fps}'[Transition frame rate]:fps:(15 30 60 120 144 240)' \
+        '(-D --daemon)'{-D,--daemon}'[Run in background and restore from cache]' \
+        '(-L --list-outputs)'{-L,--list-outputs}'[List available outputs]' \
+        '(-v --version)'{-v,--version}'[Show version information]' \
+        '(-h --help)'{-h,--help}'[Show help message]' \
+        '*:file:_files'
+
+    case $state in
+        outputs)
+            local -a outputs
+            outputs=(${(f)"$(ww --list-outputs 2>/dev/null | grep -oP '^\s+\K[^ ]+' || echo '')"})
+            _describe -t outputs 'output' outputs
+            ;;
+        modes)
+            _describe -t modes 'mode' modes
+            ;;
+        transitions)
+            _describe -t transitions 'transition' transitions
+            ;;
+    esac
+}
+
+_ww "$@"

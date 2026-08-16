@@ -1,0 +1,196 @@
+.TH WW 1 "2024" "ww 0.1.0" "User Commands"
+.SH NAME
+ww \- Universal Wayland wallpaper setter
+.SH SYNOPSIS
+.B ww
+[\fIOPTIONS\fR] <\fIfile\fR|\fIdirectory\fR|\fIcolor\fR>
+.SH DESCRIPTION
+.B ww
+is a fast wallpaper setter for Wayland compositors with support for images, videos, slideshows, and smooth transitions.
+Supports multiple image formats (PNG, JPEG, WebP, TIFF, JXL, BMP, TGA, PNM, Farbfeld) and animated wallpapers (GIF, MP4, WebM).
+.SH OPTIONS
+.TP
+.BR \-o ", " \-\-output " \fINAME\fR"
+Set wallpaper for specific output. Use \fB\-\-list\-outputs\fR to see available outputs.
+.TP
+.BR \-m ", " \-\-mode " \fIMODE\fR"
+Scaling mode: \fBfit\fR, \fBfill\fR, \fBstretch\fR, \fBcenter\fR, \fBtile\fR (default: fit)
+.TP
+.BR \-c ", " \-\-color " \fI#RRGGBB\fR"
+Solid color background or letterbox color
+.TP
+.BR \-l ", " \-\-loop
+Loop animated wallpapers (GIF/video)
+.TP
+.BR \-S ", " \-\-slideshow
+Slideshow mode (multiple files)
+.TP
+.BR \-i ", " \-\-interval " \fISECONDS\fR"
+Slideshow interval in seconds (default: 300)
+.TP
+.BR \-r ", " \-\-random
+Random slideshow order
+.TP
+.BR \-R ", " \-\-recursive
+Scan directories recursively
+.TP
+.BR \-t ", " \-\-transition " \fITYPE\fR"
+Transition effect (default: fade)
+.RS
+.PP
+\fBBasic:\fR none, fade
+.PP
+\fBSlide:\fR slide-left, slide-right, slide-up, slide-down
+.PP
+\fBZoom:\fR zoom-in, zoom-out
+.PP
+\fBCircle:\fR circle-open, circle-close
+.PP
+\fBWipe:\fR wipe-left, wipe-right, wipe-up, wipe-down
+.PP
+\fBEffects:\fR dissolve, pixelate
+.RE
+.TP
+.BR \-d ", " \-\-duration " \fISECONDS\fR"
+Transition duration in seconds (default: 1.0)
+.TP
+.BR \-f ", " \-\-fps " \fIFPS\fR"
+Transition frame rate (default: 30, max: 240)
+.TP
+.BR \-D ", " \-\-daemon
+Run in background and restore wallpapers from cache
+.TP
+.BR \-L ", " \-\-list\-outputs
+List available outputs
+.TP
+.BR \-v ", " \-\-version
+Show version information
+.TP
+.BR \-h ", " \-\-help
+Show help message
+.SH SCALING MODES
+.TP
+.B fit
+Scale to fit with letterboxing (preserves aspect ratio, default)
+.TP
+.B fill
+Scale to fill, crop if needed (preserves aspect ratio)
+.TP
+.B stretch
+Stretch to fill, ignore aspect ratio
+.TP
+.B center
+No scaling, center image
+.TP
+.B tile
+Repeat image to fill screen
+.SH TRANSITIONS
+Circle transitions (circle-open, circle-close) appear from random positions on the screen with each transition, creating dynamic visual effects.
+.PP
+All transitions support configurable duration and frame rate (up to 240 FPS for high refresh rate displays).
+.SH DAEMON MODE
+When run with \fB\-\-daemon\fR, ww forks to the background and saves wallpaper state to \fI~/.cache/ww/<output-name>\fR.
+On subsequent daemon starts, wallpapers are automatically restored from cache.
+.PP
+This is useful for auto-starting wallpapers on compositor launch. Add to your compositor config:
+.PP
+.RS
+exec-once = ww --daemon
+.RE
+.PP
+Wallpapers set normally (without --daemon) are still cached and can be restored later.
+.SH SUPPORTED FORMATS
+.TP
+.B Static Images
+PNG, JPEG, WebP, TIFF/TIF, JPEG XL (JXL), BMP, TGA, PNM/PBM/PGM/PPM, Farbfeld
+.TP
+.B Animated
+GIF, MP4, WebM, Animated WebP
+.SH EXAMPLES
+.TP
+Set wallpaper on all outputs:
+.B ww
+wallpaper.png
+.TP
+Set wallpaper on specific output:
+.B ww
+\-o DP-1 wallpaper.jpg
+.TP
+Set with fill mode:
+.B ww
+\-m fill wallpaper.jpg
+.TP
+Set with letterbox color:
+.B ww
+\-m center \-c '#282828' logo.png
+.TP
+Set solid color:
+.B ww
+\-\-color '#FF5733'
+.TP
+Loop video wallpaper:
+.B ww
+\-\-loop video.mp4
+.TP
+Basic slideshow:
+.B ww
+\-S image1.jpg image2.png image3.webp
+.TP
+Slideshow with custom interval:
+.B ww
+\-S \-i 60 ~/wallpapers/*.jpg
+.TP
+Random slideshow:
+.B ww
+\-S \-r \-i 120 ~/wallpapers/*.png
+.TP
+Recursive directory scan:
+.B ww
+\-S \-R ~/wallpapers/
+.TP
+Slideshow with fade transition:
+.B ww
+\-S \-t fade \-d 2.0 ~/wallpapers/*.png
+.TP
+Ultra-smooth 240 FPS transitions:
+.B ww
+\-S \-t circle-open \-d 2.0 \-f 240 ~/wallpapers/*.jpg
+.TP
+Run as daemon:
+.B ww
+\-\-daemon
+.SH FILES
+.TP
+.I ~/.cache/ww/<output-name>
+Cache files storing wallpaper configuration per output
+.SH ENVIRONMENT
+.TP
+.B WAYLAND_DISPLAY
+Wayland display socket (required)
+.TP
+.B XDG_CACHE_HOME
+Base directory for cache files (default: ~/.cache)
+.SH COMPOSITOR SUPPORT
+Works with wlroots-based compositors that implement \fBwlr-layer-shell-unstable-v1\fR protocol.
+.PP
+Tested compositors: Sway, Hyprland, River, Wayfire
+.SH PERFORMANCE
+Transitions use bicubic interpolation for high-quality scaling. CPU usage at 60 FPS:
+.PP
+.RS
+1080p: ~5-10%
+.br
+1600p: ~10-15%
+.br
+4K: ~40-50%
+.RE
+.PP
+Adjust FPS with \fB-f\fR flag to balance smoothness and performance.
+.SH BUGS
+Report bugs at: https://github.com/jeebuscrossaint/ww/issues
+.SH AUTHOR
+Written by jeebuscrossaint
+.SH SEE ALSO
+.BR swaybg (1),
+.BR mpvpaper (1),
+.BR swww (1)

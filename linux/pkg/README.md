@@ -31,7 +31,7 @@ which then does need root).
 | `tsubu` | daemonless notifications | dunst (partly — see below) |
 | `widle` | run a command on idle | swayidle |
 | `wlock` | session locker | gtklock |
-| `wawa` | wallpaper setter | swaybg |
+| `ww` | wallpaper setter — your own, github.com/jeebuscrossaint/ww | swaybg |
 
 `patches/` holds the upstream patch files applied to dwl.
 `local-patches/` holds our own commits exported with `git format-patch`, one file
@@ -65,6 +65,31 @@ Two dunst features would need replacing:
   `pkill -x tsubu` before spawning the next one.
 - **progress bar** (`int:value:N`) — tsubu has no value hint, so a level meter
   would have to be drawn as text.
+
+## ww
+
+Vendored from your own repo, with a plain `Makefile` added (upstream builds with
+xmake, which is another dependency and does not fit clone-and-make) and
+`stb_image.h` vendored into `inc/` since the `stb` package is not installed.
+
+Four bugs fixed while integrating:
+
+- **`--output` never worked.** `wl_output` was bound at version 3, but the
+  `wl_output.name` event that carries the connector name (`eDP-1`) only exists
+  from version 4, so the listener never fired and every output reported as
+  `Unknown`. Now binds `min(version, 4)` and falls back to the model string.
+- **An unmatched `--output` hung forever** instead of erroring: it matched no
+  output, created no surface, then blocked in the event loop waiting for a
+  configure that could never arrive.
+- **TIFF loading used uninitialised dimensions.** `TIFFGetField`'s return value
+  was ignored and `img` comes from `malloc`, so a malformed file allocated from
+  whatever was on the heap. Also `w * h` was computed in `int`.
+- **`ftell` results were assigned straight to `size_t`**, so a directory (ftell
+  returns -1) became a SIZE_MAX allocation reported as out-of-memory.
+
+Also bounded the transition frame-copy by the allocated buffer size rather than
+by `width * height` — the transition only starts when those agree, but nothing
+re-checks it, and an output resize mid-transition would run off the mapping.
 
 ## How the pieces connect
 

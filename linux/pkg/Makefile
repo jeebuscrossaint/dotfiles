@@ -16,12 +16,13 @@
 PREFIX    ?= $(HOME)/.local
 MANPREFIX ?= $(PREFIX)/share/man
 
-SUBDIRS = dwl mew slstatus tsubu widle wlock wawa
+SUBDIRS = dwl mew slstatus tsubu widle wlock ww
 
 # Packages each tree needs. wlroots is version-pinned: dwl 0.8 builds against
 # 0.19 specifically, and Artix ships 0.18/0.19/0.20 as coexisting packages, so
 # having 0.20 installed for sway does NOT satisfy dwl.
-PKGDEPS = wlroots0.19 wayland wayland-protocols libinput libxkbcommon pixman fcft tllist
+PKGDEPS = wlroots0.19 wayland wayland-protocols libinput libxkbcommon pixman fcft tllist \
+          libwebp libtiff libjxl ffmpeg
 
 all: $(SUBDIRS)
 
