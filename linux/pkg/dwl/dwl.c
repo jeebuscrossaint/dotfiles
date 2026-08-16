@@ -417,6 +417,7 @@ static void setfloating(Client *c, int floating);
 static void setfullscreen(Client *c, int fullscreen);
 static void setgaps(int oh, int ov, int ih, int iv);
 static void setlayout(const Arg *arg);
+static void cyclelayout(const Arg *arg);
 static void setmfact(const Arg *arg);
 static void setmon(Client *c, Monitor *m, uint32_t newtags);
 static void setpsel(struct wl_listener *listener, void *data);
@@ -1636,8 +1637,18 @@ createpointer(struct wlr_pointer *pointer)
 			libinput_device_config_send_events_set_mode(device, send_events_mode);
 
 		if (libinput_device_config_accel_is_available(device)) {
-			libinput_device_config_accel_set_profile(device, accel_profile);
-			libinput_device_config_accel_set_speed(device, accel_speed);
+			/* Split touchpad from mouse, as the sway config did: it set
+			 * accel_profile flat only for `input type:pointer`, leaving the
+			 * touchpad on libinput's default. dwl has one global setting, so
+			 * branch on the touchpad test used above (a nonzero tap finger
+			 * count means touchpad). */
+			if (libinput_device_config_tap_get_finger_count(device)) {
+				libinput_device_config_accel_set_profile(device, touchpad_accel_profile);
+				libinput_device_config_accel_set_speed(device, touchpad_accel_speed);
+			} else {
+				libinput_device_config_accel_set_profile(device, accel_profile);
+				libinput_device_config_accel_set_speed(device, accel_speed);
+			}
 		}
 	}
 
@@ -3460,6 +3471,26 @@ setlayout(const Arg *arg)
 	strncpy(selmon->ltsymbol, selmon->lt[selmon->sellt]->symbol, sizeof(selmon->ltsymbol));
 	arrange(selmon);
 	drawbar(selmon);
+}
+
+/* Step through layouts[] in order rather than toggling between the last two.
+ * arg->i > 0 goes forward, anything else backward; both wrap. */
+void
+cyclelayout(const Arg *arg)
+{
+	size_t i, n = LENGTH(layouts);
+
+	if (!selmon || n == 0)
+		return;
+
+	for (i = 0; i < n; i++)
+		if (&layouts[i] == selmon->lt[selmon->sellt])
+			break;
+	if (i == n) /* current layout not in the table; start from the top */
+		i = 0;
+
+	i = (arg && arg->i > 0) ? (i + 1) % n : (i + n - 1) % n;
+	setlayout(&(Arg){.v = &layouts[i]});
 }
 
 /* arg > 1.0 will set mfact absolutely */
