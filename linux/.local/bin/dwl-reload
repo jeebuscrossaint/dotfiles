@@ -1,0 +1,37 @@
+#!/bin/sh
+# dwl-reload — restart dwl in place, picking up a freshly built binary.
+#
+# dwl is configured at compile time, so there is no reload in the sway sense:
+# `coat set` and any config.def.h edit rebuild ~/.local/bin/dwl, but the running
+# compositor is still the old binary. This is the closest equivalent.
+#
+# wl-restart installs a SIGHUP handler that SIGTERMs the compositor and starts it
+# again, reusing the Wayland socket it already holds. A clean dwl exit (status 0,
+# i.e. Super+Shift+q) makes wl-restart quit too, so this does not interfere with
+# logging out.
+#
+# WHAT SURVIVES: the socket, and Qt6 clients with QT_WAYLAND_RECONNECT=1 (set by
+# dwl-run). Everything else -- foot, Firefox, anything GTK or Electron -- is
+# still killed. This saves you the walk back to a TTY, not your windows.
+
+set -e
+
+pid=$(pgrep -x wl-restart | head -1) || true
+
+if [ -z "$pid" ]; then
+	echo "dwl-reload: no wl-restart process found." >&2
+	echo "The session was probably started as plain \`dwl\` rather than \`dwl-run\`;" >&2
+	echo "without the supervisor there is nothing to restart into." >&2
+	exit 1
+fi
+
+# Rebuild first so the restart lands on current sources rather than silently
+# reusing a stale binary.
+if [ -d "$HOME/dotfiles/linux/pkg" ]; then
+	make -C "$HOME/dotfiles/linux/pkg" install >/dev/null 2>&1 || {
+		echo "dwl-reload: build failed, not restarting." >&2
+		exit 1
+	}
+fi
+
+kill -HUP "$pid"

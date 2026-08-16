@@ -256,6 +256,7 @@ static const char *termcmd[] = { "foot", NULL, NULL };
 static const char *browsercmd[] = { "firefox", NULL, "Mozilla Firefox" };
 static const char *menucmd[] = { "tofi-drun", NULL };
 static const char *lockcmd[]    = { "gtklock-once", NULL };
+static const char *reloadcmd[]  = { "dwl-reload", NULL };
 static const char *kbdcmd[]     = { "wlboard", NULL };
 static const char *themecmd[]   = { "theme-pick", NULL };
 static const char *themerndcmd[]= { "theme-random", NULL };
@@ -278,6 +279,9 @@ static const Key keys[] = {
 	{ MODKEY|WLR_MODIFIER_ALT,   XKB_KEY_g,           defaultgaps,      {0} },
 	/* --- ported from the sway config --- */
 	{ MODKEY,                    XKB_KEY_q,           spawn,            {.v = termcmd} },
+	/* rebuild and restart dwl in place -- the nearest thing to sway's
+	 * $mod+Shift+c reload, though only Qt6 clients survive it */
+	{ MODKEY|WLR_MODIFIER_SHIFT, XKB_KEY_r,           spawn,            {.v = reloadcmd} },
 	{ MODKEY,                    XKB_KEY_d,           spawn,            {.v = menucmd} },
 	{ MODKEY,                    XKB_KEY_c,           killclient,       {0} },
 	{ MODKEY,                    XKB_KEY_v,           spawn,            {.v = clipcmd} },
