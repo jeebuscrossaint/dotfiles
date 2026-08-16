@@ -40,6 +40,7 @@ static void remove_client(Monitor *m, Client *c);
 static void setratio_h(const Arg *arg);
 static void setratio_v(const Arg *arg);
 static void swapclients(const Arg *arg);
+static void focusdir(const Arg *arg);
 static unsigned int visible_count(LayoutNode *node, Monitor *m);
 static Client *xytoclient(double x, double y);
 
@@ -496,6 +497,47 @@ void swapclients(const Arg *arg) {
 			arrange(selmon);
 		}
 	}
+}
+
+/* Focus the nearest visible client in a direction, the way sway's
+ * `focus left|right|up|down` does. Same geometric search as swapclients above,
+ * but it focuses rather than swapping -- and because it only compares window
+ * centres it works in every layout, not just btrtile. */
+void focusdir(const Arg *arg) {
+	Client *c, *target = NULL, *sel = focustop(selmon);
+	int closest_dist = INT_MAX, dist, sel_center_x, sel_center_y,
+	    cand_center_x, cand_center_y;
+
+	if (!sel || sel->isfullscreen)
+		return;
+
+	sel_center_x = sel->geom.x + sel->geom.width / 2;
+	sel_center_y = sel->geom.y + sel->geom.height / 2;
+
+	wl_list_for_each(c, &clients, link) {
+		if (!VISIBLEON(c, selmon) || c->isfullscreen || c == sel)
+			continue;
+
+		cand_center_x = c->geom.x + c->geom.width / 2;
+		cand_center_y = c->geom.y + c->geom.height / 2;
+
+		switch (arg->ui) {
+			case 0: if (cand_center_x >= sel_center_x) continue; break;
+			case 1: if (cand_center_x <= sel_center_x) continue; break;
+			case 2: if (cand_center_y >= sel_center_y) continue; break;
+			case 3: if (cand_center_y <= sel_center_y) continue; break;
+			default: continue;
+		}
+
+		dist = abs(sel_center_x - cand_center_x) + abs(sel_center_y - cand_center_y);
+		if (dist < closest_dist) {
+			closest_dist = dist;
+			target = c;
+		}
+	}
+
+	if (target)
+		focusclient(target, 1);
 }
 
 unsigned int

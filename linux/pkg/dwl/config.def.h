@@ -6,7 +6,7 @@
 /* appearance */
 static const int sloppyfocus               = 1;  /* focus follows mouse */
 static const int bypass_surface_visibility = 0;  /* 1 means idle inhibitors will disable idle tracking even if it's surface isn't visible  */
-static const int smartgaps                 = 0;  /* 1 means no outer gap when there is only one window */
+static const int smartgaps                 = 1;  /* sway: smart_gaps on */  /* 1 means no outer gap when there is only one window */
 static const int monoclegaps               = 0;  /* 1 means outer gaps in monocle layout */
 static const unsigned int borderpx         = 1;  /* border pixel of windows */
 static const int showbar                   = 1; /* 0 means no bar */
@@ -40,11 +40,21 @@ static const int topbar                    = 1; /* 0 means bottom bar */
 static const char *fonts[]                 = {COAT_FONT};
 static const float rootcolor[]             = COLOR(COAT_ROOTCOLOR); /* base00 */
 static const int centeredmaster_always     = 0;  /* always center even if only 1 window */
-static const unsigned int gappih           = 10; /* horiz inner gap between windows */
-static const unsigned int gappiv           = 10; /* vert inner gap between windows */
-static const unsigned int gappoh           = 10; /* horiz outer gap between windows and screen edge */
-static const unsigned int gappov           = 10; /* vert outer gap between windows and screen edge */
+static const unsigned int gappih          = 0;  /* sway ran gaps 0; raise with Super+Alt+h/l */ /* horiz inner gap between windows */
+static const unsigned int gappiv          = 0;  /* sway ran gaps 0; raise with Super+Alt+h/l */ /* vert inner gap between windows */
+static const unsigned int gappoh          = 0;  /* sway ran gaps 0; raise with Super+Alt+h/l */ /* horiz outer gap between windows and screen edge */
+static const unsigned int gappov          = 0;  /* sway ran gaps 0; raise with Super+Alt+h/l */ /* vert outer gap between windows and screen edge */
 /* This conforms to the xdg-protocol. Set the alpha to zero to restore the old behavior */
+/* modes: keybindings can be scoped to a mode, the way sway's `mode "resize"`
+ * block was. NORMAL is implicit; entermode(&(Arg){.ui = RESIZE}) switches, and
+ * entermode with .ui = 0 returns to NORMAL. */
+enum {
+	RESIZE,
+};
+const char *modes_labels[] = {
+	"resize",
+};
+
 static const float fullscreen_bg[]         = {0.0f, 0.0f, 0.0f, 1.0f}; /* You can also use glsl colors */
 static uint32_t colors[][3]                = {
 	/*               fg              bg              border    */
@@ -63,7 +73,7 @@ static float swallowborder = 1.0f; /* add this multiplied by borderpx to border 
 
 #define SCRATCHPAD_COUNT 3
 /* tagging */
-static char *tags[] = { "1", "2", "3", "4", "5", "6", "7", "8", "9" };
+static char *tags[] = { "1", "2", "3", "4", "5", "6", "7", "8", "9", "10" };
 
 /* logging */
 static int log_level = WLR_ERROR;
@@ -219,7 +229,7 @@ LIBINPUT_CONFIG_TAP_MAP_LMR -- 1/2/3 finger tap maps to left/middle/right
 */
 static const enum libinput_config_tap_button_map button_map = LIBINPUT_CONFIG_TAP_MAP_LRM;
 
-static const int cursor_timeout = 5;
+static const int cursor_timeout = 3; /* sway: hide_cursor 3000 */
 
 /* If you want to use the windows key for MODKEY, use WLR_MODIFIER_LOGO */
 #define MODKEY WLR_MODIFIER_LOGO
@@ -285,10 +295,14 @@ static const Key keys[] = {
 	{ 0, XKB_KEY_XF86Launch3,           spawn, SHCMD("osd playpause") },
 	{ 0, XKB_KEY_XF86MonBrightnessUp,   spawn, SHCMD("osd brightness up") },
 	{ 0, XKB_KEY_XF86MonBrightnessDown, spawn, SHCMD("osd brightness down") },
-	{ MODKEY,                    XKB_KEY_p,           spawn,            {.v = menucmd} },
 	{ MODKEY|WLR_MODIFIER_SHIFT, XKB_KEY_Return,      spawn,            {.v = termcmd} },
-	{ MODKEY,                    XKB_KEY_b,           togglebar,        {0} },
+	{ MODKEY,                    XKB_KEY_p,           togglebar,        {0} }, /* sway: $mod+p */
 	{ MODKEY|WLR_MODIFIER_SHIFT, XKB_KEY_b,           spawnorfocus,     {.v = browsercmd} },
+	/* directional focus, matching sway's $mod+Left/Down/Up/Right */
+	{ MODKEY,                    XKB_KEY_Left,        focusdir,         {.ui = 0} },
+	{ MODKEY,                    XKB_KEY_Right,       focusdir,         {.ui = 1} },
+	{ MODKEY,                    XKB_KEY_Up,          focusdir,         {.ui = 2} },
+	{ MODKEY,                    XKB_KEY_Down,        focusdir,         {.ui = 3} },
 	{ MODKEY,                    XKB_KEY_j,           focusstack,       {.i = +1} },
 	{ MODKEY,                    XKB_KEY_k,           focusstack,       {.i = -1} },
 	{ MODKEY|WLR_MODIFIER_SHIFT, XKB_KEY_j,           movestack,        {.i = +1} },
@@ -340,8 +354,6 @@ static const Key keys[] = {
 	{ MODKEY|WLR_MODIFIER_SHIFT, XKB_KEY_A,           toggleautoswallow,{0} },
 	{ MODKEY|WLR_MODIFIER_ALT,   XKB_KEY_v,           togglepointer,    {0} },
 	{ MODKEY,                    XKB_KEY_F5,          togglefullscreenadaptivesync, {0} },
-	{ MODKEY,                    XKB_KEY_0,           view,             {.ui = ~0} },
-	{ MODKEY|WLR_MODIFIER_SHIFT, XKB_KEY_parenright,  tag,              {.ui = ~0} },
 	{ MODKEY,                    XKB_KEY_comma,       focusmon,         {.i = WLR_DIRECTION_LEFT} },
 	{ MODKEY,                    XKB_KEY_period,      focusmon,         {.i = WLR_DIRECTION_RIGHT} },
 	{ MODKEY|WLR_MODIFIER_SHIFT, XKB_KEY_less,        tagmon,           {.i = WLR_DIRECTION_LEFT} },
@@ -366,7 +378,12 @@ static const Key keys[] = {
 	TAGKEYS(          XKB_KEY_7, XKB_KEY_ampersand,                     6),
 	TAGKEYS(          XKB_KEY_8, XKB_KEY_asterisk,                      7),
 	TAGKEYS(          XKB_KEY_9, XKB_KEY_parenleft,                     8),
+	/* tenth tag: sway had workspaces 1-10, and $mod+0 was workspace 10 rather
+	 * than dwl's view-all, so that pair is replaced here. */
+	TAGKEYS(          XKB_KEY_0, XKB_KEY_parenright,                    9),
 	{ MODKEY|WLR_MODIFIER_SHIFT, XKB_KEY_q,           quit,             {0} },
+
+	{ MODKEY,                    XKB_KEY_r,           entermode,        {.i = RESIZE} },
 
 	/* Ctrl-Alt-Backspace and Ctrl-Alt-Fx used to be handled by X server */
 	{ WLR_MODIFIER_CTRL|WLR_MODIFIER_ALT,XKB_KEY_Terminate_Server, quit, {0} },
@@ -376,6 +393,24 @@ static const Key keys[] = {
 #define CHVT(n) { WLR_MODIFIER_CTRL|WLR_MODIFIER_ALT,XKB_KEY_XF86Switch_VT_##n, chvt, {.ui = (n)} }
 	CHVT(1), CHVT(2), CHVT(3), CHVT(4), CHVT(5), CHVT(6),
 	CHVT(7), CHVT(8), CHVT(9), CHVT(10), CHVT(11), CHVT(12),
+};
+
+static const Modekey modekeys[] = {
+	/* Mirrors the sway config's `mode "resize"`: Super+r enters, arrows or hjkl
+	 * resize, Return/Escape leave. setratio_h/_v come from btrtile and resize on
+	 * both axes; in the other layouts only the horizontal axis moves.
+	 *
+	 * mode     modifier  key                function     argument */
+	{ RESIZE, { 0, XKB_KEY_Left,   setratio_h, {.f = -0.025f} } },
+	{ RESIZE, { 0, XKB_KEY_Right,  setratio_h, {.f = +0.025f} } },
+	{ RESIZE, { 0, XKB_KEY_Up,     setratio_v, {.f = -0.025f} } },
+	{ RESIZE, { 0, XKB_KEY_Down,   setratio_v, {.f = +0.025f} } },
+	{ RESIZE, { 0, XKB_KEY_h,      setratio_h, {.f = -0.025f} } },
+	{ RESIZE, { 0, XKB_KEY_l,      setratio_h, {.f = +0.025f} } },
+	{ RESIZE, { 0, XKB_KEY_k,      setratio_v, {.f = -0.025f} } },
+	{ RESIZE, { 0, XKB_KEY_j,      setratio_v, {.f = +0.025f} } },
+	{ RESIZE, { 0, XKB_KEY_Return, entermode,  {.i = NORMAL} } },
+	{ RESIZE, { 0, XKB_KEY_Escape, entermode,  {.i = NORMAL} } },
 };
 
 static const Button buttons[] = {
