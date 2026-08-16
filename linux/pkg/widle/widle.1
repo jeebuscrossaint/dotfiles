@@ -1,0 +1,54 @@
+.Dd October 10, 2024
+.Dt WIDLE 1
+.Os
+.Sh NAME
+.Nm widle
+.Nd run a command upon becoming idle
+.Sh SYNOPSIS
+.Nm
+.Op Fl bcv
+.Op Fl t Ar timeout
+.Op Ar cmd Op Ar arg...
+.Sh DESCRIPTION
+.Nm
+runs a given command upon being recieved a notification for an idle timeout
+by a Wayland compositor supporting the
+.Sy ext-idle-notify-v1
+protocol.
+If sent the
+.Sy USR1
+signal,
+.Nm
+will immediately run the command, skipping the need for an idle timeout.
+If the idle timeout was reached/activated and the command was still running,
+it will not be ran, only allowing one instance of that command to be running.
+If a command is not given,
+.Nm
+will return after the idle timeout has been reached, as oppose to looping
+on timeouts.
+.Sh OPTIONS
+.Bl -tag
+.It Fl b
+Run the command into the background, allowing multiple instances of the 
+command to be simutaneously running.
+.It Fl c
+Do not restart the idle timeout after being sent the
+.Sy USR1
+signal.
+.It Fl t Ar timeout
+Use
+.Ar timeout
+as the configured idle timeout in seconds.
+If the
+.Ar timeout
+given is negative, this will cause widle to never reach
+a idle timeout, effectively working as a wayland application launcher
+utilizing the
+.Sy USR1
+signal. This can be useful when used from a system service such as
+.Xr acpid 1 .
+.It Fl v
+Print version information.
+.El
+.Sh SEE ALSO
+.Xr swayidle 1

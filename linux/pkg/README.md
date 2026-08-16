@@ -28,10 +28,43 @@ which then does need root).
 | `dwl` | wlroots compositor, dwm's model. dwl 0.8 + 25 patches | sway |
 | `mew` | dmenu for Wayland | tofi |
 | `slstatus` | status line generator | swayrbar |
+| `tsubu` | daemonless notifications | dunst (partly — see below) |
+| `widle` | run a command on idle | swayidle |
+| `wlock` | session locker | gtklock |
+| `wawa` | wallpaper setter | swaybg |
 
 `patches/` holds the upstream patch files applied to dwl.
 `local-patches/` holds our own commits exported with `git format-patch`, one file
 per change, with the conflict resolutions explained in each commit message.
+
+## wlock needs root
+
+wlock verifies passwords against `/etc/shadow`, which only root can read, so it
+must be setuid root. Installed into `~/.local` it is owned by you and refuses to
+run, exiting with `getspnam failed, ensure suid & sgid lock`. It fails *before*
+engaging the lock, so a broken install cannot lock you out — it just does
+nothing. To actually use it:
+
+```sh
+make install-wlock-suid     # the one target here that needs root
+```
+
+## tsubu does not fully replace dunst
+
+tsubu has **no D-Bus support at all** — it is a one-shot command that draws a
+notification, not an implementation of `org.freedesktop.Notifications`. Anything
+that notifies over D-Bus (Firefox, vesktop, `notify-send`) needs a real daemon,
+so dunst has to stay for those.
+
+Where tsubu is a genuine improvement is the OSD, which is script-driven:
+`~/.local/bin/osd` calls `dunstify` directly, so it could call tsubu instead.
+Two dunst features would need replacing:
+
+- **stack tag / replace-in-place** — mashing a volume key currently updates one
+  popup. tsubu is one process per notification, so the script would need to
+  `pkill -x tsubu` before spawning the next one.
+- **progress bar** (`int:value:N`) — tsubu has no value hint, so a level meter
+  would have to be drawn as text.
 
 ## How the pieces connect
 

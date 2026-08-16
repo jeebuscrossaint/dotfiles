@@ -1,0 +1,4 @@
+tsubu
+*-protocol.*
+*.o
+config.h
