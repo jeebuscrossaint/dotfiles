@@ -1,0 +1,105 @@
+From 9be9c310cd546c22bd486f11c21e7ffcc09b1e8a Mon Sep 17 00:00:00 2001
+From: C4FE1 <heitorcdesousa13@gmail.com>
+Date: Fri, 20 Mar 2026 21:30:41 -0300
+Subject: [PATCH] dwl: add dwindle layout
+
+dwl: add dwindle layout
+---
+ config.def.h |  2 ++
+ dwl.c        | 53 ++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 55 insertions(+)
+
+diff --git a/config.def.h b/config.def.h
+index 8a6eda0..96bb1c0 100644
+--- a/config.def.h
++++ b/config.def.h
+@@ -33,6 +33,7 @@ static const Layout layouts[] = {
+ 	{ "[]=",      tile },
+ 	{ "><>",      NULL },    /* no layout function means floating behavior */
+ 	{ "[M]",      monocle },
++	{ "[\\]",     dwindle },
+ };
+ 
+ /* monitors */
+@@ -135,6 +136,7 @@ static const Key keys[] = {
+ 	{ MODKEY,                    XKB_KEY_t,           setlayout,        {.v = &layouts[0]} },
+ 	{ MODKEY,                    XKB_KEY_f,           setlayout,        {.v = &layouts[1]} },
+ 	{ MODKEY,                    XKB_KEY_m,           setlayout,        {.v = &layouts[2]} },
++	{ MODKEY,                    XKB_KEY_r,           setlayout,        {.v = &layouts[3]} },
+ 	{ MODKEY,                    XKB_KEY_space,       setlayout,        {0} },
+ 	{ MODKEY|WLR_MODIFIER_SHIFT, XKB_KEY_space,       togglefloating,   {0} },
+ 	{ MODKEY,                    XKB_KEY_e,           togglefullscreen, {0} },
+diff --git a/dwl.c b/dwl.c
+index 101a45f..5f1b762 100644
+--- a/dwl.c
++++ b/dwl.c
+@@ -335,6 +335,7 @@ static void startdrag(struct wl_listener *listener, void *data);
+ static void tag(const Arg *arg);
+ static void tagmon(const Arg *arg);
+ static void tile(Monitor *m);
++static void dwindle(Monitor *m);
+ static void togglefloating(const Arg *arg);
+ static void togglefullscreen(const Arg *arg);
+ static void toggletag(const Arg *arg);
+@@ -2745,6 +2746,58 @@ tile(Monitor *m)
+ 	}
+ }
+ 
++void
++dwindle(Monitor *m)
++{
++	unsigned int i, n = 0;
++	int nx, ny, nw, nh;
++	int horizontal;
++	Client *c;
++
++	/* count clients */
++	wl_list_for_each(c, &clients, link)
++		if (VISIBLEON(c, m) && !c->isfloating && !c->isfullscreen)
++			n++;
++
++	if (n == 0)
++		return;
++
++	nx = m->w.x;
++	ny = m->w.y;
++	nw = m->w.width;
++	nh = m->w.height;
++
++	horizontal = 1; // toggle split direction
++	i = 0;
++
++	wl_list_for_each(c, &clients, link) {
++		if (!VISIBLEON(c, m) || c->isfloating || c->isfullscreen)
++			continue;
++
++		if (i == n - 1) {
++			/* last window gets remaining space */
++			resize(c, (struct wlr_box){nx, ny, nw, nh}, 0);
++		} else if (horizontal) {
++			int w = nw / 2;
++
++			resize(c, (struct wlr_box){nx, ny, w, nh}, 0);
++
++			nx += w;
++			nw -= w;
++		} else {
++			int h = nh / 2;
++
++			resize(c, (struct wlr_box){nx, ny, nw, h}, 0);
++
++			ny += h;
++			nh -= h;
++		}
++
++		horizontal = !horizontal;
++		i++;
++	}
++}
++
+ void
+ togglefloating(const Arg *arg)
+ {
+-- 
+2.53.0
+

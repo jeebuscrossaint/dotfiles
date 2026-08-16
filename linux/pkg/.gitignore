@@ -1,0 +1,9 @@
+# generated from config.def.h at build time
+config.h
+# build artefacts
+*.o
+*-protocol.c
+*-protocol.h
+dwl/dwl
+mew/mew
+slstatus/slstatus

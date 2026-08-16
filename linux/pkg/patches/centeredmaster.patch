@@ -1,0 +1,132 @@
+From d3d0000c3e2baa8c2a4633581186f768c909667a Mon Sep 17 00:00:00 2001
+From: Nikita Ivanov <nikita.vyach.ivanov@gmail.com>
+Date: Mon, 13 Apr 2026 18:24:17 +0200
+Subject: [PATCH] Add centeredmaster layout
+
+---
+ config.def.h |  3 +++
+ dwl.c        | 73 ++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 76 insertions(+)
+
+diff --git a/config.def.h b/config.def.h
+index 8a6eda0..15cbe32 100644
+--- a/config.def.h
++++ b/config.def.h
+@@ -7,6 +7,7 @@
+ static const int sloppyfocus               = 1;  /* focus follows mouse */
+ static const int bypass_surface_visibility = 0;  /* 1 means idle inhibitors will disable idle tracking even if it's surface isn't visible  */
+ static const unsigned int borderpx         = 1;  /* border pixel of windows */
++static const int centeredmaster_always     = 0;  /* always center even if only 1 window */
+ static const float rootcolor[]             = COLOR(0x222222ff);
+ static const float bordercolor[]           = COLOR(0x444444ff);
+ static const float focuscolor[]            = COLOR(0x005577ff);
+@@ -33,6 +34,7 @@ static const Layout layouts[] = {
+ 	{ "[]=",      tile },
+ 	{ "><>",      NULL },    /* no layout function means floating behavior */
+ 	{ "[M]",      monocle },
++	{ "|M|",      centeredmaster },
+ };
+ 
+ /* monitors */
+@@ -135,6 +137,7 @@ static const Key keys[] = {
+ 	{ MODKEY,                    XKB_KEY_t,           setlayout,        {.v = &layouts[0]} },
+ 	{ MODKEY,                    XKB_KEY_f,           setlayout,        {.v = &layouts[1]} },
+ 	{ MODKEY,                    XKB_KEY_m,           setlayout,        {.v = &layouts[2]} },
++	{ MODKEY,                    XKB_KEY_c,           setlayout,        {.v = &layouts[3]} },
+ 	{ MODKEY,                    XKB_KEY_space,       setlayout,        {0} },
+ 	{ MODKEY|WLR_MODIFIER_SHIFT, XKB_KEY_space,       togglefloating,   {0} },
+ 	{ MODKEY,                    XKB_KEY_e,           togglefullscreen, {0} },
+diff --git a/dwl.c b/dwl.c
+index 44f3ad9..98ba318 100644
+--- a/dwl.c
++++ b/dwl.c
+@@ -248,6 +248,7 @@ static void arrangelayer(Monitor *m, struct wl_list *list,
+ static void arrangelayers(Monitor *m);
+ static void axisnotify(struct wl_listener *listener, void *data);
+ static void buttonpress(struct wl_listener *listener, void *data);
++static void centeredmaster(Monitor *m);
+ static void chvt(const Arg *arg);
+ static void checkidleinhibitor(struct wlr_surface *exclude);
+ static void cleanup(void);
+@@ -672,6 +673,78 @@ buttonpress(struct wl_listener *listener, void *data)
+ 			event->time_msec, event->button, event->state);
+ }
+ 
++void
++centeredmaster(Monitor *m)
++{
++	int i, n, h, mw, mx, my, oty, ety, tw;
++	Client *c;
++
++	n = 0;
++	wl_list_for_each(c, &clients, link)
++		if (VISIBLEON(c, m) && !c->isfloating && !c->isfullscreen)
++			n++;
++	if (n == 0)
++		return;
++
++	/* initialize areas */
++	if (centeredmaster_always) {
++		mw = m->w.width / 2;
++		mx = m->w.width / 4;
++	} else {
++		mw = m->w.width;
++		mx = 0;
++	}
++	my = 0;
++	tw = mw;
++
++	if (n > m->nmaster) {
++		/* go mfact box in the center if more than nmaster clients */
++		if (centeredmaster_always) {
++			mw = m->nmaster ? (int)roundf(m->w.width / 2) : 0;
++			tw = mw / 2;
++		} else {
++			mw = m->nmaster ? (int)roundf(m->w.width * m->mfact) : 0;
++			tw = m->w.width - mw;
++		}
++
++		if (n - m->nmaster > 1) {
++			/* only one client */
++			mx = (m->w.width - mw) / 2;
++			tw = (m->w.width - mw) / 2;
++		}
++	}
++
++	i = 0;
++	oty = 0;
++	ety = 0;
++	wl_list_for_each(c, &clients, link) {
++		if (!VISIBLEON(c, m) || c->isfloating || c->isfullscreen)
++			continue;
++		if (i < m->nmaster) {
++			/* nmaster clients are stacked vertically, in the center
++			 * of the screen */
++			h = (m->w.height - my) / (MIN(n, m->nmaster) - i);
++			resize(c, (struct wlr_box){.x = m->w.x + mx, .y = m->w.y + my, .width = mw,
++				   .height = h}, 0);
++			my += c->geom.height;
++		} else {
++			/* stack clients are stacked vertically */
++			if ((i - m->nmaster) % 2) {
++				h = (m->w.height - ety) / ( (1 + n - i) / 2);
++				resize(c, (struct wlr_box){.x = m->w.x, .y = m->w.y + ety, .width = tw,
++					   .height = h}, 0);
++				ety += c->geom.height;
++			} else {
++				h = (m->w.height - oty) / ((1 + n - i) / 2);
++				resize(c, (struct wlr_box){.x = m->w.x + mx + mw, .y = m->w.y + oty, .width = tw,
++					.height = h}, 0);
++				oty += c->geom.height;
++			}
++		}
++		i++;
++	}
++}
++
+ void
+ chvt(const Arg *arg)
+ {
+-- 
+2.53.0
+
