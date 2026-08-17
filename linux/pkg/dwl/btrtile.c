@@ -53,7 +53,8 @@ apply_layout(Monitor *m, LayoutNode *node,
 {
 	Client *c;
 	float ratio;
-	unsigned int left_count, right_count, mid;
+	unsigned int left_count, right_count;
+	int mid, gap;
 	struct wlr_box left_area, right_area;
 
 	if (!node)
@@ -93,28 +94,36 @@ apply_layout(Monitor *m, LayoutNode *node,
 	memset(&right_area, 0, sizeof(right_area));
 
 	if (node->is_split_vertically) {
-		mid = (unsigned int)(area.width * ratio);
+		/* Inner gap: take it out of the area BEFORE applying the ratio, so the
+		 * split still divides the space the children actually receive and
+		 * dragging the divider does not drift. Clamped so a pathologically
+		 * narrow area cannot hand a child a negative width. */
+		gap = enablegaps ? MIN((int)m->gappiv, area.width - 1) : 0;
+		gap = MAX(gap, 0);
+		mid = (int)((area.width - gap) * ratio);
 		left_area.x      = area.x;
 		left_area.y      = area.y;
 		left_area.width  = mid;
 		left_area.height = area.height;
 
-		right_area.x      = area.x + mid;
+		right_area.x      = area.x + mid + gap;
 		right_area.y      = area.y;
-		right_area.width  = area.width  - mid;
+		right_area.width  = area.width  - mid - gap;
 		right_area.height = area.height;
 	} else {
 		/* horizontal split */
-		mid = (unsigned int)(area.height * ratio);
+		gap = enablegaps ? MIN((int)m->gappih, area.height - 1) : 0;
+		gap = MAX(gap, 0);
+		mid = (int)((area.height - gap) * ratio);
 		left_area.x     = area.x;
 		left_area.y     = area.y;
 		left_area.width = area.width;
 		left_area.height = mid;
 
 		right_area.x     = area.x;
-		right_area.y     = area.y + mid;
+		right_area.y     = area.y + mid + gap;
 		right_area.width = area.width;
-		right_area.height= area.height - mid;
+		right_area.height= area.height - mid - gap;
 	}
 
 	apply_layout(m, node->left,  left_area,  0);
@@ -157,6 +166,15 @@ btrtile(Monitor *m)
 		return;
 
 	full_area = m->w;
+	/* Outer gap, following tile()'s axis convention: gappov is x/width, gappoh
+	 * is y/height. smartgaps == n drops it for a lone client, the same rule
+	 * tile() applies at dwl.c:4136 and the nearest thing to sway's smart_gaps. */
+	if (enablegaps && (int)smartgaps != n) {
+		full_area.x      += m->gappov;
+		full_area.y      += m->gappoh;
+		full_area.width  -= 2 * m->gappov;
+		full_area.height -= 2 * m->gappoh;
+	}
 	apply_layout(m, m->root, full_area, 1);
 }
 
