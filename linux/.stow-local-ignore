@@ -1,0 +1,33 @@
+# Paths stow must not link out of this package.
+#
+# Providing this file REPLACES stow's built-in default ignore list, so the
+# defaults are repeated below -- drop them and stow will start linking .git,
+# editor backups and so on into $HOME.
+#
+# Patterns containing a slash are matched against the path relative to this
+# package directory, anchored at both ends; patterns without one are matched
+# against basenames anywhere in the tree.
+
+# pkg/ is a build tree, not dotfiles. Without this stow creates ~/pkg as a
+# symlink into the repo, which is meaningless -- `make -C ~/dotfiles/linux/pkg`
+# is how it is used. This went unnoticed for a long time only because stow
+# aborted on other conflicts before it ever got here.
+^/pkg$
+
+# stow's defaults, verbatim.
+RCS
+.+,v
+CVS
+\.\#.+
+\.cvsignore
+\.svn
+_darcs
+\.hg
+\.git
+\.gitignore
+\.gitmodules
+.+~
+\#.*\#
+^/README.*
+^/LICENSE.*
+^/COPYING
