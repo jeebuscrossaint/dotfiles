@@ -40,6 +40,32 @@ export QT_WAYLAND_RECONNECT=1
 # dwl inherits this process's environment; dbus-update-activation-environment in
 # autostart[] then hands it to anything dbus launches later.
 
+# Raise the file-descriptor limit. sway did this for itself (increase_nofile_limit()
+# in its main()); dwl never has, so it ran on the 1024 soft limit. A wlroots
+# compositor spends fds freely -- one per client connection, per dmabuf, per shm
+# pool, per input device -- and a fresh session here already sits around 164. When
+# the limit is reached the compositor stays up and responsive but can no longer
+# ACCEPT new client connections, so every spawn bind silently does nothing while
+# tag switching and quit keep working.
+hard=$(ulimit -Hn 2>/dev/null) || hard=""
+case "$hard" in
+unlimited) hard=65536 ;;
+'' | *[!0-9]*) hard="" ;;
+esac
+[ -n "$hard" ] && ulimit -n "$hard" 2>/dev/null
+
+# Keep dwl's stderr. Started from a TTY it scrolls away, so a crash or a rejected
+# output commit leaves nothing to read afterwards -- which is why an overnight
+# breakage could not be diagnosed. One previous session is kept alongside.
+LOG_DIR="${XDG_STATE_HOME:-$HOME/.local/state}/dwl"
+LOG="$LOG_DIR/dwl.log"
+if mkdir -p "$LOG_DIR" 2>/dev/null; then
+	[ -f "$LOG" ] && mv -f "$LOG" "$LOG.1" 2>/dev/null
+	# Both dwl and wl-restart inherit this, and so does slstatus.
+	exec 2>>"$LOG"
+	printf '=== session started %s ===\n' "$(date '+%F %T')" >&2
+fi
+
 if command -v wl-restart >/dev/null 2>&1; then
 	exec wl-restart --env -- sh -c 'slstatus -s | dwl "$@"' dwl-run "$@"
 else

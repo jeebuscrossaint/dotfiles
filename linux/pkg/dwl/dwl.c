@@ -1554,7 +1554,36 @@ createmon(struct wl_listener *listener, void *data)
 	LISTEN(&wlr_output->events.request_state, &m->request_state, requestmonstate);
 
 	wlr_output_state_set_enabled(&state, 1);
-	wlr_output_commit_state(wlr_output, &state);
+	/* The result used to be discarded here. When the commit failed the output
+	 * was left with no valid state while the rest of createmon() carried on
+	 * building a bar, a scene buffer and a frame listener for it -- a segfault
+	 * a few frames later, which is exactly what a headless run of this binary
+	 * does. The two settings that realistically get refused are adaptive sync
+	 * (monrules ask for it on both monitors, and it is not always available on
+	 * a connector that has just come back from suspend) and the custom mode, so
+	 * retry without each in turn instead of insisting on the monrule. */
+	if (!wlr_output_commit_state(wlr_output, &state)) {
+		fprintf(stderr, "dwl: %s rejected its monitor rule, retrying without "
+				"adaptive sync\n", wlr_output->name);
+		wlr_output_state_set_adaptive_sync_enabled(&state, 0);
+
+		if (!wlr_output_commit_state(wlr_output, &state)) {
+			fprintf(stderr, "dwl: %s still refused, falling back to its "
+					"preferred mode\n", wlr_output->name);
+			/* Start clean and ask for nothing but "on", letting wlroots
+			 * choose the mode. Scale and transform are re-applied from the
+			 * rule; only the mode and adaptive sync are given up. */
+			wlr_output_state_finish(&state);
+			wlr_output_state_init(&state);
+			wlr_output_state_set_enabled(&state, 1);
+			if (r < END(monrules)) {
+				wlr_output_state_set_scale(&state, r->scale);
+				wlr_output_state_set_transform(&state, r->rr);
+			}
+			if (!wlr_output_commit_state(wlr_output, &state))
+				die("dwl: cannot enable output %s at all", wlr_output->name);
+		}
+	}
 	wlr_output_state_finish(&state);
 
 	if (!(m->drw = drwl_create()))
