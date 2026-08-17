@@ -1,5 +1,11 @@
 # pkg — the compile-time-configured half of the desktop.
 #
+# One tree left. dwl, wlock, widle, tsubu, wl-restart and ww were all removed
+# once mango replaced dwl: mango is packaged on both Arch and OpenBSD, and the
+# rest were either unused (wlock, widle, tsubu) or only existed to prop dwl up
+# (wl-restart). slstatus stays because it feeds waybar's status module and is one
+# of the few status generators that builds on OpenBSD as well as Linux.
+#
 # These are vendored source trees, not packages. They are configured by editing
 # C headers and recompiling, so the source has to live here rather than being
 # installed from a repo. `config.def.h` in each tree is the real configuration;
@@ -16,13 +22,13 @@
 PREFIX    ?= $(HOME)/.local
 MANPREFIX ?= $(PREFIX)/share/man
 
-SUBDIRS = dwl slstatus tsubu widle wlock ww wl-restart
+SUBDIRS = slstatus
 
-# Packages each tree needs. wlroots is version-pinned: dwl 0.8 builds against
-# 0.19 specifically, and Artix ships 0.18/0.19/0.20 as coexisting packages, so
-# having 0.20 installed for sway does NOT satisfy dwl.
-PKGDEPS = wlroots0.19 wayland wayland-protocols libinput libxkbcommon pixman fcft tllist \
-          libwebp libtiff libjxl ffmpeg
+# What slstatus needs. The wlroots/wayland/fcft pile that used to be here went
+# with dwl -- the compositor is mango now, installed from the AUR on Arch and
+# ports on OpenBSD, so its dependencies are the package manager's problem rather
+# than this tree's.
+PKGDEPS = ncurses
 
 all: $(SUBDIRS)
 
@@ -42,27 +48,18 @@ install: all
 		fi; \
 	done
 	@echo
-	@echo "installed. start the session from a TTY with:  dwl-run"
-	@echo
-	@echo "NOTE: wlock reads /etc/shadow, so it needs to be setuid root. Installed"
-	@echo "into $(PREFIX) it is owned by you and will refuse to lock, exiting with"
-	@echo "'getspnam failed'. It fails BEFORE engaging the lock, so it cannot lock"
-	@echo "you out -- but to actually use it run:"
-	@echo "    make install-wlock-suid      (this one does need root)"
-
-# wlock verifies passwords against /etc/shadow, which only root can read. This
-# is the one thing in this tree that cannot live in ~/.local.
-install-wlock-suid: wlock
-	sudo install -o root -g root -m 4755 wlock/wlock /usr/local/bin/wlock
-	@echo "wlock installed setuid root at /usr/local/bin/wlock"
+	@echo "installed. start the session from a TTY with:  mango-run"
 
 clean:
 	@for d in $(SUBDIRS); do $(MAKE) --no-print-directory -C $$d clean 2>/dev/null || true; done
 	@rm -f $(SUBDIRS:=/config.h)
 
 # Non-fatal: report what is missing rather than failing, since names differ
-# across distributions.
+# across distributions -- and this tree is expected to build on OpenBSD too,
+# where pacman does not exist at all.
 deps:
+	@command -v pacman >/dev/null 2>&1 || { \
+		echo "not an Arch-family system; check for: $(PKGDEPS)"; exit 0; }
 	@missing=""; \
 	for p in $(PKGDEPS); do \
 		pacman -Q "$$p" >/dev/null 2>&1 || missing="$$missing $$p"; \
@@ -74,4 +71,4 @@ deps:
 		echo "all build dependencies present"; \
 	fi
 
-.PHONY: all install install-wlock-suid clean deps $(SUBDIRS)
+.PHONY: all install clean deps $(SUBDIRS)

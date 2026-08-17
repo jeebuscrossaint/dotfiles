@@ -48,8 +48,13 @@
     // pull in a theme lookup for no benefit at 22px.
     "format": "{title}",
     "icon-size": 0,
-    "max-length": 80,
-    "tooltip": false,
+    // 24, not 80. slstatus emits ~270 characters, which at 10pt MartianMono is
+    // already ~2030px of a 2560px panel. An 80-char title pushed the total past
+    // the output width and GTK shoved the right-hand end -- the clock -- off the
+    // screen. 24 leaves comfortable headroom without truncating anything useful,
+    // and the full title is in the tooltip.
+    "max-length": 24,
+    "tooltip": true,
     "on-click": "activate"
   },
 
