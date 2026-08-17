@@ -14,11 +14,15 @@ enabled:
   #   dunst          replaced by fnott.
   #   wlock, tsubu   never actually run; both trees are deleted.
   #
-  # No OSD module: avizo was retired 2026-07-28 for swayosd, swayosd itself on
-  # 2026-08-11 (theming a GTK app that only reads its stylesheet at startup meant
-  # the hook had to KILL the server, which raced the supervisor and left the media
-  # keys silently dead). The OSD is now wob for levels and fnott for states, both
-  # of which are modules below and neither of which needs killing.
+  #   wob            the OSD was wob briefly; it is not in OpenBSD ports, and it
+  #                  needed a supervisor process just to survive a theme change.
+  #
+  # No OSD module at all now, and that is the point: avizo was retired
+  # 2026-07-28 for swayosd, swayosd itself on 2026-08-11 (theming a GTK app that
+  # only reads its stylesheet at startup meant the hook had to KILL the server,
+  # which raced the supervisor and left the media keys silently dead), and wob
+  # went the same way for the same reason. The OSD is a notification now, so the
+  # `fnott` module themes it for free and there is nothing to kill.
   - fish
   - foot
   - neovim
@@ -36,7 +40,6 @@ enabled:
   - fnott
   - swaylock
   - wmenu
-  - wob
 
 # The 'scheme' key is a top-level scalar
 scheme: framer
