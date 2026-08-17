@@ -29,51 +29,32 @@ window#waybar {
   color: #d0d0d0;
 }
 
-/* Tags ------------------------------------------------------------------- */
+/* Tags & title ------------------------------------------------------------------- */
 
-#tags button {
+#custom-mangotags {
   padding: 0 6px;
   background: #181818;
   color: #747474;          /* base03 -- inactive */
 }
 
-#tags button.occupied {
-  color: #d0d0d0;          /* base05 -- has windows */
-}
+/* Per-tag colour is set inline by mango-tags via pango markup, because waybar
+ * cannot style parts of a custom module's text. The colours live in that script.
+ * base0D focused, base05 occupied, base03 empty -- matching what swaybar and
+ * the dwl bar did. */
 
-#tags button.focused {
-  color: #20bcfc;          /* base0D -- accent */
-}
-
-#tags button.urgent {
-  color: #fd886b;          /* base08 */
-}
-
-#tags button:hover {
+#taskbar button {
+  padding: 0 6px;
   background: #181818;
   color: #20bcfc;
-  /* GTK's default hover adds a border; suppress it so hovering does not shift
-   * the label by a pixel. */
-  box-shadow: none;
-  text-shadow: none;
+}
+
+#taskbar button.active {
+  color: #20bcfc;
 }
 
 /* Mode, window title, status --------------------------------------------- */
 
-#mode {
-  padding: 0 8px;
-  color: #fecb6e;          /* base0A -- same colour swaybar used for binding_mode */
-}
 
-#window {
-  padding: 0 8px;
-  color: #20bcfc;
-}
-
-/* Nothing focused: dim the (empty) title rather than leaving a bright gap. */
-window#waybar.empty #window {
-  color: #747474;
-}
 
 #custom-slstatus {
   padding: 0 8px 0 0;
