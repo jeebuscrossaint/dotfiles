@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# canvas-notify — send dunst notifications for upcoming Canvas assignments
+# canvas-notify — send desktop notifications for upcoming Canvas assignments
 # Tracks sent notifications to avoid repeating within a session
 
 import json
@@ -28,7 +28,9 @@ def save_sent(sent):
 
 def notify(summary, body, urgency="normal"):
     subprocess.run([
-        "dunstify",
+        # notify-send, not dunstify: dunstify ships with dunst, which is no
+        # longer the daemon here (fnott is) and is not in OpenBSD ports.
+        "notify-send",
         "-a", "Canvas",
         "-u", urgency,
         "-i", "x-office-calendar",

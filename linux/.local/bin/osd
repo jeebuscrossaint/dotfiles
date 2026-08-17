@@ -1,6 +1,6 @@
 #!/bin/sh
 # osd — perform a volume/brightness/lock-key change and draw the on-screen
-# display as a dunst notification.
+# display: levels as a wob bar, states as a replacing notification.
 #
 # Replaces swayosd, retired 2026-08-11. swayosd needed a long-lived
 # swayosd-server holding a DBus name and styled by a GTK stylesheet, and GTK
@@ -11,9 +11,9 @@
 # SILENTLY: every media key stopped working until the next login, which felt
 # exactly like the audio dying.
 #
-# dunst is already running for notifications and already themed by coat through
-# a drop-in it can reload in place, so the OSD now costs no extra process and
-# survives `coat apply` for free. There is nothing to supervise.
+# The notification daemon draws the STATE popups (mute, mic, lock keys, track
+# title) and wob draws the LEVELS. Neither needs supervising: wob is a pipe
+# reader, and the daemon is whatever is answering the notification spec.
 #
 # Usage:
 #   osd volume up|down|mute
@@ -22,9 +22,10 @@
 #   osd capslock|numlock
 #   osd playpause
 #
-# Every popup is drawn by the [osd] rule in ~/.config/dunst/dunstrc, which puts
-# them all under one stack tag: mashing the volume key updates a single popup in
-# place instead of stacking five and shoving real notifications off screen.
+# Nothing stacks. Levels go to wob, which is a single surface by construction.
+# States go through --replace-id, which is core to the notification spec rather
+# than a dunst extension -- the old dunstrc stack_tag was dunst-only and stopped
+# working the moment fnott took over, which is what put five popups on screen.
 
 SINK=@DEFAULT_AUDIO_SINK@
 SOURCE=@DEFAULT_AUDIO_SOURCE@
@@ -42,14 +43,50 @@ usage() {
 	exit 2
 }
 
-# show <text> [value 0-100]
-# The `value` hint is what dunst draws its progress bar from, so passing it
-# turns the popup into a level meter. Omit it for the on/off states.
+# A fixed, nonzero id. Passing it as --replace-id makes every popup from this
+# script REPLACE the previous one instead of stacking a new surface. This is core
+# to the notification spec (replaces_id), not a dunst extension, so it works
+# under fnott, mako or dunst alike -- which matters because the old dunst-only
+# mechanism (a stack_tag in dunstrc) is exactly what stopped working when the
+# session moved to fnott, leaving five popups shoving real notifications off the
+# screen.
+OSD_ID=4242
+
+# The FIFO wob reads. mango's exec-once creates it and pipes it into wob; if that
+# is not running, the level path below degrades to a notification rather than
+# blocking on a write to a pipe nobody is reading.
+WOB_FIFO="${XDG_RUNTIME_DIR:-/tmp}/wob.sock"
+
+# show <text> [value 0-100] [wob style]
+#
+# Two kinds of feedback, deliberately drawn by two different things:
+#
+#   LEVELS (volume, brightness) go to wob -- a layer-shell bar fed by a FIFO. It
+#   is a single surface by design, so mashing a key can never stack anything, and
+#   it needs no daemon, no DBus and no theme reload. This is what an OSD should
+#   be.
+#
+#   STATES (mute, mic, caps/num lock, play/pause + track) go to the notification
+#   daemon, because they are text and wob only draws a bar. They replace rather
+#   than stack, per OSD_ID above.
+#
+# notify-send, not dunstify: dunstify ships with dunst, and depending on a dunst
+# install for a script that only needs libnotify is wrong now that dunst is not
+# the daemon -- and dunst is not in OpenBSD's wayland ports at all.
 show() {
-	if [ -n "$2" ]; then
-		dunstify -a osd -h "int:value:$2" "$1"
+	if [ -n "${2:-}" ] && [ -p "$WOB_FIFO" ]; then
+		if [ -n "${3:-}" ]; then
+			printf '%s %s\n' "$2" "$3" >"$WOB_FIFO"
+		else
+			printf '%s\n' "$2" >"$WOB_FIFO"
+		fi
+		return
+	fi
+
+	if [ -n "${2:-}" ]; then
+		notify-send -a osd -r "$OSD_ID" -h "int:value:$2" "$1"
 	else
-		dunstify -a osd "$1"
+		notify-send -a osd -r "$OSD_ID" "$1"
 	fi
 }
 
@@ -95,7 +132,9 @@ volume)
 	# Muted still gets a bar, emptied: the popup then reads as "silenced" at a
 	# glance instead of just losing a widget.
 	if [ "$MUTED" = 1 ]; then
-		show "$icon  muted" 0
+		# wob paints this with [style.muted]; the level is still the real volume,
+		# so you can see what you are muting rather than a bar snapped to zero.
+		show "$icon  muted" "$VOL" muted
 	else
 		show "$icon  $VOL%" "$VOL"
 	fi
@@ -150,10 +189,12 @@ brightness)
 
 # ------------------------------------------------------------------ lock keys
 # Display only — the key still toggles the state itself, this just reports it.
-# sway drives the keyboard LED through libinput, so the kernel LED is the source
-# of truth. Bound with --release in sway's config because on key *press* the
-# state has not flipped yet. Three keyboards expose these LEDs here (built-in
-# plus two consumer-control devices); any one of them lit means the mode is on.
+# The compositor drives the keyboard LED through libinput, so the kernel LED is
+# the source of truth. NOTE: mango has no release-triggered bindings, so these
+# two are currently unbound -- on key press the LED has not flipped yet and the
+# popup would report the previous state. Kept because the logic is right and the
+# bind is one line away if mango gains -release. Three keyboards expose these
+# LEDs here; any one lit means the mode is on.
 capslock | numlock)
 	on=0
 	for f in /sys/class/leds/*::"$1"/brightness; do

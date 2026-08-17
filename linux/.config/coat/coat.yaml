@@ -2,37 +2,40 @@
 
 # The 'enabled' key triggers STATE_ENABLED and expects a sequence (list)
 enabled:
-  # No OSD module here on purpose. avizo was retired 2026-07-28 for swayosd, and
-  # swayosd itself was retired 2026-08-11: theming a GTK app that only reads its
-  # stylesheet at startup meant coat's apply_swayosd hook had to KILL the server,
-  # which raced ~/.local/bin/swayosd-supervise and left the media keys silently
-  # dead. The OSD is now a dunst notification (~/.local/bin/osd), so the `dunst`
-  # module below themes it for free and there is no hook to break. coat still
-  # SHIPS a swayosd module (modules.rs apply_swayosd + templates/swayosd.tera);
-  # it is inert while it is off this list, and re-adding it re-adds the kill.
-  # avizo has no module left at all — going back there means restoring it first.
+  # Retired modules and why, so they do not get re-added by reflex:
+  #
+  #   sway, swaybar  the compositor is mango; swaybar was sway's bar and its
+  #                  module ran `swaymsg reload`, which has nothing to talk to.
+  #   dwl            replaced by mango. dwl was compile-time configured, so its
+  #                  module had to rebuild the tree on every scheme change and
+  #                  still could not recolour a running session.
+  #   tofi           replaced by wmenu (tofi is not in OpenBSD ports).
+  #   gtklock        replaced by swaylock.
+  #   dunst          replaced by fnott.
+  #   wlock, tsubu   never actually run; both trees are deleted.
+  #
+  # No OSD module: avizo was retired 2026-07-28 for swayosd, swayosd itself on
+  # 2026-08-11 (theming a GTK app that only reads its stylesheet at startup meant
+  # the hook had to KILL the server, which raced the supervisor and left the media
+  # keys silently dead). The OSD is now wob for levels and fnott for states, both
+  # of which are modules below and neither of which needs killing.
   - fish
   - foot
   - neovim
   - bat
   - btop
-  - dunst
   - zathura
   - gtk
   - vesktop
-  - sway
-  - dwl
-  # swaybar must come after sway: it is the module that runs `swaymsg reload`,
-  # so sway's coat-theme has to be on disk by the time it fires.
-  - swaybar
-  - tofi
-  - wlock
-  - tsubu
-  # gtklock replaced swaylock 2026-08-05: swaylock reads one config with no
-  # include, so coat couldn't theme it without owning the whole file.
-  - gtklock
   - mpv
   - vscode
+  # The wayland stack, all runtime-configured: a scheme change recolours a live
+  # session with no restart anywhere.
+  - mango
+  - waybar
+  - fnott
+  - swaylock
+  - wob
 
 # The 'scheme' key is a top-level scalar
 scheme: framer
