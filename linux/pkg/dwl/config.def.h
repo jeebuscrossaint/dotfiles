@@ -42,10 +42,19 @@ static const int topbar                    = 1; /* 0 means bottom bar */
 static const char *fonts[]                 = {COAT_FONT};
 static const float rootcolor[]             = COLOR(COAT_ROOTCOLOR); /* base00 */
 static const int centeredmaster_always     = 0;  /* always center even if only 1 window */
-static const unsigned int gappih          = 0;  /* sway ran gaps 0; raise with Super+Alt+h/l */ /* horiz inner gap between windows */
-static const unsigned int gappiv          = 0;  /* sway ran gaps 0; raise with Super+Alt+h/l */ /* vert inner gap between windows */
-static const unsigned int gappoh          = 0;  /* sway ran gaps 0; raise with Super+Alt+h/l */ /* horiz outer gap between windows and screen edge */
-static const unsigned int gappov          = 0;  /* sway ran gaps 0; raise with Super+Alt+h/l */ /* vert outer gap between windows and screen edge */
+/* Gaps. All four equal on purpose: tile() reads gappov as the x/width axis and
+ * gappoh as y/height, while monocle() reads them the other way round (dwl.c:2695
+ * vs :4142). With one value everywhere that disagreement is invisible; split
+ * them and one of the two layouts will gap the wrong axis.
+ *
+ * smartgaps above drops the OUTER gap when a single client is tiled, which is
+ * what sway's `smart_gaps on` amounted to. Tune live with Super+Alt+h/l (both),
+ * +Ctrl for inner only, +Shift for outer only; Super+Alt+0 toggles gaps off,
+ * Super+Alt+g restores these numbers. */
+static const unsigned int gappih          = 8;  /* horiz inner gap between windows */
+static const unsigned int gappiv          = 8;  /* vert inner gap between windows */
+static const unsigned int gappoh          = 8;  /* horiz outer gap between windows and screen edge */
+static const unsigned int gappov          = 8;  /* vert outer gap between windows and screen edge */
 /* This conforms to the xdg-protocol. Set the alpha to zero to restore the old behavior */
 /* modes: keybindings can be scoped to a mode, the way sway's `mode "resize"`
  * block was. NORMAL is implicit; entermode(&(Arg){.ui = RESIZE}) switches, and
