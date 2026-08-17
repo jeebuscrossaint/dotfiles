@@ -370,6 +370,9 @@ static Client *focustop(Monitor *m);
 static void fullscreennotify(struct wl_listener *listener, void *data);
 static void gpureset(struct wl_listener *listener, void *data);
 static void gaplessgrid(Monitor *m);
+static struct wlr_box gaparea(Monitor *m, int n);
+static int gapx(Monitor *m);
+static int gapy(Monitor *m);
 static void handlecursoractivity(void);
 static int hidecursor(void *data);
 static void handlesig(int signo);
@@ -1008,6 +1011,8 @@ void
 centeredmaster(Monitor *m)
 {
 	int i, n, h, mw, mx, my, oty, ety, tw;
+	int gx, gy, cnt;
+	struct wlr_box a;
 	Client *c;
 
 	n = 0;
@@ -1017,12 +1022,16 @@ centeredmaster(Monitor *m)
 	if (n == 0)
 		return;
 
+	a = gaparea(m, n);
+	gx = gapx(m);
+	gy = gapy(m);
+
 	/* initialize areas */
 	if (centeredmaster_always) {
-		mw = m->w.width / 2;
-		mx = m->w.width / 4;
+		mw = a.width / 2;
+		mx = a.width / 4;
 	} else {
-		mw = m->w.width;
+		mw = a.width;
 		mx = 0;
 	}
 	my = 0;
@@ -1031,17 +1040,18 @@ centeredmaster(Monitor *m)
 	if (n > m->nmaster) {
 		/* go mfact box in the center if more than nmaster clients */
 		if (centeredmaster_always) {
-			mw = m->nmaster ? (int)roundf(m->w.width / 2) : 0;
-			tw = mw / 2;
+			mw = m->nmaster ? a.width / 2 : 0;
 		} else {
-			mw = m->nmaster ? (int)roundf(m->w.width * m->mfact) : 0;
-			tw = m->w.width - mw;
+			mw = m->nmaster ? (int)roundf(a.width * m->mfact) : 0;
 		}
+		/* one stack column, on the right: a single gap to pay for */
+		tw = a.width - mx - mw - gx;
 
 		if (n - m->nmaster > 1) {
-			/* only one client */
-			mx = (m->w.width - mw) / 2;
-			tw = (m->w.width - mw) / 2;
+			/* stack columns on BOTH sides, so two gaps come out of the
+			 * width before the leftovers are split between them */
+			tw = (a.width - mw - 2 * gx) / 2;
+			mx = tw + gx;
 		}
 	}
 
@@ -1054,22 +1064,24 @@ centeredmaster(Monitor *m)
 		if (i < m->nmaster) {
 			/* nmaster clients are stacked vertically, in the center
 			 * of the screen */
-			h = (m->w.height - my) / (MIN(n, m->nmaster) - i);
-			resize(c, (struct wlr_box){.x = m->w.x + mx, .y = m->w.y + my, .width = mw,
+			cnt = MIN(n, m->nmaster) - i;
+			h = MAX((a.height - my - gy * (cnt - 1)) / cnt, 1);
+			resize(c, (struct wlr_box){.x = a.x + mx, .y = a.y + my, .width = mw,
 				   .height = h}, 0);
-			my += c->geom.height;
+			my += c->geom.height + gy;
 		} else {
 			/* stack clients are stacked vertically */
+			cnt = (1 + n - i) / 2;
 			if ((i - m->nmaster) % 2) {
-				h = (m->w.height - ety) / ( (1 + n - i) / 2);
-				resize(c, (struct wlr_box){.x = m->w.x, .y = m->w.y + ety, .width = tw,
+				h = MAX((a.height - ety - gy * (cnt - 1)) / cnt, 1);
+				resize(c, (struct wlr_box){.x = a.x, .y = a.y + ety, .width = tw,
 					   .height = h}, 0);
-				ety += c->geom.height;
+				ety += c->geom.height + gy;
 			} else {
-				h = (m->w.height - oty) / ((1 + n - i) / 2);
-				resize(c, (struct wlr_box){.x = m->w.x + mx + mw, .y = m->w.y + oty, .width = tw,
+				h = MAX((a.height - oty - gy * (cnt - 1)) / cnt, 1);
+				resize(c, (struct wlr_box){.x = a.x + mx + mw + gx, .y = a.y + oty, .width = tw,
 					.height = h}, 0);
-				oty += c->geom.height;
+				oty += c->geom.height + gy;
 			}
 		}
 		i++;
@@ -2196,6 +2208,8 @@ void
 gaplessgrid(Monitor *m)
 {
 	int n = 0, i = 0, ch, cw, cn, rn, rows, cols;
+	int gx, gy;
+	struct wlr_box a;
 	Client *c;
 
 	wl_list_for_each(c, &clients, link)
@@ -2203,6 +2217,10 @@ gaplessgrid(Monitor *m)
 			n++;
 	if (n == 0)
 		return;
+
+	a = gaparea(m, n);
+	gx = gapx(m);
+	gy = gapy(m);
 
 	/* grid dimensions */
 	for (cols = 0; cols <= (n / 2); cols++)
@@ -2213,13 +2231,14 @@ gaplessgrid(Monitor *m)
 		cols = 2;
 
 	/* widescreen is better if 3 columns */
-	if (n >= 3 && n <= 6 && (m->w.width / m->w.height) > 1)
+	if (n >= 3 && n <= 6 && (a.width / a.height) > 1)
 		cols = 3;
 
 	rows = n / cols;
 
-	/* window geometries */
-	cw = cols ? m->w.width / cols : m->w.width;
+	/* window geometries. The gaps come out of the area before it is divided,
+	 * so cw/ch are the cell size and the stride is cell + gap. */
+	cw = cols ? (a.width - gx * (cols - 1)) / cols : a.width;
 	cn = 0; /* current column number */
 	rn = 0; /* current row number */
 	wl_list_for_each(c, &clients, link) {
@@ -2229,9 +2248,9 @@ gaplessgrid(Monitor *m)
 
 		if ((i / rows + 1) > (cols - n % cols))
 			rows = n / cols + 1;
-		ch = rows ? m->w.height / rows : m->w.height;
-		cx = m->w.x + cn * cw;
-		cy = m->w.y + rn * ch;
+		ch = rows ? (a.height - gy * (rows - 1)) / rows : a.height;
+		cx = a.x + cn * (cw + gx);
+		cy = a.y + rn * (ch + gy);
 		resize(c, (struct wlr_box) { cx, cy, cw, ch}, 0);
 		rn++;
 		if (rn >= rows) {
@@ -2240,6 +2259,46 @@ gaplessgrid(Monitor *m)
 		}
 		i++;
 	}
+}
+
+/* Gaps for the layouts that do not compute them inline.
+ *
+ * tile() carries the vanitygaps patch's own arithmetic and monocle() has its
+ * monoclegaps switch; every other layout predates the patch and worked straight
+ * off m->w, so gaps were silently ignored in nine of the twelve. These three
+ * helpers give the rest one consistent story.
+ *
+ * Axis convention is tile()'s: gappov/gappiv act on x/width, gappoh/gappih on
+ * y/height. monocle() reads the outer pair the other way round -- harmless only
+ * while all four values are equal, which is why config.def.h keeps them so. */
+struct wlr_box
+gaparea(Monitor *m, int n)
+{
+	struct wlr_box a = m->w;
+
+	/* smartgaps == n drops the outer gap for a lone tiled client, the rule
+	 * tile() applies at the head of its own gap handling. */
+	if (!enablegaps || (int)smartgaps == n)
+		return a;
+
+	a.x += (int)m->gappov;
+	a.y += (int)m->gappoh;
+	a.width -= 2 * (int)m->gappov;
+	a.height -= 2 * (int)m->gappoh;
+	return a;
+}
+
+/* Inner gap between two columns (x) and between two rows (y). */
+int
+gapx(Monitor *m)
+{
+	return enablegaps ? (int)m->gappiv : 0;
+}
+
+int
+gapy(Monitor *m)
+{
+	return enablegaps ? (int)m->gappih : 0;
 }
 
 void
@@ -2630,7 +2689,8 @@ void
 mastercol(Monitor *m)
 {
 	unsigned int mw, mx, ty;
-	int i, n = 0;
+	int i, n = 0, gx, gy, cnt;
+	struct wlr_box a;
 	Client *c;
 
 	wl_list_for_each(c, &clients, link)
@@ -2639,22 +2699,36 @@ mastercol(Monitor *m)
 	if (n == 0)
 		return;
 
+	a = gaparea(m, n);
+	gx = gapx(m);
+	gy = gapy(m);
+
 	if (n > m->nmaster)
-		mw = m->nmaster ? (int)roundf(m->w.width * m->mfact) : 0;
+		mw = m->nmaster ? (int)roundf(a.width * m->mfact) : 0;
 	else
-		mw = m->w.width;
+		mw = a.width;
+	/* nmaster can be driven to 0 (Super+Shift+d), leaving no master area at
+	 * all -- do not draw a separator gap against a zero-width column. */
+	if (!mw)
+		gx = 0;
 	i = mx = ty = 0;
 	wl_list_for_each(c, &clients, link) {
 		if (!VISIBLEON(c, m) || c->isfloating || c->isfullscreen)
 			continue;
 		if (i < m->nmaster) {
-			resize(c, (struct wlr_box){.x = m->w.x + mx, .y = m->w.y,
-				.width = (mw - mx) / (MIN(n, m->nmaster) - i), .height = m->w.height}, 0);
-			mx += c->geom.width;
+			/* masters split the master area into columns */
+			cnt = MIN(n, m->nmaster) - i;
+			resize(c, (struct wlr_box){.x = a.x + mx, .y = a.y,
+				.width = MAX(((int)mw - (int)mx - gx * (cnt - 1)) / cnt, 1),
+				.height = a.height}, 0);
+			mx += c->geom.width + gx;
 		} else {
-			resize(c, (struct wlr_box){.x = m->w.x + mw, .y = m->w.y + ty,
-				.width = m->w.width - mw, .height = (m->w.height - ty) / (n - i)}, 0);
-			ty += c->geom.height;
+			/* the stack is one column on the right, split into rows */
+			cnt = n - i;
+			resize(c, (struct wlr_box){.x = a.x + mw + gx, .y = a.y + ty,
+				.width = a.width - mw - gx,
+				.height = MAX((a.height - (int)ty - gy * (cnt - 1)) / cnt, 1)}, 0);
+			ty += c->geom.height + gy;
 		}
 		i++;
 	}
@@ -2705,7 +2779,8 @@ void
 deck(Monitor *m)
 {
 	unsigned int mw, my;
-	int i, n = 0;
+	int i, n = 0, gx, gy, cnt;
+	struct wlr_box a;
 	Client *c;
 
 	/* count tiled clients */
@@ -2717,11 +2792,17 @@ deck(Monitor *m)
 	if (n == 0)
 		return;
 
+	a = gaparea(m, n);
+	gx = gapx(m);
+	gy = gapy(m);
+
 	/* set master width */
 	if (n > m->nmaster)
-		mw = m->nmaster ? (int)roundf(m->w.width * m->mfact) : 0;
+		mw = m->nmaster ? (int)roundf(a.width * m->mfact) : 0;
 	else
-		mw = m->w.width;
+		mw = a.width;
+	if (!mw) /* no master area -- no separator gap either, see mastercol() */
+		gx = 0;
 
 	/* update layout symbol with number of stack windows */
 	/* use the following rules to count only the windows on the deck
@@ -2741,20 +2822,22 @@ deck(Monitor *m)
 
 		if (i < m->nmaster) {
 			/* master clients */
+			cnt = MIN(n, m->nmaster) - i;
 			resize(c, (struct wlr_box){
-				.x = m->w.x,
-				.y = m->w.y + my,
+				.x = a.x,
+				.y = a.y + my,
 				.width = mw,
-				.height = (m->w.height - my) / (MIN(n, m->nmaster) - i)
+				.height = MAX((a.height - (int)my - gy * (cnt - 1)) / cnt, 1)
 			}, 0);
-			my += c->geom.height;
+			my += c->geom.height + gy;
 		} else {
-			/* deck clients: overlap in stack area */
+			/* deck clients: overlap in stack area. They sit on top of each
+			 * other by design, so only the master/stack gap applies. */
 			resize(c, (struct wlr_box){
-				.x = m->w.x + mw,
-				.y = m->w.y,
-				.width = m->w.width - mw,
-				.height = m->w.height
+				.x = a.x + mw + gx,
+				.y = a.y,
+				.width = a.width - mw - gx,
+				.height = a.height
 			}, 0);
 		}
 		i++;
@@ -3851,8 +3934,9 @@ setup(void)
 void
 snail(Monitor *m)
 {
-	int i = 0, n = 0;
-	unsigned int mw = m->w.width;
+	int i = 0, n = 0, gx, gy, half;
+	unsigned int mw;
+	struct wlr_box a;
 	Client *c, *prev;
 	enum wlr_direction dir = WLR_DIRECTION_RIGHT;
 
@@ -3862,8 +3946,15 @@ snail(Monitor *m)
 	if (n == 0)
 		return;
 
+	a = gaparea(m, n);
+	gx = gapx(m);
+	gy = gapy(m);
+	mw = a.width;
+
 	if (n > m->nmaster)
-		mw = m->nmaster ? (int)round(m->w.width * m->mfact) : 0;
+		mw = m->nmaster ? (int)round(a.width * m->mfact) : 0;
+	if (!mw) /* no master area -- no separator gap either, see mastercol() */
+		gx = 0;
 
 	wl_list_for_each(c, &clients, link) {
 		if (!VISIBLEON(c, m) || c->isfloating || c->isfullscreen)
@@ -3874,67 +3965,73 @@ snail(Monitor *m)
 		 * master area with this window
 		 */
 		if (mw > 0 && i == 0) {
-			c->geom = (struct wlr_box){.x = m->w.x, .y = m->w.y,
-				.width = mw, .height = m->w.height};
+			c->geom = (struct wlr_box){.x = a.x, .y = a.y,
+				.width = mw, .height = a.height};
 			/*
 			 * If the first window in the master area is wide, split it
 			 * horizontally and put next one on its right; otherwise, split it
 			 * vertically and put the next one below it
 			 */
-			dir = c->geom.width > m->w.height ? WLR_DIRECTION_RIGHT : WLR_DIRECTION_DOWN;
+			dir = c->geom.width > a.height ? WLR_DIRECTION_RIGHT : WLR_DIRECTION_DOWN;
 		/*
 		 * If the master area is full or doesn't exist, fill the stack with the
 		 * m->nmaster-th window
 		 */
 		} else if (i == m->nmaster) {
-			c->geom = (struct wlr_box){.x = m->w.x + mw, .y = m->w.y,
-				.width = m->w.width - mw, .height = m->w.height};
+			c->geom = (struct wlr_box){.x = a.x + mw + gx, .y = a.y,
+				.width = a.width - mw - gx, .height = a.height};
 			/*
 			 * If the first window in the stack is wide, split it horizontally
 			 * and put next one on its right; otherwise, split it vertically and
 			 * put the next one below it
 			 */
-			dir = c->geom.width > m->w.height ? WLR_DIRECTION_RIGHT : WLR_DIRECTION_DOWN;
+			dir = c->geom.width > a.height ? WLR_DIRECTION_RIGHT : WLR_DIRECTION_DOWN;
 		/*
-		 * Split the previous horizontally and put the current window on the right
+		 * Split the previous horizontally and put the current window on the right.
+		 * Every split takes the gap out of prev's own extent first, then halves
+		 * what is left, so the two halves stay equal at each turn of the spiral.
 		 */
 		} else if (dir == WLR_DIRECTION_RIGHT) {
-			c->geom = (struct wlr_box){.x = prev->geom.x + prev->geom.width / 2, .y = prev->geom.y,
-				.width = prev->geom.width / 2, .height = prev->geom.height};
+			half = MAX((prev->geom.width - gx) / 2, 1);
+			c->geom = (struct wlr_box){.x = prev->geom.x + half + gx, .y = prev->geom.y,
+				.width = prev->geom.width - half - gx, .height = prev->geom.height};
 			prev->geom = (struct wlr_box){.x = prev->geom.x, .y = prev->geom.y,
-				.width = prev->geom.width / 2, .height = prev->geom.height};
+				.width = half, .height = prev->geom.height};
 			/*
 			 * If it's a stack window or the first narrow window in the master
 			 * area, put the next one below it
 			 */
-			if (i >= m->nmaster || c->geom.width < m->w.height)
+			if (i >= m->nmaster || c->geom.width < a.height)
 				dir = WLR_DIRECTION_DOWN;
 		/*
 		 * Split the previous vertically and put the current window below it
 		 */
 		} else if (dir == WLR_DIRECTION_DOWN) {
-			c->geom = (struct wlr_box){.x = prev->geom.x, .y = prev->geom.y + prev->geom.height / 2,
-				.width = prev->geom.width, .height = prev->geom.height / 2};
+			half = MAX((prev->geom.height - gy) / 2, 1);
+			c->geom = (struct wlr_box){.x = prev->geom.x, .y = prev->geom.y + half + gy,
+				.width = prev->geom.width, .height = prev->geom.height - half - gy};
 			prev->geom = (struct wlr_box){.x = prev->geom.x, .y = prev->geom.y,
-				.width = prev->geom.width, .height = prev->geom.height / 2};
+				.width = prev->geom.width, .height = half};
 			dir = WLR_DIRECTION_LEFT;
 		/*
 		 * Split the previous horizontally and put the current window on the left
 		 */
 		} else if (dir == WLR_DIRECTION_LEFT) {
+			half = MAX((prev->geom.width - gx) / 2, 1);
 			c->geom = (struct wlr_box){.x = prev->geom.x, .y = prev->geom.y,
-				.width = prev->geom.width / 2, .height = prev->geom.height};
-			prev->geom = (struct wlr_box){.x = prev->geom.x + prev->geom.width / 2, .y = prev->geom.y,
-				.width = prev->geom.width / 2, .height = prev->geom.height};
+				.width = half, .height = prev->geom.height};
+			prev->geom = (struct wlr_box){.x = prev->geom.x + half + gx, .y = prev->geom.y,
+				.width = prev->geom.width - half - gx, .height = prev->geom.height};
 			dir = WLR_DIRECTION_UP;
 		/*
 		 * Split the previous vertically and put the current window above it
 		 */
 		} else {
+			half = MAX((prev->geom.height - gy) / 2, 1);
 			c->geom = (struct wlr_box){.x = prev->geom.x, .y = prev->geom.y,
-				.width = prev->geom.width, .height = prev->geom.height / 2};
-			prev->geom = (struct wlr_box){.x = prev->geom.x, .y = prev->geom.y + prev->geom.height / 2,
-				.width = prev->geom.width, .height = prev->geom.height / 2};
+				.width = prev->geom.width, .height = half};
+			prev->geom = (struct wlr_box){.x = prev->geom.x, .y = prev->geom.y + half + gy,
+				.width = prev->geom.width, .height = prev->geom.height - half - gy};
 			dir = WLR_DIRECTION_RIGHT;
 		}
 		i++;
@@ -4195,7 +4292,8 @@ dwindle(Monitor *m)
 {
 	unsigned int i, n = 0;
 	int nx, ny, nw, nh;
-	int horizontal;
+	int horizontal, gx, gy;
+	struct wlr_box a;
 	Client *c;
 
 	/* count clients */
@@ -4206,10 +4304,14 @@ dwindle(Monitor *m)
 	if (n == 0)
 		return;
 
-	nx = m->w.x;
-	ny = m->w.y;
-	nw = m->w.width;
-	nh = m->w.height;
+	a = gaparea(m, n);
+	gx = gapx(m);
+	gy = gapy(m);
+
+	nx = a.x;
+	ny = a.y;
+	nw = a.width;
+	nh = a.height;
 
 	horizontal = 1; // toggle split direction
 	i = 0;
@@ -4222,19 +4324,22 @@ dwindle(Monitor *m)
 			/* last window gets remaining space */
 			resize(c, (struct wlr_box){nx, ny, nw, nh}, 0);
 		} else if (horizontal) {
-			int w = nw / 2;
+			/* the gap comes out of the remaining space before the halving,
+			 * so the two siblings stay equal instead of the left one
+			 * keeping a full half and the right one paying for the gap */
+			int w = MAX((nw - gx) / 2, 1);
 
 			resize(c, (struct wlr_box){nx, ny, w, nh}, 0);
 
-			nx += w;
-			nw -= w;
+			nx += w + gx;
+			nw -= w + gx;
 		} else {
-			int h = nh / 2;
+			int h = MAX((nh - gy) / 2, 1);
 
 			resize(c, (struct wlr_box){nx, ny, nw, h}, 0);
 
-			ny += h;
-			nh -= h;
+			ny += h + gy;
+			nh -= h + gy;
 		}
 
 		horizontal = !horizontal;
@@ -4839,7 +4944,8 @@ static void
 bstack(Monitor *m) 
 {
 	int w, h, mh, mx, tx, ty, tw;
-	int i, n = 0;
+	int i, n = 0, gx, gy, cnt;
+	struct wlr_box a;
 	Client *c;
 
 	wl_list_for_each(c, &clients, link)
@@ -4848,30 +4954,39 @@ bstack(Monitor *m)
 	if (n == 0)
 		return;
 
+	a = gaparea(m, n);
+	gx = gapx(m);
+	gy = gapy(m);
+
 	if (n > m->nmaster) {
-		mh = (int)round(m->nmaster ? m->mfact * m->w.height : 0);
-		tw = m->w.width / (n - m->nmaster);
-		ty = m->w.y + mh;
+		mh = (int)round(m->nmaster ? m->mfact * a.height : 0);
+		tw = (a.width - gx * (n - m->nmaster - 1)) / (n - m->nmaster);
+		/* nmaster can be 0 (Super+Shift+d): no master row, so no gap under
+		 * one either. gy is used for nothing else in this layout. */
+		if (!mh)
+			gy = 0;
+		ty = a.y + mh + gy;
 	} else {
-		mh = m->w.height;
-		tw = m->w.width;
-		ty = m->w.y;
+		mh = a.height;
+		tw = a.width;
+		ty = a.y;
 	}
 
 	i = mx = 0;
-	tx = m-> w.x;
+	tx = a.x;
 	wl_list_for_each(c, &clients, link) {
 		if (!VISIBLEON(c, m) || c->isfloating)
 			continue;
 		if (i < m->nmaster) {
-			w = (m->w.width - mx) / (MIN(n, m->nmaster) - i);
-			resize(c, (struct wlr_box) { .x = m->w.x + mx, .y = m->w.y, .width = w, .height = mh }, 0);
-			mx += c->geom.width;
+			cnt = MIN(n, m->nmaster) - i;
+			w = MAX((a.width - mx - gx * (cnt - 1)) / cnt, 1);
+			resize(c, (struct wlr_box) { .x = a.x + mx, .y = a.y, .width = w, .height = mh }, 0);
+			mx += c->geom.width + gx;
 		} else {
-			h = m->w.height - mh;
+			h = a.height - mh - gy;
 			resize(c, (struct wlr_box) { .x = tx, .y = ty, .width = tw, .height = h }, 0);
-			if (tw != m->w.width)
-				tx += c->geom.width;
+			if (tw != a.width)
+				tx += c->geom.width + gx;
 		}
 		i++;
 	}
@@ -4880,7 +4995,8 @@ bstack(Monitor *m)
 static void
 bstackhoriz(Monitor *m) {
 	int w, mh, mx, tx, ty, th;
-	int i, n = 0;
+	int i, n = 0, gx, gy, sgy, cnt;
+	struct wlr_box a;
 	Client *c;
 
 	wl_list_for_each(c, &clients, link)
@@ -4889,28 +5005,36 @@ bstackhoriz(Monitor *m) {
 	if (n == 0)
 		return;
 
+	a = gaparea(m, n);
+	gx = gapx(m);
+	gy = gapy(m);
+
 	if (n > m->nmaster) {
-		mh = (int)round(m->nmaster ? m->mfact * m->w.height : 0);
-		th = (m->w.height - mh) / (n - m->nmaster);
-		ty = m->w.y + mh;
+		mh = (int)round(m->nmaster ? m->mfact * a.height : 0);
+		/* one gap under the master row (none if nmaster is 0, so there is no
+		 * master row), then one between each pair of stack rows */
+		sgy = mh ? gy : 0;
+		th = (a.height - mh - sgy - gy * (n - m->nmaster - 1)) / (n - m->nmaster);
+		ty = a.y + mh + sgy;
 	} else {
-		th = mh = m->w.height;
-		ty = m->w.y;
+		th = mh = a.height;
+		ty = a.y;
 	}
 
 	i = mx = 0;
-	tx = m-> w.x;
+	tx = a.x;
 	wl_list_for_each(c, &clients, link) {
 		if (!VISIBLEON(c,m) || c->isfloating)
 			continue;
 		if (i < m->nmaster) {
-			w = (m->w.width - mx) / (MIN(n, m->nmaster) - i);
-			resize(c, (struct wlr_box) { .x = m->w.x + mx, .y = m->w.y, .width = w, .height = mh }, 0);
-			mx += c->geom.width;
+			cnt = MIN(n, m->nmaster) - i;
+			w = MAX((a.width - mx - gx * (cnt - 1)) / cnt, 1);
+			resize(c, (struct wlr_box) { .x = a.x + mx, .y = a.y, .width = w, .height = mh }, 0);
+			mx += c->geom.width + gx;
 		} else {
-			resize(c, (struct wlr_box) { .x = tx, .y = ty, .width = m->w.width, .height = th }, 0);
-			if (th != m->w.height)
-				ty += c->geom.height;
+			resize(c, (struct wlr_box) { .x = tx, .y = ty, .width = a.width, .height = th }, 0);
+			if (th != a.height)
+				ty += c->geom.height + gy;
 		}
 		i++;
 	}
