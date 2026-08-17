@@ -1,0 +1,77 @@
+#!/usr/bin/env python3
+"""mango-title — stream the FOCUSED window's title for waybar.
+
+This replaces waybar's `wlr/taskbar`, which was the wrong module for the job:
+taskbar renders a button per toplevel, so it listed every open window and its
+`max-length` applies per button rather than to the row. With six windows open the
+titles ran the full width of the panel and shoved the clock off the right edge.
+
+`mmsg watch focusing-client` streams one JSON object per focus change:
+
+    {"id":59,"title":"~","appid":"foot","monitor":"eDP-1","tags":[4],
+     "is_fullscreen":false,...}
+
+so this prints exactly one title, and updates the instant focus moves.
+"""
+
+import html
+import json
+import subprocess
+import sys
+
+MAX = 60
+ACCENT = "#20bcfc"  # base0D
+
+
+def render(payload):
+    title = (payload or {}).get("title") or ""
+    appid = (payload or {}).get("appid") or ""
+
+    if not title:
+        return ""
+
+    # Firefox and friends append " — Mozilla Firefox" to every title, which is
+    # the least useful part of it and eats a third of the budget.
+    for sep in (" — ", " - "):
+        if sep in title and appid:
+            head, _, tail = title.rpartition(sep)
+            if appid.lower().split(".")[-1] in tail.lower().replace(" ", ""):
+                title = head
+                break
+
+    if len(title) > MAX:
+        title = title[: MAX - 1].rstrip() + "…"
+
+    # escape(): a title containing & or < is markup to pango and would either
+    # vanish or break the whole label.
+    return f'<span color="{ACCENT}">{html.escape(title)}</span>'
+
+
+def main():
+    proc = subprocess.Popen(
+        ["mmsg", "watch", "focusing-client"],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.DEVNULL,
+        text=True,
+    )
+    if proc.stdout is None:
+        return 1
+    for line in proc.stdout:
+        line = line.strip()
+        if not line:
+            continue
+        try:
+            payload = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        # An empty object is mango reporting "nothing focused" -- print a blank
+        # line so the module clears rather than keeping a stale title.
+        print(render(payload), flush=True)
+    return proc.wait()
+
+
+if __name__ == "__main__":
+    try:
+        sys.exit(main())
+    except KeyboardInterrupt:
+        sys.exit(0)

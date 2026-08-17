@@ -1,3 +1,7 @@
+/* Added by coat — pulls in the generated colour/font fragment.*/
+/* Everything below is yours: coat rewrites the fragment, never this file.*/
+@import "coat-colors.css";
+
 /* waybar — Framer (coat, base16 dark).
  *
  * Deliberately flat: no pills, no rounded corners, no gradients. Workspaces

@@ -1,62 +1,89 @@
-#!/bin/sh
-# mango-tags — stream mango's tag state for waybar's custom module.
-#
-# mango is dwl-derived but does NOT implement dwl's IPC protocol (its protocols/
-# directory has only layer-shell, foreign-toplevel and output-power-management),
-# so waybar's `dwl/tags` module cannot see it. mango has its own IPC instead, via
-# `mmsg`, and `mmsg watch all-tags` streams state changes -- which is exactly
-# what a waybar custom module in continuous mode consumes.
-#
-# Output is one line per update: the tag row, with the focused tag marked. waybar
-# renders it via a custom/mangotags module with "return-type": "" (plain text).
-#
-# Tag glyph meaning:
-#   accent + underline  focused
-#   solid               has windows
-#   dim                 empty
+#!/usr/bin/env python3
+"""mango-tags — stream mango's tag row for waybar's custom module.
 
-FOCUS_COLOR="#20bcfc"   # base0D
-USED_COLOR="#d0d0d0"    # base05
-EMPTY_COLOR="#747474"   # base03
+waybar has no mango module, and mango is dwl-derived but does NOT implement dwl's
+IPC protocol (its protocols/ dir carries only layer-shell, foreign-toplevel and
+output-power-management), so `dwl/tags` cannot see it either. mango has its own
+IPC via `mmsg`, and `mmsg watch all-tags` streams one JSON object per change --
+which is exactly what a waybar custom module in continuous mode consumes.
 
-command -v mmsg >/dev/null 2>&1 || {
-	echo "mmsg missing"
-	exit 1
-}
+`mmsg` emits JSON, one complete object per line:
 
-render() {
-	# mmsg prints key: value lines per tag; collect what we need and emit a row.
-	# Fields vary by mango version, so parse defensively: anything we cannot
-	# read degrades to an empty tag rather than breaking the bar.
-	awk -v fc="$FOCUS_COLOR" -v uc="$USED_COLOR" -v ec="$EMPTY_COLOR" '
-	function flush_tag() {
-		if (id == "") return
-		color = ec
-		if (clients + 0 > 0) color = uc
-		if (focused == "1" || focused == "true") color = fc
-		out = out sprintf("<span color=\"%s\">%s</span> ", color, id)
-		id = ""; clients = 0; focused = ""
-	}
-	/^[[:space:]]*(tag|index)[[:space:]]*:/ { flush_tag(); split($0, a, ":"); gsub(/[[:space:]]/, "", a[2]); id = a[2]; next }
-	/^[[:space:]]*(clients|num_clients|windows)[[:space:]]*:/ { split($0, a, ":"); gsub(/[[:space:]]/, "", a[2]); clients = a[2]; next }
-	/^[[:space:]]*(focused|is_focused|selected)[[:space:]]*:/ { split($0, a, ":"); gsub(/[[:space:]]/, "", a[2]); focused = a[2]; next }
-	/^[[:space:]]*$/ { next }
-	END { flush_tag(); sub(/ $/, "", out); print out; fflush() }
-	'
-}
+    {"all_tags":[{"monitor":"eDP-1","tags":[{"index":1,"is_active":false,
+     "is_urgent":false,"layout":"T","client_count":6}, ...]}]}
 
-# `watch` emits a fresh block per change. Blocks are separated by blank lines in
-# mmsg's output, so accumulate until one ends, then render that block.
-buf=""
-mmsg watch all-tags 2>/dev/null | while IFS= read -r line; do
-	case "$line" in
-	'')
-		[ -n "$buf" ] && printf '%s\n' "$buf" | render
-		buf=""
-		;;
-	*)
-		buf="$buf$line
-"
-		;;
-	esac
-done
+Colour is inline pango markup because waybar cannot style individual characters
+inside a custom module's text -- the CSS can only reach the module as a whole.
+
+Output is one line per update, flushed immediately, so the bar updates the moment
+a tag does rather than on a poll interval.
+"""
+
+import json
+import subprocess
+import sys
+
+# base16 Framer. coat does not template this file, so these are the one place in
+# the bar that a scheme change does not reach; they are the same three slots the
+# swaybar block and the dwl bar used, and the only ones guaranteed legible on
+# base00 across schemes.
+FOCUSED = "#20bcfc"  # base0D, accent
+OCCUPIED = "#d0d0d0"  # base05
+EMPTY = "#747474"  # base03
+URGENT = "#fd886b"  # base08
+
+
+def render(payload):
+    """Turn one all-tags object into a pango-marked row."""
+    out = []
+    for mon in payload.get("all_tags", []):
+        for tag in mon.get("tags", []):
+            idx = tag.get("index")
+            if idx is None:
+                continue
+            if tag.get("is_urgent"):
+                color = URGENT
+            elif tag.get("is_active"):
+                color = FOCUSED
+            elif tag.get("client_count", 0) > 0:
+                color = OCCUPIED
+            else:
+                # Empty and unfocused: skip entirely rather than print a dim
+                # number. Nine placeholders is most of the row for no
+                # information, and dwm-style bars have always hidden them.
+                continue
+            out.append(f'<span color="{color}">{idx}</span>')
+        # Only the first monitor: waybar runs one bar per output and this module
+        # would otherwise repeat every output's tags on each of them.
+        break
+    return " ".join(out)
+
+
+def main():
+    proc = subprocess.Popen(
+        ["mmsg", "watch", "all-tags"],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.DEVNULL,
+        text=True,
+    )
+    if proc.stdout is None:
+        return 1
+    for line in proc.stdout:
+        line = line.strip()
+        if not line:
+            continue
+        try:
+            payload = json.loads(line)
+        except json.JSONDecodeError:
+            # A partial or unexpected line must not kill the module -- waybar
+            # would show a permanently empty slot until the next restart.
+            continue
+        print(render(payload), flush=True)
+    return proc.wait()
+
+
+if __name__ == "__main__":
+    try:
+        sys.exit(main())
+    except KeyboardInterrupt:
+        sys.exit(0)

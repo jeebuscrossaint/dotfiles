@@ -1,0 +1,21 @@
+#!/bin/sh
+# menu-run — dmenu_run for wmenu, themed by coat.
+#
+# wmenu ships wmenu-run, but that hardcodes plain `wmenu` and so ignores coat's
+# colours entirely. This is the same idea routed through ~/.local/bin/menu.
+#
+# PATH listing, not .desktop entries: wmenu has no drun mode. `fuzzel` is in both
+# Arch's repos and OpenBSD ports if desktop-file launching is ever wanted.
+
+cmd=$(
+	IFS=:
+	for dir in $PATH; do
+		[ -d "$dir" ] || continue
+		for f in "$dir"/*; do
+			[ -x "$f" ] && [ ! -d "$f" ] && printf '%s\n' "${f##*/}"
+		done
+	done | sort -u | menu -i -p run
+) || exit 1
+
+[ -n "$cmd" ] || exit 0
+setsid $cmd >/dev/null 2>&1 &
