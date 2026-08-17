@@ -39,4 +39,26 @@ if ! mango -c "$HOME/.config/mango/config.conf" -p >/dev/null 2>&1; then
 	exit 1
 fi
 
+# Start the session under ONE D-Bus session bus.
+#
+# Without this there is no session bus at all: Artix has no systemd to create
+# $XDG_RUNTIME_DIR/bus, and nothing here was starting one. Every client that
+# needed D-Bus therefore fell back to autolaunch and started its OWN bus --
+# three lockfiles in ~/.dbus/session-bus and a pile of /tmp/dbus-* sockets, with
+# fnott sitting on one bus and notify-send talking to another. Notifications
+# "randomly" stopped working, which is exactly what that looks like from the
+# outside: no error anywhere, the daemon running, the name simply unowned on
+# whichever bus the sender happened to reach.
+#
+# dbus-run-session creates one bus, exports DBUS_SESSION_BUS_ADDRESS into it, and
+# runs the compositor inside -- so mango, everything in exec-once, and every app
+# launched from a keybind all inherit the same address. It also makes the
+# `dbus-update-activation-environment` line in config.conf meaningful, since that
+# needs a bus to talk to in the first place.
+if command -v dbus-run-session >/dev/null 2>&1; then
+	exec dbus-run-session -- mango "$@"
+fi
+
+echo "mango-run: dbus-run-session not found; starting without a session bus." >&2
+echo "mango-run: expect notifications and portals to misbehave." >&2
 exec mango "$@"
