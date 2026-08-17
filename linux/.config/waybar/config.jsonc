@@ -15,8 +15,12 @@
 // OpenBSD too, which is the other reason to keep it rather than reimplement a
 // dozen waybar modules.
 //
-// NOTE: river/tags, river/mode and river/window need a waybar built with river
-// support. Arch's package has it. Verify on the OpenBSD side before assuming.
+// NOTE: waybar has NO mango module. mango is dwl-derived but does not implement
+// dwl's IPC protocol -- its protocols/ dir carries only layer-shell,
+// foreign-toplevel and output-power-management -- so `dwl/tags` cannot see it
+// either. Tags therefore come from mango's own IPC through the mango-tags
+// script, which streams `mmsg watch all-tags`. The window title comes from
+// wlr/taskbar's protocol instead, which mango DOES implement.
 {
   "layer": "top",
   "position": "bottom",
@@ -24,29 +28,29 @@
   "spacing": 0,
   "margin": "0",
 
-  "modules-left": ["river/tags", "river/mode", "river/window"],
+  "modules-left": ["custom/mangotags", "wlr/taskbar"],
   "modules-center": [],
   "modules-right": ["custom/slstatus"],
 
-  "river/tags": {
-    // Ten tags, matching the init script. The eleventh (1<<10) is the scratchpad
-    // and is deliberately NOT listed -- it should not be clickable, or you can
-    // strand a window on a tag with no way back.
-    "num-tags": 10,
-    "tag-labels": ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"],
-    "set-tags": [1, 2, 4, 8, 16, 32, 64, 128, 256, 512]
+  "custom/mangotags": {
+    "exec": "mango-tags",
+    // No interval: mango-tags blocks on mmsg and emits a line per state change,
+    // so the bar updates the instant a tag does rather than up to a second late.
+    "return-type": "",
+    "restart-interval": 5,
+    "escape": false,
+    "tooltip": false
   },
 
-  "river/mode": {
-    // Shows "resize" while in that mode. Worth having visible: river's modes are
-    // exclusive, so every Super bind is inert until you leave, and without an
-    // indicator that state looks like a dead keyboard.
-    "format": "  {}"
-  },
-
-  "river/window": {
-    "format": "{}",
-    "max-length": 90
+  "wlr/taskbar": {
+    // wlr-foreign-toplevel-management is in mango's protocols/, so this works
+    // where a mango-specific title module would not. Text only -- icons would
+    // pull in a theme lookup for no benefit at 22px.
+    "format": "{title}",
+    "icon-size": 0,
+    "max-length": 80,
+    "tooltip": false,
+    "on-click": "activate"
   },
 
   "custom/slstatus": {
