@@ -26,7 +26,6 @@ which then does need root).
 | tree | what it is | replaces |
 |---|---|---|
 | `dwl` | wlroots compositor, dwm's model. dwl 0.8 + 25 patches | sway |
-| `mew` | dmenu for Wayland | tofi |
 | `slstatus` | status line generator | swayrbar |
 | `tsubu` | daemonless notifications | dunst (partly — see below) |
 | `widle` | run a command on idle | swayidle |
@@ -98,15 +97,14 @@ re-checks it, and an output resize mid-transition would run off the mapping.
 - slstatus reuses `~/.config/swayrbar/barstat` for the fields that script already
   does well, grouped into four `barstat all …` calls. Fields swayrbar drew with
   its own modules (wifi, cpu/mem/load, clock) use slstatus' native C readers.
-- Colours and fonts come from **coat**. Each tree includes a generated header
-  (`~/.config/dwl/coat-colors.h`, `~/.config/mew/coat-colors.h`) found via a
-  `-I$(HOME)/.config/<tool>` in its Makefile. Both are guarded with
-  `__has_include`, so a fresh clone builds before coat has ever run, falling back
-  to the framer values baked into `config.def.h`.
+- Colours and fonts come from **coat**. A tree that is themed includes a
+  generated header (`~/.config/dwl/coat-colors.h`) found via a
+  `-I$(HOME)/.config/<tool>` in its Makefile, guarded with `__has_include` so a
+  fresh clone builds before coat has ever run, falling back to the framer values
+  baked into `config.def.h`.
 - Because these are compile-time configured, `coat set <scheme>` **rebuilds**
   them. dwl is not restarted automatically — that would kill the session — so
-  restart it yourself to see a scheme change. mew needs no restart; the next
-  invocation picks it up.
+  restart it yourself (`Super+Shift+r`) to see a scheme change.
 
 ## Updating a tree from upstream
 

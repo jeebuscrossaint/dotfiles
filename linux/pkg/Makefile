@@ -16,7 +16,7 @@
 PREFIX    ?= $(HOME)/.local
 MANPREFIX ?= $(PREFIX)/share/man
 
-SUBDIRS = dwl mew slstatus tsubu widle wlock ww wl-restart
+SUBDIRS = dwl slstatus tsubu widle wlock ww wl-restart
 
 # Packages each tree needs. wlroots is version-pinned: dwl 0.8 builds against
 # 0.19 specifically, and Artix ships 0.18/0.19/0.20 as coexisting packages, so
