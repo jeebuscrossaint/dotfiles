@@ -1,20 +1,21 @@
-/* Added by coat — pulls in the generated colour/font fragment.*/
-/* Everything below is yours: coat rewrites the fragment, never this file.*/
 @import "coat-colors.css";
 
-/* waybar — Framer (coat, base16 dark).
+/* waybar — GEOMETRY ONLY. Every colour lives in coat-colors.css, imported above.
  *
- * Deliberately flat: no pills, no rounded corners, no gradients. Workspaces
- * render as bare accent-coloured numbers on base00, which is exactly what the
- * swaybar block did (`focused_workspace #181818 #181818 #20BCFC`) and what dwl's
- * bar did. The bar should look like the same bar it has always been.
+ * This file used to carry a copy of the Framer palette, and that silently broke
+ * theming: GTK CSS is last-wins at equal specificity, the @import is necessarily
+ * at the top (an @import after a rule is dropped entirely), so every hardcoded
+ * `background: #181818` further down overrode what coat had just generated. The
+ * scheme changed on disk and the bar never moved. mango's config had the
+ * identical bug with its `source=` line.
  *
- * Only base05 on base00 and base03 on base00 are used for text. base01/02/04/06
- * are not trustworthy for chrome across schemes -- plenty of base16 schemes
- * leave them at contrast ratios that are unreadable, so they are avoided here
- * entirely.
+ * So: padding, sizing and font weight here; colour in the template. If a colour
+ * needs changing, change coat's templates/waybar.tera.
  *
- * coat can overwrite this file; keep the selector names stable if it does. */
+ * Deliberately flat — no pills, no rounded corners, no gradients. Tags render as
+ * bare accent-coloured numbers, which is what the swaybar block did
+ * (`focused_workspace #181818 #181818 #20BCFC`) and what dwl's bar did. The bar
+ * should look like the same bar it has always been. */
 
 * {
   font-family: "MartianMono Nerd Font Mono";
@@ -22,49 +23,28 @@
   border: none;
   border-radius: 0;
   min-height: 0;
-  /* GTK draws a 1px box-shadow on some themes; kill it or the bar looks
+  /* GTK draws a 1px box-shadow under some themes; without this the bar looks
    * double-bordered against the wallpaper. */
   box-shadow: none;
   text-shadow: none;
 }
 
-window#waybar {
-  background: #181818;
-  color: #d0d0d0;
-}
-
-/* Tags & title ------------------------------------------------------------------- */
+/* Tags & title ------------------------------------------------------------ */
 
 #custom-mangotags {
   padding: 0 6px;
-  background: #181818;
-  color: #747474;          /* base03 -- inactive */
 }
 
-/* Per-tag colour is set inline by mango-tags via pango markup, because waybar
- * cannot style parts of a custom module's text. The colours live in that script.
- * base0D focused, base05 occupied, base03 empty -- matching what swaybar and
- * the dwl bar did. */
+/* Per-tag colour is inline pango markup from ~/.local/bin/mango-tags, not CSS:
+ * waybar cannot style individual characters inside a custom module, only the
+ * module as a whole. Same for the title. */
 
-#taskbar button {
+#custom-mangotitle {
   padding: 0 6px;
-  background: #181818;
-  color: #20bcfc;
 }
-
-#taskbar button.active {
-  color: #20bcfc;
-}
-
-/* Mode, window title, status --------------------------------------------- */
-
-
 
 /* Status modules ---------------------------------------------------------- */
 
-/* One rule for the lot: even horizontal padding, base05 text. Individual states
- * below are the point of moving off a single text blob -- a battery inside one
- * opaque string could not be coloured when it got low. */
 #mpris,
 #network,
 #disk,
@@ -78,39 +58,9 @@ window#waybar {
 #custom-uptime,
 #clock {
   padding: 0 7px;
-  background: #181818;
-  color: #d0d0d0;
 }
 
 #clock {
-  /* Last module: no right padding or the clock sits off the panel edge. */
+  /* Last module: extra right padding or the clock sits flush to the panel edge. */
   padding-right: 8px;
-  color: #20bcfc;
-}
-
-#mpris.paused,
-#mpris.stopped {
-  color: #747474;
-}
-
-#temperature.critical,
-#battery.critical {
-  color: #fd886b;
-}
-
-#battery.warning {
-  color: #fecb6e;
-}
-
-#battery.charging,
-#battery.full {
-  color: #a1cd7c;
-}
-
-#network.disconnected {
-  color: #fd886b;
-}
-
-#wireplumber.muted {
-  color: #747474;
 }

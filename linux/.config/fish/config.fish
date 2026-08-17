@@ -91,7 +91,7 @@ if status is-interactive
         end
     end
 
-    if command -q fastfetch
-        fastfetch
+    if command -q pfetch
+        pfetch
     end
 end
