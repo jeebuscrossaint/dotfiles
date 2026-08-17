@@ -1,0 +1,15 @@
+#!/bin/sh
+# menu — wmenu with the current coat colours, reading choices on stdin.
+#
+# wmenu has no config file; colours and font are flags. coat writes them to
+# ~/.config/wmenu/coat-flags and this sources it, so the launcher follows a scheme
+# change with no restart and nothing to reload.
+#
+# Everything after "$@" is passed through, so callers can add -p/-l/-i.
+
+FLAGS="$HOME/.config/wmenu/coat-flags"
+[ -r "$FLAGS" ] && . "$FLAGS"
+
+# eval, because the colour flags are a single string containing quoted arguments;
+# without it wmenu receives one giant argv[1] and rejects it.
+eval exec wmenu ${WMENU_FONT:+-f \"\$WMENU_FONT\"} $WMENU_COLORS '"$@"'
