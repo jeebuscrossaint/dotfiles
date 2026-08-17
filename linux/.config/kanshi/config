@@ -1,0 +1,45 @@
+# kanshi — output configuration, replacing dwl's monrules[] and sway's `output`
+# blocks.
+#
+# river has no output configuration of its own: no modes, no positions, no
+# scaling. It implements wlr-output-management and expects an external client to
+# drive it, which is kanshi (in Arch galaxy and OpenBSD ports -- one of the
+# reasons this stack works on both).
+#
+# kanshi picks the first profile whose output set matches exactly what is
+# connected, and re-applies on hotplug -- so closing the lid and docking are
+# handled without a keybind. That is a straight upgrade on dwl, where a monitor
+# rule was matched once at createmon() time and a rejected mode was silently
+# ignored (which is what segfaulted it).
+#
+# NOTE: no adaptive sync / VRR here on purpose. dwl asked for it on both outputs
+# and a connector refusing it is what took the compositor down. Add
+# `adaptive_sync on` per-output once the stack is known good, not before.
+#
+# NOTE ON 10-BIT: kanshi cannot set colour depth, and neither can river. The
+# `render_bit_depth 10` that the sway config had has no equivalent in any wlroots
+# compositor -- it was a sway-specific feature. On this OLED that remains a real
+# loss versus sway, and it is not something this stack can get back.
+
+# Laptop panel only -- the common case, and the OpenBSD case (no NVIDIA driver
+# there, so the internal Intel-driven panel is all there is).
+profile laptop {
+	output eDP-1 mode 2560x1600@240Hz position 0,0 scale 1
+}
+
+# Panel plus the external display, external to the right.
+profile docked {
+	output eDP-1 mode 2560x1600@240Hz position 0,0 scale 1
+	output HDMI-A-1 mode 3840x2160@30Hz position 2560,0 scale 1
+}
+
+# External only, i.e. lid shut while docked.
+profile external {
+	output HDMI-A-1 mode 3840x2160@30Hz position 0,0 scale 1
+}
+
+# Fallback: any single unknown output, left enabled at whatever it prefers.
+# Without this, plugging in a projector gets you a black screen and no clue why.
+profile fallback {
+	output eDP-1 enable
+}

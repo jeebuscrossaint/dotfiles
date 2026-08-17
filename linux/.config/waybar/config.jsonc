@@ -1,0 +1,60 @@
+// waybar — the bar, replacing swaybar+swayrbar (sway) and dwl's built-in bar.
+//
+// waybar is the compromise in this stack: it is C++/GTK3 and the least minimal
+// thing here. It is also the ONLY bar present in both Arch's repos and OpenBSD
+// ports -- yambar is in neither tree for OpenBSD, and dwlb/somebar are
+// dwl-specific. So this is the price of a bar that runs on both machines.
+//
+// The status line is deliberately ONE module: slstatus, already vendored in
+// pkg/slstatus and already producing exactly the fields you want (wifi, cpu,
+// mem, load, disk, temp, fan, backlight, volume, battery, uptime, clock) via its
+// own C readers plus the barstat script. `slstatus -s` streams one line per
+// second on stdout, which is precisely what a waybar custom module in continuous
+// mode consumes -- so the entire status side needs no waybar configuration at
+// all, and it stays identical to what the dwl bar showed. slstatus builds on
+// OpenBSD too, which is the other reason to keep it rather than reimplement a
+// dozen waybar modules.
+//
+// NOTE: river/tags, river/mode and river/window need a waybar built with river
+// support. Arch's package has it. Verify on the OpenBSD side before assuming.
+{
+  "layer": "top",
+  "position": "bottom",
+  "height": 22,
+  "spacing": 0,
+  "margin": "0",
+
+  "modules-left": ["river/tags", "river/mode", "river/window"],
+  "modules-center": [],
+  "modules-right": ["custom/slstatus"],
+
+  "river/tags": {
+    // Ten tags, matching the init script. The eleventh (1<<10) is the scratchpad
+    // and is deliberately NOT listed -- it should not be clickable, or you can
+    // strand a window on a tag with no way back.
+    "num-tags": 10,
+    "tag-labels": ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"],
+    "set-tags": [1, 2, 4, 8, 16, 32, 64, 128, 256, 512]
+  },
+
+  "river/mode": {
+    // Shows "resize" while in that mode. Worth having visible: river's modes are
+    // exclusive, so every Super bind is inert until you leave, and without an
+    // indicator that state looks like a dead keyboard.
+    "format": "  {}"
+  },
+
+  "river/window": {
+    "format": "{}",
+    "max-length": 90
+  },
+
+  "custom/slstatus": {
+    "exec": "slstatus -s",
+    // No interval: slstatus emits a line per second and waybar renders each one
+    // as it arrives. restart-interval brings it back if it ever dies.
+    "restart-interval": 5,
+    "escape": true,
+    "tooltip": false
+  }
+}

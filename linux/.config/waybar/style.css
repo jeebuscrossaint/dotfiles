@@ -1,0 +1,81 @@
+/* waybar — Framer (coat, base16 dark).
+ *
+ * Deliberately flat: no pills, no rounded corners, no gradients. Workspaces
+ * render as bare accent-coloured numbers on base00, which is exactly what the
+ * swaybar block did (`focused_workspace #181818 #181818 #20BCFC`) and what dwl's
+ * bar did. The bar should look like the same bar it has always been.
+ *
+ * Only base05 on base00 and base03 on base00 are used for text. base01/02/04/06
+ * are not trustworthy for chrome across schemes -- plenty of base16 schemes
+ * leave them at contrast ratios that are unreadable, so they are avoided here
+ * entirely.
+ *
+ * coat can overwrite this file; keep the selector names stable if it does. */
+
+* {
+  font-family: "MartianMono Nerd Font Mono";
+  font-size: 10pt;
+  border: none;
+  border-radius: 0;
+  min-height: 0;
+  /* GTK draws a 1px box-shadow on some themes; kill it or the bar looks
+   * double-bordered against the wallpaper. */
+  box-shadow: none;
+  text-shadow: none;
+}
+
+window#waybar {
+  background: #181818;
+  color: #d0d0d0;
+}
+
+/* Tags ------------------------------------------------------------------- */
+
+#tags button {
+  padding: 0 6px;
+  background: #181818;
+  color: #747474;          /* base03 -- inactive */
+}
+
+#tags button.occupied {
+  color: #d0d0d0;          /* base05 -- has windows */
+}
+
+#tags button.focused {
+  color: #20bcfc;          /* base0D -- accent */
+}
+
+#tags button.urgent {
+  color: #fd886b;          /* base08 */
+}
+
+#tags button:hover {
+  background: #181818;
+  color: #20bcfc;
+  /* GTK's default hover adds a border; suppress it so hovering does not shift
+   * the label by a pixel. */
+  box-shadow: none;
+  text-shadow: none;
+}
+
+/* Mode, window title, status --------------------------------------------- */
+
+#mode {
+  padding: 0 8px;
+  color: #fecb6e;          /* base0A -- same colour swaybar used for binding_mode */
+}
+
+#window {
+  padding: 0 8px;
+  color: #20bcfc;
+}
+
+/* Nothing focused: dim the (empty) title rather than leaving a bright gap. */
+window#waybar.empty #window {
+  color: #747474;
+}
+
+#custom-slstatus {
+  padding: 0 8px 0 0;
+  color: #d0d0d0;
+}

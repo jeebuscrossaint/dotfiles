@@ -1,0 +1,43 @@
+#!/bin/sh
+# river-touchpad — toggle the touchpad on and off.
+#
+# Bound to XF86TouchpadToggle and Super+Alt+V. river's `input` command takes an
+# exact device name, and those differ per machine, so match on the word the same
+# way the init script does rather than hardcoding one. This laptop's touchpad is
+# "ASUP1207:00 093A:3012 Touchpad"; assuming a name is what left the equivalent
+# dwl binding a silent no-op.
+#
+# river has no query for the current send-events state, so the state is tracked
+# in a file. Worst case it starts out inverted and one extra press fixes it.
+
+STATE="${XDG_STATE_HOME:-$HOME/.local/state}/river/touchpad"
+mkdir -p "$(dirname "$STATE")" 2>/dev/null
+
+want=enabled
+if [ -r "$STATE" ]; then
+	read -r cur <"$STATE" 2>/dev/null
+	[ "$cur" = enabled ] && want=disabled
+fi
+
+found=0
+riverctl list-inputs 2>/dev/null | while IFS= read -r dev; do
+	case "$dev" in
+	*[Tt]ouchpad* | *[Tt]rackpad*)
+		riverctl input "$dev" events "$want"
+		;;
+	esac
+done
+
+# The `while` above runs in a subshell, so count separately for the message.
+found=$(riverctl list-inputs 2>/dev/null | grep -ciE 'touch|trackpad')
+printf '%s\n' "$want" >"$STATE"
+
+if [ "$found" -eq 0 ]; then
+	notify-send -a river "touchpad" "no touchpad found in riverctl list-inputs" 2>/dev/null
+	exit 1
+fi
+
+case "$want" in
+enabled) notify-send -a river "󰟸  touchpad on" 2>/dev/null ;;
+disabled) notify-send -a river "󰟵  touchpad off" 2>/dev/null ;;
+esac
