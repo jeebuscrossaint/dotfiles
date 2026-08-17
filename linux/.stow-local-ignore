@@ -8,12 +8,6 @@
 # package directory, anchored at both ends; patterns without one are matched
 # against basenames anywhere in the tree.
 
-# pkg/ is a build tree, not dotfiles. Without this stow creates ~/pkg as a
-# symlink into the repo, which is meaningless -- `make -C ~/dotfiles/linux/pkg`
-# is how it is used. This went unnoticed for a long time only because stow
-# aborted on other conflicts before it ever got here.
-^/pkg$
-
 # stow's defaults, verbatim.
 RCS
 .+,v

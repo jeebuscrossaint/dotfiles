@@ -60,7 +60,57 @@ window#waybar {
 
 
 
-#custom-slstatus {
-  padding: 0 8px 0 0;
+/* Status modules ---------------------------------------------------------- */
+
+/* One rule for the lot: even horizontal padding, base05 text. Individual states
+ * below are the point of moving off a single text blob -- a battery inside one
+ * opaque string could not be coloured when it got low. */
+#mpris,
+#network,
+#disk,
+#cpu,
+#memory,
+#temperature,
+#custom-fan,
+#backlight,
+#wireplumber,
+#battery,
+#custom-uptime,
+#clock {
+  padding: 0 7px;
+  background: #181818;
   color: #d0d0d0;
+}
+
+#clock {
+  /* Last module: no right padding or the clock sits off the panel edge. */
+  padding-right: 8px;
+  color: #20bcfc;
+}
+
+#mpris.paused,
+#mpris.stopped {
+  color: #747474;
+}
+
+#temperature.critical,
+#battery.critical {
+  color: #fd886b;
+}
+
+#battery.warning {
+  color: #fecb6e;
+}
+
+#battery.charging,
+#battery.full {
+  color: #a1cd7c;
+}
+
+#network.disconnected {
+  color: #fd886b;
+}
+
+#wireplumber.muted {
+  color: #747474;
 }

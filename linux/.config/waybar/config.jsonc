@@ -1,26 +1,24 @@
-// waybar — the bar, replacing swaybar+swayrbar (sway) and dwl's built-in bar.
+// waybar — the bar. Native modules only.
 //
-// waybar is the compromise in this stack: it is C++/GTK3 and the least minimal
-// thing here. It is also the ONLY bar present in both Arch's repos and OpenBSD
-// ports -- yambar is in neither tree for OpenBSD, and dwlb/somebar are
-// dwl-specific. So this is the price of a bar that runs on both machines.
+// This replaced a three-layer chain that rendered the status line:
 //
-// The status line is deliberately ONE module: slstatus, already vendored in
-// pkg/slstatus and already producing exactly the fields you want (wifi, cpu,
-// mem, load, disk, temp, fan, backlight, volume, battery, uptime, clock) via its
-// own C readers plus the barstat script. `slstatus -s` streams one line per
-// second on stdout, which is precisely what a waybar custom module in continuous
-// mode consumes -- so the entire status side needs no waybar configuration at
-// all, and it stays identical to what the dwl bar showed. slstatus builds on
-// OpenBSD too, which is the other reason to keep it rather than reimplement a
-// dozen waybar modules.
+//   waybar -> slstatus (vendored C, needed `make install`) -> barstat (shell,
+//   4 forks/sec) -> /sys/*
 //
-// NOTE: waybar has NO mango module. mango is dwl-derived but does not implement
-// dwl's IPC protocol -- its protocols/ dir carries only layer-shell,
-// foreign-toplevel and output-power-management -- so `dwl/tags` cannot see it
-// either. Tags therefore come from mango's own IPC through the mango-tags
-// script, which streams `mmsg watch all-tags`. The window title comes from
-// wlr/taskbar's protocol instead, which mango DOES implement.
+// slstatus was inherited from the swaybar/swayrbar era, where a bar that read a
+// text stream was the only option. It survived here on the claim that it "works
+// on OpenBSD", which was false in practice: 10 of the 15 fields came from
+// barstat, a shell script reading /sys/class/power_supply, /sys/class/hwmon,
+// /sys/class/backlight and /sys/class/net -- none of which exist there. So the
+// portability argument for keeping it was backwards.
+//
+// Everything below is a waybar module, which means one project's portability to
+// worry about instead of a shell script full of Linux paths, per-field CSS
+// (battery can go red at 10%; a single text blob cannot), and pkg/ deleted.
+//
+// Fan and uptime are the two fields waybar has no module for. Both resolve their
+// hardware by NAME rather than hwmon index, because hwmon numbering is not stable
+// across boots -- coretemp happened to be hwmon7 today.
 {
   "layer": "top",
   "position": "bottom",
@@ -30,12 +28,30 @@
 
   "modules-left": ["custom/mangotags", "custom/mangotitle"],
   "modules-center": [],
-  "modules-right": ["custom/slstatus"],
+  "modules-right": [
+    "mpris",
+    "network",
+    "disk",
+    "cpu",
+    "memory",
+    "temperature",
+    "custom/fan",
+    "backlight",
+    "wireplumber",
+    "battery",
+    "custom/uptime",
+    "clock"
+  ],
 
+  // ── mango ────────────────────────────────────────────────────────────────
+  // waybar has no mango module, and mango does not implement dwl's IPC protocol
+  // (protocols/ has only layer-shell, foreign-toplevel and
+  // output-power-management), so `dwl/tags` cannot see it either. Both of these
+  // stream mango's own IPC via `mmsg watch`, which pushes on change rather than
+  // polling, and emit pango markup because CSS cannot reach individual characters
+  // inside a custom module.
   "custom/mangotags": {
     "exec": "mango-tags",
-    // No interval: mango-tags blocks on mmsg and emits a line per state change,
-    // so the bar updates the instant a tag does rather than up to a second late.
     "return-type": "",
     "restart-interval": 5,
     "escape": false,
@@ -43,11 +59,6 @@
   },
 
   "custom/mangotitle": {
-    // NOT wlr/taskbar. taskbar renders a button per toplevel, so it listed every
-    // open window, and its max-length applies per button rather than to the row --
-    // with six windows the titles ran the full panel width and pushed the clock
-    // off the right edge. mango-title streams `mmsg watch focusing-client` and
-    // prints exactly one title.
     "exec": "mango-title",
     "return-type": "",
     "restart-interval": 5,
@@ -55,12 +66,126 @@
     "tooltip": false
   },
 
-  "custom/slstatus": {
-    "exec": "slstatus -s",
-    // No interval: slstatus emits a line per second and waybar renders each one
-    // as it arrives. restart-interval brings it back if it ever dies.
-    "restart-interval": 5,
-    "escape": true,
+  // ── status ───────────────────────────────────────────────────────────────
+  "mpris": {
+    "format": "{status_icon} {dynamic}",
+    "dynamic-len": 38,
+    "dynamic-order": ["artist", "title"],
+    "status-icons": { "playing": "󰐊", "paused": "󰏤", "stopped": "󰓛" },
+    "tooltip": false,
+    "on-click": "osd playpause"
+  },
+
+  "network": {
+    "interface": "wlan0",
+    "format-wifi": "󰇚 {bandwidthDownBytes} 󰕒 {bandwidthUpBytes}  󰖩 {essid} {signalStrength}%",
+    "format-ethernet": "󰇚 {bandwidthDownBytes} 󰕒 {bandwidthUpBytes}  󰈀 {ipaddr}",
+    "format-disconnected": "󰖪 offline",
+    "interval": 2,
+    "tooltip": false,
+    "on-click": "foot -e nmtui"
+  },
+
+  "disk": {
+    "format": "󰋊 {percentage_used}% {free}",
+    "path": "/",
+    "interval": 30,
     "tooltip": false
+  },
+
+  "cpu": {
+    // {load} is the 1-minute average, which is what the old load field showed.
+    "format": "󰻠 {usage}%  󰬺 {load}",
+    "interval": 2,
+    "tooltip": false,
+    "on-click": "foot -e btop"
+  },
+
+  "memory": {
+    "format": "󰍛 {percentage}%",
+    "format-swap": "󰾵 {swapPercentage}%",
+    "interval": 5,
+    "tooltip": false,
+    "on-click": "foot -e btop"
+  },
+
+  "temperature": {
+    // hwmon-path-abs is the platform device path, which IS stable across boots;
+    // the hwmonN directory beneath it is not, and waybar resolves that itself.
+    // temp10_input is coretemp's package sensor on this Meteor Lake part.
+    "hwmon-path-abs": "/sys/devices/platform/coretemp.0/hwmon",
+    "input-filename": "temp10_input",
+    "format": "󰔏 {temperatureC}°",
+    "critical-threshold": 90,
+    "format-critical": "󰸁 {temperatureC}°",
+    "interval": 5,
+    "tooltip": false
+  },
+
+  "custom/fan": {
+    "exec": "waybar-fan",
+    "interval": 5,
+    "tooltip": false
+  },
+
+  "backlight": {
+    // intel_backlight, not nvidia_0: the OLED panel is driven by the Intel card.
+    "device": "intel_backlight",
+    "format": "󰃠 {percent}%",
+    "tooltip": false,
+    "on-scroll-up": "osd brightness up",
+    "on-scroll-down": "osd brightness down"
+  },
+
+  "wireplumber": {
+    "format": "󰕾 {volume}%",
+    "format-muted": "󰝟 muted",
+    "max-volume": 150,
+    "tooltip": false,
+    "on-click": "osd volume mute",
+    "on-scroll-up": "osd volume up",
+    "on-scroll-down": "osd volume down"
+  },
+
+  "battery": {
+    "bat": "BAT1",
+    "adapter": "ACAD",
+    // These drive the CSS states, which is the thing a single text blob could
+    // never do: the module goes amber at 25% and red at 10%.
+    "states": { "warning": 25, "critical": 10 },
+    "format": "{icon} {capacity}% {power:.1f}W {time}",
+    "format-charging": "󰂄 {capacity}% {power:.1f}W {time}",
+    "format-full": "󰁹 {capacity}%",
+    "format-time": "{H}h{m}m",
+    "format-icons": ["󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"],
+    "interval": 10,
+    "tooltip": false
+  },
+
+  "custom/uptime": {
+    "exec": "waybar-uptime",
+    "interval": 60,
+    "tooltip": false
+  },
+
+  "clock": {
+    // 1s because the old field showed ticking seconds.
+    //
+    // %d and %I, NOT %-d and %-I. waybar's clock formats through fmt/chrono,
+    // which rejects glibc's no-pad modifier with "invalid specifier in
+    // chrono-specs" -- and the failure mode is the whole module rendering
+    // nothing, so the clock silently disappears off the end of the bar. %e and
+    // %l (space-padded) are rejected too; zero-padded is what works.
+    "format": "󰃰 {:%a %b %d  %I:%M:%S %p}",
+    "interval": 1,
+    "tooltip-format": "<tt>{calendar}</tt>",
+    "calendar": {
+      "mode": "month",
+      "on-scroll": 1,
+      "format": {
+        "months": "<span color='#20bcfc'><b>{}</b></span>",
+        "today": "<span color='#fd886b'><b>{}</b></span>"
+      }
+    }
   }
 }
