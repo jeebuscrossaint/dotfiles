@@ -2965,6 +2965,18 @@ moveresize(const Arg *arg)
 	if (!grabc || client_is_unmanaged(grabc) || grabc->isfullscreen)
 		return;
 
+	/* Super+drag to MOVE a tiled client only works where the release handler
+	 * can put it back: the |w| branch in buttonpress() re-inserts it into
+	 * btrtile's split tree and clears the float. No other layout has anywhere
+	 * to drop it, so the window floated here on press and stayed floating --
+	 * a stray Super+click was enough to knock it out of the tiling. Refuse the
+	 * grab instead, matching that branch's test exactly so the two cannot
+	 * disagree. Floating clients still drag anywhere, and Super+right-drag
+	 * still resizes tiled ones (CurResize never floats -- see below). */
+	if (arg->ui == CurMove && !grabc->isfloating
+			&& strcmp(selmon->ltsymbol, "|w|"))
+		return;
+
 	cursor_mode = arg->ui;
 	grabc->was_tiled = (!grabc->isfloating && !grabc->isfullscreen);
 
