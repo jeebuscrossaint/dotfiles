@@ -2,7 +2,7 @@
 
 ![arch](misc/preview_arch.png) ![openbsd](misc/preview_openbsd.png) ![windows](misc/preview_windows.png)
 
-sway · swaybar · foot · fish · nvim · tofi · coat · glazewm
+mango · waybar · foot · fish · nvim · wmenu · coat · glazewm
 
 arch linux · openbsd · windows 11
 

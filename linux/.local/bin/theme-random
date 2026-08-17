@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
-# Pick a random coat scheme, apply it everywhere, and notify. (sway: $mod+Shift+t)
-coat random -y >/dev/null 2>&1   # coat's swaybar module runs `swaymsg reload` itself
+# Pick a random coat scheme, apply it everywhere, and notify. (mango: Super+Shift+T)
+# coat reloads every enabled module itself -- under mango that includes an
+# `mmsg dispatch reload_config`, so the compositor recolours without a restart.
+coat random -y >/dev/null 2>&1
 scheme=$(grep -m1 '^scheme:' "$HOME/.config/coat/coat.yaml" | awk '{print $2}')
 command -v notify-send >/dev/null && notify-send -t 2000 "󰏘  Theme" "switched to $scheme"

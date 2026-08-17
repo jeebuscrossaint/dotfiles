@@ -5,7 +5,11 @@
 # launcher everywhere else in this setup now. coat applies the scheme to every
 # enabled module itself -- under mango that includes a live `mmsg dispatch
 # reload_config`, so the compositor recolours without a restart.
-pick=$(coat list --no-preview 2>/dev/null | awk '/Slug:/{print $2}' | wmenu -i -p 'theme')
+# `menu`, not bare wmenu: wmenu has no config file, so bare wmenu comes up in its
+# own default black-and-white and ignores the scheme entirely -- which looked
+# especially silly on the picker whose whole job is changing the scheme.
+# ~/.local/bin/menu sources the flags coat writes.
+pick=$(coat list --no-preview 2>/dev/null | awk '/Slug:/{print $2}' | menu -i -p theme)
 [ -n "$pick" ] || exit 0
 coat set "$pick" >/dev/null 2>&1
 command -v notify-send >/dev/null && notify-send -t 2000 "󰏘  Theme" "switched to $pick"
