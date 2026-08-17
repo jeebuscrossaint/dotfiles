@@ -1,5 +1,8 @@
-# swayidle — started from sway's config with `-w` (wait for each command to
+# swayidle — started from dwl's autostart[] with `-w` (wait for each command to
 # finish before moving on).
+#
+# `-w` is why nothing here may block: a command that never returns wedges the
+# whole idle chain. ww-restore backgrounds ww for exactly that reason.
 #
 # Every lock goes through `gtklock-once`, never bare `gtklock`: it adds -d
 # (detach — gtklock's -f is --follow-focus, not fork) and refuses to stack a
@@ -7,5 +10,19 @@
 # locker directly here is what caused the double password prompt after a lid
 # close/open cycle.
 timeout 300 'gtklock-once'
-timeout 600 'swaymsg "output * dpms off"' resume 'swaymsg "output * dpms on"'
+
+# wlopm, not `swaymsg "output * dpms off"`. That line was carried over from the
+# sway config and has been dead since the move to dwl: swaymsg needs a sway IPC
+# socket, finds none, and exits non-zero — so the screen never blanked on idle at
+# all, it only locked. dwl implements wlr-output-power-management-v1 (dwl.c:506),
+# which is the protocol wlopm speaks.
+timeout 600 'wlopm --off "*"' resume 'wlopm --on "*"'
+
 before-sleep 'gtklock-once'
+
+# ww loses its wallpaper across suspend and never puts it back: the output is
+# destroyed on the way down, which destroys ww's layer surface with it, and ww's
+# registry_global_remove() and layer_surface_closed() handlers are both empty
+# (src/wayland.cc:479 and :251 — the former still carries a "TODO: Handle output
+# removal"). Until ww learns output hotplug, restart it on resume.
+after-resume 'ww-restore'

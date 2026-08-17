@@ -99,7 +99,10 @@ static const char *const autostart[] = {
 	/* NOTE: the sway config pointed at /usr/libexec, which does not exist here --
 	 * these binaries live in /usr/lib, so those two exec lines never ran. */
 	"/usr/lib/xdg-desktop-portal-wlr", NULL,
-	"ww", "-m", "fill", "/home/amarnath/jbwallpapers/wallpapers/Matanuska-River-ENBLA05.jpg", NULL,
+	/* ww-restore, not ww directly: it owns the wallpaper path (shared with
+	 * swayidle's after-resume, which has to put the wallpaper back because ww
+	 * cannot survive its output being destroyed -- see the script). */
+	"ww-restore", NULL,
 	/* swayidle, not widle: widle's .resumed handler is a noop, so it cannot
 	 * express the `timeout 600 dpms-off resume dpms-on` pair or before-sleep.
 	 * widle is built and installed if a single-timeout job ever needs it. */
