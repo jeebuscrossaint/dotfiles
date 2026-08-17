@@ -1,0 +1,39 @@
+#!/bin/sh
+# waybar-fan — fan RPM for waybar. There is no native module for fans.
+#
+# Resolves the sensor by hwmon NAME, not by index: hwmon numbering is assigned in
+# probe order and is not stable across boots (the asus controller was hwmon5 today,
+# coretemp hwmon7). Hardcoding /sys/class/hwmon/hwmon5 works until it silently
+# reports somebody else's fan.
+#
+# Two controllers expose fans on this laptop -- `asus` (asus-nb-wmi, the real
+# chassis fans) and `acpi_fan` -- so asus is preferred and acpi_fan is the
+# fallback.
+
+read_fan() {
+	for h in /sys/class/hwmon/hwmon*; do
+		[ -r "$h/name" ] || continue
+		read -r name <"$h/name" 2>/dev/null
+		[ "$name" = "$1" ] || continue
+		for f in "$h"/fan*_input; do
+			[ -r "$f" ] || continue
+			read -r rpm <"$f" 2>/dev/null
+			case "$rpm" in
+			'' | *[!0-9]*) continue ;;
+			esac
+			printf '%s\n' "$rpm"
+			return 0
+		done
+	done
+	return 1
+}
+
+rpm=$(read_fan asus) || rpm=$(read_fan acpi_fan) || exit 0
+
+# 0 means the fan has stopped, which is information rather than a missing reading
+# -- on this machine it is the normal idle state.
+if [ "$rpm" -eq 0 ]; then
+	echo "󰈐 off"
+else
+	echo "󰈐 ${rpm}"
+fi

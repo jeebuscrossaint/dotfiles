@@ -1,0 +1,22 @@
+#!/bin/sh
+# waybar-uptime — uptime for waybar. No native module for it.
+#
+# /proc/uptime rather than `uptime -p`: one read with no fork, and the output is
+# seconds as a float so the formatting is ours rather than locale-dependent
+# ("up 1 hour, 6 minutes" vs "1h06m").
+#
+# The `uptime` command is the portable fallback for a system without /proc, which
+# is the OpenBSD case.
+
+if [ -r /proc/uptime ]; then
+	read -r secs _ </proc/uptime
+	secs=${secs%.*}
+else
+	secs=$(sysctl -n kern.boottime 2>/dev/null | sed 's/.*sec = \([0-9]*\).*/\1/')
+	case "$secs" in
+	'' | *[!0-9]*) exit 0 ;;
+	*) secs=$(( $(date +%s) - secs )) ;;
+	esac
+fi
+
+printf '󰅐 %dh%02dm\n' $((secs / 3600)) $((secs % 3600 / 60))
