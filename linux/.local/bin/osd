@@ -37,7 +37,7 @@ SOURCE=@DEFAULT_AUDIO_SOURCE@
 BACKLIGHT=intel_backlight
 
 VOL_STEP=5
-VOL_MAX=1.5 # wpctl ceiling (150%), matching ~/.local/bin/volumectl
+VOL_MAX=1.5 # wpctl ceiling (150%)
 BL_STEP=5   # percent of max_brightness per keypress
 BL_MIN=1    # never step the backlight to 0 — that is a black screen
 

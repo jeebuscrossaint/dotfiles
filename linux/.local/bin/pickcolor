@@ -1,0 +1,97 @@
+#!/usr/bin/env python3
+"""pickcolor — eyedropper: pick a pixel, copy its hex, notify with a swatch.
+
+Replaces `grimpicker -n -c`. grimpicker is fine, but it ships in sway-contrib,
+which depends on sway -- so a colour picker was the only reason a whole compositor
+stayed installed after the move to mango. The actual work is three lines of grim
+and slurp; this is those, plus a swatch in the notification.
+
+Deps: grim, slurp, wl-copy, notify-send. All already here for the screenshot
+scripts and the OSD, and all in OpenBSD ports.
+"""
+
+import subprocess
+import sys
+
+
+def read_pixel():
+    """Return (r, g, b), averaged if the output scale makes the grab >1px.
+
+    grim -t ppm emits binary P6: a header of three whitespace-separated tokens
+    after the magic (width, height, maxval), then width*height*3 bytes. The header
+    is parsed token by token rather than by splitting on newlines -- the pixel
+    payload can contain 0x0a bytes, and a line-based parser corrupts itself on any
+    colour with a 10 in it.
+    """
+    region = subprocess.check_output(("slurp", "-p"))
+    ppm = subprocess.check_output(
+        ("grim", "-g", "-", "-t", "ppm", "-"), input=region
+    )
+
+    if not ppm.startswith(b"P6"):
+        raise ValueError("grim did not return binary PPM")
+
+    tokens, pos = [], 2
+    while len(tokens) < 3:
+        while pos < len(ppm) and ppm[pos : pos + 1].isspace():
+            pos += 1
+        if pos < len(ppm) and ppm[pos : pos + 1] == b"#":  # comment to end of line
+            while pos < len(ppm) and ppm[pos : pos + 1] != b"\n":
+                pos += 1
+            continue
+        start = pos
+        while pos < len(ppm) and not ppm[pos : pos + 1].isspace():
+            pos += 1
+        tokens.append(ppm[start:pos])
+    pos += 1  # exactly one whitespace byte separates the header from the payload
+
+    width, height, maxval = (int(t) for t in tokens)
+    if maxval != 255:
+        raise ValueError(f"unsupported maxval {maxval} (expected 8-bit)")
+
+    data = ppm[pos : pos + width * height * 3]
+    count = width * height
+    if count == 0 or len(data) < count * 3:
+        raise ValueError("short PPM payload")
+
+    return tuple(
+        sum(data[i * 3 + channel] for i in range(count)) // count
+        for channel in range(3)
+    )
+
+
+def main():
+    try:
+        r, g, b = read_pixel()
+    except subprocess.CalledProcessError:
+        # slurp exits non-zero when the pick is cancelled with Escape. Not an
+        # error worth a notification.
+        return 0
+    except (ValueError, OSError) as err:
+        print(f"pickcolor: {err}", file=sys.stderr)
+        return 1
+
+    hexcode = f"#{r:02X}{g:02X}{b:02X}"
+    print(hexcode)
+
+    subprocess.run(("wl-copy", hexcode), check=False)
+    # A span with a background is the only way to show the colour itself: fnott
+    # renders pango markup in the body, and no notification daemon here has a
+    # swatch of its own.
+    subprocess.run(
+        (
+            "notify-send",
+            "-t", "3000",
+            f"󰈊  {hexcode}",
+            f'<span background="{hexcode}">       </span>  copied',
+        ),
+        check=False,
+    )
+    return 0
+
+
+if __name__ == "__main__":
+    try:
+        sys.exit(main())
+    except KeyboardInterrupt:
+        sys.exit(0)
