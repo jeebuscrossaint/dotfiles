@@ -16,11 +16,60 @@ so this prints exactly one title, and updates the instant focus moves.
 
 import html
 import json
+import os
 import subprocess
 import sys
 
 MAX = 60
-ACCENT = "#20bcfc"  # base0D
+
+def coat_colors():
+    """Read the palette out of coat's mango fragment.
+
+    These are pango markup, not CSS, so coat cannot reach them the way it reaches
+    a stylesheet -- waybar cannot style individual characters inside a custom
+    module, which is why the colour is inline in the first place. Rather than add
+    another coat module for two scripts, reuse the fragment coat already writes
+    for the compositor: ~/.config/mango/coat-colors.conf, lines of the form
+    `focuscolor=0xRRGGBBAA`.
+
+    Falls back to Framer if the file is missing, so this still runs on a machine
+    where coat has never been applied.
+    """
+    out = {
+        "focused": "#20bcfc",
+        "occupied": "#d0d0d0",
+        "empty": "#747474",
+        "urgent": "#fd886b",
+    }
+    # scratchpadcolor is base0D (the accent), focuscolor base05, bordercolor
+    # base03, urgentcolor base08 -- see coat's templates/mango.tera.
+    keymap = {
+        "scratchpadcolor": "focused",
+        "focuscolor": "occupied",
+        "bordercolor": "empty",
+        "urgentcolor": "urgent",
+    }
+    path = os.path.expanduser("~/.config/mango/coat-colors.conf")
+    try:
+        with open(path) as fh:
+            for line in fh:
+                line = line.strip()
+                if "=" not in line or line.startswith("#"):
+                    continue
+                key, _, val = line.partition("=")
+                slot = keymap.get(key.strip())
+                if not slot:
+                    continue
+                val = val.strip()
+                if val.startswith("0x") and len(val) >= 8:
+                    # 0xRRGGBBAA -> #RRGGBB; pango wants no alpha channel.
+                    out[slot] = "#" + val[2:8]
+    except OSError:
+        pass
+    return out
+
+
+ACCENT = coat_colors()["focused"]
 
 
 def render(payload):
