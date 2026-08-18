@@ -1,0 +1,201 @@
+#!/usr/bin/env python3
+"""wayfire-check — validate ~/.config/wayfire.ini against wayfire's own metadata.
+
+This exists because of how wayfire fails. It has no dry-run flag, and unlike
+`mango -p` (which rejects an unknown keyword outright) wayfire SILENTLY IGNORES both
+unknown sections and unknown keys. A typo is not an error, it is a setting that does
+nothing -- and the only symptom is a keybind that never fires or an effect that never
+appears, which is indistinguishable from "I configured it wrong".
+
+wayfire ships an XML description of every plugin's options in
+/usr/share/wayfire/metadata/. That is the authority this checks against, so it stays
+correct across wayfire versions instead of hardcoding a key list that rots.
+
+What it CANNOT catch: a valid key with a nonsense value, a keybind that collides with
+another, or a plugin left out of core/plugins (that last one is worth checking by eye
+-- a section for a plugin that is not loaded is ignored just as silently).
+
+    wayfire-check              check ~/.config/wayfire.ini
+    wayfire-check FILE         check a specific file
+
+Exit 0 if every section and key is known, 1 otherwise.
+"""
+
+import configparser
+import glob
+import os
+import sys
+import xml.etree.ElementTree as ET
+
+METADATA_DIRS = (
+    "/usr/share/wayfire/metadata",
+    "/usr/local/share/wayfire/metadata",
+)
+
+# Sections wayfire handles in core rather than in a plugin, so they have no metadata
+# file of their own. Values are the keys each accepts; None means "do not check keys".
+# Sections whose keys are arbitrary by design, so there is nothing to check them
+# against. core, input, output and workarounds DO ship metadata and are checked.
+FREEFORM_SECTIONS = {"autostart", "command"}
+
+
+def metadata_dir():
+    for d in METADATA_DIRS:
+        if os.path.isdir(d):
+            return d
+    return None
+
+
+def known_options(path):
+    """Return (names, prefixes) of the options a plugin's metadata declares.
+
+    Dynamic lists are the fiddly part and were got wrong first time round: the prefix
+    is NOT an attribute of the <option> element, it lives on a nested <entry>:
+
+        <option name="workspace_bindings" type="dynamic-list" type-hint="dict">
+            <entry prefix="binding_" type="activator"/>
+        </option>
+
+    A prefix of "" (as [window-rules] rules uses) means any key name is valid, so it
+    is returned as the empty string and matched with str.startswith, which is always
+    true.
+    """
+    names, prefixes = set(), set()
+    try:
+        root = ET.parse(path).getroot()
+    except ET.ParseError:
+        return names, prefixes
+    for opt in root.iter("option"):
+        name = opt.get("name")
+        if opt.get("type") == "dynamic-list":
+            entries = [e.get("prefix") for e in opt.iter("entry")]
+            if entries:
+                prefixes.update(e or "" for e in entries)
+            elif name:
+                names.add(name)
+        elif name:
+            names.add(name)
+    return names, prefixes
+
+
+
+KEYCODES = "/usr/include/linux/input-event-codes.h"
+
+
+def valid_keynames():
+    """Every KEY_* name the kernel defines, or None if the header is unavailable.
+
+    Wayfire binds use LINUX INPUT names, not xkb keysyms, and the two disagree in
+    ways that bite: the period key is KEY_DOT, not KEY_PERIOD. A bad name is not a
+    config error -- wayfire logs "Failed to parse extension binding" and the bind
+    simply never fires.
+    """
+    try:
+        with open(KEYCODES) as fh:
+            return {
+                line.split()[1]
+                for line in fh
+                if line.startswith("#define KEY_") and len(line.split()) > 2
+            }
+    except OSError:
+        return None
+
+
+def check_values(cp):
+    """Catch the two value-level mistakes wayfire only complains about at runtime."""
+    status = 0
+    keys = valid_keynames()
+    for section in cp.sections():
+        for opt, val in cp[section].items():
+            if val is None:
+                continue
+            # A raw '#' starts a COMMENT in wayfire.ini, so an unescaped colour is
+            # read as an empty value and reported only as "invalid option value".
+            if "color" in opt and val.lstrip().startswith("#"):
+                print(f"FAILED   [{section}] {opt}: '#' must be escaped as '\\#' "
+                      f"or wayfire reads it as a comment", file=sys.stderr)
+                status = 1
+            if keys is not None:
+                for tok in val.split():
+                    if tok.startswith("KEY_") and tok not in keys:
+                        print(f"FAILED   [{section}] {opt}: {tok} is not a Linux "
+                              f"input key name (see {KEYCODES})", file=sys.stderr)
+                        status = 1
+    return status
+
+
+def main():
+    conf = sys.argv[1] if len(sys.argv) > 1 else os.path.expanduser(
+        "~/.config/wayfire.ini"
+    )
+    if not os.path.isfile(conf):
+        print(f"wayfire-check: no such file: {conf}", file=sys.stderr)
+        return 1
+
+    md = metadata_dir()
+    if md is None:
+        print(
+            "wayfire-check: no wayfire metadata found -- is wayfire installed?",
+            file=sys.stderr,
+        )
+        return 1
+
+    plugins = {}
+    for f in glob.glob(os.path.join(md, "*.xml")):
+        plugins[os.path.splitext(os.path.basename(f))[0]] = known_options(f)
+
+    # allow_no_value + a permissive parser: wayfire.ini uses backslash continuations
+    # and bare values that configparser is otherwise fussy about.
+    cp = configparser.ConfigParser(allow_no_value=True, strict=False,
+                                   interpolation=None)
+    cp.optionxform = str
+    try:
+        cp.read(conf)
+    except configparser.Error as err:
+        print(f"wayfire-check: {conf} is not parseable: {err}", file=sys.stderr)
+        return 1
+
+    status = 0
+    for section in cp.sections():
+        base = section.split(":", 1)[0]      # output:eDP-1 -> output
+        if base in FREEFORM_SECTIONS:
+            print(f"ok       [{section}]  ({len(cp[section])} keys, freeform by design)")
+            continue
+        if base not in plugins:
+            print(f"UNKNOWN  [{section}] is not a plugin wayfire ships", file=sys.stderr)
+            status = 1
+            continue
+
+        names, prefixes = plugins[base]
+        bad = [
+            k for k in cp[section]
+            if k not in names and not any(k.startswith(p) for p in prefixes)
+        ]
+        if bad:
+            status = 1
+            print(f"FAILED   [{section}]: unknown keys, silently ignored by wayfire:",
+                  file=sys.stderr)
+            for k in bad:
+                print(f"             {k}", file=sys.stderr)
+        else:
+            print(f"ok       [{section}]  ({len(cp[section])} keys)")
+
+    # A section for a plugin that is not in core/plugins is ignored just as quietly.
+    if cp.has_option("core", "plugins"):
+        enabled = set(cp["core"]["plugins"].replace("\\", " ").split())
+        for section in cp.sections():
+            base = section.split(":", 1)[0]
+            if (base in plugins and base not in enabled
+                    and base not in FREEFORM_SECTIONS
+                    and base not in {"core", "input", "output", "workarounds"}):
+                print(f"WARNING  [{section}] is configured but '{base}' is not in "
+                      f"core/plugins, so it does nothing", file=sys.stderr)
+                status = 1
+
+    status |= check_values(cp)
+
+    return status
+
+
+if __name__ == "__main__":
+    sys.exit(main())
