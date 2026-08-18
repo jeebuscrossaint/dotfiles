@@ -1,15 +1,51 @@
 #!/bin/sh
-# menu — wmenu with the current coat colours, reading choices on stdin.
+# menu — a dmenu-style picker reading choices on stdin, for scripts.
 #
-# wmenu has no config file; colours and font are flags. coat writes them to
-# ~/.config/wmenu/coat-flags and this sources it, so the launcher follows a scheme
-# change with no restart and nothing to reload.
+# This is `fuzzel --dmenu`. The NAME is the point: theme-pick, the clipboard binds and
+# all three compositor configs call `menu`, so the launcher underneath can be swapped
+# with no edits anywhere else. It was wmenu until 2026-08-18.
 #
-# Everything after "$@" is passed through, so callers can add -p/-l/-i.
+# No colour flags to pass any more, which is half the reason for the move. wmenu had no
+# config file, so its colours were command-line flags that coat wrote to
+# ~/.config/wmenu/coat-flags, and any caller that forgot to source them came up
+# unthemed -- which is exactly what had happened to theme-pick. fuzzel reads
+# ~/.config/fuzzel/fuzzel.ini itself.
+#
+# wmenu's flags are translated rather than passed through, because fuzzel spells them
+# differently:
+#     -p PROMPT  ->  --prompt="PROMPT ❯ "
+#     -l LINES   ->  --lines=LINES
+#     -i         ->  dropped; fuzzel always matches case-insensitively, and passing an
+#                    unknown flag would make it exit instead
+#
+# Arguments are rebuilt with `set --` rather than accumulated in a string. A string
+# breaks on the prompt: "$args" unquoted word-splits `--prompt=theme ❯` into two
+# arguments, so the ❯ silently became a stray positional and the prompt lost its arrow.
 
-FLAGS="$HOME/.config/wmenu/coat-flags"
-[ -r "$FLAGS" ] && . "$FLAGS"
+prompt=""
+lines=""
 
-# eval, because the colour flags are a single string containing quoted arguments;
-# without it wmenu receives one giant argv[1] and rejects it.
-eval exec wmenu ${WMENU_FONT:+-f \"\$WMENU_FONT\"} $WMENU_COLORS '"$@"'
+while [ $# -gt 0 ]; do
+	case "$1" in
+	-p)
+		shift
+		prompt="$1"
+		;;
+	-l)
+		shift
+		lines="$1"
+		;;
+	-i) ;;
+	*)
+		# Anything else is assumed to be a fuzzel flag already and is kept.
+		set -- "$@" "$1"
+		;;
+	esac
+	shift
+done
+
+set --
+[ -n "$prompt" ] && set -- "$@" "--prompt=$prompt ❯ "
+[ -n "$lines" ] && set -- "$@" "--lines=$lines"
+
+exec fuzzel --dmenu "$@"

@@ -9,7 +9,13 @@ enabled:
   #   dwl            replaced by mango. dwl was compile-time configured, so its
   #                  module had to rebuild the tree on every scheme change and
   #                  still could not recolour a running session.
-  #   tofi           replaced by wmenu (tofi is not in OpenBSD ports).
+  #   tofi           replaced by wmenu, then by fuzzel (tofi is not in OpenBSD ports).
+  #   wmenu          replaced by fuzzel on 2026-08-18. wmenu has no .desktop support,
+  #                  so menu-run had to fake a launcher by listing every executable on
+  #                  PATH, and it has no config file either -- colours were CLI flags,
+  #                  which meant any caller that forgot to route through
+  #                  ~/.local/bin/menu came up unthemed. fuzzel is 1.14.1 in both Arch
+  #                  and OpenBSD ports, is Wayland-native, and reads a real config.
   #   gtklock        replaced by swaylock.
   #   dunst          replaced by fnott.
   #
@@ -53,7 +59,7 @@ enabled:
   - waybar
   - fnott
   - swaylock
-  - wmenu
+  - fuzzel
 
 # The 'scheme' key is a top-level scalar
 scheme: lab-fox

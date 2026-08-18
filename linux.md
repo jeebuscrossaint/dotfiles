@@ -20,7 +20,7 @@ stow -D -t ~ linux    # uninstall
 | compositor (effects) | **wayfire** | stacking *with* animations, Exposé and Mission Control |
 | bar | **waybar** | native modules + `mmsg watch` streamers for tags and title |
 | notifications | **fnott** | also draws the volume/brightness OSD, via `~/.local/bin/osd` |
-| launcher | **wmenu** | through `~/.local/bin/menu` so it follows the colour scheme |
+| launcher | **fuzzel** | .desktop entries with icons; `menu` / `menu-run` wrap it |
 | lock / idle | **swaylock** + **swayidle** | |
 | terminal | **foot** | |
 | shell | **fish** | |
@@ -87,6 +87,7 @@ linux/
 │   ├── xdg-desktop-portal/  labwc-portals.conf (screenshots + screen share)
 │   ├── waybar/        bar config + stylesheet
 │   ├── fnott/         notifications and OSD
+│   ├── fuzzel/        launcher (colours patched in place by coat)
 │   ├── swayidle/      idle → lock → screen off
 │   ├── swaylock/
 │   ├── foot/  fish/  nvim/  bat/  btop/  zathura/  gtk-3.0/  gtk-4.0/  paru/
@@ -110,7 +111,7 @@ is tracked, so a scheme change never shows up as a diff.
 | `audio-ensure` | repair the audio stack, but only when it is genuinely dead |
 | `mango-tags`, `mango-title` | stream compositor state to waybar over `mmsg watch` |
 | `waybar-fan`, `waybar-uptime` | the two things waybar has no module for |
-| `menu`, `menu-run` | wmenu wrappers that pick up coat's colours |
+| `menu`, `menu-run` | fuzzel wrappers — `menu` is dmenu mode for scripts, `menu-run` is the app launcher |
 | `osd` | perform a volume/brightness/lock-key change *and* draw it as a notification |
 | `theme-pick`, `theme-random` | coat scheme pickers |
 | `swayscreenshot`, `swayscreenshot-edit` | region grab; `-edit` pipes to satty |
@@ -125,7 +126,8 @@ because it could not be recoloured live, or needed a supervisor process to
 survive being recoloured:
 
 **sway/swaybar** → mango/waybar · **dwl** → mango (compile-time config) ·
-**tofi** → wmenu (not in OpenBSD ports) · **gtklock** → swaylock ·
+**tofi** → wmenu → **fuzzel** (tofi is not in OpenBSD ports; wmenu has no
+.desktop support and no config file) · **gtklock** → swaylock ·
 **dunst** → fnott · **swayrbar**, **slstatus**, **barstat** → native waybar
 modules · **ashell** · **avizo**, **swayosd**, **wob** → the OSD is a
 notification now · **kanshi** → mango's `monitorrule`
