@@ -60,7 +60,7 @@ enabled:
   - fuzzel
 
 # The 'scheme' key is a top-level scalar
-scheme: lab-fox
+scheme: materia
 prefer_base24: false
 
 # Evens out whatever scheme is loaded: uniform brightness, legible text,

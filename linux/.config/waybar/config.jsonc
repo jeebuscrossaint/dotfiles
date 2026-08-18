@@ -211,7 +211,9 @@
   "name": "dock",
   "layer": "top",
   "position": "bottom",
-  "height": 56,
+  // 64, not 56: icon-size 40 plus padding needs 64 and waybar silently overrode
+  // the smaller value ("Requested height: 56 is less than the minimum height: 64").
+  "height": 64,
   "spacing": 0,
   // The BAR spans the whole output — a layer-shell surface always does and waybar has
   // no shrink-to-fit. The island look comes from the CSS: the window is transparent and

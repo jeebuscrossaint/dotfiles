@@ -25,10 +25,6 @@ stow -D -t ~ linux    # uninstall
 | editor | **nvim** | lazy.nvim |
 | theming | **coat** | one command recolours every app below, live |
 
-Start it from a TTY with `mango-run`, which raises the fd limit, validates the
-config, keeps a log in `~/.local/state/mango/`, and wraps the session in a single
-D-Bus bus.
-
 ## One compositor
 
 **mango, and only mango.** labwc and wayfire were both tried as a second stacking session
@@ -93,8 +89,7 @@ is tracked, so a scheme change never shows up as a diff.
 | `menu`, `menu-run` | fuzzel wrappers — `menu` is dmenu mode for scripts, `menu-run` is the app launcher |
 | `osd` | perform a volume/brightness/lock-key change *and* draw it as a notification |
 | `theme-pick`, `theme-random` | coat scheme pickers |
-| `swayscreenshot`, `swayscreenshot-edit` | region grab; `-edit` pipes to satty |
-| `canvas-ical-fetch`, `canvas-ical-parse`, `canvas-notify` | Canvas assignment reminders |
+| `screenshot`, `screenshot-edit` | region grab; `-edit` pipes to satty |
 | `prime-run` | run one app on the dGPU |
 | `start-polkit`, `refresh-paru-completions` | session odds and ends |
 
