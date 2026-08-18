@@ -1,9 +1,7 @@
 #!/bin/sh
 # audio-ensure — bring the audio stack up, but ONLY when it is actually broken.
 #
-# One copy of this logic, called from both compositors' autostart (mango's
-# exec-once, labwc's autostart). It used to be an inline one-liner duplicated in
-# both, and it was WRONG in both:
+# Called from mango's exec-once. It used to be an inline one-liner and it was WRONG:
 #
 #     wpctl status 2>/dev/null | grep -q "Sinks:" || artix-pipewire-launcher restart
 #

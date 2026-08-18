@@ -7,18 +7,9 @@ linux/.config/coat/schemes/
 # the fragments it writes alongside a config — those already match the *coat*
 # rule above. These tools have no include mechanism, so coat generates the
 # whole file and tracking them would mean a dirty tree after every theme change.
-# (labwc joined on 2026-08-17; note its path is a THEME dir, not .config/labwc --
-# labwc ignores themerc in the config dir. See coat's apply_labwc.)
 # The templates that produce them live in ~/Projects/coat/templates/.
 linux/.config/fnott/fnott.ini
 linux/.config/swaylock/config
-linux/.local/share/themes/coat/labwc/themerc
-# ...and the traffic-light buttons coat renders next to it. Note stow FOLDS
-# ~/.local/share/themes/coat into a symlink straight at this package directory, so
-# coat writes these into the repo, not into a separate target tree. The .xbm files in
-# that directory are hand-made and ARE tracked -- they are the fallback for a labwc
-# built without librsvg, and unlike svg they are masks that labwc recolours itself.
-linux/.local/share/themes/coat/labwc/*.svg
 linux/.config/wob/wob.ini
 
 # py_compile droppings — the scripts in .local/bin are run directly, never imported.

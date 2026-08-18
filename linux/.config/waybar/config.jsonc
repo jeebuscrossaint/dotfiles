@@ -27,18 +27,9 @@
   "spacing": 0,
   "margin": "0",
 
-  // One config, two compositors. Each side's modules go quietly empty under the
-  // other, so there is deliberately NO config-labwc.jsonc: splitting waybar's
-  // config per compositor is what the sway/hyprland era did and it was a
-  // maintenance tax for no benefit.
-  //
-  //   ext/workspaces      labwc only. It speaks ext-workspace-v1 (labwc >= 0.8.3);
-  //                       mango does not implement that protocol, so the module has
-  //                       no workspaces to show and renders nothing.
-  //   custom/mangotags    mango only. Both scripts check for `mmsg` and, when it is
-  //   custom/mangotitle   absent, print one blank line and block -- see mango-tags
-  //                       for why blocking beats exiting under restart-interval.
-  "modules-left": ["ext/workspaces", "custom/mangotags", "custom/mangotitle"],
+  // mango is the only compositor now, so these two are the whole left side. Both
+  // stream mango's IPC; see the mango block below.
+  "modules-left": ["custom/mangotags", "custom/mangotitle"],
   "modules-center": [],
   "modules-right": [
     "mpris",
@@ -54,25 +45,6 @@
     "custom/uptime",
     "clock"
   ],
-
-  // ── labwc ────────────────────────────────────────────────────────────────
-  // Workspace pills for the labwc session. labwc has ten desktops (rc.xml
-  // <desktops number="10">) but ext-workspace only advertises the ones that exist,
-  // so this shows what is actually there rather than ten placeholders -- the same
-  // choice mango-tags makes by skipping empty tags.
-  "ext/workspaces": {
-    "format": "{name}",
-    // Ordering needs no option here, and there is no "sort-by" key to set: this
-    // module takes BOOLEANS (sort-by-name, sort-by-id, sort-by-coordinates), and
-    // sort-by-name already defaults to true. The important half of its contract is
-    // that it sorts numerically only "when all names are numbers" -- so while
-    // labwc's desktops were called "Workspace 1".."Workspace 10" it fell back to a
-    // string sort and the row read 1, 10, 2, 3, ... Naming the desktops "1".."10"
-    // in labwc's rc.xml fixes the order and the labels in one move.
-    "all-outputs": false,
-    "active-only": false,
-    "tooltip": false
-  },
 
   // ── mango ────────────────────────────────────────────────────────────────
   // waybar has no mango module, and mango does not implement dwl's IPC protocol
@@ -229,21 +201,22 @@
 // children to reap, and the SIGUSR1 bar-toggle bind hitting both.
 //
 // There is no dock in OpenBSD's wayland ports — none at all — so this is the portable
-// way to get one. It is also why it is deliberately plain: wlr/taskbar gives one button
-// per open window, which is exactly what a dock is, and it needs no new dependency.
+// way to get one. wlr/taskbar gives one button per open window, which is exactly what a
+// dock is, and mango implements wlr-foreign-toplevel so it can see them.
 //
-// It is a LAYER-SHELL surface, so wayfire's blur treats it as "overlay" and frosts it
-// (see [blur] blur_by_default in wayfire.ini). Under mango or labwc it simply renders
-// opaque, which is why the CSS keeps it legible either way.
+// It is a LAYER-SHELL surface, so mango's blur_layer=1 frosts it. That is why its
+// background is deliberately translucent: blur only shows through something you can see
+// through.
 {
   "name": "dock",
   "layer": "top",
   "position": "bottom",
   "height": 56,
   "spacing": 0,
-  // Not full width: a dock is an island. Large left/right margins let the wallpaper
-  // through either side, and `width` is deliberately unset so it shrinks to its
-  // contents like macOS's does.
+  // The BAR spans the whole output — a layer-shell surface always does and waybar has
+  // no shrink-to-fit. The island look comes from the CSS: the window is transparent and
+  // the rounded frosted slab is drawn on the inner #taskbar container, which is only as
+  // wide as its icons.
   "margin-bottom": 8,
   "modules-left": [],
   "modules-center": ["wlr/taskbar"],
