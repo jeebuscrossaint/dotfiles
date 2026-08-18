@@ -1,0 +1,101 @@
+#!/bin/sh
+# audio-ensure — bring the audio stack up, but ONLY when it is actually broken.
+#
+# One copy of this logic, called from both compositors' autostart (mango's
+# exec-once, labwc's autostart). It used to be an inline one-liner duplicated in
+# both, and it was WRONG in both:
+#
+#     wpctl status 2>/dev/null | grep -q "Sinks:" || artix-pipewire-launcher restart
+#
+# `wpctl status` prints the "Sinks:" HEADER whether or not there is a real sink
+# behind it, so that test passed on a completely dead stack and the repair never
+# ran. Confirmed 2026-08-17 in a labwc session: pipewire, pipewire-pulse and
+# wireplumber all running, Devices list empty, one sink called "Dummy Output", no
+# audio -- and the guard reporting everything fine.
+#
+# What actually identifies a dead stack is the sink pipewire invents when it can
+# reach no hardware: a null sink, `factory.name = "support.null-audio-sink"` with
+# `node.name = "auto_null"`. Those are pipewire's own internal names for the
+# fallback, so this tests the condition rather than a rendered label -- unlike
+# grepping for the string "Dummy Output", which is a description and can be
+# translated or renamed.
+#
+# Why the stack ends up like this: a pipewire from a previous session survives the
+# compositor exiting and holds unlinked sockets in a runtime dir that has since been
+# deleted. It looks alive to anything that just counts processes. And
+# `artix-pipewire-launcher` without `restart` bails at "already running" the moment
+# it sees ANY pipewire process, so it never reaches its wireplumber line -- which is
+# why the repair below is always `restart`, never bare.
+#
+#   audio-ensure           repair if broken, stay silent if not
+#   audio-ensure --check   report only, change nothing (exit 0 healthy, 1 broken)
+#
+# Always exits 0 in repair mode: a session must not fail to start over audio.
+
+CHECK_ONLY=0
+[ "$1" = "--check" ] && CHECK_ONLY=1
+
+# Not a pipewire machine (OpenBSD uses sndio); nothing to do either way.
+if ! command -v wpctl >/dev/null 2>&1; then
+	[ "$CHECK_ONLY" = 1 ] && echo "audio-ensure: no wpctl, not a pipewire system"
+	exit 0
+fi
+
+broken_reason() {
+	# No daemon at all.
+	if ! pgrep -x pipewire >/dev/null 2>&1; then
+		echo "pipewire is not running"
+		return 0
+	fi
+	# No session manager: without it nothing ever links a device to a sink.
+	if ! pgrep -x wireplumber >/dev/null 2>&1; then
+		echo "wireplumber is not running"
+		return 0
+	fi
+	# Daemon up but talking to nothing. `wpctl inspect` fails outright when the
+	# socket is stale, which counts as broken too.
+	sink=$(wpctl inspect @DEFAULT_AUDIO_SINK@ 2>/dev/null) || {
+		echo "cannot inspect the default sink"
+		return 0
+	}
+	case "$sink" in
+	*support.null-audio-sink* | *auto_null*)
+		echo "the default sink is pipewire's null fallback (no real device)"
+		return 0
+		;;
+	esac
+	return 1
+}
+
+reason=$(broken_reason)
+
+if [ -z "$reason" ]; then
+	[ "$CHECK_ONLY" = 1 ] && echo "audio-ensure: healthy"
+	exit 0
+fi
+
+if [ "$CHECK_ONLY" = 1 ]; then
+	echo "audio-ensure: BROKEN -- $reason"
+	exit 1
+fi
+
+command -v artix-pipewire-launcher >/dev/null 2>&1 || exit 0
+artix-pipewire-launcher restart >/dev/null 2>&1
+
+# Verify, and say so where it will be seen. wireplumber needs a moment to enumerate
+# devices, so a check straight after the restart would still see auto_null; without
+# the wait this would report failure on a repair that actually worked.
+i=0
+while [ "$i" -lt 10 ]; do
+	sleep 1
+	if [ -z "$(broken_reason)" ]; then
+		command -v notify-send >/dev/null 2>&1 &&
+			notify-send -t 4000 "󰕾  Audio" "stack was dead ($reason) — restarted"
+		exit 0
+	fi
+	i=$((i + 1))
+done
+
+command -v notify-send >/dev/null 2>&1 &&
+	notify-send -u critical "󰝟  Audio" "restart did not recover: $(broken_reason)"
+exit 0

@@ -21,7 +21,7 @@
 // across boots -- coretemp happened to be hwmon7 today.
 {
   "layer": "top",
-  "position": "bottom",
+  "position": "top",
   "height": 22,
   "spacing": 0,
   "margin": "0",
@@ -54,13 +54,6 @@
     "clock"
   ],
 
-  // ── mango ────────────────────────────────────────────────────────────────
-  // waybar has no mango module, and mango does not implement dwl's IPC protocol
-  // (protocols/ has only layer-shell, foreign-toplevel and
-  // output-power-management), so `dwl/tags` cannot see it either. Both of these
-  // stream mango's own IPC via `mmsg watch`, which pushes on change rather than
-  // polling, and emit pango markup because CSS cannot reach individual characters
-  // inside a custom module.
   // ── labwc ────────────────────────────────────────────────────────────────
   // Workspace pills for the labwc session. labwc has ten desktops (rc.xml
   // <desktops number="10">) but ext-workspace only advertises the ones that exist,
@@ -68,11 +61,25 @@
   // choice mango-tags makes by skipping empty tags.
   "ext/workspaces": {
     "format": "{name}",
+    // Ordering needs no option here, and there is no "sort-by" key to set: this
+    // module takes BOOLEANS (sort-by-name, sort-by-id, sort-by-coordinates), and
+    // sort-by-name already defaults to true. The important half of its contract is
+    // that it sorts numerically only "when all names are numbers" -- so while
+    // labwc's desktops were called "Workspace 1".."Workspace 10" it fell back to a
+    // string sort and the row read 1, 10, 2, 3, ... Naming the desktops "1".."10"
+    // in labwc's rc.xml fixes the order and the labels in one move.
     "all-outputs": false,
     "active-only": false,
     "tooltip": false
   },
 
+  // ── mango ────────────────────────────────────────────────────────────────
+  // waybar has no mango module, and mango does not implement dwl's IPC protocol
+  // (protocols/ has only layer-shell, foreign-toplevel and
+  // output-power-management), so `dwl/tags` cannot see it either. Both of these
+  // stream mango's own IPC via `mmsg watch`, which pushes on change rather than
+  // polling, and emit pango markup because CSS cannot reach individual characters
+  // inside a custom module.
   "custom/mangotags": {
     "exec": "mango-tags",
     "return-type": "",
