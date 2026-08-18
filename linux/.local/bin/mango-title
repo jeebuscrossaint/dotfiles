@@ -17,6 +17,8 @@ so this prints exactly one title, and updates the instant focus moves.
 import html
 import json
 import os
+import shutil
+import signal
 import subprocess
 import sys
 
@@ -97,6 +99,15 @@ def render(payload):
 
 
 def main():
+    # Not under mango (a labwc session, say): print one blank line so waybar renders
+    # an empty module, then block forever. See mango-tags for why this blocks rather
+    # than returning -- waybar respawns a custom module whenever it exits, whatever
+    # the status, so returning would cost a Python startup every 5s all session.
+    if shutil.which("mmsg") is None:
+        print("", flush=True)
+        signal.pause()
+        return 0
+
     proc = subprocess.Popen(
         ["mmsg", "watch", "focusing-client"],
         stdout=subprocess.PIPE,

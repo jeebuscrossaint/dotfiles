@@ -26,7 +26,18 @@
   "spacing": 0,
   "margin": "0",
 
-  "modules-left": ["custom/mangotags", "custom/mangotitle"],
+  // One config, two compositors. Each side's modules go quietly empty under the
+  // other, so there is deliberately NO config-labwc.jsonc: splitting waybar's
+  // config per compositor is what the sway/hyprland era did and it was a
+  // maintenance tax for no benefit.
+  //
+  //   ext/workspaces      labwc only. It speaks ext-workspace-v1 (labwc >= 0.8.3);
+  //                       mango does not implement that protocol, so the module has
+  //                       no workspaces to show and renders nothing.
+  //   custom/mangotags    mango only. Both scripts check for `mmsg` and, when it is
+  //   custom/mangotitle   absent, print one blank line and block -- see mango-tags
+  //                       for why blocking beats exiting under restart-interval.
+  "modules-left": ["ext/workspaces", "custom/mangotags", "custom/mangotitle"],
   "modules-center": [],
   "modules-right": [
     "mpris",
@@ -50,6 +61,18 @@
   // stream mango's own IPC via `mmsg watch`, which pushes on change rather than
   // polling, and emit pango markup because CSS cannot reach individual characters
   // inside a custom module.
+  // ── labwc ────────────────────────────────────────────────────────────────
+  // Workspace pills for the labwc session. labwc has ten desktops (rc.xml
+  // <desktops number="10">) but ext-workspace only advertises the ones that exist,
+  // so this shows what is actually there rather than ten placeholders -- the same
+  // choice mango-tags makes by skipping empty tags.
+  "ext/workspaces": {
+    "format": "{name}",
+    "all-outputs": false,
+    "active-only": false,
+    "tooltip": false
+  },
+
   "custom/mangotags": {
     "exec": "mango-tags",
     "return-type": "",

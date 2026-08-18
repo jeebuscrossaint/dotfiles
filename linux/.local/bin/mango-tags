@@ -21,6 +21,8 @@ a tag does rather than on a poll interval.
 
 import json
 import os
+import shutil
+import signal
 import subprocess
 import sys
 
@@ -107,6 +109,20 @@ def render(payload):
 
 
 def main():
+    # Not under mango (a labwc session, say): print one blank line so waybar renders
+    # an empty module, then block forever.
+    #
+    # Blocking rather than returning is the point. Without the guard at all, the
+    # missing `mmsg` raises FileNotFoundError and the script dies; but returning
+    # cleanly is barely better, because waybar's restart-interval respawns a custom
+    # module whenever it EXITS, whatever the status -- so either way waybar pays a
+    # Python startup every 5 seconds for the whole session. signal.pause() costs
+    # nothing and leaves the module quietly empty.
+    if shutil.which("mmsg") is None:
+        print("", flush=True)
+        signal.pause()
+        return 0
+
     proc = subprocess.Popen(
         ["mmsg", "watch", "all-tags"],
         stdout=subprocess.PIPE,

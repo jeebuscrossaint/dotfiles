@@ -1,0 +1,57 @@
+#!/bin/sh
+# labwc autostart — runs once when the compositor starts.
+#
+# Deliberately NOT a copy of the version this replaces. Four things were wrong in
+# that one and all four are the sort that present as "randomly broken", not as an
+# error:
+#
+#   1. `eval $(dbus-launch --sh-syntax --exit-with-session)` was the first line.
+#      That starts a SECOND session bus, from inside the compositor, after every
+#      client that cares has already been given an address -- so fnott could end
+#      up on one bus and notify-send on another, and notifications just stop with
+#      nothing in any log. The session bus is created ONCE, outside and around the
+#      compositor, by ~/.local/bin/labwc-run. Nothing here should start one.
+#
+#   2. `dunst &` -- dunst is not the notification daemon anymore, fnott is.
+#
+#   3. `artix-pipewire-launcher restart` unguarded. Guarded now: the launcher
+#      bails at "already running" if it sees any pipewire process and never
+#      reaches its wireplumber line, so a stale pipewire from a previous session
+#      leaves audio that looks alive with no working sink. Only restart when there
+#      is genuinely no sink.
+#
+#   4. `command -v nm-applet && nm-applet &` -- nm-applet is not installed, and
+#      there is no tray in the bar for it to sit in. waybar's network module has
+#      `on-click: foot -e nmtui` instead.
+#
+# No portal is started here either; see labwc-portals.conf for why.
+
+# Wallpaper. Same image and mode as mango's exec-once.
+swaybg -m fill -i "$HOME/jbwallpapers/wallpapers/Matanuska-River-ENBLA05.jpg" &
+
+fnott &
+waybar &
+
+swayidle -w -C "$HOME/.config/swayidle/config" &
+
+# Clipboard history — text and images; recalled with W-v.
+# `regular` only, not `both`: with the primary selection included, cliphist stores
+# every mouse-drag highlight.
+wl-clip-persist --clipboard regular &
+wl-paste --type text --watch cliphist store &
+wl-paste --type image --watch cliphist store &
+
+# Export the session environment to D-Bus so portals and activated services see
+# WAYLAND_DISPLAY and XDG_CURRENT_DESKTOP. This needs a bus to talk to, which
+# labwc-run has already created.
+dbus-update-activation-environment --all &
+
+start-polkit &
+canvas-notify &
+
+nvibrant 1023 1023 1023 1023 &
+
+# Only bring audio up if there is no working sink. Never a bare `restart`.
+sh -c 'wpctl status 2>/dev/null | grep -q "Sinks:" || artix-pipewire-launcher restart' &
+
+refresh-paru-completions &
