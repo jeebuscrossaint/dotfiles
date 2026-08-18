@@ -30,12 +30,12 @@
 <labwc_config>
 
   <core>
-    <!-- `none`, so no titlebars and no server-side frames: same barless look the
-         sway and mango configs go for. Note this costs the mouse-driven
-         close/iconify/maximise buttons AND the window menu, since all of those
-         live in the titlebar - everything below is therefore reachable from the
-         keyboard. Set to `server` to get decorations back. -->
-    <decoration>none</decoration>
+    <!-- `server`, so labwc draws real titlebars. This is the one place labwc is
+         deliberately NOT trying to look like the mango session: mango is barless
+         because a tiling WM with titlebars wastes a row per window, whereas a
+         stacking WM needs somewhere to grab, and the decoration IS the interface.
+         Set to `none` for the old undecorated look. -->
+    <decoration>server</decoration>
     <gap>8</gap>
     <!-- no, as in mango: a connector refusing adaptive sync is what segfaulted
          dwl. Get the stack known-good first. -->
@@ -47,20 +47,71 @@
   </core>
 
   <theme>
-    <!-- Empty name = built-in theme, then themerc on top. Do not put a theme
-         name here: coat writes themerc and a named theme would win over it. -->
-    <name></name>
-    <cornerRadius>0</cornerRadius>
-    <!-- keepBorder=no drops the 1px frame that <decoration>none</decoration>
-         leaves behind, so windows are genuinely undecorated. -->
-    <keepBorder>no</keepBorder>
-    <dropShadows>no</dropShadows>
+    <!-- There is deliberately NO <name> element. It must be either absent or a real
+         theme name: labwc 0.20 logs "Empty string is not allowed for name.theme"
+         and ignores <name></name>, which is what used to be here. Absent is what we
+         want anyway — it means the built-in theme plus ~/.config/labwc/themerc,
+         and themerc is the file coat generates. Naming a theme would make labwc load
+         THAT theme's themerc instead and silently ignore coat entirely. -->
+
+    <!-- macOS-ish decorations. The pieces that make it read that way:
+           - buttons on the LEFT, in close/minimise/maximise order
+           - title centred (window.label.text.justify in themerc)
+           - a generous corner radius
+           - a soft drop shadow instead of a hard border
+
+         `close,iconify,max:` — the colon separates the left group from the right
+         group and is MANDATORY even when one side is empty, so the trailing colon
+         is load-bearing: drop it and the layout is rejected. Order here is the
+         macOS order, which is NOT labwc's default (`icon:iconify,max,close` puts
+         the icon left and the buttons right, Windows-style).
+
+         The buttons themselves are close.xbm / iconify.xbm / max.xbm in this
+         directory: filled circles. xbm is a 1-BIT MASK, which is exactly what makes
+         them coatifiable — labwc fills the mask with the per-button colour from
+         themerc, so the traffic lights follow the scheme's red/amber/green instead
+         of being three hardcoded hex values in an image file. -->
+    <titlebar>
+      <layout>close,iconify,max:</layout>
+      <showTitle>yes</showTitle>
+    </titlebar>
+
+    <cornerRadius>10</cornerRadius>
+
+    <!-- yes, but the border is 1px and themed close to the titlebar (see themerc):
+         it exists to separate a window from a same-coloured window behind it, not
+         to be seen on its own. -->
+    <keepBorder>yes</keepBorder>
+
+    <!-- The shadow is what actually sells the depth, and it is why the border can
+         stay this quiet. Off for tiled/snapped windows: a shadow between two
+         windows snapped edge-to-edge is a dark seam, not depth. -->
+    <dropShadows>yes</dropShadows>
+    <dropShadowsOnTiled>no</dropShadowsOnTiled>
+
+    <!-- A maximised window keeps its titlebar (so the buttons stay reachable) but
+         loses the rest of the frame, which is the macOS behaviour. -->
+    <maximizedDecoration>titlebar</maximizedDecoration>
+
+    <!-- A UI sans for the title, not the terminal font the rest of this setup uses.
+         A centred proportional title is most of the macOS impression, and Terminess
+         is a monospace bitmap-style face that fights it. Adwaita Sans is installed
+         here (it is Inter-derived); Noto Sans is the fallback fontconfig lands on. -->
     <font place="ActiveWindow">
-      <name>Terminess Nerd Font Mono</name>
+      <name>Adwaita Sans</name>
+      <size>10</size>
+      <weight>bold</weight>
+    </font>
+    <font place="InactiveWindow">
+      <name>Adwaita Sans</name>
+      <size>10</size>
+    </font>
+    <font place="MenuItem">
+      <name>Adwaita Sans</name>
       <size>10</size>
     </font>
     <font place="OnScreenDisplay">
-      <name>Terminess Nerd Font Mono</name>
+      <name>Adwaita Sans</name>
       <size>10</size>
     </font>
   </theme>
@@ -326,6 +377,24 @@
        attribute in 0.20 (it sets the MINIMUM count, and makes <names> optional). -->
   <desktops number="10">
     <popupTime>800</popupTime>
+    <!-- Named explicitly, and the names are just the numbers.
+         labwc's default desktop name is the string "Workspace N", and THAT is what
+         it hands out over ext-workspace-v1 — so a bar showing {{name}} renders
+         "Workspace 1 Workspace 2 ..." across the whole panel. Naming them here fixes
+         it at the source, which is better than stripping a prefix in waybar's format
+         string: the same names show up in labwc's own desktop-switch popup. -->
+    <names>
+      <name>1</name>
+      <name>2</name>
+      <name>3</name>
+      <name>4</name>
+      <name>5</name>
+      <name>6</name>
+      <name>7</name>
+      <name>8</name>
+      <name>9</name>
+      <name>10</name>
+    </names>
   </desktops>
 
   <!-- <range> is an ELEMENT WITH ATTRIBUTES now, not a scalar. The old config

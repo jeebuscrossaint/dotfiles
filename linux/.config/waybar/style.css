@@ -31,6 +31,28 @@
 
 /* Tags & title ------------------------------------------------------------ */
 
+/* labwc's workspaces, styled to match the mango tag row below it: bare numbers,
+ * flat, no pill. ext/workspaces renders a real GTK *button* per workspace, which
+ * arrives with GTK's own padding, min-width, border and background — so unless
+ * they are zeroed here every number sits in a chunky raised button and the labwc
+ * session looks nothing like the mango one. The `*` block above already killed the
+ * border and radius; this handles the box.
+ *
+ * Colour (including which state is the accent) is in coat's templates/waybar.tera,
+ * under #workspaces button and its .active/.urgent variants. */
+#workspaces {
+  padding: 0 6px;
+}
+
+#workspaces button {
+  padding: 0 4px;
+  margin: 0;
+  min-width: 0;
+  /* GTK gives buttons an animated background transition; without this a workspace
+   * switch fades instead of snapping, which reads as lag on a 240Hz panel. */
+  transition: none;
+}
+
 #custom-mangotags {
   padding: 0 6px;
 }
