@@ -12,6 +12,13 @@ enabled:
   #   tofi           replaced by wmenu (tofi is not in OpenBSD ports).
   #   gtklock        replaced by swaylock.
   #   dunst          replaced by fnott.
+  #
+  # labwc came BACK on 2026-08-17 and is enabled below -- it is the stacking
+  # session alongside mango, not a replacement for it, so both compositors are in
+  # the enabled list at once. coat owns ~/.config/labwc/themerc outright (whole
+  # file, not a fragment) and runs `labwc -r` after writing it, so a scheme change
+  # recolours a live labwc session. That file is gitignored for the same reason
+  # fnott.ini and swaylock/config are.
   #   wlock, tsubu   never actually run; both trees are deleted.
   #
   #   wob            the OSD was wob briefly; it is not in OpenBSD ports, and it
@@ -36,6 +43,7 @@ enabled:
   # The wayland stack, all runtime-configured: a scheme change recolours a live
   # session with no restart anywhere.
   - mango
+  - labwc
   - waybar
   - fnott
   - swaylock

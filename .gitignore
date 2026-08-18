@@ -5,9 +5,15 @@ linux/.config/coat/schemes/
 
 # Files coat OWNS entirely (it rewrites them on every `coat set`), as opposed to
 # the fragments it writes alongside a config — those already match the *coat*
-# rule above. These three tools have no include mechanism, so coat generates the
+# rule above. These tools have no include mechanism, so coat generates the
 # whole file and tracking them would mean a dirty tree after every theme change.
+# (labwc/themerc joined this list on 2026-08-17 when labwc came back.)
 # The templates that produce them live in ~/Projects/coat/templates/.
 linux/.config/fnott/fnott.ini
 linux/.config/swaylock/config
+linux/.config/labwc/themerc
 linux/.config/wob/wob.ini
+
+# py_compile droppings — the scripts in .local/bin are run directly, never imported.
+__pycache__/
+*.pyc

@@ -1,0 +1,377 @@
+<?xml version="1.0"?>
+<!--
+  labwc — the stacking option. Restored 2026-08-17 after being deleted in 330905a.
+
+  This is a SECOND compositor, not a replacement for mango: mango is the tiling
+  daily driver, labwc is here for when a stacking/floating session is wanted.
+  Both can be installed at once; pick one at the TTY (`labwc-run` / `mango-run`).
+
+  Written against labwc 0.20.1. The config schema moved under this config's feet
+  while it sat deleted in git history, so several things here are deliberately NOT
+  what the old version said — each one is commented where it matters.
+
+  Check before starting anything:       xmllint ‑‑noout ~/.config/labwc/rc.xml
+  Reload a running instance:            labwc -r   (or W-S-c below)
+
+  labwc has no dry-run flag (nothing like `mango -p`), so xmllint is the whole
+  safety net. It catches malformed XML but NOT a misspelled action or option name —
+  labwc logs those and carries on, so a typo'd action is a silently dead keybind.
+  Start with `labwc -d` from a TTY if a bind does nothing.
+
+  Note for editors: an XML comment may not contain a double hyphen, so prose here
+  uses em dashes where the rest of these dotfiles would use two hyphens, and the
+  xmllint flag above is written with non-breaking hyphens. Copy it by hand, or just
+  run `labwc-check`. That is a parser rule, not a style choice.
+
+  THEME: themerc is NOT hand-edited and is NOT in git. coat owns that file
+  entirely (templates/labwc.tera -> ~/.config/labwc/themerc) and runs
+  `labwc -r` itself, so a scheme change recolours a live session.
+-->
+<labwc_config>
+
+  <core>
+    <!-- `none`, so no titlebars and no server-side frames: same barless look the
+         sway and mango configs go for. Note this costs the mouse-driven
+         close/iconify/maximise buttons AND the window menu, since all of those
+         live in the titlebar - everything below is therefore reachable from the
+         keyboard. Set to `server` to get decorations back. -->
+    <decoration>none</decoration>
+    <gap>8</gap>
+    <!-- no, as in mango: a connector refusing adaptive sync is what segfaulted
+         dwl. Get the stack known-good first. -->
+    <adaptiveSync>no</adaptiveSync>
+    <!-- The panel is a 2560x1600 OLED. labwc gained an HDR switch; it is
+         experimental upstream, so it stays off until it is asked for. -->
+    <hdr>no</hdr>
+    <allowTearing>no</allowTearing>
+  </core>
+
+  <theme>
+    <!-- Empty name = built-in theme, then themerc on top. Do not put a theme
+         name here: coat writes themerc and a named theme would win over it. -->
+    <name></name>
+    <cornerRadius>0</cornerRadius>
+    <!-- keepBorder=no drops the 1px frame that <decoration>none</decoration>
+         leaves behind, so windows are genuinely undecorated. -->
+    <keepBorder>no</keepBorder>
+    <dropShadows>no</dropShadows>
+    <font place="ActiveWindow">
+      <name>Terminess Nerd Font Mono</name>
+      <size>10</size>
+    </font>
+    <font place="OnScreenDisplay">
+      <name>Terminess Nerd Font Mono</name>
+      <size>10</size>
+    </font>
+  </theme>
+
+  <!-- Where new windows land. `cascade` is labwc's default and the sane choice
+       for a stacking WM — `center` stacks every window on the same spot. -->
+  <placement>
+    <policy>cascade</policy>
+  </placement>
+
+  <keyboard>
+    <numlock>on</numlock>
+    <repeatRate>50</repeatRate>
+    <repeatDelay>200</repeatDelay>
+
+    <!-- labwc's built-in binds (A-Tab, W-Return, A-F4, arrow-key window
+         management). Kept, because everything below only ADDS to them; remove
+         this line if a bind here ever fights one of labwc's. -->
+    <default />
+
+    <!-- ============================================================ launch ==
+         Same programs as the mango config, which is the point: one set of
+         session scripts, two compositors. -->
+    <keybind key="W-q"><action name="Execute" command="foot"/></keybind>
+    <keybind key="W-S-Return"><action name="Execute" command="foot"/></keybind>
+    <!-- menu-run, not tofi-drun: tofi is gone (not in OpenBSD ports). menu-run
+         routes through ~/.local/bin/menu so wmenu picks up coat's colours. -->
+    <keybind key="W-d"><action name="Execute" command="menu-run"/></keybind>
+    <keybind key="W-S-b"><action name="Execute" command="firefox"/></keybind>
+    <!-- Clipboard history. The old config bound this to `wlboard`, which does not
+         exist on this machine and never did — both W-v and W-Delete were dead
+         keys. This is the same inline pipeline mango's W-v uses. -->
+    <keybind key="W-v">
+      <action name="Execute" command="sh -c 'cliphist list | menu -i -p clip | cliphist decode | wl-copy'"/>
+    </keybind>
+    <keybind key="W-t"><action name="Execute" command="theme-pick"/></keybind>
+    <keybind key="W-S-t"><action name="Execute" command="theme-random"/></keybind>
+    <keybind key="W-S-s"><action name="Execute" command="swayscreenshot"/></keybind>
+    <keybind key="W-S-e"><action name="Execute" command="swayscreenshot-edit"/></keybind>
+    <keybind key="W-S-p"><action name="Execute" command="pickcolor"/></keybind>
+    <!-- swaylock, not gtklock-once: gtklock is retired and gtklock-once is gone
+         with it. swaylock's own -f is the detach flag. -->
+    <keybind key="W-l"><action name="Execute" command="swaylock -f"/></keybind>
+    <keybind key="W-Escape"><action name="Execute" command="swaylock -f"/></keybind>
+    <!-- Show/hide waybar. SIGUSR1 is toggle, SIGUSR2 is reload (what coat
+         sends) — do not swap them. -->
+    <keybind key="W-p"><action name="Execute" command="pkill -SIGUSR1 -x waybar"/></keybind>
+    <keybind key="W-S-c"><action name="Reconfigure"/></keybind>
+    <keybind key="W-S-q"><action name="Exit"/></keybind>
+
+    <!-- ============================================================ window == -->
+    <keybind key="W-c"><action name="Close"/></keybind>
+    <keybind key="W-f"><action name="ToggleFullscreen"/></keybind>
+    <!-- W-m as well, the muscle-memory duplicate sway carried. -->
+    <keybind key="W-m"><action name="ToggleFullscreen"/></keybind>
+    <keybind key="W-a"><action name="ToggleMaximize"/></keybind>
+    <keybind key="W-minus"><action name="Iconify"/></keybind>
+    <keybind key="W-S-a"><action name="ToggleAlwaysOnTop"/></keybind>
+    <keybind key="W-S-o"><action name="ToggleOmnipresent"/></keybind>
+    <keybind key="W-S-d"><action name="ToggleDecorations"/></keybind>
+    <!-- There is deliberately NO ToggleFloating bind. The old config had one and
+         it was a dead action: labwc has no such action because labwc is a
+         stacking compositor — every window already floats. Snapping (below) is
+         what stands in for "tile this". -->
+
+    <!-- ============================================================= focus ==
+         labwc has NO directional window-focus action, so sway's `$mod+Left focus
+         left` cannot be reproduced. The old config bound the arrows to
+         FocusOutput, which switches MONITOR, not window — a silently different
+         meaning. Arrows are left to labwc's <default/> handling and window
+         cycling gets the Tab keys, which is the stacking-WM idiom.
+
+         W-Tab / W-S-Tab raise as they go; the Immediate variants skip the
+         switcher OSD entirely. -->
+    <keybind key="W-Tab"><action name="NextWindow"/></keybind>
+    <keybind key="W-S-Tab"><action name="PreviousWindow"/></keybind>
+    <keybind key="A-Tab"><action name="NextWindow"/></keybind>
+    <keybind key="A-S-Tab"><action name="PreviousWindow"/></keybind>
+
+    <!-- Monitors, on the same comma/period keys mango uses for focusmon/tagmon
+         rather than on the arrows. -->
+    <keybind key="W-comma"><action name="FocusOutput" direction="left"/></keybind>
+    <keybind key="W-period"><action name="FocusOutput" direction="right"/></keybind>
+    <keybind key="W-S-comma"><action name="MoveToOutput" direction="left"/></keybind>
+    <keybind key="W-S-period"><action name="MoveToOutput" direction="right"/></keybind>
+
+    <!-- ====================================================== snap / tile ==
+         This is labwc's answer to tiling: SnapToEdge fills half the output in a
+         direction (and a quarter if already snapped), so W-S-<arrow> is the
+         closest thing to sway's `move`. GrowToEdge/ShrinkToEdge grow a window
+         until it hits a neighbour, which is the manual-tiling workflow. -->
+    <keybind key="W-S-Left"><action name="SnapToEdge" direction="left"/></keybind>
+    <keybind key="W-S-Right"><action name="SnapToEdge" direction="right"/></keybind>
+    <keybind key="W-S-Up"><action name="SnapToEdge" direction="up"/></keybind>
+    <keybind key="W-S-Down"><action name="SnapToEdge" direction="down"/></keybind>
+    <keybind key="W-S-h"><action name="SnapToEdge" direction="left"/></keybind>
+    <keybind key="W-S-l"><action name="SnapToEdge" direction="right"/></keybind>
+    <keybind key="W-S-k"><action name="SnapToEdge" direction="up"/></keybind>
+    <keybind key="W-S-j"><action name="SnapToEdge" direction="down"/></keybind>
+    <keybind key="W-S-n"><action name="UnSnap"/></keybind>
+
+    <keybind key="C-A-Left"><action name="GrowToEdge" direction="left"/></keybind>
+    <keybind key="C-A-Right"><action name="GrowToEdge" direction="right"/></keybind>
+    <keybind key="C-A-Up"><action name="GrowToEdge" direction="up"/></keybind>
+    <keybind key="C-A-Down"><action name="GrowToEdge" direction="down"/></keybind>
+    <keybind key="C-A-S-Left"><action name="ShrinkToEdge" direction="left"/></keybind>
+    <keybind key="C-A-S-Right"><action name="ShrinkToEdge" direction="right"/></keybind>
+    <keybind key="C-A-S-Up"><action name="ShrinkToEdge" direction="up"/></keybind>
+    <keybind key="C-A-S-Down"><action name="ShrinkToEdge" direction="down"/></keybind>
+
+    <!-- Nudge a window to the next edge. Ctrl+Shift+arrows, matching the
+         movewin binds in mango's config. -->
+    <keybind key="C-S-Left"><action name="MoveToEdge" direction="left"/></keybind>
+    <keybind key="C-S-Right"><action name="MoveToEdge" direction="right"/></keybind>
+    <keybind key="C-S-Up"><action name="MoveToEdge" direction="up"/></keybind>
+    <keybind key="C-S-Down"><action name="MoveToEdge" direction="down"/></keybind>
+
+    <!-- The named regions defined at the bottom of this file. -->
+    <keybind key="W-C-h"><action name="SnapToRegion" region="left"/></keybind>
+    <keybind key="W-C-l"><action name="SnapToRegion" region="right"/></keybind>
+    <keybind key="W-C-u"><action name="SnapToRegion" region="center"/></keybind>
+    <keybind key="W-C-m"><action name="SnapToRegion" region="full"/></keybind>
+
+    <!-- ========================================================= desktops ==
+         Ten, matching sway. mango has nine because its overview is built around
+         tag_num=9; labwc has no such constraint, so W-0 comes back here. -->
+    <keybind key="W-1"><action name="GoToDesktop" to="1"/></keybind>
+    <keybind key="W-2"><action name="GoToDesktop" to="2"/></keybind>
+    <keybind key="W-3"><action name="GoToDesktop" to="3"/></keybind>
+    <keybind key="W-4"><action name="GoToDesktop" to="4"/></keybind>
+    <keybind key="W-5"><action name="GoToDesktop" to="5"/></keybind>
+    <keybind key="W-6"><action name="GoToDesktop" to="6"/></keybind>
+    <keybind key="W-7"><action name="GoToDesktop" to="7"/></keybind>
+    <keybind key="W-8"><action name="GoToDesktop" to="8"/></keybind>
+    <keybind key="W-9"><action name="GoToDesktop" to="9"/></keybind>
+    <keybind key="W-0"><action name="GoToDesktop" to="10"/></keybind>
+
+    <keybind key="W-S-1"><action name="SendToDesktop" to="1" follow="no"/></keybind>
+    <keybind key="W-S-2"><action name="SendToDesktop" to="2" follow="no"/></keybind>
+    <keybind key="W-S-3"><action name="SendToDesktop" to="3" follow="no"/></keybind>
+    <keybind key="W-S-4"><action name="SendToDesktop" to="4" follow="no"/></keybind>
+    <keybind key="W-S-5"><action name="SendToDesktop" to="5" follow="no"/></keybind>
+    <keybind key="W-S-6"><action name="SendToDesktop" to="6" follow="no"/></keybind>
+    <keybind key="W-S-7"><action name="SendToDesktop" to="7" follow="no"/></keybind>
+    <keybind key="W-S-8"><action name="SendToDesktop" to="8" follow="no"/></keybind>
+    <keybind key="W-S-9"><action name="SendToDesktop" to="9" follow="no"/></keybind>
+    <keybind key="W-S-0"><action name="SendToDesktop" to="10" follow="no"/></keybind>
+
+    <keybind key="W-A-Left"><action name="GoToDesktop" to="left"/></keybind>
+    <keybind key="W-A-Right"><action name="GoToDesktop" to="right"/></keybind>
+    <keybind key="W-A-S-Left"><action name="SendToDesktop" to="left"/></keybind>
+    <keybind key="W-A-S-Right"><action name="SendToDesktop" to="right"/></keybind>
+
+    <!-- ============================================================ extras ==
+         Magnifier: labwc has one built in, which nothing else in this setup
+         does. Worth a bind. -->
+    <keybind key="W-equal"><action name="ZoomIn"/></keybind>
+    <keybind key="W-S-equal"><action name="ZoomOut"/></keybind>
+    <keybind key="W-o"><action name="ToggleShowDesktop"/></keybind>
+
+    <!-- ======================================================= media keys ==
+         `osd`, NOT volumectl/lightctl. This is the single worst bit of rot in the
+         old config: it called `volumectl` and `lightctl`, and NEITHER exists on
+         this machine — lightctl was avizo's and never in the repo, volumectl was
+         deleted 2026-08-17 as a duplicate of `osd volume`. Every media key in the
+         restored-from-history config was a silent no-op.
+
+         ~/.local/bin/osd performs the change AND draws the indicator as a
+         notification, so there is no OSD daemon to start. -->
+    <keybind key="XF86AudioRaiseVolume"><action name="Execute" command="osd volume up"/></keybind>
+    <keybind key="XF86AudioLowerVolume"><action name="Execute" command="osd volume down"/></keybind>
+    <keybind key="XF86AudioMute"><action name="Execute" command="osd volume mute"/></keybind>
+    <keybind key="XF86AudioMicMute"><action name="Execute" command="osd mic mute"/></keybind>
+    <keybind key="XF86AudioPlay"><action name="Execute" command="osd playpause"/></keybind>
+    <keybind key="XF86Launch3"><action name="Execute" command="osd playpause"/></keybind>
+    <keybind key="XF86MonBrightnessUp"><action name="Execute" command="osd brightness up"/></keybind>
+    <keybind key="XF86MonBrightnessDown"><action name="Execute" command="osd brightness down"/></keybind>
+    <!-- Caps/Num-lock indicators are absent here for the same reason as mango:
+         they need a key-RELEASE trigger (sway's a release-triggered bind) so the LED
+         has already flipped when the script reads it, and labwc keybinds fire on
+         press. `osd capslock` still works by hand. -->
+  </keyboard>
+
+  <!-- ============================================================== input == -->
+  <libinput>
+    <device category="touchpad">
+      <tap>yes</tap>
+      <tapAndDrag>yes</tapAndDrag>
+      <dragLock>no</dragLock>
+      <naturalScroll>no</naturalScroll>
+      <disableWhileTyping>yes</disableWhileTyping>
+      <!-- adaptive for the trackpad, flat for the mouse: exactly the split the
+           sway and mango configs use. Flat makes crossing 2560px a multi-swipe
+           affair on a touchpad. -->
+      <accelProfile>adaptive</accelProfile>
+      <pointerSpeed>0.0</pointerSpeed>
+    </device>
+    <device category="non-touch">
+      <accelProfile>flat</accelProfile>
+      <pointerSpeed>0.0</pointerSpeed>
+      <naturalScroll>no</naturalScroll>
+    </device>
+  </libinput>
+
+  <mouse>
+    <default/>
+
+    <!-- W-drag to move, W-right-drag to resize, anywhere on the window. With
+         <decoration>none</decoration> there is no titlebar to grab, so without
+         these the mouse cannot move a window at all.
+
+         Both contexts go in ONE <context name="Frame"> block: the old config
+         opened Frame twice and the second block is the kind of thing that
+         quietly wins or quietly loses depending on parser order. -->
+    <context name="Frame">
+      <mousebind button="W-Left" action="Press">
+        <action name="Focus"/>
+        <action name="Raise"/>
+      </mousebind>
+      <mousebind button="W-Left" action="Drag">
+        <action name="Move"/>
+      </mousebind>
+      <mousebind button="W-Right" action="Press">
+        <action name="Focus"/>
+        <action name="Raise"/>
+      </mousebind>
+      <mousebind button="W-Right" action="Drag">
+        <action name="Resize"/>
+      </mousebind>
+      <mousebind button="W-Middle" action="Click">
+        <action name="ToggleMaximize"/>
+      </mousebind>
+    </context>
+
+    <!-- Scroll on the desktop to change workspace, as the mango axisbinds do. -->
+    <context name="Desktop">
+      <mousebind direction="Up" action="Scroll">
+        <action name="GoToDesktop" to="left" wrap="yes"/>
+      </mousebind>
+      <mousebind direction="Down" action="Scroll">
+        <action name="GoToDesktop" to="right" wrap="yes"/>
+      </mousebind>
+    </context>
+  </mouse>
+
+  <focus>
+    <followMouse>yes</followMouse>
+    <followMouseRequiresMovement>no</followMouseRequiresMovement>
+    <raiseOnFocus>no</raiseOnFocus>
+  </focus>
+
+  <!-- Alt-Tab OSD. The old config had none of this section, so it ran labwc's
+       defaults; naming the fields explicitly is what makes the switcher useful
+       with <decoration>none</decoration>, where there are no titles on screen. -->
+  <windowSwitcher preview="yes" outlines="yes">
+    <fields>
+      <field content="desktop_entry_name" width="30%"/>
+      <field content="title" width="70%"/>
+    </fields>
+  </windowSwitcher>
+
+  <!-- number=10 to match the sway/mango desktop count. Still a supported
+       attribute in 0.20 (it sets the MINIMUM count, and makes <names> optional). -->
+  <desktops number="10">
+    <popupTime>800</popupTime>
+  </desktops>
+
+  <!-- <range> is an ELEMENT WITH ATTRIBUTES now, not a scalar. The old config
+       said `<range>1</range>`, which is the pre-0.9 schema; on 0.20 that is not
+       how the value is read. inner/outer are the px thresholds for snapping to a
+       window edge and to the output edge respectively. -->
+  <snapping>
+    <range inner="10" outer="10"/>
+    <cornerRange>50</cornerRange>
+    <overlay enabled="yes">
+      <delay inner="400" outer="400"/>
+    </overlay>
+    <topMaximize>yes</topMaximize>
+  </snapping>
+
+  <resistance>
+    <screenEdgeStrength>20</screenEdgeStrength>
+    <windowEdgeStrength>20</windowEdgeStrength>
+  </resistance>
+
+  <magnifier>
+    <width>600</width>
+    <height>400</height>
+    <initScale>2.0</initScale>
+    <increment>0.25</increment>
+    <useFilter>yes</useFilter>
+  </magnifier>
+
+  <!-- Named snap regions, bound to W-C-hlum above. Percentages are of each
+       output's usable area, so these work on both the 2560x1600 panel and the
+       external 4K without per-output variants. -->
+  <regions>
+    <region name="left"   x="0%"  y="0%" width="50%"  height="100%"/>
+    <region name="right"  x="50%" y="0%" width="50%"  height="100%"/>
+    <region name="center" x="15%" y="8%" width="70%"  height="84%"/>
+    <region name="full"   x="0%"  y="0%" width="100%" height="100%"/>
+  </regions>
+
+  <windowRules>
+    <!-- Pinentry and PiP float already (everything does), but they should stay
+         above whatever is behind them. -->
+    <windowRule identifier="pinentry*">
+      <action name="ToggleAlwaysOnTop"/>
+    </windowRule>
+    <windowRule title="Picture-in-Picture">
+      <action name="ToggleAlwaysOnTop"/>
+    </windowRule>
+  </windowRules>
+</labwc_config>

@@ -1,0 +1,14 @@
+# labwc reads this before starting anything, as KEY=VALUE lines (no `export`, no
+# shell syntax -- it is not sourced by a shell).
+#
+# XDG_CURRENT_DESKTOP=labwc is load-bearing: it is what makes xdg-desktop-portal
+# pick up labwc-portals.conf, and therefore what makes screenshots and screen
+# sharing work. See ~/.config/xdg-desktop-portal/labwc-portals.conf.
+XDG_CURRENT_DESKTOP=labwc
+XDG_SESSION_TYPE=wayland
+XDG_SESSION_DESKTOP=labwc
+
+# Toolkit hints, matching mango's env= block.
+QT_QPA_PLATFORM=wayland
+MOZ_ENABLE_WAYLAND=1
+_JAVA_AWT_WM_NONREPARENTING=1
