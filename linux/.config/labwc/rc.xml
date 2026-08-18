@@ -23,9 +23,11 @@
   xmllint flag above is written with non-breaking hyphens. Copy it by hand, or just
   run `labwc-check`. That is a parser rule, not a style choice.
 
-  THEME: themerc is NOT hand-edited and is NOT in git. coat owns that file
-  entirely (templates/labwc.tera -> ~/.config/labwc/themerc) and runs
-  `labwc -r` itself, so a scheme change recolours a live session.
+  THEME: themerc is NOT hand-edited and is NOT in git. coat owns it entirely
+  (templates/labwc.tera) and writes it to ~/.local/share/themes/coat/labwc/themerc —
+  a THEME directory, because labwc does not read themerc from ~/.config/labwc at all.
+  coat also renders the titlebar button svgs there, and runs `labwc -r` afterwards,
+  so a scheme change recolours a live session.
 -->
 <labwc_config>
 
@@ -451,6 +453,23 @@
   </regions>
 
   <windowRules>
+    <!-- Default window SIZE is the client's decision, not labwc's: there is no
+         "open new windows at NxM" setting. Where an app opens too small, fix it in
+         that app first (foot has initial-window-size-chars, which is where the
+         terminal's 120x34 comes from) — a client that chooses its own size keeps
+         doing the right thing on the 4K external and after a font change.
+
+         For an app with no such option, a windowRule can resize it on map. Kept as
+         an example rather than switched on, because ResizeTo applies to EVERY
+         window matching the criteria, dialogs and pickers included, and forcing a
+         file chooser to 1400x900 is worse than leaving it alone:
+
+           <windowRule identifier="some-app">
+             <action name="ResizeTo" width="1400" height="900"/>
+             <action name="AutoPlace"/>
+           </windowRule>
+    -->
+
     <!-- Pinentry and PiP float already (everything does), but they should stay
          above whatever is behind them. -->
     <windowRule identifier="pinentry*">
