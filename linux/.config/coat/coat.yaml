@@ -72,7 +72,11 @@ normalize:
   enabled: false
 
 opacity:
-  terminal: 1.0
+  # 0.95, not 1.0: wayfire's blur only shows through a translucent surface, so an opaque
+  # terminal frosts nothing. This is the macOS Terminal look and it is subtle enough not
+  # to hurt legibility. It has no cost under mango or labwc, which do not blur -- there
+  # it is just a faint tint of the wallpaper.
+  terminal: 0.95
   applications: 1.0
   desktop: 1.0
   popups: 1.0

@@ -19,6 +19,7 @@
 // Fan and uptime are the two fields waybar has no module for. Both resolve their
 // hardware by NAME rather than hwmon index, because hwmon numbering is not stable
 // across boots -- coretemp happened to be hwmon7 today.
+[
 {
   "layer": "top",
   "position": "top",
@@ -219,3 +220,45 @@
     }
   }
 }
+,
+// ═══════════════════════════════════════════════════════════════════════════
+// THE DOCK — a second bar, not a second waybar.
+//
+// waybar takes an ARRAY of bar objects in one config, so this is one process with two
+// surfaces. Two `waybar -c` instances would mean two GTK startups, two sets of module
+// children to reap, and the SIGUSR1 bar-toggle bind hitting both.
+//
+// There is no dock in OpenBSD's wayland ports — none at all — so this is the portable
+// way to get one. It is also why it is deliberately plain: wlr/taskbar gives one button
+// per open window, which is exactly what a dock is, and it needs no new dependency.
+//
+// It is a LAYER-SHELL surface, so wayfire's blur treats it as "overlay" and frosts it
+// (see [blur] blur_by_default in wayfire.ini). Under mango or labwc it simply renders
+// opaque, which is why the CSS keeps it legible either way.
+{
+  "name": "dock",
+  "layer": "top",
+  "position": "bottom",
+  "height": 56,
+  "spacing": 0,
+  // Not full width: a dock is an island. Large left/right margins let the wallpaper
+  // through either side, and `width` is deliberately unset so it shrinks to its
+  // contents like macOS's does.
+  "margin-bottom": 8,
+  "modules-left": [],
+  "modules-center": ["wlr/taskbar"],
+  "modules-right": [],
+
+  "wlr/taskbar": {
+    // Icon only. A dock with text labels is a taskbar, which is the Windows idea.
+    "format": "{icon}",
+    "icon-size": 40,
+    "tooltip-format": "{title}",
+    "on-click": "activate",
+    "on-click-middle": "close",
+    "all-outputs": false,
+    // Nothing to hide yet; add app-ids here if something clutters it.
+    "ignore-list": []
+  }
+}
+]
