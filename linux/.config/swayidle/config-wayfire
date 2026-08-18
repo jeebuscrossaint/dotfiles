@@ -1,0 +1,18 @@
+# swayidle for the WAYFIRE session — locking only.
+#
+# The shared ~/.config/swayidle/config turns the outputs off with wlopm, because
+# neither mango nor labwc can blank a screen by itself. wayfire can: its `idle`
+# plugin has dpms_timeout, so blanking happens inside the compositor with no D-Bus
+# round trip and no `after-resume` handler to power the outputs back on.
+#
+# So this file deliberately does NOT contain a wlopm line. Running both would leave
+# two things toggling the same outputs, which is how you get a screen that will not
+# come back.
+#
+# Everything else about swayidle applies as in the shared config: `-w` waits for each
+# command, so nothing here may block, and the pgrep guard exists because the
+# session-lock protocol allows exactly one lock client — without it a manual lock
+# plus an idle lock produced two password prompts.
+
+timeout 300 'pgrep -x swaylock >/dev/null || swaylock -f'
+before-sleep 'pgrep -x swaylock >/dev/null || swaylock -f'
