@@ -1,0 +1,74 @@
+#!/bin/sh
+# wayfire-plugins-build — build the third-party wayfire plugins into ~/.local.
+#
+# Everything it builds is listed in dotfiles/THIRD-PARTY.md. Run it after a wayfire
+# upgrade: wayfire plugins are ABI-tied to the compositor, so a wayfire version bump
+# breaks them until they are rebuilt. The symptom is undecorated windows and a "failed
+# to load plugin" line in ~/.local/state/wayfire/wayfire.log.
+#
+# Installs into $PREFIX (~/.local) rather than /usr, so:
+#   - no sudo, and the distro's wayfire package is never touched
+#   - no need for wayfire-git, which is what the AUR package would drag in. pixdecor's
+#     meson only asks for wayfire >= 0.11.0, and 0.11.0 is what is installed.
+#   - wayfire finds the .so through $WAYFIRE_PLUGIN_PATH (exported by wayfire-run) and
+#     the matching metadata under $XDG_DATA_HOME/wayfire/metadata
+#
+# Requires: meson, ninja, glm, a C++ compiler, and wayfire's headers (the wayfire
+# package ships wayfire.pc).
+
+set -e
+
+PREFIX="$HOME/.local"
+SRC="${XDG_CACHE_HOME:-$HOME/.cache}/wayfire-plugins"
+mkdir -p "$SRC"
+
+need() {
+	command -v "$1" >/dev/null 2>&1 || {
+		echo "wayfire-plugins-build: missing $1" >&2
+		echo "  install with: sudo pacman -S $2" >&2
+		exit 1
+	}
+}
+need meson meson
+need ninja ninja
+need g++ gcc
+pkg-config --exists wayfire || {
+	echo "wayfire-plugins-build: no wayfire.pc — wayfire headers missing" >&2
+	exit 1
+}
+pkg-config --exists glm || {
+	echo "wayfire-plugins-build: glm not installed (sudo pacman -S glm)" >&2
+	exit 1
+}
+
+echo "wayfire $(pkg-config --modversion wayfire), installing plugins to $PREFIX"
+
+build() {
+	name=$1
+	url=$2
+	dir="$SRC/$name"
+
+	if [ -d "$dir/.git" ]; then
+		echo "==> $name: updating"
+		git -C "$dir" pull --ff-only
+	else
+		echo "==> $name: cloning"
+		git clone --depth 1 "$url" "$dir"
+	fi
+
+	# Reconfigure from scratch: a stale build dir from a previous wayfire version is
+	# exactly what makes a rebuild silently produce an unloadable plugin.
+	rm -rf "$dir/build"
+	meson setup "$dir/build" "$dir" --prefix="$PREFIX" --buildtype=release
+	ninja -C "$dir/build"
+	ninja -C "$dir/build" install
+	echo "==> $name: installed"
+}
+
+# pixdecor — rounded corners, drop shadows, and left-side titlebar buttons. wayfire's
+# built-in decorator can do none of those. By soreau, a wayfire maintainer.
+build pixdecor https://github.com/soreau/pixdecor
+
+echo
+echo "Done. Plugins in $PREFIX/lib/wayfire, metadata in $PREFIX/share/wayfire/metadata."
+echo "Verify with: wayfire-check   (it reads the metadata you just installed)"
