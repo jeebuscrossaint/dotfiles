@@ -34,6 +34,16 @@ if command -v wayfire-check >/dev/null 2>&1; then
 	fi
 fi
 
+# Third-party plugins live in ~/.local/lib/wayfire so the system wayfire package stays
+# untouched. pixdecor (rounded corners, shadows, left-side buttons) is built there --
+# see THIRD-PARTY.md. wayfire searches $WAYFIRE_PLUGIN_PATH in addition to its own
+# directory, and finds the matching metadata under $XDG_DATA_HOME/wayfire/metadata.
+#
+# Without this line pixdecor is simply not found, wayfire says so in the log and starts
+# with NO decorations at all -- undecorated windows are the symptom of this being wrong.
+WAYFIRE_PLUGIN_PATH="$HOME/.local/lib/wayfire"
+export WAYFIRE_PLUGIN_PATH
+
 # XDG_CURRENT_DESKTOP is load-bearing for portals: it selects which portals.conf
 # xdg-desktop-portal reads. wayfire ships wayfire-portals.conf in some distros; if
 # screen sharing misbehaves, that is the first thing to check.

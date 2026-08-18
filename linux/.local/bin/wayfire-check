@@ -27,9 +27,16 @@ import os
 import sys
 import xml.etree.ElementTree as ET
 
+# Searched in order, and ALL of them are merged -- not just the first that exists.
+# Third-party plugins built into ~/.local (pixdecor) install their metadata under
+# XDG_DATA_HOME, and wayfire looks there too; a checker that only read /usr/share would
+# report every one of their sections as "not a plugin wayfire ships".
 METADATA_DIRS = (
-    "/usr/share/wayfire/metadata",
+    os.path.expanduser(
+        os.path.join(os.environ.get("XDG_DATA_HOME", "~/.local/share"), "wayfire/metadata")
+    ),
     "/usr/local/share/wayfire/metadata",
+    "/usr/share/wayfire/metadata",
 )
 
 # Sections wayfire handles in core rather than in a plugin, so they have no metadata
@@ -39,11 +46,8 @@ METADATA_DIRS = (
 FREEFORM_SECTIONS = {"autostart", "command"}
 
 
-def metadata_dir():
-    for d in METADATA_DIRS:
-        if os.path.isdir(d):
-            return d
-    return None
+def metadata_dirs():
+    return [d for d in METADATA_DIRS if os.path.isdir(d)]
 
 
 def known_options(path):
@@ -132,17 +136,20 @@ def main():
         print(f"wayfire-check: no such file: {conf}", file=sys.stderr)
         return 1
 
-    md = metadata_dir()
-    if md is None:
+    dirs = metadata_dirs()
+    if not dirs:
         print(
             "wayfire-check: no wayfire metadata found -- is wayfire installed?",
             file=sys.stderr,
         )
         return 1
 
+    # Later directories must not shadow earlier ones: XDG_DATA_HOME comes first so a
+    # locally built plugin wins over a system copy of the same name.
     plugins = {}
-    for f in glob.glob(os.path.join(md, "*.xml")):
-        plugins[os.path.splitext(os.path.basename(f))[0]] = known_options(f)
+    for d in reversed(dirs):
+        for f in glob.glob(os.path.join(d, "*.xml")):
+            plugins[os.path.splitext(os.path.basename(f))[0]] = known_options(f)
 
     # allow_no_value + a permissive parser: wayfire.ini uses backslash continuations
     # and bare values that configparser is otherwise fussy about.

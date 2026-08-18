@@ -9,9 +9,25 @@ Rule of thumb: if a packaged tool does the job, use the packaged tool. See the m
 "not in OpenBSD ports" notes in `linux/.config/` for the decisions that went the other
 way.
 
+Build them all with **`wayfire-plugins-build`**. Re-run it after any wayfire upgrade:
+plugins are ABI-tied to the compositor, and the symptom of a stale one is undecorated
+windows plus a "failed to load plugin" line in `~/.local/state/wayfire/wayfire.log`.
+
 | what | repo | why | if it dies |
 |---|---|---|---|
-| *(none yet)* | | | |
+| **pixdecor** | [soreau/pixdecor](https://github.com/soreau/pixdecor) | Rounded corners, drop shadows, and **left-side titlebar buttons** — wayfire's built-in decorator can do none of the three. Also per-button PNG images, separate focused/unfocused title colours, and window shading. | wayfire keeps its built-in `decoration` plugin: add `decoration` back to `core/plugins`, add a `[decoration]` section, and restore the `decoration` edits in coat's `templates/wayfire.tera`. You lose corners, shadows and left buttons, not the session. |
+
+Notes on pixdecor specifically:
+
+- Built into `~/.local` by `wayfire-plugins-build`, **not** from the AUR. The AUR package
+  `wayfire-plugin-pixdecor-git` depends on `wayfire-git`, which would replace the distro
+  wayfire; pixdecor's own meson only asks for `wayfire >= 0.11.0`, and 0.11.0 is what is
+  installed. `wayfire-run` exports `WAYFIRE_PLUGIN_PATH` so it is found.
+- Maintained by a wayfire maintainer and pushed within days of writing this, which is
+  the difference between it and Firedecor below.
+- `button_layout` uses the same `left:right` colon convention as labwc's titlebar layout.
+- Button images are **PNG**, not SVG, so coat's traffic-light SVGs cannot be dropped in
+  as-is. Currently a single coat-driven `button_color` is used for all three.
 
 ## Evaluated and rejected
 
@@ -25,6 +41,9 @@ are README-only), and wayfire's plugin ABI has moved several releases since — 
 0.11.0 now. Of 30-odd forks, exactly one has been touched in the last year
 (`cjlester41/Firedecor`) and it is not a maintained continuation. A decoration plugin
 that fails to load takes the titlebars with it.
+
+**Superseded:** pixdecor (above) provides exactly what Firedecor would have, is
+maintained, and builds against the installed wayfire. Firedecor is not needed.
 
 What wayfire's built-in decorator gives instead: buttons ARE already circles
 (`cairo_arc` in `plugins/decor/deco-theme.cpp`), with a hover animation, and it does
