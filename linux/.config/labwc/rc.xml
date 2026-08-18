@@ -183,9 +183,28 @@
 
     <!-- ============================================================ window == -->
     <keybind key="W-c"><action name="Close"/></keybind>
-    <keybind key="W-f"><action name="ToggleFullscreen"/></keybind>
-    <!-- W-m as well, the muscle-memory duplicate sway carried. -->
-    <keybind key="W-m"><action name="ToggleFullscreen"/></keybind>
+    <!-- Two different kinds of "big", which is the macOS split:
+           W-f    Maximize   fills the USABLE area, so the titlebar and its traffic
+                             lights stay, and waybar keeps its strip (labwc maximizes
+                             within layer-shell exclusive zones). Pairs with
+                             <maximizedDecoration>titlebar</maximizedDecoration>
+                             above, which is what keeps the bar on a maximized window
+                             while dropping the rest of the frame.
+           W-S-f  Fullscreen the real thing: no decorations, covers waybar, one
+                             surface owning the output. For video and games.
+
+         This deliberately breaks sway parity, where BOTH $mod+f and $mod+m were
+         plain `fullscreen` and maximize was not bound at all. The distinction only
+         exists once windows have titlebars, so it belongs to the labwc session and
+         is not mirrored into mango. -->
+    <keybind key="W-f"><action name="ToggleMaximize"/></keybind>
+    <keybind key="W-S-f"><action name="ToggleFullscreen"/></keybind>
+    <!-- W-m and W-a are aliases of W-f: W-m is the muscle-memory duplicate sway
+         carried, W-a matches mango's Super+A (togglemaximizescreen). Both now mean
+         maximize, following W-f rather than keeping their old fullscreen meaning —
+         otherwise W-f, W-m and W-S-f would be three keys with two subtly different
+         behaviours and no way to remember which was which. -->
+    <keybind key="W-m"><action name="ToggleMaximize"/></keybind>
     <keybind key="W-a"><action name="ToggleMaximize"/></keybind>
     <keybind key="W-minus"><action name="Iconify"/></keybind>
     <keybind key="W-S-a"><action name="ToggleAlwaysOnTop"/></keybind>
