@@ -13,6 +13,11 @@ enabled:
   #   gtklock        replaced by swaylock.
   #   dunst          replaced by fnott.
   #
+  # wayfire joined on 2026-08-18 as the third compositor — stacking WITH animations and
+  # exposé, which labwc has neither of. Its module is unlike every other one here: it
+  # PATCHES KEYS IN PLACE in ~/.config/wayfire.ini rather than writing a file or a
+  # fragment, because wayfire.ini has no include directive and holds every keybind.
+  #
   # labwc came BACK on 2026-08-17 and is enabled below -- it is the stacking
   # session alongside mango, not a replacement for it, so both compositors are in
   # the enabled list at once. coat owns ~/.config/labwc/themerc outright (whole
@@ -44,6 +49,7 @@ enabled:
   # session with no restart anywhere.
   - mango
   - labwc
+  - wayfire
   - waybar
   - fnott
   - swaylock
