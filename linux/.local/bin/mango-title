@@ -98,15 +98,31 @@ def render(payload):
     return f'<span color="{ACCENT}">{html.escape(title)}</span>'
 
 
+def idle():
+    """Render an empty module and block forever.
+
+    Used when there is no mango to talk to. Blocking rather than returning is
+    deliberate: waybar respawns a custom module whenever it EXITS, whatever the
+    status, so returning costs a Python startup every restart-interval for the whole
+    session and fills the log with "stopped unexpectedly, is it endless?".
+    signal.pause() costs nothing.
+    """
+    print("", flush=True)
+    signal.pause()
+    return 0
+
+
 def main():
-    # Not under mango (a labwc session, say): print one blank line so waybar renders
-    # an empty module, then block forever. See mango-tags for why this blocks rather
-    # than returning -- waybar respawns a custom module whenever it exits, whatever
-    # the status, so returning would cost a Python startup every 5s all session.
-    if shutil.which("mmsg") is None:
-        print("", flush=True)
-        signal.pause()
-        return 0
+    # Not under mango? Then there is nothing to stream.
+    #
+    # Checking the binary alone was NOT enough and this is the bug it hid: mmsg is
+    # installed system-wide, so under a labwc session `which` found it, the script
+    # ran, and mmsg exited 1 with "MANGO_INSTANCE_SIGNATURE is not set" -- which
+    # ended the loop, ended the script, and had waybar respawning it every 5s.
+    # MANGO_INSTANCE_SIGNATURE is the variable mmsg itself requires, so testing it
+    # is testing the actual precondition rather than a proxy for it.
+    if shutil.which("mmsg") is None or not os.environ.get("MANGO_INSTANCE_SIGNATURE"):
+        return idle()
 
     proc = subprocess.Popen(
         ["mmsg", "watch", "focusing-client"],
@@ -127,7 +143,10 @@ def main():
         # An empty object is mango reporting "nothing focused" -- print a blank
         # line so the module clears rather than keeping a stale title.
         print(render(payload), flush=True)
-    return proc.wait()
+
+    # mmsg exited -- mango is gone. Same treatment as never having been there.
+    proc.wait()
+    return idle()
 
 
 if __name__ == "__main__":

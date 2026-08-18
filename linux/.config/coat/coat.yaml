@@ -50,7 +50,7 @@ enabled:
   - wmenu
 
 # The 'scheme' key is a top-level scalar
-scheme: square
+scheme: equilibrium-dark
 prefer_base24: false
 
 # Evens out whatever scheme is loaded: uniform brightness, legible text,
