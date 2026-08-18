@@ -1,21 +1,15 @@
 #!/bin/sh
-# menu-run — dmenu_run for wmenu, themed by coat.
+# menu-run — the application launcher.
 #
-# wmenu ships wmenu-run, but that hardcodes plain `wmenu` and so ignores coat's
-# colours entirely. This is the same idea routed through ~/.local/bin/menu.
+# Now a one-liner, and that is the whole reason for moving to fuzzel. What this script
+# used to be: a loop over every directory in $PATH listing every executable file, piped
+# into wmenu, because wmenu has no .desktop support. That offered up `[`, `zgrep`,
+# `x86_64-pc-linux-gnu-gcc-ranlib` and several hundred other things nobody launches by
+# hand, with no real names and no icons.
 #
-# PATH listing, not .desktop entries: wmenu has no drun mode. `fuzzel` is in both
-# Arch's repos and OpenBSD ports if desktop-file launching is ever wanted.
-
-cmd=$(
-	IFS=:
-	for dir in $PATH; do
-		[ -d "$dir" ] || continue
-		for f in "$dir"/*; do
-			[ -x "$f" ] && [ ! -d "$f" ] && printf '%s\n' "${f##*/}"
-		done
-	done | sort -u | menu -i -p run
-) || exit 1
-
-[ -n "$cmd" ] || exit 0
-setsid $cmd >/dev/null 2>&1 &
+# fuzzel's default mode IS .desktop launching, with icons, the app's proper name, and
+# its actions (so Firefox offers "New Private Window"). Nothing to reimplement.
+#
+# The script is kept rather than binding fuzzel directly so that all three compositor
+# configs keep calling one stable name.
+exec fuzzel "$@"
