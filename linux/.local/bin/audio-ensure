@@ -87,8 +87,10 @@ i=0
 while [ "$i" -lt 10 ]; do
 	sleep 1
 	if [ -z "$(broken_reason)" ]; then
-		command -v notify-send >/dev/null 2>&1 &&
-			notify-send -t 4000 "󰕾  Audio" "stack was dead ($reason) — restarted"
+		# Deliberately SILENT on success. At session start there is no pipewire yet, so
+		# the repair legitimately runs on every single login -- and a notification every
+		# login for something working as intended is just noise. Only a repair that
+		# FAILS is worth interrupting for.
 		exit 0
 	fi
 	i=$((i + 1))
