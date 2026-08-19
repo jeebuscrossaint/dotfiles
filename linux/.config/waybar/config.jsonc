@@ -19,21 +19,17 @@
 // Fan and uptime are the two fields waybar has no module for. Both resolve their
 // hardware by NAME rather than hwmon index, because hwmon numbering is not stable
 // across boots -- coretemp happened to be hwmon7 today.
-[
 {
   "layer": "top",
   "position": "top",
-  // 30 and floating, not 22 flush. The bar is inset from the edges and the visible slabs
-  // are drawn per module-group in the CSS, so it reads as pills over the wallpaper rather
-  // than one bar welded to the top of the screen. mango's blur_layer frosts them.
-  "height": 30,
+  // Flush to the top edge, full width, one solid background. No margins: the inset
+  // version left visible stubs at the bar's ends. Section backgrounds are gone too --
+  // the bar has exactly one background, in coat's template.
+  "height": 26,
   "spacing": 4,
-  "margin-top": 6,
-  "margin-left": 8,
-  "margin-right": 8,
+  "margin": "0",
 
-  // mango is the only compositor now, so these two are the whole left side. Both
-  // stream mango's IPC; see the mango block below.
+  // mango is the only compositor, so these two are the whole left side.
   "modules-left": ["custom/mangotags", "custom/mangotitle"],
   "modules-center": [],
   "modules-right": [
@@ -197,48 +193,3 @@
     }
   }
 }
-,
-// ═══════════════════════════════════════════════════════════════════════════
-// THE DOCK — a second bar, not a second waybar.
-//
-// waybar takes an ARRAY of bar objects in one config, so this is one process with two
-// surfaces. Two `waybar -c` instances would mean two GTK startups, two sets of module
-// children to reap, and the SIGUSR1 bar-toggle bind hitting both.
-//
-// There is no dock in OpenBSD's wayland ports — none at all — so this is the portable
-// way to get one. wlr/taskbar gives one button per open window, which is exactly what a
-// dock is, and mango implements wlr-foreign-toplevel so it can see them.
-//
-// It is a LAYER-SHELL surface, so mango's blur_layer=1 frosts it. That is why its
-// background is deliberately translucent: blur only shows through something you can see
-// through.
-{
-  "name": "dock",
-  "layer": "top",
-  "position": "bottom",
-  // 64, not 56: icon-size 40 plus padding needs 64 and waybar silently overrode
-  // the smaller value ("Requested height: 56 is less than the minimum height: 64").
-  "height": 64,
-  "spacing": 0,
-  // The BAR spans the whole output — a layer-shell surface always does and waybar has
-  // no shrink-to-fit. The island look comes from the CSS: the window is transparent and
-  // the rounded frosted slab is drawn on the inner #taskbar container, which is only as
-  // wide as its icons.
-  "margin-bottom": 8,
-  "modules-left": [],
-  "modules-center": ["wlr/taskbar"],
-  "modules-right": [],
-
-  "wlr/taskbar": {
-    // Icon only. A dock with text labels is a taskbar, which is the Windows idea.
-    "format": "{icon}",
-    "icon-size": 40,
-    "tooltip-format": "{title}",
-    "on-click": "activate",
-    "on-click-middle": "close",
-    "all-outputs": false,
-    // Nothing to hide yet; add app-ids here if something clutters it.
-    "ignore-list": []
-  }
-}
-]
