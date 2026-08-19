@@ -16,8 +16,8 @@ end
 
 set -x EDITOR nvim
 # Honoured by xdg-terminal-exec, i3-sensible-terminal and various launchers, so
-# "open a terminal" lands on foot outside of sway's own $term binds too.
-set -x TERMINAL foot
+# "open a terminal" lands on kitty for anything that reads $TERMINAL.
+set -x TERMINAL kitty
 set -x LANG en_US.UTF-8
 set -x LC_ALL en_US.UTF-8
 set -x SWAY_UNSUPPORTED_GPU true

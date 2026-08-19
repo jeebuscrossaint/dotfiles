@@ -9,7 +9,7 @@ stow -D -t ~ linux    # uninstall
 ```
 
 `linux/` is a single stow package: its tree mirrors `$HOME`, so
-`linux/.config/foot/foot.ini` becomes `~/.config/foot/foot.ini`.
+`linux/.config/kitty/kitty.conf` becomes `~/.config/kitty/kitty.conf`.
 
 ## Stack
 
@@ -20,7 +20,7 @@ stow -D -t ~ linux    # uninstall
 | notifications | **fnott** | also draws the volume/brightness OSD, via `~/.local/bin/osd` |
 | launcher | **fuzzel** | .desktop entries with icons; `menu` / `menu-run` wrap it |
 | lock / idle | **swaylock** + **swayidle** | |
-| terminal | **foot** | |
+| terminal | **kitty** | coat writes `coat-theme.conf`; `kitty @ set-colors` recolours live |
 | shell | **fish** | |
 | editor | **nvim** | lazy.nvim |
 | theming | **coat** | one command recolours every app below, live |
@@ -66,7 +66,7 @@ linux/
 │   ├── fuzzel/        launcher (colours patched in place by coat)
 │   ├── swayidle/      idle → lock → screen off
 │   ├── swaylock/
-│   ├── foot/  fish/  nvim/  bat/  btop/  zathura/  gtk-3.0/  gtk-4.0/  paru/
+│   ├── kitty/ fish/  nvim/  bat/  btop/  zathura/  gtk-3.0/  gtk-4.0/  paru/
 │   └── ...
 └── .local/
     ├── bin/           session scripts — see below
@@ -100,7 +100,7 @@ because it could not be recoloured live, or needed a supervisor process to
 survive being recoloured:
 
 **sway/swaybar** → mango/waybar · **dwl** → mango (compile-time config) ·
-**tofi** → wmenu → **fuzzel** (tofi is not in OpenBSD ports; wmenu has no
+**foot** → **kitty** · **tofi** → wmenu → **fuzzel** (tofi is not in OpenBSD ports; wmenu has no
 .desktop support and no config file) · **gtklock** → swaylock ·
 **dunst** → fnott · **labwc**, **wayfire** → mango does it all natively ·
 **swayrbar**, **slstatus**, **barstat** → native waybar

@@ -42,7 +42,7 @@ enabled:
   # went the same way for the same reason. The OSD is a notification now, so the
   # `fnott` module themes it for free and there is nothing to kill.
   - fish
-  - foot
+  - kitty
   - neovim
   - bat
   - btop
@@ -74,7 +74,7 @@ opacity:
   # 0.95, not 1.0. mango's blur only shows through a translucent surface, so an opaque
   # terminal frosts nothing and the whole effects block appears to do less than it does.
   # Subtle enough not to hurt legibility, and it is the macOS Terminal look.
-  terminal: 0.95
+  terminal: 1.0
   applications: 1.0
   desktop: 1.0
   popups: 1.0
