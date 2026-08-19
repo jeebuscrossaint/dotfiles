@@ -112,34 +112,20 @@
   border-bottom: 2px solid;
 }
 
-/* Top bar: pills, not a slab ---------------------------------------------- */
+/* Top bar: no slabs -------------------------------------------------------- */
 
-/* The bar WINDOW is transparent (see the template) and each module group draws its own
- * rounded slab. Two pills — tags/title on the left, status on the right — with the
- * wallpaper visible between them. Fewer edges than per-module pills, and it survives
- * modules appearing and disappearing (mpris, the swap indicator) without leaving gaps.
- *
- * Colour is in coat's templates/waybar.tera under .modules-left/.modules-right. */
+/* No background anywhere -- not on the bar, not on the module groups. Padding only, so
+ * the bar is text floating over the wallpaper. The group backgrounds that used to be
+ * here rendered as visible blocks at the bar's left and right ends. */
 .modules-left,
 .modules-right {
-  border-radius: 14px;
-  padding: 0 10px;
+  padding: 0 6px;
 }
 
-/* Breathing room between fields inside a pill. `spacing` in config.jsonc handles the gap
- * BETWEEN groups; this is the gap between modules within one. */
 .modules-right > widget > * {
   padding: 0 7px;
 }
 
 .modules-left > widget > * {
   padding: 0 4px;
-}
-
-/* The clock is the one field worth emphasising, so it gets the accent treatment from the
- * template and a slightly tighter box here so it reads as a button rather than text. */
-#clock {
-  border-radius: 10px;
-  margin: 3px 0 3px 4px;
-  padding: 0 10px;
 }
