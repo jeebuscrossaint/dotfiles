@@ -23,9 +23,14 @@
 {
   "layer": "top",
   "position": "top",
-  "height": 22,
-  "spacing": 0,
-  "margin": "0",
+  // 30 and floating, not 22 flush. The bar is inset from the edges and the visible slabs
+  // are drawn per module-group in the CSS, so it reads as pills over the wallpaper rather
+  // than one bar welded to the top of the screen. mango's blur_layer frosts them.
+  "height": 30,
+  "spacing": 4,
+  "margin-top": 6,
+  "margin-left": 8,
+  "margin-right": 8,
 
   // mango is the only compositor now, so these two are the whole left side. Both
   // stream mango's IPC; see the mango block below.
