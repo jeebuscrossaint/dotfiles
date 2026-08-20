@@ -16,9 +16,18 @@
 // worry about instead of a shell script full of Linux paths, per-field CSS
 // (battery can go red at 10%; a single text blob cannot), and pkg/ deleted.
 //
-// Fan and uptime are the two fields waybar has no module for. Both resolve their
-// hardware by NAME rather than hwmon index, because hwmon numbering is not stable
-// across boots -- coretemp happened to be hwmon7 today.
+// NO hand-rolled script modules. Every field is either a waybar built-in or a
+// packaged binary from the repos/AUR read through `custom` (wttrbar). The three
+// pre-existing exceptions -- mango-tags, mango-title, waybar-fan, waybar-uptime --
+// stay only because waybar has no built-in for tags, titles, fan RPM or uptime.
+//
+// The bar is dense on purpose: everything that fits legibly is in the text, and
+// everything that does not is in the tooltip. Modules whose waybar version has no
+// `tooltip-format` (cpu, memory, battery, backlight, upower) keep tooltip:false
+// rather than showing waybar's raw fallback.
+//
+// Fan and uptime resolve their hardware by NAME rather than hwmon index, because
+// hwmon numbering is not stable across boots -- coretemp happened to be hwmon5 today.
 {
   "layer": "top",
   "position": "top",
@@ -26,24 +35,38 @@
   // version left visible stubs at the bar's ends. Section backgrounds are gone too --
   // the bar has exactly one background, in coat's template.
   "height": 26,
-  "spacing": 4,
+  // 0, not 4. With ~20 modules on the right, waybar's inter-module spacing plus each
+  // module's own padding is what pushes the row past the panel edge; the padding in
+  // style.css does the separating.
+  "spacing": 0,
   "margin": "0",
 
   // mango is the only compositor, so these two are the whole left side.
   "modules-left": ["custom/mangotags", "custom/mangotitle"],
   "modules-center": [],
+
+  // Ordered the way a macOS menu bar is: system load first, then media,
+  // connectivity, the controls, power, and the clock last at the panel edge.
   "modules-right": [
-    "mpris",
-    "network",
-    "disk",
+    "privacy",
+    "idle_inhibitor",
     "cpu",
     "memory",
     "temperature",
+    "temperature#nvme",
     "custom/fan",
-    "backlight",
+    "disk",
+    "network#vpn",
+    "network",
+    "bluetooth",
+    "mpris",
+    "wireplumber#mic",
     "wireplumber",
+    "backlight",
+    "upower",
     "battery",
     "custom/uptime",
+    "custom/weather",
     "clock"
   ],
 
@@ -63,51 +86,54 @@
   },
 
   "custom/mangotitle": {
+    // max-length is waybar's, not the script's: a long browser title would otherwise
+    // push the whole right side off the panel, and the right side is now ~20 modules.
     "exec": "mango-title",
     "return-type": "",
     "restart-interval": 5,
     "escape": false,
+    "max-length": 40,
     "tooltip": false
   },
 
   // ── status ───────────────────────────────────────────────────────────────
-  "mpris": {
-    "format": "{status_icon} {dynamic}",
-    "dynamic-len": 38,
-    "dynamic-order": ["artist", "title"],
-    "status-icons": { "playing": "󰐊", "paused": "󰏤", "stopped": "󰓛" },
-    "tooltip": false,
-    "on-click": "osd playpause"
+
+  // Who is using the microphone, the camera, or capturing the screen. Reads
+  // pipewire directly -- this is the module that tells you a screenshare is still
+  // live after the call ended.
+  "privacy": {
+    "icon-spacing": 4,
+    "icon-size": 13,
+    "transition-duration": 200,
+    "modules": [
+      { "type": "screenshare", "tooltip": true, "tooltip-icon-size": 20 },
+      { "type": "audio-in", "tooltip": true, "tooltip-icon-size": 20 },
+      { "type": "audio-out", "tooltip": true, "tooltip-icon-size": 20 }
+    ]
   },
 
-  "network": {
-    "interface": "wlan0",
-    "format-wifi": "󰇚 {bandwidthDownBytes} 󰕒 {bandwidthUpBytes}  󰖩 {essid} {signalStrength}%",
-    "format-ethernet": "󰇚 {bandwidthDownBytes} 󰕒 {bandwidthUpBytes}  󰈀 {ipaddr}",
-    "format-disconnected": "󰖪 offline",
-    "interval": 2,
-    "tooltip": false,
-    "on-click": "kitty nmtui"
-  },
-
-  "disk": {
-    "format": "󰋊 {percentage_used}% {free}",
-    "path": "/",
-    "interval": 30,
-    "tooltip": false
+  // Click to hold the screen awake without touching swayidle's config. The lock is
+  // swayidle -> swaylock, so this is the "don't lock during a film" switch.
+  "idle_inhibitor": {
+    "format": "{icon}",
+    "format-icons": { "activated": "󰅶", "deactivated": "󰾪" },
+    "tooltip-format-activated": "idle inhibited — screen stays awake",
+    "tooltip-format-deactivated": "idle inhibitor off — swayidle will lock"
   },
 
   "cpu": {
     // {load} is the 1-minute average, which is what the old load field showed.
-    "format": "󰻠 {usage}%  󰬺 {load}",
+    // {avg_frequency} is in GHz already, hence the bare G.
+    "format": "󰻠 {usage}% {avg_frequency}G 󰬺 {load}",
     "interval": 2,
     "tooltip": false,
     "on-click": "kitty btop"
   },
 
   "memory": {
-    "format": "󰍛 {percentage}%",
-    "format-swap": "󰾵 {swapPercentage}%",
+    // Swap on the same line rather than behind format-swap: format-swap only
+    // replaces the whole label, so it showed swap INSTEAD of RAM.
+    "format": "󰍛 {percentage}% 󰾵 {swapPercentage}%",
     "interval": 5,
     "tooltip": false,
     "on-click": "kitty btop"
@@ -116,20 +142,115 @@
   "temperature": {
     // hwmon-path-abs is the platform device path, which IS stable across boots;
     // the hwmonN directory beneath it is not, and waybar resolves that itself.
-    // temp10_input is coretemp's package sensor on this Meteor Lake part.
+    //
+    // temp1_input, NOT temp10_input. On this Meteor Lake part temp1_input is
+    // labelled "Package id 0" and temp10_input is "Core 8" -- the old setting was
+    // reading one core and calling it the package, which reads low under a
+    // single-threaded load.
     "hwmon-path-abs": "/sys/devices/platform/coretemp.0/hwmon",
-    "input-filename": "temp10_input",
+    "input-filename": "temp1_input",
     "format": "󰔏 {temperatureC}°",
     "critical-threshold": 90,
     "format-critical": "󰸁 {temperatureC}°",
     "interval": 5,
-    "tooltip": false
+    "tooltip-format": "CPU package {temperatureC}°C / {temperatureF}°F"
+  },
+
+  // The NVMe controller's own sensor. Same trick: the PCI path is stable, the
+  // hwmonN under it is not.
+  "temperature#nvme": {
+    "hwmon-path-abs": "/sys/devices/pci0000:00/0000:00:06.0/0000:02:00.0/nvme/nvme0",
+    "input-filename": "temp1_input",
+    "format": "󰆓 {temperatureC}°",
+    "critical-threshold": 70,
+    "format-critical": "󰸁 {temperatureC}°",
+    "interval": 10,
+    "tooltip-format": "NVMe composite {temperatureC}°C / {temperatureF}°F"
   },
 
   "custom/fan": {
     "exec": "waybar-fan",
     "interval": 5,
     "tooltip": false
+  },
+
+  "disk": {
+    "format": "󰆼 {percentage_used}% {free}",
+    "path": "/",
+    "interval": 30,
+    "tooltip-format": "{used} of {total} used on {path} — {free} free ({percentage_free}%)"
+  },
+
+  // tailscale0. waybar has no VPN module; a tunnel is just an interface, and the
+  // built-in network module bound to it says whether the tailnet is up and on what
+  // address. It is not wireless, so waybar renders it through format-ethernet.
+  "network#vpn": {
+    "interface": "tailscale0",
+    "format-ethernet": "󰦝 {ipaddr}",
+    "format-disconnected": "󰦞",
+    "interval": 10,
+    "tooltip-format": "tailscale0 — {ipaddr}/{cidr}",
+    "tooltip-format-disconnected": "tailnet down",
+    "on-click": "kitty -e sh -c 'tailscale status; read -r _'"
+  },
+
+  "network": {
+    "interface": "wlan0",
+    // essid and address moved to the tooltip: they are the two longest fields and
+    // the two you look at least often.
+    "format-wifi": "󰇚 {bandwidthDownBytes} 󰕒 {bandwidthUpBytes} 󰖩 {signalStrength}%",
+    "format-ethernet": "󰇚 {bandwidthDownBytes} 󰕒 {bandwidthUpBytes} 󰈀",
+    "format-disconnected": "󰖪 offline",
+    "interval": 2,
+    "tooltip-format-wifi": "{essid} ({signalStrength}%, {signaldBm} dBm, {frequency} MHz)\n{ipaddr}/{cidr} via {gwaddr}\n{ifname} — ↓ {bandwidthDownBytes} ↑ {bandwidthUpBytes}",
+    "tooltip-format-ethernet": "{ifname}\n{ipaddr}/{cidr} via {gwaddr}",
+    "tooltip-format-disconnected": "disconnected",
+    "on-click": "kitty nmtui"
+  },
+
+  // bluez is running (org.bluez on the system bus) even though bluez-utils is not
+  // installed, and this module talks dbus directly -- so it works, but there is no
+  // bluetoothctl for an on-click.
+  "bluetooth": {
+    "format": "󰂯",
+    "format-on": "󰂯",
+    "format-off": "󰂲",
+    "format-disabled": "󰂲",
+    "format-connected": "󰂱 {num_connections}",
+    "tooltip-format": "{controller_alias}\t{controller_address}\n\n{num_connections} connected",
+    "tooltip-format-connected": "{controller_alias}\t{controller_address}\n\n{num_connections} connected\n\n{device_enumerate}",
+    "tooltip-format-enumerate-connected": "{device_alias}\t{device_address}",
+    "tooltip-format-enumerate-connected-battery": "{device_alias}\t{device_address}\t{device_battery_percentage}%"
+  },
+
+  "mpris": {
+    "format": "{status_icon} {dynamic}",
+    "dynamic-len": 30,
+    "dynamic-order": ["artist", "title"],
+    "status-icons": { "playing": "󰐊", "paused": "󰏤", "stopped": "󰓛" },
+    "tooltip-format": "{player}: {dynamic}",
+    "on-click": "osd playpause"
+  },
+
+  // The same module as the volume one, pointed at the source instead of the sink.
+  // node-type is what makes it the microphone.
+  "wireplumber#mic": {
+    "node-type": "Audio/Source",
+    "format": "󰍬 {volume}%",
+    "format-muted": "󰍭",
+    "max-volume": 100,
+    "tooltip-format": "mic: {node_name}",
+    "on-click": "osd mic mute"
+  },
+
+  "wireplumber": {
+    "format": "󰕾 {volume}%",
+    "format-muted": "󰝟 muted",
+    "max-volume": 150,
+    "tooltip-format": "output: {node_name}",
+    "on-click": "osd volume mute",
+    "on-scroll-up": "osd volume up",
+    "on-scroll-down": "osd volume down"
   },
 
   "backlight": {
@@ -141,14 +262,17 @@
     "on-scroll-down": "osd brightness down"
   },
 
-  "wireplumber": {
-    "format": "󰕾 {volume}%",
-    "format-muted": "󰝟 muted",
-    "max-volume": 150,
-    "tooltip": false,
-    "on-click": "osd volume mute",
-    "on-scroll-up": "osd volume up",
-    "on-scroll-down": "osd volume down"
+  // The mouse. upower exposes the G305's HID++ battery as hidpp_battery_0, and
+  // native-path pins the module to it -- without that it shows the laptop battery,
+  // which the battery module already covers. hide-if-empty means it disappears
+  // when the mouse is off rather than showing a stale number.
+  "upower": {
+    "native-path": "hidpp_battery_0",
+    "format": "󰍽 {percentage}",
+    "show-icon": false,
+    "hide-if-empty": true,
+    "tooltip": true,
+    "tooltip-spacing": 8
   },
 
   "battery": {
@@ -170,6 +294,20 @@
     "exec": "waybar-uptime",
     "interval": 60,
     "tooltip": false
+  },
+
+  // wttrbar (AUR, /usr/bin/wttrbar) -- a packaged binary, not a script of mine. It
+  // prints waybar JSON: text, a pango tooltip with the two-day hourly forecast, and
+  // a `class` (sunnyDay, cloudy, rainyNight, ...) that CSS could hook if wanted.
+  //
+  // --location is explicit because wttr.in geolocates by IP, and over the tailnet
+  // that lands somewhere else entirely. Change the city here.
+  // 900s: wttr.in rate-limits, and the weather does not move faster than that.
+  "custom/weather": {
+    "exec": "wttrbar --location Orlando --fahrenheit --mph --ampm --nerd --hide-conditions --custom-indicator '{ICON} {temp_F}°'",
+    "return-type": "json",
+    "interval": 900,
+    "tooltip": true
   },
 
   "clock": {

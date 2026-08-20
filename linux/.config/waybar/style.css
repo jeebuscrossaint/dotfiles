@@ -45,71 +45,41 @@
 
 /* Status modules ---------------------------------------------------------- */
 
-#mpris,
-#network,
-#disk,
+/* One rule for every field on the right. 5px, not 7: the row is ~20 modules wide
+ * now, and 2px of padding per side per module is 80px of panel -- enough to push
+ * the clock off a 2560px display. Duplicated modules are addressed as
+ * `#id.instance` (waybar turns `temperature#nvme` into id=temperature class=nvme). */
+#privacy,
+#idle_inhibitor,
 #cpu,
 #memory,
 #temperature,
+#temperature.nvme,
 #custom-fan,
-#backlight,
+#disk,
+#network,
+#network.vpn,
+#bluetooth,
+#mpris,
 #wireplumber,
+#wireplumber.mic,
+#backlight,
+#upower,
 #battery,
 #custom-uptime,
+#custom-weather,
 #clock {
-  padding: 0 7px;
+  padding: 0 5px;
+}
+
+/* The privacy module draws icons, not text, so it needs the room a glyph does not. */
+#privacy {
+  padding: 0 6px;
 }
 
 #clock {
   /* Last module: extra right padding or the clock sits flush to the panel edge. */
   padding-right: 8px;
-}
-
-/* Dock -------------------------------------------------------------------- */
-
-/* The second bar (name="dock" in config.jsonc). waybar turns a bar's `name` into a
- * CSS class on the window, so #waybar.dock targets only this one and every rule above
- * still applies to the top bar.
- *
- * Geometry only, as everywhere in this file — the colours come from coat's
- * templates/waybar.tera under #waybar.dock and #taskbar button.
- *
- * The rounded corners and the inset margins are what make it read as a macOS dock
- * rather than a second status bar: an island floating above the wallpaper, sized to its
- * contents. mango's blur_layer=1 frosts it, which is the glass part — and why the
- * background is deliberately not fully opaque. */
-/* The dock WINDOW spans the whole output — a layer-shell bar always does, and waybar
- * has no shrink-to-fit. So the window itself is transparent (in the template) and the
- * rounded frosted slab is drawn on the inner #taskbar container instead. That is what
- * makes it an island sized to its icons rather than a second full-width bar, which is
- * what it looked like on the first attempt. */
-#waybar.dock #taskbar {
-  border-radius: 18px;
-  padding: 0 8px;
-  margin: 4px 0;
-}
-
-/* Each dock icon. min-width keeps them square so the row reads as evenly spaced
- * tiles, and the transition is the one place in this config an animation is welcome —
- * a dock icon that grows slightly under the pointer is most of the macOS feel. */
-#waybar.dock #taskbar button {
-  padding: 4px 6px;
-  margin: 4px 2px;
-  min-width: 44px;
-  border-radius: 12px;
-  transition: background-color 120ms ease, padding 120ms ease;
-}
-
-#waybar.dock #taskbar button:hover {
-  /* Grows by shrinking its own padding budget rather than changing icon-size, which
-   * waybar cannot animate. */
-  padding: 2px 6px;
-}
-
-/* The running-app dot. macOS puts a small mark under a running app; waybar's taskbar
- * marks the ACTIVE one, which is the closest available signal. */
-#waybar.dock #taskbar button.active {
-  border-bottom: 2px solid;
 }
 
 /* Top bar: no slabs -------------------------------------------------------- */
@@ -122,8 +92,11 @@
   padding: 0 6px;
 }
 
+/* 0, not 7. This padding STACKS on top of each module's own -- 7px here plus 5px
+ * per module was 24px of gap per field, which on a ~20-module row is most of a
+ * 2560px panel. The per-#id rules above are the only horizontal padding now. */
 .modules-right > widget > * {
-  padding: 0 7px;
+  padding: 0;
 }
 
 .modules-left > widget > * {
