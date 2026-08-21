@@ -45,36 +45,21 @@
 
 /* Status modules ---------------------------------------------------------- */
 
-/* One rule for every field on the right. 5px, not 7: the row is ~20 modules wide
- * now, and 2px of padding per side per module is 80px of panel -- enough to push
- * the clock off a 2560px display. Duplicated modules are addressed as
- * `#id.instance` (waybar turns `temperature#nvme` into id=temperature class=nvme). */
-#privacy,
-#idle_inhibitor,
+#mpris,
+#network,
+#disk,
 #cpu,
 #memory,
 #temperature,
 #temperature.nvme,
 #custom-fan,
-#disk,
-#network,
-#network.vpn,
-#bluetooth,
-#mpris,
-#wireplumber,
-#wireplumber.mic,
 #backlight,
-#upower,
+#wireplumber,
 #battery,
 #custom-uptime,
 #custom-weather,
 #clock {
-  padding: 0 5px;
-}
-
-/* The privacy module draws icons, not text, so it needs the room a glyph does not. */
-#privacy {
-  padding: 0 6px;
+  padding: 0 7px;
 }
 
 #clock {
@@ -92,11 +77,8 @@
   padding: 0 6px;
 }
 
-/* 0, not 7. This padding STACKS on top of each module's own -- 7px here plus 5px
- * per module was 24px of gap per field, which on a ~20-module row is most of a
- * 2560px panel. The per-#id rules above are the only horizontal padding now. */
 .modules-right > widget > * {
-  padding: 0;
+  padding: 0 7px;
 }
 
 .modules-left > widget > * {
