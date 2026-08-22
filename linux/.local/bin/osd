@@ -19,9 +19,11 @@
 # Usage:
 #   osd volume up|down|mute
 #   osd mic mute
-#   osd brightness up|down
+#   osd brightness up|down          screen backlight
+#   osd kbd up|down|show            keyboard backlight
 #   osd capslock|numlock
-#   osd playpause
+#   osd touchpad                    toggle, through the compositor
+#   osd playpause|next|prev
 #
 # Nothing stacks, via --replace-id: reusing one notification id makes each popup
 # REPLACE the last. That is core to the notification spec (replaces_id), not a
@@ -41,8 +43,25 @@ VOL_MAX=1.5 # wpctl ceiling (150%)
 BL_STEP=5   # percent of max_brightness per keypress
 BL_MIN=1    # never step the backlight to 0 — that is a black screen
 
+# The ASUS keyboard backlight. A 4-step LED (0..3), not a percentage device, so
+# it steps by 1 rather than by BL_STEP.
+KBD_LED=asus::kbd_backlight
+
+# Whether the touchpad is currently off. Neither compositor can be asked (see
+# the touchpad section), so the state is tracked here.
+TP_FLAG=${XDG_RUNTIME_DIR:-/tmp}/touchpad-off
+
+# How long to let a lock-key LED catch up with the keypress. wlroots updates its
+# xkb state and pushes the LED from inside the key event, BEFORE the compositor
+# gets a look at it, so by the time this script runs the flip is already in
+# flight -- but it lands in the kernel a few ms later, and reading immediately
+# reports the old value. Imperceptible next to the notification's own latency.
+LOCK_SETTLE=0.15
+
 usage() {
-	echo "usage: osd {volume up|down|mute | mic mute | brightness up|down | capslock | numlock | playpause}" >&2
+	echo "usage: osd {volume up|down|mute | mic mute | brightness up|down |" >&2
+	echo "           kbd up|down|show | capslock | numlock | touchpad |" >&2
+	echo "           playpause | next | prev}" >&2
 	exit 2
 }
 
@@ -175,15 +194,120 @@ brightness)
 	show "$icon  $pct%" "$pct"
 	;;
 
+# -------------------------------------------------------- keyboard backlight
+kbd)
+	# Four discrete steps (0..3 on this ASUS), so it steps by 1 and the popup
+	# says "2/3" rather than a rounded percentage -- the bar still gets a
+	# percentage because that is the only thing int:value can draw.
+	led=/sys/class/leds/$KBD_LED
+	[ -r "$led/brightness" ] || exit 0
+	read -r cur <"$led/brightness" || exit 1
+	read -r max <"$led/max_brightness" || exit 1
+	[ "$max" -gt 0 ] || exit 1
+
+	case "$2" in
+	up)
+		new=$((cur + 1))
+		[ "$new" -gt "$max" ] && new=$max
+		;;
+	down)
+		new=$((cur - 1))
+		[ "$new" -lt 0 ] && new=0
+		;;
+	# Report the level without touching it. Use this if the firmware turns out
+	# to handle the fn keys itself -- then having both act on one press would
+	# step twice per keystroke.
+	show) new=$cur ;;
+	*) usage ;;
+	esac
+
+	# -c leds is required: brightnessctl defaults to the backlight class and
+	# would not find this device at all without it.
+	note=""
+	if [ "$new" != "$cur" ]; then
+		if brightnessctl -q -c leds -d "$KBD_LED" set "$new" 2>/dev/null; then
+			:
+		else
+			# brightnessctl's own udev rule chgrps LED brightness to the `input`
+			# group, so this is a group-membership problem, not a missing rule --
+			# and it is silent otherwise: the popup would show an unchanged level
+			# and look like the key did nothing. See misc/99-kbd-backlight.rules
+			# for the narrower fix (that one LED to `video`, which is already a
+			# group here) or add yourself to `input`.
+			new=$cur
+			note=" — read-only"
+		fi
+	fi
+
+	pct=$((new * 100 / max))
+	if [ "$new" -eq 0 ]; then icon='󰌍'; else icon='󰌌'; fi
+	show "$icon  kbd $new/$max$note" "$pct"
+	;;
+
+# -------------------------------------------------------------------- touchpad
+touchpad)
+	# The compositor owns the device, so the toggle has to go through it, and
+	# NEITHER compositor will report the result: mango's `mmsg get all-devices`
+	# lists name/types/vendor/matched and no enabled flag, and Hyprland has no
+	# state query for device:enabled at all. Hence the flag file.
+	#
+	# Which is why both of mango's trackpad binds route through here instead of
+	# calling toggle_trackpad_enable natively: a native bind would flip the
+	# device behind the flag's back and every popup after that would lie.
+	if [ -f "$TP_FLAG" ]; then want=on; else want=off; fi
+
+	if [ -n "${MANGO_INSTANCE_SIGNATURE:-}" ]; then
+		# mango's own toggle -- one dispatch, no device name to resolve.
+		mmsg dispatch toggle_trackpad_enable >/dev/null 2>&1 || exit 1
+	elif [ -n "${HYPRLAND_INSTANCE_SIGNATURE:-}" ]; then
+		# Hyprland wants the device by name, and `device[...]` takes the name as
+		# libinput reports it. This is what ~/.local/bin/hypr-touchpad-toggle did
+		# before it was folded in here.
+		command -v jq >/dev/null || exit 0
+		tp=$(hyprctl devices -j 2>/dev/null |
+			jq -r '.mice[]? | select(.name | test("touchpad"; "i")) | .name' | head -1)
+		[ -n "$tp" ] || exit 0
+		case $want in
+		on) hyprctl keyword "device[$tp]:enabled" true >/dev/null 2>&1 || exit 1 ;;
+		off) hyprctl keyword "device[$tp]:enabled" false >/dev/null 2>&1 || exit 1 ;;
+		esac
+	else
+		# No compositor to ask (a TTY, or a session that does not do this).
+		exit 0
+	fi
+
+	if [ "$want" = on ]; then
+		rm -f "$TP_FLAG"
+		show '󰟸  touchpad on'
+	else
+		: >"$TP_FLAG"
+		show '󰤳  touchpad off'
+	fi
+	;;
+
 # ------------------------------------------------------------------ lock keys
 # Display only — the key still toggles the state itself, this just reports it.
 # The compositor drives the keyboard LED through libinput, so the kernel LED is
-# the source of truth. NOTE: mango has no release-triggered bindings, so these
-# two are currently unbound -- on key press the LED has not flipped yet and the
-# popup would report the previous state. Kept because the logic is right and the
-# bind is one line away if mango gains -release. Three keyboards expose these
-# LEDs here; any one lit means the mode is on.
+# the source of truth. Three keyboards expose these LEDs here; any one lit means
+# the mode is on.
+#
+# These ARE bound now, on press, and the old note saying they could not be is
+# wrong. Two things had to be true and both are:
+#
+#   The key still toggles. Binding a key means the compositor does not FORWARD it
+#   to the client, but the xkb state machine has already processed the keycode by
+#   then -- wlroots updates state and pushes the LED from inside the key event,
+#   before the compositor's handler runs. Verified against mango 0.16.1's
+#   keypress() in src/input/keyboard.h: the `if (handled) return` only skips
+#   wlr_seat_keyboard_notify_key, nothing upstream of it. Caps lock keeps
+#   capitalising; a lock key has nothing useful to say to a client anyway.
+#
+#   The LED can be read in time. It lands in the kernel a few ms after the press,
+#   so reading it immediately reports the PREVIOUS state -- which is what the old
+#   note had run into. LOCK_SETTLE covers that, and needing no release-triggered
+#   binding is what makes this work on mango.
 capslock | numlock)
+	sleep "$LOCK_SETTLE"
 	on=0
 	for f in /sys/class/leds/*::"$1"/brightness; do
 		[ -r "$f" ] || continue
@@ -207,8 +331,14 @@ capslock | numlock)
 	;;
 
 # --------------------------------------------------------------------- media
-playpause)
-	playerctl play-pause 2>/dev/null || exit 0
+playpause | next | prev)
+	case "$1" in
+	playpause) playerctl play-pause 2>/dev/null || exit 0 ;;
+	# `previous`, not `prev`: that is playerctl's spelling. The subcommand here
+	# stays `prev` to match XF86AudioPrev.
+	next) playerctl next 2>/dev/null || exit 0 ;;
+	prev) playerctl previous 2>/dev/null || exit 0 ;;
+	esac
 	# playerctl keeps reporting the pre-toggle status for a moment after the
 	# call, so give the player a beat to settle before asking what it did. The
 	# key press has already taken effect — this only delays the popup.
@@ -217,10 +347,18 @@ playpause)
 	text=$(playerctl metadata --format '{{artist}} - {{title}}' 2>/dev/null)
 	text=${text# - }
 	[ "${#text}" -gt 48 ] && text=$(printf '%.47s…' "$text")
-	case $status in
-	Playing) icon='󰐊' ;;
-	Paused) icon='󰏤' ;;
-	*) exit 0 ;;
+	# A skip shows which way it went; play/pause shows the resulting state. Both
+	# then print the track, which is the useful part of either popup.
+	case "$1" in
+	next) icon='󰒭' ;;
+	prev) icon='󰒮' ;;
+	*)
+		case $status in
+		Playing) icon='󰐊' ;;
+		Paused) icon='󰏤' ;;
+		*) exit 0 ;;
+		esac
+		;;
 	esac
 	show "$icon  ${text:-$status}"
 	;;

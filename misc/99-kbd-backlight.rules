@@ -1,0 +1,20 @@
+# /etc/udev/rules.d/99-kbd-backlight.rules
+#
+# Let `osd kbd up|down` change the ASUS keyboard backlight without root.
+#
+# brightnessctl already ships a rule for this (90-brightnessctl.rules) and it
+# does the right thing -- but it chgrps every LED to the `input` group, and being
+# in `input` means read access to every input device on the machine, i.e. every
+# keystroke. Not a trade worth making for a backlight.
+#
+# So: this one LED, to `video`, which is already a group here because that is
+# what the same package uses for the screen backlight.
+#
+# Install:
+#   sudo cp misc/99-kbd-backlight.rules /etc/udev/rules.d/
+#   sudo udevadm control --reload
+#   sudo udevadm trigger -s leds
+#
+# Without it osd still runs: the write fails, and the popup says "read-only"
+# rather than silently showing an unchanged level.
+ACTION=="add", SUBSYSTEM=="leds", KERNEL=="asus::kbd_backlight", RUN+="/bin/chgrp video /sys/class/leds/%k/brightness", RUN+="/bin/chmod g+w /sys/class/leds/%k/brightness"
