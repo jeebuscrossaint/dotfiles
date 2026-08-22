@@ -84,3 +84,22 @@
 .modules-left > widget > * {
   padding: 0 4px;
 }
+
+/* Hyprland's tag row and title ---------------------------------------------- */
+
+/* Used only by config-hyprland.jsonc, where modules-left is the native
+ * hyprland/workspaces + hyprland/window pair instead of the two mango scripts.
+ * Inert under mango: those widgets do not exist there, so the rules cost
+ * nothing and both bars keep one stylesheet. Colour, as always, is coat's
+ * templates/waybar.tera -- #workspaces button.active was already in it. */
+
+#workspaces button {
+  padding: 0 4px;
+  /* GTK gives a button a min-width of its own, which puts a single digit in the
+   * middle of a wide slab and breaks the even spacing of the tag row. */
+  min-width: 0;
+}
+
+#window {
+  padding: 0 6px;
+}
