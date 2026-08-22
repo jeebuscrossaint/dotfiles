@@ -59,9 +59,14 @@ enabled:
   - swaylock
   - fuzzel
   - kitty
+  # Hyprland is not the running compositor -- mango is -- but the module writes
+  # ~/.config/hypr/coat-theme.conf, which hyprland.conf sources, so the parked
+  # session is already themed whenever it is started. `hyprctl reload` inside the
+  # module is silenced and no-ops when nothing is listening.
+  - hyprland
 
 # The 'scheme' key is a top-level scalar
-scheme: papercolor-dark
+scheme: summerfruit-dark
 prefer_base24: false
 
 # Evens out whatever scheme is loaded: uniform brightness, legible text,
