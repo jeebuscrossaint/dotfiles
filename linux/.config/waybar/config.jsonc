@@ -201,7 +201,7 @@
   "custom/weather": {
     "exec": "wttrbar --location Orlando --fahrenheit --mph --ampm --nerd --hide-conditions --custom-indicator '{ICON} {temp_F}°'",
     "return-type": "json",
-    "interval": 900,
+    "interval": 60,
     "tooltip": true
   },
 
