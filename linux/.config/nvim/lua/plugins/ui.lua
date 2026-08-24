@@ -1,7 +1,5 @@
 -- lua/plugins/ui.lua
--- ============================================================================
 -- Visual niceties: a statusline, a keymap-hint popup, and prettier icons.
--- ============================================================================
 
 return {
   -- lualine: the statusline at the bottom (mode, file, git branch, diagnostics)
@@ -19,9 +17,7 @@ return {
     },
   },
 
-  -- which-key: after you press <leader> (Space), a popup shows every shortcut
-  -- available and what it does. This is your cheat-sheet while learning — just
-  -- press Space and wait a moment.
+  -- which-key: press <leader> and wait; a popup lists every shortcut under it.
   {
     "folke/which-key.nvim",
     event = "VeryLazy",
@@ -46,7 +42,6 @@ return {
     },
   },
 
-  -- Nerd-font icons used by lualine, telescope, neo-tree, etc.
-  -- (Requires a Nerd Font in your terminal — you already use Lilex Nerd Font.)
+  -- Nerd-font icons for lualine, telescope, neo-tree.
   { "nvim-tree/nvim-web-devicons", lazy = true },
 }

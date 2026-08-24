@@ -2,19 +2,11 @@
 # osd — perform a volume/brightness/lock-key change and draw the on-screen
 # display as a notification that REPLACES the previous one.
 #
-# Replaces swayosd, retired 2026-08-11. swayosd needed a long-lived
-# swayosd-server holding a DBus name and styled by a GTK stylesheet, and GTK
-# only re-reads that stylesheet on startup — so coat's only way to restyle it
-# was to kill the server on every theme change. That raced the supervisor
-# keeping it alive (~/.local/bin/swayosd-supervise, deleted with this), and when
-# the race went the wrong way swayosd-client had no server to talk to and failed
-# SILENTLY: every media key stopped working until the next login, which felt
-# exactly like the audio dying.
-#
-# One mechanism, not two. wob was here briefly for the level bars and is gone:
-# it is not in OpenBSD ports, so it would have made the OSD Linux-only for the
-# sake of a nicer bar, and it needed a supervisor process to survive a coat theme
-# change. The notification daemon draws everything now.
+# No OSD daemon by design. swayosd and wob were each retired for the same
+# reason: both read their styling once at startup, so a coat theme change meant
+# killing the process, which raced its supervisor and left the media keys
+# silently dead until the next login. The notification daemon draws everything
+# now and there is nothing to kill.
 #
 # Usage:
 #   osd volume up|down|mute
@@ -25,12 +17,7 @@
 #   osd touchpad                    toggle, through the compositor
 #   osd playpause|next|prev
 #
-# Nothing stacks, via --replace-id: reusing one notification id makes each popup
-# REPLACE the last. That is core to the notification spec (replaces_id), not a
-# dunst extension, so it works under fnott, mako or dunst alike. The mechanism
-# this replaced was a stack_tag in dunstrc, which was dunst-only and silently
-# stopped working the moment fnott took over -- which is what left five popups on
-# screen shoving real notifications away.
+# Nothing stacks: see OSD_ID below.
 
 SINK=@DEFAULT_AUDIO_SINK@
 SOURCE=@DEFAULT_AUDIO_SOURCE@
@@ -51,11 +38,9 @@ KBD_LED=asus::kbd_backlight
 # the touchpad section), so the state is tracked here.
 TP_FLAG=${XDG_RUNTIME_DIR:-/tmp}/touchpad-off
 
-# How long to let a lock-key LED catch up with the keypress. wlroots updates its
-# xkb state and pushes the LED from inside the key event, BEFORE the compositor
-# gets a look at it, so by the time this script runs the flip is already in
-# flight -- but it lands in the kernel a few ms later, and reading immediately
-# reports the old value. Imperceptible next to the notification's own latency.
+# Let a lock-key LED catch up with the keypress: the flip is already in flight
+# when this runs but lands in the kernel a few ms later, so reading immediately
+# reports the OLD value. Imperceptible next to the notification's own latency.
 LOCK_SETTLE=0.15
 
 usage() {
@@ -65,30 +50,20 @@ usage() {
 	exit 2
 }
 
-# A fixed, nonzero id. Passing it as --replace-id makes every popup from this
-# script REPLACE the previous one instead of stacking a new surface. This is core
-# to the notification spec (replaces_id), not a dunst extension, so it works
-# under fnott, mako or dunst alike -- which matters because the old dunst-only
-# mechanism (a stack_tag in dunstrc) is exactly what stopped working when the
-# session moved to fnott, leaving five popups shoving real notifications off the
-# screen.
+# A fixed, nonzero id passed as --replace-id, so every popup REPLACES the last
+# instead of stacking. replaces_id is core to the notification spec, so this works
+# under fnott, mako or dunst alike -- unlike the dunst-only stack_tag it replaced,
+# which silently stopped working when fnott took over and left five popups on
+# screen shoving real notifications away.
 OSD_ID=4242
 
 # show <text> [value 0-100]
 #
 # A value turns the popup into a level meter: int:value is the hint the daemon
-# draws its progress bar from (progress-bar-height / progress-bar-color in
-# fnott.ini). Omit it for the on/off states.
+# draws its progress bar from (progress-bar-* in fnott.ini). Omit it for on/off.
 #
-# One mechanism, not two. wob drew the level bars for a while and is gone: it is
-# not in OpenBSD ports, so it made the OSD Linux-only for the sake of a prettier
-# bar, and it needed a supervisor process on the side just to survive a coat theme
-# change -- wob reads its config once at startup and killing it under
-# `tail -f fifo | wob` leaves the pipeline half-dead.
-#
-# notify-send, not dunstify: dunstify ships with dunst, and depending on a dunst
-# install for a script that only needs libnotify is wrong now that dunst is not
-# the daemon -- and dunst is not in OpenBSD's wayland ports at all.
+# notify-send, not dunstify: dunstify ships with dunst, which is neither the
+# daemon here nor in OpenBSD's wayland ports.
 show() {
 	if [ -n "${2:-}" ]; then
 		notify-send -a osd -r "$OSD_ID" -h "int:value:$2" "$1"
@@ -196,9 +171,8 @@ brightness)
 
 # -------------------------------------------------------- keyboard backlight
 kbd)
-	# Four discrete steps (0..3 on this ASUS), so it steps by 1 and the popup
-	# says "2/3" rather than a rounded percentage -- the bar still gets a
-	# percentage because that is the only thing int:value can draw.
+	# Four discrete steps, so the popup says "2/3" rather than a rounded
+	# percentage. The bar still gets a percentage; int:value draws nothing else.
 	led=/sys/class/leds/$KBD_LED
 	[ -r "$led/brightness" ] || exit 0
 	read -r cur <"$led/brightness" || exit 1
@@ -214,9 +188,7 @@ kbd)
 		new=$((cur - 1))
 		[ "$new" -lt 0 ] && new=0
 		;;
-	# Report the level without touching it. Use this if the firmware turns out
-	# to handle the fn keys itself -- then having both act on one press would
-	# step twice per keystroke.
+	# Report without touching. Use this if the firmware steps the LED itself.
 	show) new=$cur ;;
 	*) usage ;;
 	esac
@@ -228,12 +200,10 @@ kbd)
 		if brightnessctl -q -c leds -d "$KBD_LED" set "$new" 2>/dev/null; then
 			:
 		else
-			# brightnessctl's own udev rule chgrps LED brightness to the `input`
-			# group, so this is a group-membership problem, not a missing rule --
-			# and it is silent otherwise: the popup would show an unchanged level
-			# and look like the key did nothing. See misc/99-kbd-backlight.rules
-			# for the narrower fix (that one LED to `video`, which is already a
-			# group here) or add yourself to `input`.
+			# A group-membership problem, not a missing rule: brightnessctl's udev
+			# rule chgrps LED brightness to `input`. Silent otherwise -- the popup
+			# would show an unchanged level and look like the key did nothing.
+			# misc/99-kbd-backlight.rules is the narrower fix.
 			new=$cur
 			note=" — read-only"
 		fi
@@ -246,23 +216,17 @@ kbd)
 
 # -------------------------------------------------------------------- touchpad
 touchpad)
-	# The compositor owns the device, so the toggle has to go through it, and
-	# NEITHER compositor will report the result: mango's `mmsg get all-devices`
-	# lists name/types/vendor/matched and no enabled flag, and Hyprland has no
-	# state query for device:enabled at all. Hence the flag file.
-	#
-	# Which is why both of mango's trackpad binds route through here instead of
-	# calling toggle_trackpad_enable natively: a native bind would flip the
-	# device behind the flag's back and every popup after that would lie.
+	# NEITHER compositor reports the result -- mango's all-devices has no enabled
+	# flag and Hyprland has no query for it -- hence the flag file. Which is why
+	# both trackpad binds route through here: a native bind would flip the device
+	# behind the flag's back and every popup after would lie.
 	if [ -f "$TP_FLAG" ]; then want=on; else want=off; fi
 
 	if [ -n "${MANGO_INSTANCE_SIGNATURE:-}" ]; then
 		# mango's own toggle -- one dispatch, no device name to resolve.
 		mmsg dispatch toggle_trackpad_enable >/dev/null 2>&1 || exit 1
 	elif [ -n "${HYPRLAND_INSTANCE_SIGNATURE:-}" ]; then
-		# Hyprland wants the device by name, and `device[...]` takes the name as
-		# libinput reports it. This is what ~/.local/bin/hypr-touchpad-toggle did
-		# before it was folded in here.
+		# Hyprland takes the device name as libinput reports it.
 		command -v jq >/dev/null || exit 0
 		tp=$(hyprctl devices -j 2>/dev/null |
 			jq -r '.mice[]? | select(.name | test("touchpad"; "i")) | .name' | head -1)
@@ -286,26 +250,13 @@ touchpad)
 	;;
 
 # ------------------------------------------------------------------ lock keys
-# Display only — the key still toggles the state itself, this just reports it.
-# The compositor drives the keyboard LED through libinput, so the kernel LED is
-# the source of truth. Three keyboards expose these LEDs here; any one lit means
-# the mode is on.
+# Display only -- the key toggles itself, this reports it. The kernel LED is the
+# source of truth; three keyboards expose these here, and any one lit means on.
 #
-# These ARE bound now, on press, and the old note saying they could not be is
-# wrong. Two things had to be true and both are:
-#
-#   The key still toggles. Binding a key means the compositor does not FORWARD it
-#   to the client, but the xkb state machine has already processed the keycode by
-#   then -- wlroots updates state and pushes the LED from inside the key event,
-#   before the compositor's handler runs. Verified against mango 0.16.1's
-#   keypress() in src/input/keyboard.h: the `if (handled) return` only skips
-#   wlr_seat_keyboard_notify_key, nothing upstream of it. Caps lock keeps
-#   capitalising; a lock key has nothing useful to say to a client anyway.
-#
-#   The LED can be read in time. It lands in the kernel a few ms after the press,
-#   so reading it immediately reports the PREVIOUS state -- which is what the old
-#   note had run into. LOCK_SETTLE covers that, and needing no release-triggered
-#   binding is what makes this work on mango.
+# Binding these on PRESS is safe: the compositor declining to forward a key only
+# skips wlr_seat_keyboard_notify_key, and xkb has already processed the keycode
+# and pushed the LED upstream of that (mango 0.16.1 keypress(), src/input/
+# keyboard.h). Caps lock keeps capitalising. LOCK_SETTLE covers the read.
 capslock | numlock)
 	sleep "$LOCK_SETTLE"
 	on=0

@@ -1,6 +1,5 @@
 -- lua/plugins/filetree.lua
--- ============================================================================
--- neo-tree = a file-explorer sidebar (like the tree on the left of VS Code).
+-- neo-tree, the file-explorer sidebar.
 --
 --   <leader>n   toggle the sidebar
 --
@@ -8,7 +7,6 @@
 --   <CR>  open file / expand folder     a  add file (end name with / for a dir)
 --   d     delete       r  rename        c  copy      x  cut      p  paste
 --   H     toggle hidden files           ?  show all the tree's keybindings
--- ============================================================================
 
 return {
   "nvim-neo-tree/neo-tree.nvim",

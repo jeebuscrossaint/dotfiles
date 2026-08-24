@@ -1,8 +1,5 @@
 -- lua/plugins/leetcode.lua
--- ============================================================================
--- leetcode.nvim = grind LeetCode without leaving Neovim. Browse problems, read
--- the description in a side panel, write your solution with full LSP + your
--- keymaps, and submit — all in the editor.
+-- leetcode.nvim — browse, solve and submit without leaving Neovim.
 --
 --   :Leet            open the LeetCode dashboard
 --   :Leet run        run your solution against the sample tests
@@ -11,10 +8,8 @@
 --   :Leet menu       command menu (browse everything)
 --   <leader>lc       shortcut for :Leet
 --
--- FIRST TIME: you need to sign in so it can talk to your account. Run
---   :Leet menu   -> Sign In   (it walks you through pasting your session cookie)
--- Free problems are browsable; running/submitting needs the sign-in.
--- ============================================================================
+-- FIRST TIME: :Leet menu -> Sign In. Browsing works without it; running and
+-- submitting do not.
 
 return {
   "kawre/leetcode.nvim",

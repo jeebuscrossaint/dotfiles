@@ -1,15 +1,6 @@
 -- lua/plugins/animations.lua
--- ============================================================================
--- Neovide-style motion for TERMINAL Neovim (kitty): a smooth cursor smear and
--- animated scrolling. These are gated with `cond = not vim.g.neovide` because
--- Neovide already renders its own (nicer, GPU-drawn) animations — running these
--- on top would fight with it.
---
--- Note: terminals can't do shadows or real blur (those need a pixel renderer
--- like Neovide's), so this covers cursor + scroll + resize motion only.
---
--- Tune or disable: edit the opts below, or delete this file to turn it all off.
--- ============================================================================
+-- Cursor smear + animated scrolling for TERMINAL Neovim. Gated on
+-- `not vim.g.neovide`: Neovide draws its own and the two would fight.
 
 return {
   -- ── Cursor smear (the Neovide-signature trailing cursor) ───────────────────

@@ -1,21 +1,13 @@
 -- lua/plugins/lsp.lua
--- ============================================================================
--- LSP = Language Server Protocol. This is what gives you: go-to-definition,
--- hover documentation, autocompletion data, rename-across-project, inline
--- error/warning diagnostics, and code actions — the "IDE" features.
+-- mason.nvim installs the servers, mason-lspconfig bridges them to
+-- nvim-lspconfig.
 --
--- Pieces:
---   mason.nvim          -> installs language servers for you (:Mason to browse)
---   mason-lspconfig     -> bridges mason installs to nvim-lspconfig
---   nvim-lspconfig      -> sensible default configs for each server
---
--- LSP keymaps (set when a server attaches to a buffer — see LspAttach below):
+-- Keymaps, set on LspAttach below:
 --   grn   rename symbol           gra   code action
 --   grr   references              grd   go to definition
 --   gri   go to implementation    grt   go to type definition
 --   K     hover documentation     <leader>e  show line diagnostic
 --   [d / ]d  previous / next diagnostic
--- ============================================================================
 
 return {
   "neovim/nvim-lspconfig",

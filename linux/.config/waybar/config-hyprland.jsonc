@@ -1,46 +1,23 @@
-// waybar — the Hyprland bar. An OVERLAY on config.jsonc, not a copy of it.
+// waybar under Hyprland. An OVERLAY on config.jsonc, not a copy: only modules-left
+// differs. The shared config's left side is custom/mangotags + custom/mangotitle,
+// which stream mango's IPC and come up empty here; the reverse -- hyprland/* in the
+// shared config -- throws "Hyprland is not running" on every mango login.
 //
-// Hyprland is not the live compositor here (mango is), but its config is kept
-// working, and the main bar cannot serve both: `modules-left` there is
-// custom/mangotags + custom/mangotitle, which stream mango's own IPC via
-// `mmsg watch`. Under Hyprland both scripts find no MANGO_INSTANCE_SIGNATURE and
-// idle with an empty label -- so the bar comes up with no tags and no title at
-// all. The reverse is just as bad: putting the hyprland/* modules in the shared
-// config would have them throw "Hyprland is not running" on every mango login.
+// The outer definition wins on any key it defines, so everything else (right side,
+// geometry, style.css) comes from the include.
 //
-// `include` is what avoids maintaining two of everything. Waybar merges the
-// included file and the OUTER definition wins on any key it defines -- verified
-// against 0.15.0 by loading this shape and dumping the widget tree. So the whole
-// right-hand side, every module's settings and the bar geometry come from
-// config.jsonc, and only the left side is restated here.
-//
-// The path is absolute rather than ~-relative: `include` is resolved by waybar's
-// own path handling, and the rest of this setup already spells the home path out
-// for exactly that reason (see mango's swayidle line).
-//
-// Started from hyprland.conf:  exec-once = waybar -c <this file>
-// style.css is picked up from ~/.config/waybar as usual, so coat still owns the
-// colours -- including #workspaces button.active, which is base0D and was
-// already in coat's template, inert, waiting for a compositor that emits it.
+// Started from hyprland.conf: exec-once = waybar -c <this file>
 {
   "include": ["/home/amarnath/.config/waybar/config.jsonc"],
 
   "modules-left": ["hyprland/workspaces", "hyprland/window"],
 
-  // Native modules, not scripts: this is the whole reason the mango side needs
-  // custom ones. Hyprland speaks its own IPC and waybar has first-class support
-  // for it, so there is nothing to stream by hand.
-  //
-  // No persistent-workspaces and no format-icons: Hyprland destroys a workspace
-  // when its last window closes, so the row already shows only occupied-or-active
-  // ones -- which is exactly what mango-tags does by skipping empty tags. Bare
-  // numbers, matching the tag row and the swaybar block before it.
+  // No persistent-workspaces: Hyprland destroys a workspace with its last window,
+  // so the row already shows only occupied-or-active ones, like mango's tag row.
   "hyprland/workspaces": {
     "format": "{id}",
     "sort-by": "id",
-    // Per-output, unlike mango-tags -- that script prints the first monitor's
-    // tags on every bar because it has no way to know which output it is on.
-    // The native module does, so each bar shows its own screen's workspaces.
+    // Per-output, unlike mango-tags, which has no way to know which bar it is on.
     "all-outputs": false,
     "active-only": false,
     "show-special": true,
@@ -49,19 +26,14 @@
     "on-scroll-down": "e-1"
   },
 
-  // The focused window only, like mango-title. NOT wlr/taskbar: that renders a
-  // button per toplevel and its max-length applies per button, so six open
-  // windows ran the full width of the panel and shoved the clock off the edge.
-  //
-  // max-length 60 is mango-title's MAX. `rewrite` does what that script's
-  // suffix-stripping does -- " — Mozilla Firefox" on every title is the least
-  // useful part of it and eats a third of the budget -- but as regex rather than
-  // an appid comparison, so each offender needs its own line.
+  // NOT wlr/taskbar: that renders a button per toplevel and max-length applies per
+  // button, so six windows shoved the clock off the edge.
   "hyprland/window": {
     "format": "{title}",
     "max-length": 60,
     "separate-outputs": true,
     "icon": false,
+    // Regex, so each offender needs its own line.
     "rewrite": {
       "(.*) — Mozilla Firefox": "$1",
       "(.*) - Visual Studio Code": "$1",

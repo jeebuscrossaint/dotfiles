@@ -1,8 +1,5 @@
 -- lua/config/options.lua
--- ============================================================================
--- Editor behaviour. `vim.opt.X = Y` is how you set a setting.
--- Every line has a comment so you know what it does and can change it.
--- ============================================================================
+-- Editor behaviour. Inline comments are kept here on purpose as a reference.
 
 local opt = vim.opt
 

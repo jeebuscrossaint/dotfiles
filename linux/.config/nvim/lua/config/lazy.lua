@@ -1,17 +1,8 @@
 -- lua/config/lazy.lua
--- ============================================================================
--- Bootstraps lazy.nvim (the plugin manager) and then loads every plugin.
+-- Bootstraps lazy.nvim and imports lua/plugins/, so adding a plugin is just a
+-- new file in there.
 --
--- lazy.nvim: https://github.com/folke/lazy.nvim
---   - It auto-installs itself the first time (the block below).
---   - `{ import = "plugins" }` tells it to load EVERY file in lua/plugins/,
---     so to add a plugin you just drop a new file in there — no editing here.
---
--- Useful commands once you're in Neovim:
---   :Lazy         open the plugin manager UI (install/update/profile/etc.)
---   :Lazy sync    install missing + update + clean removed plugins
---   :Lazy update  update plugins
--- ============================================================================
+--   :Lazy   manager UI      :Lazy sync   install + update + clean
 
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 

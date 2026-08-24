@@ -1,26 +1,18 @@
 #!/bin/sh
 # menu — a dmenu-style picker reading choices on stdin, for scripts.
 #
-# This is `fuzzel --dmenu`. The NAME is the point: theme-pick, the clipboard binds and
-# all three compositor configs call `menu`, so the launcher underneath can be swapped
-# with no edits anywhere else. It was wmenu until 2026-08-18.
+# `fuzzel --dmenu`. The NAME is the point: every caller says `menu`, so the
+# launcher underneath swaps with no edits anywhere else (it was wmenu until
+# 2026-08-18). No colour flags to pass -- fuzzel reads its own config.
 #
-# No colour flags to pass any more, which is half the reason for the move. wmenu had no
-# config file, so its colours were command-line flags that coat wrote to
-# ~/.config/wmenu/coat-flags, and any caller that forgot to source them came up
-# unthemed -- which is exactly what had happened to theme-pick. fuzzel reads
-# ~/.config/fuzzel/fuzzel.ini itself.
-#
-# wmenu's flags are translated rather than passed through, because fuzzel spells them
-# differently:
+# wmenu's flags are TRANSLATED, since fuzzel spells them differently:
 #     -p PROMPT  ->  --prompt="PROMPT ❯ "
 #     -l LINES   ->  --lines=LINES
-#     -i         ->  dropped; fuzzel always matches case-insensitively, and passing an
-#                    unknown flag would make it exit instead
+#     -i         ->  dropped; fuzzel is always case-insensitive, and an unknown
+#                    flag would make it exit
 #
-# Arguments are rebuilt with `set --` rather than accumulated in a string. A string
-# breaks on the prompt: "$args" unquoted word-splits `--prompt=theme ❯` into two
-# arguments, so the ❯ silently became a stray positional and the prompt lost its arrow.
+# Arguments are rebuilt with `set --`, not accumulated in a string: unquoted
+# word-splitting broke `--prompt=theme ❯` in two and lost the arrow.
 
 prompt=""
 lines=""

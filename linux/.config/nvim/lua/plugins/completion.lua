@@ -1,16 +1,10 @@
 -- lua/plugins/completion.lua
--- ============================================================================
--- Autocompletion popup, powered by blink.cmp — the modern, fast completion
--- engine (written partly in Rust). It pulls suggestions from the LSP, the
--- current buffer, snippets, and file paths.
---
--- Default keys inside the completion popup:
+-- blink.cmp. Keys inside the popup:
 --   <C-space>  open / toggle the menu
 --   <Tab> / <S-Tab>  move to next / previous item (and jump snippet fields)
 --   <CR> (Enter)     accept the selected item
 --   <C-e>            close the menu
 --   <C-b> / <C-f>    scroll the documentation window
--- ============================================================================
 
 return {
   "saghen/blink.cmp",

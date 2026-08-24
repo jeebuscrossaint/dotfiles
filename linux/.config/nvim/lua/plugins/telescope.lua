@@ -1,7 +1,5 @@
 -- lua/plugins/telescope.lua
--- ============================================================================
--- Telescope = the fuzzy finder. This is the tool you'll use most: find files,
--- search text across the whole project, jump to symbols, browse git, etc.
+-- Telescope, the fuzzy finder.
 --
 -- Key shortcuts (all under <leader> = Space):
 --   <leader>ff  find files by name
@@ -14,7 +12,6 @@
 --
 -- Inside the picker: type to filter, <C-j>/<C-k> or arrows to move,
 -- <Enter> to open, <C-v> to open in a vertical split, <Esc> to close.
--- ============================================================================
 
 return {
   "nvim-telescope/telescope.nvim",

@@ -1,10 +1,5 @@
 -- lua/plugins/debug.lua
--- ============================================================================
--- Debugging with nvim-dap (Debug Adapter Protocol) + a graphical UI.
--- Set breakpoints, run your program, step line-by-line, and inspect variables
--- — the same idea as VS Code's debugger, inside Neovim.
---
--- Adapters used (installed via Mason):
+-- nvim-dap + UI. Adapters, installed via Mason:
 --   codelldb  -> C / C++ / CUDA (host code)
 --   debugpy   -> Python
 --
@@ -15,13 +10,8 @@
 --   <leader>du    toggle the debugger UI  <leader>dr   open REPL
 --   <leader>de    evaluate expression under cursor / selection
 --
--- The UI (variables, call stack, breakpoints, watches, console) opens
--- automatically when a session starts and closes when it ends.
---
--- NOTE ON CUDA: codelldb debugs the *host* (CPU) side of a CUDA program. To
--- step inside GPU kernels you need `cuda-gdb` — a heavier, separate setup we
--- can add later if you get into kernel-level debugging.
--- ============================================================================
+-- CUDA: codelldb debugs the HOST side only. Stepping inside GPU kernels needs
+-- cuda-gdb, which is a separate setup.
 
 return {
   "mfussenegger/nvim-dap",
