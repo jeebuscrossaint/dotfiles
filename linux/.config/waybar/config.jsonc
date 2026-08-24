@@ -34,12 +34,28 @@
   // waybar's box spacing and a left/right module margin would stack and the gaps
   // would come out double-width.
   //
-  // margin pulls the whole row off the screen edges so the end islands float too;
-  // "0" left them welded to the top and sides. Waybar's margin string is CSS order
-  // (top right bottom left).
-  "height": 34,
+  // height 38 with a 26px island gives 6px of wallpaper above and below each slab.
+  //
+  // The top margin is 0 on purpose. A margin there does NOT replace the island's
+  // own vertical margin, it stacks with it: 6px of bar margin plus 4px of island
+  // margin put 10px above the islands and 4px below, which is the lopsided gap
+  // that made the row look like it was sagging off the top edge. The bar sits
+  // flush and the island margin alone -- symmetric by construction -- does the
+  // floating.
+  //
+  // Horizontal margin is 0 too, and the screen-edge inset is a CSS margin on the
+  // module boxes instead. waybar applies a bar margin by OFFSETTING the layer
+  // surface without shrinking it: `hyprctl layers` showed the bar at x=10 with
+  // width 2540 on a 2540px screen, so it hung ten pixels off the right edge while
+  // leaving ten bare on the left. That asymmetry is also where the blur appeared
+  // to stop short of the corners.
+  //
+  // spacing 8 is the gap BETWEEN islands. It lives here and not as a CSS margin --
+  // waybar's box spacing and a left/right module margin would stack the same way
+  // the vertical ones did.
+  "height": 38,
   "spacing": 8,
-  "margin": "6 10 0 10",
+  "margin": "0",
 
   // mango is the only compositor, so these two are the whole left side.
   "modules-left": ["custom/mangotags", "custom/mangotitle"],
@@ -54,7 +70,6 @@
   // The grouping is by what you look at together: what is playing, the link, the
   // machine's load, the machine's knobs, and the time.
   "modules-right": [
-    "group/media",
     "group/link",
     "group/load",
     "group/knobs",
@@ -65,8 +80,13 @@
   // click-to-expand. The id after the slash is the CSS id of the box, but nothing
   // in style.css depends on it: the island rule matches the group by position, so
   // adding a group needs no stylesheet change.
-  "group/media": { "orientation": "horizontal", "modules": ["mpris"] },
-  "group/link":  { "orientation": "horizontal", "modules": ["network"] },
+  // mpris rides WITH network rather than in a group of its own. On its own it was
+  // an empty island: waybar hides a module whose label renders empty, but it does
+  // not hide the group around it, so with nothing playing the bar showed a bare
+  // slab -- a blob -- sitting to the left of the wifi. Pairing it with a module
+  // that always has output means the group is never empty, and the island simply
+  // grows a track name when something starts playing.
+  "group/link": { "orientation": "horizontal", "modules": ["mpris", "network"] },
   "group/load":  {
     "orientation": "horizontal",
     "modules": ["disk", "cpu", "memory", "temperature", "temperature#nvme", "custom/fan"]

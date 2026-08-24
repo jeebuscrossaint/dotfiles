@@ -50,7 +50,11 @@
  * The vertical margin is what makes an island an island: without it a module
  * stretches to the full bar height and neighbours touch top and bottom, which
  * reads as one continuous strip no matter how round the corners are. The bar is
- * 34px, the islands 26px, leaving 4px of wallpaper above and below each.
+ * 38px, the islands 26px, leaving 6px of wallpaper above and below each.
+ *
+ * This margin is the ONLY vertical spacing. config.jsonc keeps margin-top at 0
+ * because waybar's bar margin stacks on top of this one instead of replacing it,
+ * and the two together put a visibly bigger gap above the islands than below.
  *
  * Horizontal separation is `spacing` in config.jsonc (waybar's box spacing), NOT
  * a margin here -- a left/right margin on the module would double up with it. */
@@ -58,7 +62,7 @@
 .modules-left > widget > *,
 .modules-center > widget > *,
 .modules-right > widget > * {
-  margin: 4px 0;
+  margin: 6px 0;
   padding: 0 4px;
   border-radius: 8px;
 }
@@ -99,6 +103,18 @@
 #custom-weather,
 #clock {
   padding: 0 6px;
+}
+
+/* The screen-edge inset. This is on the module BOX, not on the bar: a bar margin
+ * offsets the layer surface without shrinking it, so it pushes the right end off
+ * the screen instead of insetting it. Here the surface stays full-width and the
+ * end islands simply start 10px in. */
+.modules-left {
+  margin-left: 10px;
+}
+
+.modules-right {
+  margin-right: 10px;
 }
 
 /* Tags & title -------------------------------------------------------------
