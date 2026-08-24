@@ -44,22 +44,41 @@
   // mango is the only compositor, so these two are the whole left side.
   "modules-left": ["custom/mangotags", "custom/mangotitle"],
   "modules-center": [],
+
+  // Five islands, not fourteen pills. The bar's top level is a list of GROUPS, and
+  // a group is one widget -- so it gets one slab, and the modules inside it share
+  // that slab with no gap between them. A flat list of modules here is what made
+  // the first attempt wrong: every field became its own rectangle, they were all
+  // the same width apart, and the row read as one continuous strip again.
+  //
+  // The grouping is by what you look at together: what is playing, the link, the
+  // machine's load, the machine's knobs, and the time.
   "modules-right": [
-    "mpris",
-    "network",
-    "disk",
-    "cpu",
-    "memory",
-    "temperature",
-    "temperature#nvme",
-    "custom/fan",
-    "backlight",
-    "wireplumber",
-    "battery",
-    "custom/uptime",
-    "custom/weather",
-    "clock"
+    "group/media",
+    "group/link",
+    "group/load",
+    "group/knobs",
+    "group/time"
   ],
+
+  // A group with no "drawer" key is a plain box -- every child visible, no
+  // click-to-expand. The id after the slash is the CSS id of the box, but nothing
+  // in style.css depends on it: the island rule matches the group by position, so
+  // adding a group needs no stylesheet change.
+  "group/media": { "orientation": "horizontal", "modules": ["mpris"] },
+  "group/link":  { "orientation": "horizontal", "modules": ["network"] },
+  "group/load":  {
+    "orientation": "horizontal",
+    "modules": ["disk", "cpu", "memory", "temperature", "temperature#nvme", "custom/fan"]
+  },
+  "group/knobs": {
+    "orientation": "horizontal",
+    "modules": ["backlight", "wireplumber", "battery"]
+  },
+  "group/time": {
+    "orientation": "horizontal",
+    "modules": ["custom/uptime", "custom/weather", "clock"]
+  },
 
   // ── mango ────────────────────────────────────────────────────────────────
   // waybar has no mango module, and mango does not implement dwl's IPC protocol
