@@ -1,10 +1,12 @@
 # ~/.config/coat/coat.yaml
 
 enabled:
-  # Retired, so they do not get re-added by reflex: sway/swaybar, dwl, tofi,
-  # wmenu, gtklock, dunst, labwc, wayfire, wlock, tsubu, wob. The compositor is
-  # mango only; the locker is swaylock; notifications are fnott; the launcher is
-  # fuzzel. Their coat modules still exist upstream, just not enabled here.
+  # Deleted from coat entirely on 2026-08-24, so they cannot be re-added here:
+  # dwl, labwc, wayfire, wmenu, mew, gtklock, wlock, swayosd, tsubu.
+  #
+  # Still in coat, just not enabled: sway, swaybar, tofi, dunst, foot. The
+  # compositor is mango only; the locker is swaylock; notifications are fnott;
+  # the launcher is fuzzel.
   #
   # No OSD module at all, and that is the point: avizo, swayosd and wob were each
   # retired for the same reason -- theming a GTK app that only reads its stylesheet
