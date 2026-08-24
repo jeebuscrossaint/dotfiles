@@ -16,9 +16,10 @@
  * own rounded slab, so the row is a line of floating rectangles over the wallpaper.
  * See the island block below for the three rules that have to agree for that.
  *
- * ID selectors beat the `.modules-* > widget > *` island rule, so do NOT add
- * per-module padding/margin/radius by #id further down -- it wins silently and
- * that one module comes out a different shape from the rest. */
+ * ID selectors beat the island rule, so the per-module #id block below sets ONLY
+ * padding and a transparent background -- margin, radius and the slab colour stay
+ * with the island rule. Setting any of those three by #id gives that one module a
+ * different shape from the rest of its group. */
 
 * {
   font-family: "MartianMono Nerd Font Mono";
@@ -58,8 +59,46 @@
 .modules-center > widget > *,
 .modules-right > widget > * {
   margin: 4px 0;
-  padding: 0 10px;
+  padding: 0 4px;
   border-radius: 8px;
+}
+
+/* The two selector families above are the same rule for two different widgets. A
+ * plain module is wrapped in a GtkEventBox, whose GTK css name is `widget`; a
+ * group is a GtkBox, whose css name is `box` and which is NOT wrapped. So
+ * `> widget > *` reaches modules and `> box` reaches groups, and a group needs
+ * both halves or it comes out unpainted next to painted neighbours.
+ *
+ * Padding inside the island. It is on the modules rather than only on the island
+ * so that fields inside a GROUP are separated from each other too -- a group box
+ * has no spacing of its own, so without this the load island reads as one run-on
+ * string. The island itself adds 4px at each end on top of this.
+ *
+ * Padding ONLY -- no `background: transparent` here. These ids include the two
+ * standalone left-hand modules, which ARE islands themselves, and an id beats the
+ * island rule: a transparent background in this block stripped the slab off the
+ * tags and the title while every group on the right kept theirs. Modules nested
+ * inside a group are not matched by the island rule in the first place, so they
+ * have nothing to clear. */
+#custom-mangotags,
+#custom-mangotitle,
+#window,
+#workspaces,
+#mpris,
+#network,
+#disk,
+#cpu,
+#memory,
+#temperature,
+#temperature.nvme,
+#custom-fan,
+#backlight,
+#wireplumber,
+#battery,
+#custom-uptime,
+#custom-weather,
+#clock {
+  padding: 0 6px;
 }
 
 /* Tags & title -------------------------------------------------------------
