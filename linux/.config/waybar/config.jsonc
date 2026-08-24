@@ -22,12 +22,24 @@
 {
   "layer": "top",
   "position": "top",
-  // Flush to the top edge, full width, one solid background. No margins: the inset
-  // version left visible stubs at the bar's ends. Section backgrounds are gone too --
-  // the bar has exactly one background, in coat's template.
-  "height": 26,
-  "spacing": 4,
-  "margin": "0",
+  // Islands: the bar window itself paints nothing (style.css / coat-colors.css), and
+  // each module carries its own rounded slab, so this geometry is about the gaps
+  // between them rather than about a panel.
+  //
+  // height 34, not 26: the islands are 26 and sit inside a 4px vertical margin, so
+  // the bar has to be 8px taller than the slabs or the margin has nowhere to go and
+  // GTK clips it back to a full-height strip.
+  //
+  // spacing 8 is the gap BETWEEN islands. It lives here and not as a CSS margin --
+  // waybar's box spacing and a left/right module margin would stack and the gaps
+  // would come out double-width.
+  //
+  // margin pulls the whole row off the screen edges so the end islands float too;
+  // "0" left them welded to the top and sides. Waybar's margin string is CSS order
+  // (top right bottom left).
+  "height": 34,
+  "spacing": 8,
+  "margin": "6 10 0 10",
 
   // mango is the only compositor, so these two are the whole left side.
   "modules-left": ["custom/mangotags", "custom/mangotitle"],

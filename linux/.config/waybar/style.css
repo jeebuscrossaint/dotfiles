@@ -12,10 +12,13 @@
  * So: padding, sizing and font weight here; colour in the template. If a colour
  * needs changing, change coat's templates/waybar.tera.
  *
- * Deliberately flat — no pills, no rounded corners, no gradients. Tags render as
- * bare accent-coloured numbers, which is what the swaybar block did
- * (`focused_workspace #181818 #181818 #20BCFC`) and what dwl's bar did. The bar
- * should look like the same bar it has always been. */
+ * Islands, not a brick: the bar window is transparent and every module carries its
+ * own rounded slab, so the row is a line of floating rectangles over the wallpaper.
+ * See the island block below for the three rules that have to agree for that.
+ *
+ * ID selectors beat the `.modules-* > widget > *` island rule, so do NOT add
+ * per-module padding/margin/radius by #id further down -- it wins silently and
+ * that one module comes out a different shape from the rest. */
 
 * {
   font-family: "MartianMono Nerd Font Mono";
@@ -29,61 +32,49 @@
   text-shadow: none;
 }
 
-/* Tags & title ------------------------------------------------------------ */
+/* Islands ------------------------------------------------------------------
+ *
+ * Every module is its own rounded slab, separated by real gaps, so the row reads
+ * as floating rectangles rather than one panel. Three things have to line up for
+ * that, and missing any one of them puts the brick back:
+ *
+ *   1. the bar window paints nothing        -> coat-colors.css, background: transparent
+ *   2. each module paints its own slab      -> coat-colors.css, `> widget > *`
+ *   3. the slabs are inset and rounded      -> here
+ *
+ * `> widget > *` and not `> widget`: waybar wraps every module in a GtkEventBox,
+ * and a border-radius on the wrapper is not clipped to the child, so the corners
+ * come out square with a rounded ghost behind them.
+ *
+ * The vertical margin is what makes an island an island: without it a module
+ * stretches to the full bar height and neighbours touch top and bottom, which
+ * reads as one continuous strip no matter how round the corners are. The bar is
+ * 34px, the islands 26px, leaving 4px of wallpaper above and below each.
+ *
+ * Horizontal separation is `spacing` in config.jsonc (waybar's box spacing), NOT
+ * a margin here -- a left/right margin on the module would double up with it. */
 
-#custom-mangotags {
-  padding: 0 6px;
-}
-
-/* Per-tag colour is inline pango markup from ~/.local/bin/mango-tags, not CSS:
- * waybar cannot style individual characters inside a custom module, only the
- * module as a whole. Same for the title. */
-
-#custom-mangotitle {
-  padding: 0 6px;
-}
-
-/* Status modules ---------------------------------------------------------- */
-
-#mpris,
-#network,
-#disk,
-#cpu,
-#memory,
-#temperature,
-#temperature.nvme,
-#custom-fan,
-#backlight,
-#wireplumber,
-#battery,
-#custom-uptime,
-#custom-weather,
-#clock {
-  padding: 0 7px;
-}
-
-#clock {
-  /* Last module: extra right padding or the clock sits flush to the panel edge. */
-  padding-right: 8px;
-}
-
-/* Top bar: no slabs -------------------------------------------------------- */
-
-/* No background anywhere -- not on the bar, not on the module groups. Padding only, so
- * the bar is text floating over the wallpaper. The group backgrounds that used to be
- * here rendered as visible blocks at the bar's left and right ends. */
-.modules-left,
-.modules-right {
-  padding: 0 6px;
-}
-
+.modules-left > widget > *,
+.modules-center > widget > *,
 .modules-right > widget > * {
-  padding: 0 7px;
+  margin: 4px 0;
+  padding: 0 10px;
+  border-radius: 8px;
 }
 
-.modules-left > widget > * {
-  padding: 0 4px;
-}
+/* Tags & title -------------------------------------------------------------
+ *
+ * Per-tag colour is inline pango markup from ~/.local/bin/mango-tags, not CSS:
+ * waybar cannot style individual characters inside a custom module, only the
+ * module as a whole. Same for the title. The tag row is ONE island -- it is one
+ * custom module -- and the title is the island next to it.
+ *
+ * The title island needs no rule to disappear when empty: waybar hides a module
+ * whose label renders to an empty string, widget and slab together, so an
+ * unfocused workspace leaves a gap rather than a blank 20px rectangle. A `:empty`
+ * rule was the first attempt and is worse than useless -- GTK's CSS parser has no
+ * such pseudo-class, rejects it with "Invalid name of pseudo-class", and drops the
+ * REST of the stylesheet with it, which took the islands out entirely. */
 
 /* Hyprland's tag row and title ---------------------------------------------- */
 
@@ -100,6 +91,6 @@
   min-width: 0;
 }
 
-#window {
-  padding: 0 6px;
-}
+/* No padding rule for #window: an ID selector outranks the `> widget > *` island
+ * rule above, so one here would silently win and give the title island different
+ * padding from every other module. The island rule already covers it. */
