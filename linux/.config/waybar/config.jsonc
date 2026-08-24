@@ -248,11 +248,27 @@
   //
   // --location is explicit because wttr.in geolocates by IP, and over the tailnet
   // that lands somewhere else entirely. Change the city here.
-  // 900s: wttr.in rate-limits, and the weather does not move faster than that.
+  //
+  // 900s, matching what this comment always claimed. It said 900 while the setting
+  // said 60 -- a request a minute at a service that rate-limits, which earns
+  // exactly the broken responses the exec-if below now has to catch.
+  //
+  // exec-if is the fix for how wttrbar fails. When wttr.in cannot be reached OR
+  // answers with an error -- it currently 500s with "weather data source not
+  // available", which is upstream being down, nothing local -- wttrbar prints
+  // {"text":"⛓️‍💥"}, and MartianMono has no glyph for that, so the bar showed a
+  // dead tofu box. A custom module whose exec-if exits non-zero is hidden
+  // entirely, so a bad upstream now costs the island rather than filling it with
+  // a broken chain.
+  //
+  // curl -f is what turns the 500 into a non-zero exit; without it curl happily
+  // succeeds at fetching an error page. This is waybar's own mechanism plus curl,
+  // not a wrapper script -- the weather module stays a packaged binary.
   "custom/weather": {
     "exec": "wttrbar --location Orlando --fahrenheit --mph --ampm --nerd --hide-conditions --custom-indicator '{ICON} {temp_F}°'",
+    "exec-if": "curl -sf --max-time 10 -o /dev/null 'https://wttr.in/Orlando?format=j1'",
     "return-type": "json",
-    "interval": 60,
+    "interval": 900,
     "tooltip": true
   },
 
