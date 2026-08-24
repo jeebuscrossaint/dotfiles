@@ -1,14 +1,6 @@
 -- lua/plugins/formatting.lua
--- ============================================================================
--- conform.nvim = auto-format your code with the right tool per language
--- (stylua for Lua, black for Python, rustfmt for Rust, prettier for web...).
---
--- Format-on-save is ON. Turn it off for a language by removing it from
--- formatters_by_ft, or comment out the format_on_save block entirely.
---
--- Manual format:  <leader>f
--- NOTE: install the formatter binaries via :Mason or your package manager.
--- ============================================================================
+-- conform.nvim — per-language formatting. Format-on-save is ON; <leader>f to do
+-- it by hand. The formatter binaries themselves come from :Mason.
 
 return {
   "stevearc/conform.nvim",

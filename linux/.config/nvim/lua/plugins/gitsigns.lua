@@ -1,14 +1,11 @@
 -- lua/plugins/gitsigns.lua
--- ============================================================================
--- gitsigns.nvim = git info right in the editor: which lines are added/changed/
--- removed (shown in the left gutter), plus staging and blame from inside nvim.
+-- gitsigns.nvim — hunk signs in the gutter, staging and blame.
 --
 -- Keymaps:
 --   ]c / [c            next / previous changed hunk
 --   <leader>hs         stage hunk        <leader>hr  reset (undo) hunk
 --   <leader>hp         preview hunk      <leader>hb  blame this line
 --   <leader>hd         diff this file
--- ============================================================================
 
 return {
   "lewis6991/gitsigns.nvim",

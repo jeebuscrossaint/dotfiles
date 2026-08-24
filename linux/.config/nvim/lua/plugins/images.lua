@@ -1,17 +1,7 @@
 -- lua/plugins/images.lua
--- ============================================================================
--- image.nvim = render real images inside Neovim (used by leetcode.nvim to show
--- problem diagrams inline). It draws via the KITTY GRAPHICS PROTOCOL, so it only
--- works when Neovim is running inside kitty — NOT in Neovide or foot.
---
--- Because of that, this plugin is gated with `cond`: it only loads when the
--- KITTY_WINDOW_ID environment variable is present (i.e. you launched nvim from
--- kitty). Everywhere else it stays dormant and images fall back to plain links.
---
--- Requirements (install once):  kitty + imagemagick
---   sudo pacman -S kitty imagemagick
--- No luarocks needed — we use ImageMagick's CLI via the `magick_cli` processor.
--- ============================================================================
+-- Inline images for leetcode.nvim, drawn with the kitty graphics protocol --
+-- hence the KITTY_WINDOW_ID gate; elsewhere it stays dormant and images fall
+-- back to links. Needs kitty + imagemagick (the CLI, not the luarock).
 
 return {
   "3rd/image.nvim",

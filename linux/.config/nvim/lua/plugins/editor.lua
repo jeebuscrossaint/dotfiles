@@ -1,7 +1,5 @@
 -- lua/plugins/editor.lua
--- ============================================================================
 -- Small quality-of-life editing plugins that don't need much explanation.
--- ============================================================================
 
 return {
   -- Auto-close brackets/quotes: type ( and get (), etc.

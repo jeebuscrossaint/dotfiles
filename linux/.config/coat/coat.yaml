@@ -1,46 +1,16 @@
 # ~/.config/coat/coat.yaml
 
-# The 'enabled' key triggers STATE_ENABLED and expects a sequence (list)
 enabled:
-  # Retired modules and why, so they do not get re-added by reflex:
+  # Retired, so they do not get re-added by reflex: sway/swaybar, dwl, tofi,
+  # wmenu, gtklock, dunst, labwc, wayfire, wlock, tsubu, wob. The compositor is
+  # mango only; the locker is swaylock; notifications are fnott; the launcher is
+  # fuzzel. Their coat modules still exist upstream, just not enabled here.
   #
-  #   sway, swaybar  the compositor is mango; swaybar was sway's bar and its
-  #                  module ran `swaymsg reload`, which has nothing to talk to.
-  #   dwl            replaced by mango. dwl was compile-time configured, so its
-  #                  module had to rebuild the tree on every scheme change and
-  #                  still could not recolour a running session.
-  #   tofi           replaced by wmenu, then by fuzzel (tofi is not in OpenBSD ports).
-  #   wmenu          replaced by fuzzel on 2026-08-18. wmenu has no .desktop support,
-  #                  so menu-run had to fake a launcher by listing every executable on
-  #                  PATH, and it has no config file either -- colours were CLI flags,
-  #                  which meant any caller that forgot to route through
-  #                  ~/.local/bin/menu came up unthemed. fuzzel is 1.14.1 in both Arch
-  #                  and OpenBSD ports, is Wayland-native, and reads a real config.
-  #   gtklock        replaced by swaylock.
-  #   dunst          replaced by fnott.
-  #   labwc, wayfire both tried as a second, stacking compositor and both removed on
-  #                  2026-08-18. The setup is mango ONLY now. labwc had macOS titlebars
-  #                  (traffic lights, centred title, rounded corners, shadows) but no
-  #                  blur, no animations and no exposé, and none are addable. wayfire
-  #                  had blur, animations and exposé but needed a third-party plugin
-  #                  built from git for corners and shadows, and hardcoded its titlebar
-  #                  buttons to the right. mango does blur, shadows, rounded corners,
-  #                  animations AND an overview on its own, is in OpenBSD ports, and was
-  #                  already themed here -- so both were solving a problem that did not
-  #                  exist. Their coat modules still exist in coat itself; they are
-  #                  simply not enabled.
-  #
-  #   wlock, tsubu   never actually run; both trees are deleted.
-  #
-  #   wob            the OSD was wob briefly; it is not in OpenBSD ports, and it
-  #                  needed a supervisor process just to survive a theme change.
-  #
-  # No OSD module at all now, and that is the point: avizo was retired
-  # 2026-07-28 for swayosd, swayosd itself on 2026-08-11 (theming a GTK app that
-  # only reads its stylesheet at startup meant the hook had to KILL the server,
-  # which raced the supervisor and left the media keys silently dead), and wob
-  # went the same way for the same reason. The OSD is a notification now, so the
-  # `fnott` module themes it for free and there is nothing to kill.
+  # No OSD module at all, and that is the point: avizo, swayosd and wob were each
+  # retired for the same reason -- theming a GTK app that only reads its stylesheet
+  # at startup meant the hook had to KILL the server, which raced the supervisor and
+  # left the media keys silently dead. The OSD is a notification now, so `fnott`
+  # themes it for free and there is nothing to kill.
   - fish
   - kitty
   - neovim
@@ -59,32 +29,26 @@ enabled:
   - swaylock
   - fuzzel
   - kitty
-  # Hyprland is not the running compositor -- mango is -- but the module writes
-  # ~/.config/hypr/coat-theme.conf, which hyprland.conf sources, so the parked
-  # session is already themed whenever it is started. `hyprctl reload` inside the
-  # module is silenced and no-ops when nothing is listening.
+  # Not the running compositor, but the module writes coat-theme.conf so a parked
+  # Hyprland session is already themed. Its `hyprctl reload` no-ops when nothing
+  # is listening.
   - hyprland
 
-# The 'scheme' key is a top-level scalar
 scheme: lichen-chartreuse-dark
 prefer_base24: false
 
-# Evens out whatever scheme is loaded: uniform brightness, legible text,
-# accents that stay distinct. Defaults are tuned; `coat docs normalize` lists
-# the knobs if one ever needs touching.
+# Evens out whatever scheme is loaded. `coat docs normalize` lists the knobs.
 normalize:
   enabled: false
 
 opacity:
-  # 0.95, not 1.0. mango's blur only shows through a translucent surface, so an opaque
-  # terminal frosts nothing and the whole effects block appears to do less than it does.
-  # Subtle enough not to hurt legibility, and it is the macOS Terminal look.
+  # Blur only shows through a translucent surface, so at 1.0 an opaque terminal
+  # frosts nothing and the effects block appears to do less than it does.
   terminal: 1.0
   applications: 1.0
   desktop: 1.0
   popups: 1.0
 
-# The 'font' key triggers in_font_section and expects a mapping (dictionary)
 font:
   emoji: "Noto Color Emoji"
   monospace: "MartianMono Nerd Font Mono"

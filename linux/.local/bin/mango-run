@@ -1,18 +1,12 @@
 #!/bin/sh
 # mango-run — start a mango session from a TTY.
 #
-# Thin on purpose. mango's config.conf owns the environment (env=) and the
-# autostart (exec-once=), so unlike dwl-run there is no pipe to build, no
-# wl-restart to wrap, and no rebuild step. What is left is the couple of things
-# that have to happen before the compositor exists.
-#
-# Works on Artix and OpenBSD; anything Linux-only is gated on `uname`.
+# Thin on purpose: config.conf owns the environment and the autostart, so all
+# that is left is what has to happen BEFORE the compositor exists.
 
-# Raise the fd limit BEFORE the compositor starts. sway does this for itself
-# (increase_nofile_limit() in its main); dwl never did and mango does not
-# either, so it inherits the 1024 soft limit. Past that a wlroots compositor
-# stays responsive but can no longer ACCEPT new client connections -- the
-# session looks healthy while nothing new will launch.
+# Raise the fd limit. sway does this for itself; mango does not, so it inherits
+# the 1024 soft limit -- past which it stays responsive but can no longer ACCEPT
+# clients: the session looks healthy while nothing new will launch.
 hard=$(ulimit -Hn 2>/dev/null) || hard=""
 case "$hard" in
 unlimited) hard=65536 ;;
@@ -20,8 +14,7 @@ unlimited) hard=65536 ;;
 esac
 [ -n "$hard" ] && ulimit -n "$hard" 2>/dev/null
 
-# Keep stderr. From a TTY it scrolls away, which is why an overnight dwl failure
-# left nothing to diagnose and cost most of a day guessing.
+# Keep stderr; from a TTY it scrolls away and a crash leaves nothing to read.
 LOG_DIR="${XDG_STATE_HOME:-$HOME/.local/state}/mango"
 LOG="$LOG_DIR/mango.log"
 if mkdir -p "$LOG_DIR" 2>/dev/null; then
@@ -30,8 +23,8 @@ if mkdir -p "$LOG_DIR" 2>/dev/null; then
 	printf '=== session started %s on %s ===\n' "$(date '+%F %T')" "$(uname -s)" >&2
 fi
 
-# Validate first. mango -p parses the config and exits, so a typo costs a clear
-# error here instead of a black screen and a walk back to the TTY.
+# `mango -p` parses and exits, so a typo costs a clear error instead of a black
+# screen and a walk back to the TTY.
 if ! mango -c "$HOME/.config/mango/config.conf" -p >/dev/null 2>&1; then
 	echo "mango-run: config rejected, not starting. Full output:" >&2
 	mango -c "$HOME/.config/mango/config.conf" -p >&2 2>&1
@@ -39,22 +32,11 @@ if ! mango -c "$HOME/.config/mango/config.conf" -p >/dev/null 2>&1; then
 	exit 1
 fi
 
-# Start the session under ONE D-Bus session bus.
-#
-# Without this there is no session bus at all: Artix has no systemd to create
-# $XDG_RUNTIME_DIR/bus, and nothing here was starting one. Every client that
-# needed D-Bus therefore fell back to autolaunch and started its OWN bus --
-# three lockfiles in ~/.dbus/session-bus and a pile of /tmp/dbus-* sockets, with
-# fnott sitting on one bus and notify-send talking to another. Notifications
-# "randomly" stopped working, which is exactly what that looks like from the
-# outside: no error anywhere, the daemon running, the name simply unowned on
-# whichever bus the sender happened to reach.
-#
-# dbus-run-session creates one bus, exports DBUS_SESSION_BUS_ADDRESS into it, and
-# runs the compositor inside -- so mango, everything in exec-once, and every app
-# launched from a keybind all inherit the same address. It also makes the
-# `dbus-update-activation-environment` line in config.conf meaningful, since that
-# needs a bus to talk to in the first place.
+# ONE D-Bus session bus for the whole session. Artix has no systemd to create
+# $XDG_RUNTIME_DIR/bus, so without this every client autolaunched its OWN bus --
+# fnott listening on one, notify-send talking to another, notifications
+# "randomly" dead with no error anywhere. This is also what makes the
+# dbus-update-activation-environment line in config.conf mean anything.
 if command -v dbus-run-session >/dev/null 2>&1; then
 	exec dbus-run-session -- mango "$@"
 fi

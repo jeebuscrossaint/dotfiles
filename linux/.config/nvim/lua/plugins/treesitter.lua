@@ -1,12 +1,6 @@
 -- lua/plugins/treesitter.lua
--- ============================================================================
--- Treesitter = accurate syntax highlighting + smart code understanding.
--- It parses your code into a real syntax tree instead of guessing with regex,
--- which gives much better highlighting, indentation, and text objects.
---
--- Language parsers install automatically the first time you open a file type
--- (auto_install = true). You can also run :TSInstall <lang> manually.
--- ============================================================================
+-- Syntax highlighting, indentation and text objects from a real parse tree.
+-- Parsers install on first use; :TSInstall <lang> does it by hand.
 
 return {
   "nvim-treesitter/nvim-treesitter",

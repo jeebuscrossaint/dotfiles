@@ -1,9 +1,5 @@
 -- lua/plugins/ui-extra.lua
--- ============================================================================
--- Optional-but-nice visual upgrades. None of these change how you edit — they
--- just make Neovim look and feel more polished. Remove any file/block you don't
--- like; nothing else depends on them.
--- ============================================================================
+-- Purely visual. Nothing else depends on any of it.
 
 return {
   -- ── Buffer tabs across the top (VS Code style) ─────────────────────────────
@@ -24,9 +20,7 @@ return {
     },
   },
 
-  -- ── Modern command line, messages & popups (noice.nvim) ────────────────────
-  -- Moves the ":" command line into a clean centered popup, routes messages
-  -- through pretty notifications, and gives LSP hover/signature a nice border.
+  -- ── Command line, messages & popups ────────────────────────────────────────
   {
     "folke/noice.nvim",
     event = "VeryLazy",
@@ -63,9 +57,7 @@ return {
     },
   },
 
-  -- ── Nicer input / selection popups (dressing.nvim) ─────────────────────────
-  -- Upgrades the small prompts Neovim shows for things like LSP rename and the
-  -- code-action menu into tidy floating windows.
+  -- ── Nicer input / selection popups (LSP rename, code actions) ──────────────
   {
     "stevearc/dressing.nvim",
     event = "VeryLazy",

@@ -1,12 +1,6 @@
 -- lua/plugins/dashboard.lua
--- ============================================================================
--- alpha-nvim = the fancy "start screen" shown when you open `nvim` with no file.
---
--- The banner is a RANDOM "neovim" figlet, drawn fresh on every launch from a
--- ~500-font pack in  assets/neovim_headers.json  (rendered from pyfiglet, the
--- same fonts patorjk.com/software/taag uses). To regenerate/adjust the pack see
--- the note at the bottom of this file.
--- ============================================================================
+-- Start screen. The banner is a random figlet from a ~500-font pack in
+-- assets/neovim_headers.json — see the note at the bottom to regenerate it.
 
 return {
   "goolord/alpha-nvim",

@@ -1,32 +1,20 @@
 #!/bin/sh
 # audio-ensure — bring the audio stack up, but ONLY when it is actually broken.
 #
-# Called from mango's exec-once. It used to be an inline one-liner and it was WRONG:
+# The test is the hard part. `wpctl status | grep "Sinks:"` prints that header
+# whether or not a real sink is behind it, so it passed on a completely dead
+# stack. What identifies a dead stack is the null sink pipewire invents when it
+# can reach no hardware -- factory.name support.null-audio-sink / node.name
+# auto_null. Those are pipewire's internal names, so this tests the condition
+# rather than a rendered label like "Dummy Output", which can be renamed.
 #
-#     wpctl status 2>/dev/null | grep -q "Sinks:" || artix-pipewire-launcher restart
-#
-# `wpctl status` prints the "Sinks:" HEADER whether or not there is a real sink
-# behind it, so that test passed on a completely dead stack and the repair never
-# ran. Confirmed 2026-08-17 in a labwc session: pipewire, pipewire-pulse and
-# wireplumber all running, Devices list empty, one sink called "Dummy Output", no
-# audio -- and the guard reporting everything fine.
-#
-# What actually identifies a dead stack is the sink pipewire invents when it can
-# reach no hardware: a null sink, `factory.name = "support.null-audio-sink"` with
-# `node.name = "auto_null"`. Those are pipewire's own internal names for the
-# fallback, so this tests the condition rather than a rendered label -- unlike
-# grepping for the string "Dummy Output", which is a description and can be
-# translated or renamed.
-#
-# Why the stack ends up like this: a pipewire from a previous session survives the
-# compositor exiting and holds unlinked sockets in a runtime dir that has since been
-# deleted. It looks alive to anything that just counts processes. And
-# `artix-pipewire-launcher` without `restart` bails at "already running" the moment
-# it sees ANY pipewire process, so it never reaches its wireplumber line -- which is
-# why the repair below is always `restart`, never bare.
+# The repair is always `restart`, never bare: artix-pipewire-launcher bails at
+# "already running" the moment it sees ANY pipewire process, so it never reaches
+# its wireplumber line -- and a stale pipewire holding dead sockets is exactly
+# the case this script exists for.
 #
 #   audio-ensure           repair if broken, stay silent if not
-#   audio-ensure --check   report only, change nothing (exit 0 healthy, 1 broken)
+#   audio-ensure --check   report only (exit 0 healthy, 1 broken)
 #
 # Always exits 0 in repair mode: a session must not fail to start over audio.
 
@@ -80,17 +68,14 @@ fi
 command -v artix-pipewire-launcher >/dev/null 2>&1 || exit 0
 artix-pipewire-launcher restart >/dev/null 2>&1
 
-# Verify, and say so where it will be seen. wireplumber needs a moment to enumerate
-# devices, so a check straight after the restart would still see auto_null; without
-# the wait this would report failure on a repair that actually worked.
+# wireplumber needs a moment to enumerate devices, so a check straight after the
+# restart would still see auto_null and report failure on a repair that worked.
 i=0
 while [ "$i" -lt 10 ]; do
 	sleep 1
 	if [ -z "$(broken_reason)" ]; then
-		# Deliberately SILENT on success. At session start there is no pipewire yet, so
-		# the repair legitimately runs on every single login -- and a notification every
-		# login for something working as intended is just noise. Only a repair that
-		# FAILS is worth interrupting for.
+		# Silent on success: the repair legitimately runs on every login, so a
+		# notification each time is noise. Only a FAILED repair is worth it.
 		exit 0
 	fi
 	i=$((i + 1))

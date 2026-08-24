@@ -1,74 +1,24 @@
-// waybar — the bar. Native modules only.
-//
-// This replaced a three-layer chain that rendered the status line:
-//
-//   waybar -> slstatus (vendored C, needed `make install`) -> barstat (shell,
-//   4 forks/sec) -> /sys/*
-//
-// slstatus was inherited from the swaybar/swayrbar era, where a bar that read a
-// text stream was the only option. It survived here on the claim that it "works
-// on OpenBSD", which was false in practice: 10 of the 15 fields came from
-// barstat, a shell script reading /sys/class/power_supply, /sys/class/hwmon,
-// /sys/class/backlight and /sys/class/net -- none of which exist there. So the
-// portability argument for keeping it was backwards.
-//
-// Everything below is a waybar module, which means one project's portability to
-// worry about instead of a shell script full of Linux paths, per-field CSS
-// (battery can go red at 10%; a single text blob cannot), and pkg/ deleted.
-//
-// Fan and uptime are the two fields waybar has no module for. Both resolve their
-// hardware by NAME rather than hwmon index, because hwmon numbering is not stable
-// across boots -- coretemp happened to be hwmon7 today.
+// waybar — native modules only. Fan and uptime are the only two waybar has no
+// module for.
 {
   "layer": "top",
   "position": "top",
-  // Islands: the bar window itself paints nothing (style.css / coat-colors.css), and
-  // each module carries its own rounded slab, so this geometry is about the gaps
-  // between them rather than about a panel.
-  //
-  // height 34, not 26: the islands are 26 and sit inside a 4px vertical margin, so
-  // the bar has to be 8px taller than the slabs or the margin has nowhere to go and
-  // GTK clips it back to a full-height strip.
-  //
-  // spacing 8 is the gap BETWEEN islands. It lives here and not as a CSS margin --
-  // waybar's box spacing and a left/right module margin would stack and the gaps
-  // would come out double-width.
-  //
-  // height 38 with a 26px island gives 6px of wallpaper above and below each slab.
-  //
-  // The top margin is 0 on purpose. A margin there does NOT replace the island's
-  // own vertical margin, it stacks with it: 6px of bar margin plus 4px of island
-  // margin put 10px above the islands and 4px below, which is the lopsided gap
-  // that made the row look like it was sagging off the top edge. The bar sits
-  // flush and the island margin alone -- symmetric by construction -- does the
-  // floating.
-  //
-  // Horizontal margin is 0 too, and the screen-edge inset is a CSS margin on the
-  // module boxes instead. waybar applies a bar margin by OFFSETTING the layer
-  // surface without shrinking it: `hyprctl layers` showed the bar at x=10 with
-  // width 2540 on a 2540px screen, so it hung ten pixels off the right edge while
-  // leaving ten bare on the left. That asymmetry is also where the blur appeared
-  // to stop short of the corners.
-  //
-  // spacing 8 is the gap BETWEEN islands. It lives here and not as a CSS margin --
-  // waybar's box spacing and a left/right module margin would stack the same way
-  // the vertical ones did.
+
+  // height 38 with a 26px island leaves 6px of wallpaper above and below. margin
+  // is 0 because a bar margin OFFSETS the layer surface without shrinking it (the
+  // right end runs off screen) and stacks with the island's own vertical margin;
+  // the screen-edge inset is a CSS margin in style.css instead.
+  // spacing is the gap between islands.
   "height": 38,
   "spacing": 8,
   "margin": "0",
 
-  // mango is the only compositor, so these two are the whole left side.
   "modules-left": ["custom/mangotags", "custom/mangotitle"],
   "modules-center": [],
 
-  // Five islands, not fourteen pills. The bar's top level is a list of GROUPS, and
-  // a group is one widget -- so it gets one slab, and the modules inside it share
-  // that slab with no gap between them. A flat list of modules here is what made
-  // the first attempt wrong: every field became its own rectangle, they were all
-  // the same width apart, and the row read as one continuous strip again.
-  //
-  // The grouping is by what you look at together: what is playing, the link, the
-  // machine's load, the machine's knobs, and the time.
+  // Groups, not a flat module list: a group is one widget, so it takes one island
+  // and its modules share it. Flat, every field became its own rectangle and the
+  // row read as a perforated brick again.
   "modules-right": [
     "group/link",
     "group/load",
@@ -76,16 +26,9 @@
     "group/time"
   ],
 
-  // A group with no "drawer" key is a plain box -- every child visible, no
-  // click-to-expand. The id after the slash is the CSS id of the box, but nothing
-  // in style.css depends on it: the island rule matches the group by position, so
-  // adding a group needs no stylesheet change.
-  // mpris rides WITH network rather than in a group of its own. On its own it was
-  // an empty island: waybar hides a module whose label renders empty, but it does
-  // not hide the group around it, so with nothing playing the bar showed a bare
-  // slab -- a blob -- sitting to the left of the wifi. Pairing it with a module
-  // that always has output means the group is never empty, and the island simply
-  // grows a track name when something starts playing.
+  // mpris rides with network rather than alone: waybar hides a module whose label
+  // renders empty but NOT the group around it, so with nothing playing it left a
+  // bare slab.
   "group/link": { "orientation": "horizontal", "modules": ["mpris", "network"] },
   "group/load":  {
     "orientation": "horizontal",
@@ -101,12 +44,9 @@
   },
 
   // ── mango ────────────────────────────────────────────────────────────────
-  // waybar has no mango module, and mango does not implement dwl's IPC protocol
-  // (protocols/ has only layer-shell, foreign-toplevel and
-  // output-power-management), so `dwl/tags` cannot see it either. Both of these
-  // stream mango's own IPC via `mmsg watch`, which pushes on change rather than
-  // polling, and emit pango markup because CSS cannot reach individual characters
-  // inside a custom module.
+  // mango does not implement dwl's IPC, so dwl/tags cannot see it either. Both
+  // stream `mmsg watch` and emit pango markup, because CSS cannot reach individual
+  // characters inside a custom module.
   "custom/mangotags": {
     "exec": "mango-tags",
     "return-type": "",
@@ -151,7 +91,6 @@
   },
 
   "cpu": {
-    // {load} is the 1-minute average, which is what the old load field showed.
     "format": "󰻠 {usage}% {avg_frequency}G 󰬺 {load}",
     "interval": 2,
     "tooltip": false,
@@ -159,22 +98,20 @@
   },
 
   "memory": {
-    // Swap on the same line rather than behind format-swap: format-swap only
-    // replaces the whole label, so it showed swap INSTEAD of RAM.
+    // Swap on the same line, not format-swap: that replaces the whole label, so it
+    // showed swap INSTEAD of RAM.
     "format": "󰍛 {percentage}% 󰾵 {swapPercentage}%",
     "interval": 5,
     "tooltip": false,
     "on-click": "kitty btop"
   },
 
+  // hwmon-path-abs is the platform device path, which IS stable across boots; the
+  // hwmonN directory beneath it is not, and waybar resolves that itself.
+  //
+  // temp1_input is "Package id 0"; temp10_input is "Core 8" -- the old setting read
+  // one core and called it the package.
   "temperature": {
-    // hwmon-path-abs is the platform device path, which IS stable across boots;
-    // the hwmonN directory beneath it is not, and waybar resolves that itself.
-    //
-    // temp1_input, NOT temp10_input. On this Meteor Lake part temp1_input is
-    // labelled "Package id 0" and temp10_input is "Core 8" -- the old setting was
-    // reading one core and calling it the package, which reads low under a
-    // single-threaded load.
     "hwmon-path-abs": "/sys/devices/platform/coretemp.0/hwmon",
     "input-filename": "temp1_input",
     "format": "󰔏 {temperatureC}°",
@@ -184,8 +121,6 @@
     "tooltip": false
   },
 
-  // The NVMe controller's own sensor. Same trick as above: the PCI path is stable,
-  // the hwmonN directory under it is not.
   "temperature#nvme": {
     "hwmon-path-abs": "/sys/devices/pci0000:00/0000:00:06.0/0000:02:00.0/nvme/nvme0",
     "input-filename": "temp1_input",
@@ -203,7 +138,7 @@
   },
 
   "backlight": {
-    // intel_backlight, not nvidia_0: the OLED panel is driven by the Intel card.
+    // intel_backlight, not nvidia_0: the OLED panel is on the Intel card.
     "device": "intel_backlight",
     "format": "󰃠 {percent}%",
     "tooltip": false,
@@ -224,8 +159,7 @@
   "battery": {
     "bat": "BAT1",
     "adapter": "ACAD",
-    // These drive the CSS states, which is the thing a single text blob could
-    // never do: the module goes amber at 25% and red at 10%.
+    // These drive the CSS states: amber at 25%, red at 10%.
     "states": { "warning": 25, "critical": 10 },
     "format": "{icon} {capacity}% {power:.1f}W {time}",
     "format-charging": "󰂄 {capacity}% {power:.1f}W {time}",
@@ -242,28 +176,12 @@
     "tooltip": false
   },
 
-  // wttrbar (AUR, /usr/bin/wttrbar) -- a packaged binary, not a script of mine. It
-  // prints waybar JSON: text, a pango tooltip with the two-day hourly forecast, and
-  // a `class` (sunnyDay, cloudy, rainyNight, ...) that CSS could hook if wanted.
+  // --location is explicit because wttr.in geolocates by IP, which over the tailnet
+  // lands somewhere else. 900s because it rate-limits.
   //
-  // --location is explicit because wttr.in geolocates by IP, and over the tailnet
-  // that lands somewhere else entirely. Change the city here.
-  //
-  // 900s, matching what this comment always claimed. It said 900 while the setting
-  // said 60 -- a request a minute at a service that rate-limits, which earns
-  // exactly the broken responses the exec-if below now has to catch.
-  //
-  // exec-if is the fix for how wttrbar fails. When wttr.in cannot be reached OR
-  // answers with an error -- it currently 500s with "weather data source not
-  // available", which is upstream being down, nothing local -- wttrbar prints
-  // {"text":"⛓️‍💥"}, and MartianMono has no glyph for that, so the bar showed a
-  // dead tofu box. A custom module whose exec-if exits non-zero is hidden
-  // entirely, so a bad upstream now costs the island rather than filling it with
-  // a broken chain.
-  //
-  // curl -f is what turns the 500 into a non-zero exit; without it curl happily
-  // succeeds at fetching an error page. This is waybar's own mechanism plus curl,
-  // not a wrapper script -- the weather module stays a packaged binary.
+  // exec-if hides the module when wttr.in is unreachable or erroring: wttrbar
+  // reports that as a broken-chain emoji MartianMono has no glyph for, i.e. a dead
+  // tofu box. curl -f is what turns an error page into a non-zero exit.
   "custom/weather": {
     "exec": "wttrbar --location Orlando --fahrenheit --mph --ampm --nerd --hide-conditions --custom-indicator '{ICON} {temp_F}°'",
     "exec-if": "curl -sf --max-time 10 -o /dev/null 'https://wttr.in/Orlando?format=j1'",
@@ -273,13 +191,9 @@
   },
 
   "clock": {
-    // 1s because the old field showed ticking seconds.
-    //
-    // %d and %I, NOT %-d and %-I. waybar's clock formats through fmt/chrono,
-    // which rejects glibc's no-pad modifier with "invalid specifier in
-    // chrono-specs" -- and the failure mode is the whole module rendering
-    // nothing, so the clock silently disappears off the end of the bar. %e and
-    // %l (space-padded) are rejected too; zero-padded is what works.
+    // %d and %I, NOT %-d and %-I: waybar formats through fmt/chrono, which rejects
+    // glibc's no-pad modifier (and %e/%l) with "invalid specifier in chrono-specs"
+    // -- and the module then renders nothing, so the clock silently disappears.
     "format": "󰃰 {:%a %b %d  %I:%M:%S %p}",
     "interval": 1,
     "tooltip-format": "<tt>{calendar}</tt>",

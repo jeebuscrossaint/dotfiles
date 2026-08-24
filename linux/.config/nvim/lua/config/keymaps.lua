@@ -1,14 +1,6 @@
 -- lua/config/keymaps.lua
--- ============================================================================
--- Your custom keyboard shortcuts.
---
--- The pattern is:  vim.keymap.set(mode, keys, action, { desc = "..." })
---   mode: "n" = normal, "i" = insert, "v" = visual, "x" = visual block, "t" = terminal
---   desc: a description — which-key shows this in the popup menu, so always add one.
---
--- Plugin-specific shortcuts (Telescope, LSP, file tree...) live in their own
--- plugin files under lua/plugins/. This file is only for editor-wide basics.
--- ============================================================================
+-- Editor-wide shortcuts only; plugin keys live with their plugin.
+-- Always set `desc` — which-key shows it in the popup.
 
 local map = vim.keymap.set
 

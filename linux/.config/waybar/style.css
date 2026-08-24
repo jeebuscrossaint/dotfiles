@@ -1,25 +1,7 @@
 @import "coat-colors.css";
 
-/* waybar — GEOMETRY ONLY. Every colour lives in coat-colors.css, imported above.
- *
- * This file used to carry a copy of the Framer palette, and that silently broke
- * theming: GTK CSS is last-wins at equal specificity, the @import is necessarily
- * at the top (an @import after a rule is dropped entirely), so every hardcoded
- * `background: #181818` further down overrode what coat had just generated. The
- * scheme changed on disk and the bar never moved. mango's config had the
- * identical bug with its `source=` line.
- *
- * So: padding, sizing and font weight here; colour in the template. If a colour
- * needs changing, change coat's templates/waybar.tera.
- *
- * Islands, not a brick: the bar window is transparent and every module carries its
- * own rounded slab, so the row is a line of floating rectangles over the wallpaper.
- * See the island block below for the three rules that have to agree for that.
- *
- * ID selectors beat the island rule, so the per-module #id block below sets ONLY
- * padding and a transparent background -- margin, radius and the slab colour stay
- * with the island rule. Setting any of those three by #id gives that one module a
- * different shape from the rest of its group. */
+/* Geometry only. Colour is coat-colors.css -- the @import must stay first, and
+ * anything here after it wins, so a hardcoded colour would silently kill theming. */
 
 * {
   font-family: "MartianMono Nerd Font Mono";
@@ -27,38 +9,15 @@
   border: none;
   border-radius: 0;
   min-height: 0;
-  /* GTK draws a 1px box-shadow under some themes; without this the bar looks
-   * double-bordered against the wallpaper. */
   box-shadow: none;
   text-shadow: none;
 }
 
-/* Islands ------------------------------------------------------------------
+/* One island per module group. `> widget > *` is the module/group itself; a radius
+ * on the EventBox wrapper is not clipped to the child.
  *
- * Every module is its own rounded slab, separated by real gaps, so the row reads
- * as floating rectangles rather than one panel. Three things have to line up for
- * that, and missing any one of them puts the brick back:
- *
- *   1. the bar window paints nothing        -> coat-colors.css, background: transparent
- *   2. each module paints its own slab      -> coat-colors.css, `> widget > *`
- *   3. the slabs are inset and rounded      -> here
- *
- * `> widget > *` and not `> widget`: waybar wraps every module in a GtkEventBox,
- * and a border-radius on the wrapper is not clipped to the child, so the corners
- * come out square with a rounded ghost behind them.
- *
- * The vertical margin is what makes an island an island: without it a module
- * stretches to the full bar height and neighbours touch top and bottom, which
- * reads as one continuous strip no matter how round the corners are. The bar is
- * 38px, the islands 26px, leaving 6px of wallpaper above and below each.
- *
- * This margin is the ONLY vertical spacing. config.jsonc keeps margin-top at 0
- * because waybar's bar margin stacks on top of this one instead of replacing it,
- * and the two together put a visibly bigger gap above the islands than below.
- *
- * Horizontal separation is `spacing` in config.jsonc (waybar's box spacing), NOT
- * a margin here -- a left/right margin on the module would double up with it. */
-
+ * The 6px margin is the only vertical spacing: waybar's own bar margin STACKS with
+ * this instead of replacing it, which is why config.jsonc keeps margin at 0. */
 .modules-left > widget > *,
 .modules-center > widget > *,
 .modules-right > widget > * {
@@ -67,23 +26,8 @@
   border-radius: 8px;
 }
 
-/* The two selector families above are the same rule for two different widgets. A
- * plain module is wrapped in a GtkEventBox, whose GTK css name is `widget`; a
- * group is a GtkBox, whose css name is `box` and which is NOT wrapped. So
- * `> widget > *` reaches modules and `> box` reaches groups, and a group needs
- * both halves or it comes out unpainted next to painted neighbours.
- *
- * Padding inside the island. It is on the modules rather than only on the island
- * so that fields inside a GROUP are separated from each other too -- a group box
- * has no spacing of its own, so without this the load island reads as one run-on
- * string. The island itself adds 4px at each end on top of this.
- *
- * Padding ONLY -- no `background: transparent` here. These ids include the two
- * standalone left-hand modules, which ARE islands themselves, and an id beats the
- * island rule: a transparent background in this block stripped the slab off the
- * tags and the title while every group on the right kept theirs. Modules nested
- * inside a group are not matched by the island rule in the first place, so they
- * have nothing to clear. */
+/* Padding only. An id beats the island rule, so setting margin/radius/background
+ * here gives that one module a different shape from the rest. */
 #custom-mangotags,
 #custom-mangotitle,
 #window,
@@ -105,10 +49,8 @@
   padding: 0 6px;
 }
 
-/* The screen-edge inset. This is on the module BOX, not on the bar: a bar margin
- * offsets the layer surface without shrinking it, so it pushes the right end off
- * the screen instead of insetting it. Here the surface stays full-width and the
- * end islands simply start 10px in. */
+/* Screen-edge inset. Here and not as a bar margin: a bar margin offsets the layer
+ * surface without shrinking it, pushing the right end off screen. */
 .modules-left {
   margin-left: 10px;
 }
@@ -117,35 +59,9 @@
   margin-right: 10px;
 }
 
-/* Tags & title -------------------------------------------------------------
- *
- * Per-tag colour is inline pango markup from ~/.local/bin/mango-tags, not CSS:
- * waybar cannot style individual characters inside a custom module, only the
- * module as a whole. Same for the title. The tag row is ONE island -- it is one
- * custom module -- and the title is the island next to it.
- *
- * The title island needs no rule to disappear when empty: waybar hides a module
- * whose label renders to an empty string, widget and slab together, so an
- * unfocused workspace leaves a gap rather than a blank 20px rectangle. A `:empty`
- * rule was the first attempt and is worse than useless -- GTK's CSS parser has no
- * such pseudo-class, rejects it with "Invalid name of pseudo-class", and drops the
- * REST of the stylesheet with it, which took the islands out entirely. */
-
-/* Hyprland's tag row and title ---------------------------------------------- */
-
-/* Used only by config-hyprland.jsonc, where modules-left is the native
- * hyprland/workspaces + hyprland/window pair instead of the two mango scripts.
- * Inert under mango: those widgets do not exist there, so the rules cost
- * nothing and both bars keep one stylesheet. Colour, as always, is coat's
- * templates/waybar.tera -- #workspaces button.active was already in it. */
-
+/* config-hyprland.jsonc only; inert under mango. min-width because GTK gives a
+ * button its own, which strands a single digit in a wide slab. */
 #workspaces button {
   padding: 0 4px;
-  /* GTK gives a button a min-width of its own, which puts a single digit in the
-   * middle of a wide slab and breaks the even spacing of the tag row. */
   min-width: 0;
 }
-
-/* No padding rule for #window: an ID selector outranks the `> widget > *` island
- * rule above, so one here would silently win and give the title island different
- * padding from every other module. The island rule already covers it. */
