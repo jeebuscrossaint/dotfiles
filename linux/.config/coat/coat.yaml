@@ -36,7 +36,7 @@ enabled:
   # is listening.
   - hyprland
 
-scheme: primer-dark-dimmed
+scheme: atelier-estuary
 prefer_base24: false
 
 # Evens out whatever scheme is loaded. `coat docs normalize` lists the knobs.
