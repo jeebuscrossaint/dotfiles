@@ -10,7 +10,17 @@
 {
   "include": ["/home/amarnath/.config/waybar/config.jsonc"],
 
-  "modules-left": ["hyprland/workspaces", "hyprland/window"],
+  // One island, not two. hyprland/window does NOT hide itself when there is no
+  // focused window (waybar 0.15 sets `floating` and `solo` classes but no `empty`
+  // one to hook), so as its own island it rendered a bare rounded blob on any
+  // empty workspace. Sharing the tags' island means an empty title collapses into
+  // it instead -- see the padding note in style.css.
+  "modules-left": ["group/left"],
+
+  "group/left": {
+    "orientation": "horizontal",
+    "modules": ["hyprland/workspaces", "hyprland/window"]
+  },
 
   // No persistent-workspaces: Hyprland destroys a workspace with its last window,
   // so the row already shows only occupied-or-active ones, like mango's tag row.

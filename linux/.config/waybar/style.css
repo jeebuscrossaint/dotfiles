@@ -30,7 +30,6 @@
  * here gives that one module a different shape from the rest. */
 #custom-mangotags,
 #custom-mangotitle,
-#window,
 #workspaces,
 #mpris,
 #network,
@@ -64,4 +63,34 @@
 #workspaces button {
   padding: 0 4px;
   min-width: 0;
+}
+
+/* Collapse the title island when there is no window. waybar does NOT hide the
+ * widget on empty text -- an empty workspace left a bare rounded slab next to the
+ * tags -- but hyprland/window sets a `.empty` class, which is the hook. An
+ * id+class beats the island rule, so clearing the three properties that make an
+ * island visible is enough; the label itself has no width.
+ *
+ * NOT `:empty` -- GTK's CSS parser has no such pseudo-class, rejects the rule,
+ * and drops the rest of the stylesheet with it. */
+#window.empty {
+  margin: 0;
+  padding: 0;
+  background: transparent;
+}
+
+/* The title carries NO padding of its own, and the gap that separates it from the
+ * tags lives on the tags instead. hyprland/window keeps its widget when the title
+ * is empty, so any padding here is a visible slab on an empty workspace; with zero
+ * padding the empty label has zero width and disappears entirely.
+ *
+ * `.empty` is not available to hook -- waybar 0.15 sets only `floating` and `solo`
+ * on this module -- and `:empty` is not a thing GTK's CSS parser knows. */
+#window {
+  padding: 0;
+  min-width: 0;
+}
+
+#workspaces {
+  padding-right: 10px;
 }
