@@ -36,7 +36,7 @@ enabled:
   # is listening.
   - hyprland
 
-scheme: gruvbox-dark-hard
+scheme: tokyodark
 prefer_base24: false
 
 # Evens out whatever scheme is loaded. `coat docs normalize` lists the knobs.
