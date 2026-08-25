@@ -44,11 +44,19 @@
     "separate-outputs": true,
     "icon": false,
     // Regex, so each offender needs its own line.
+    //
+    // Every replacement ends in ONE literal space, so the title never sits flush
+    // against the island's right edge. It has to go here and not in `format` or as
+    // CSS padding: both of those would apply to an EMPTY title too, giving it a
+    // non-zero width and putting the bare slab back on empty workspaces. `^$`
+    // stays empty for exactly that reason, and the `(.+)` catch-all only matches
+    // when there is at least one character.
     "rewrite": {
-      "(.*) — Mozilla Firefox": "$1",
-      "(.*) - Visual Studio Code": "$1",
-      "(.*) — Vesktop": "$1",
-      "^$": ""
+      "(.*) — Mozilla Firefox": "$1 ",
+      "(.*) - Visual Studio Code": "$1 ",
+      "(.*) — Vesktop": "$1 ",
+      "^$": "",
+      "(.+)": "$1 "
     }
   }
 }
