@@ -4,8 +4,6 @@
  * anything here after it wins, so a hardcoded colour would silently kill theming. */
 
 * {
-  font-family: "MartianMono Nerd Font Mono";
-  font-size: 10pt;
   border: none;
   border-radius: 0;
   min-height: 0;
