@@ -20,7 +20,7 @@ enabled:
   - kitty
   - hyprland
 
-scheme: framer
+scheme: atelier-dune
 prefer_base24: false
 
 # Evens out whatever scheme is loaded. `coat docs normalize` lists the knobs.
