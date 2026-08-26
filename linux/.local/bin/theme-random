@@ -3,5 +3,12 @@
 # coat reloads every enabled module itself -- under mango that includes an
 # `mmsg dispatch reload_config`, so the compositor recolours without a restart.
 coat random -y >/dev/null 2>&1
-scheme=$(grep -m1 '^scheme:' "$HOME/.config/coat/coat.yaml" | awk '{print $2}')
-command -v notify-send >/dev/null && notify-send -t 2000 "󰏘  Theme" "switched to $scheme"
+# The family is reported because ~46 slugs exist in both, so the name alone does
+# not tell you which palette you are looking at. coat.yaml is the only place that
+# records it -- `scheme:` stores the slug and nothing else.
+conf="$HOME/.config/coat/coat.yaml"
+scheme=$(grep -m1 '^scheme:' "$conf" | awk '{print $2}')
+fam=base16
+grep -q '^prefer_base24: *true' "$conf" && fam=base24
+command -v notify-send >/dev/null &&
+	notify-send -t 2000 "󰏘  Theme" "switched to $scheme ($fam)"
