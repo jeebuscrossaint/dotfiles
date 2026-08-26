@@ -1,18 +1,6 @@
 # ~/.config/coat/coat.yaml
 
 enabled:
-  # Deleted from coat entirely on 2026-08-24, so they cannot be re-added here:
-  # dwl, labwc, wayfire, wmenu, mew, gtklock, wlock, swayosd, tsubu.
-  #
-  # Still in coat, just not enabled: sway, swaybar, tofi, dunst, foot. The
-  # compositor is mango only; the locker is swaylock; notifications are fnott;
-  # the launcher is fuzzel.
-  #
-  # No OSD module at all, and that is the point: avizo, swayosd and wob were each
-  # retired for the same reason -- theming a GTK app that only reads its stylesheet
-  # at startup meant the hook had to KILL the server, which raced the supervisor and
-  # left the media keys silently dead. The OSD is a notification now, so `fnott`
-  # themes it for free and there is nothing to kill.
   - fish
   - kitty
   - neovim
@@ -23,20 +11,16 @@ enabled:
   - vesktop
   - mpv
   - vscode
-  # The wayland stack, all runtime-configured: a scheme change recolours a live
-  # session with no restart anywhere.
+
   - mango
   - waybar
   - fnott
   - swaylock
   - fuzzel
   - kitty
-  # Not the running compositor, but the module writes coat-theme.conf so a parked
-  # Hyprland session is already themed. Its `hyprctl reload` no-ops when nothing
-  # is listening.
   - hyprland
 
-scheme: atelier-estuary
+scheme: gruvbox-dark-pale
 prefer_base24: false
 
 # Evens out whatever scheme is loaded. `coat docs normalize` lists the knobs.
@@ -53,9 +37,9 @@ opacity:
 
 font:
   emoji: "Noto Color Emoji"
-  monospace: "MartianMono Nerd Font Mono"
-  sansserif: "MartianMono Nerd Font Mono"
-  serif: "MartianMono Nerd Font Mono"
+  monospace: "SFMono Nerd Font Mono Heavy"
+  sansserif: "SFMono Nerd Font Mono Heavy"
+  serif: "SFMono Nerd Font Mono Heavy"
   sizes:
     terminal: 10
     desktop: 10
