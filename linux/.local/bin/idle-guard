@@ -1,0 +1,52 @@
+#!/bin/sh
+# idle-guard — lock only when nothing is actually happening.
+#
+#   idle-guard lock    lock, but wait out any audio that is still playing
+#   idle-guard dpms    same, for blanking the screen
+#   idle-guard cancel  abort a pending guard (the user came back)
+#
+# The problem this solves: hypridle fires on INPUT idleness alone, so watching a
+# video with the keyboard untouched locks the screen at the timeout. There is no
+# toggle to remember here -- it works out for itself whether something is playing.
+#
+# hypridle fires each listener ONCE per idle period, so the guard cannot simply
+# decline and expect to be asked again. It waits instead, re-checking until the
+# audio stops, and the on-resume hook kills it if input returns first.
+
+STATE="${XDG_RUNTIME_DIR:-/tmp}/idle-guard.pid"
+
+audio_playing() {
+	# ALSA's own view, which covers anything routed through pipewire without
+	# needing to ask pipewire. A stream that is open but paused reads as
+	# something other than RUNNING.
+	grep -qx RUNNING /proc/asound/card*/pcm*/sub*/status 2>/dev/null && return 0
+	# Fallback for players that report through MPRIS but are not holding a PCM
+	# open at this instant.
+	[ "$(playerctl status 2>/dev/null)" = "Playing" ] && return 0
+	return 1
+}
+
+do_lock() { pgrep -x hyprlock >/dev/null 2>&1 || { sfx lock; hyprlock >/dev/null 2>&1 & }; }
+do_dpms() { hyprctl dispatch dpms off >/dev/null 2>&1; }
+
+case "$1" in
+cancel)
+	[ -f "$STATE" ] && kill "$(cat "$STATE")" 2>/dev/null
+	rm -f "$STATE"
+	exit 0
+	;;
+lock | dpms) action="$1" ;;
+*) exit 0 ;;
+esac
+
+echo $$ > "$STATE"
+trap 'rm -f "$STATE"' EXIT
+
+while audio_playing; do
+	sleep 30
+done
+
+case "$action" in
+lock) do_lock ;;
+dpms) do_dpms ;;
+esac

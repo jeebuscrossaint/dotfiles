@@ -34,6 +34,14 @@ BL_MIN=1    # never step the backlight to 0 — that is a black screen
 # it steps by 1 rather than by BL_STEP.
 KBD_LED=asus::kbd_backlight
 
+# Night light: 4000K is warm enough to matter after dark without going orange.
+# Desktop event sounds go through ~/.local/bin/sfx, which is a no-op if the theme
+# is missing or ~/.config/sfx-mute exists. Volume gets one because you are already
+# thinking about audio; brightness deliberately does not, since a click on every
+# step of a held key is maddening.
+NIGHT_TEMP=4000
+NIGHT_FLAG="${XDG_RUNTIME_DIR:-/tmp}/osd-nightlight"
+
 # Whether the touchpad is currently off. Neither compositor can be asked (see
 # the touchpad section), so the state is tracked here.
 TP_FLAG=${XDG_RUNTIME_DIR:-/tmp}/touchpad-off
@@ -118,7 +126,8 @@ volume)
 		# rather than snapping to empty and losing the information.
 		show "$icon  muted" "$VOL"
 	else
-		show "$icon  $VOL%" "$VOL"
+		sfx volume
+	show "$icon  $VOL%" "$VOL"
 	fi
 	;;
 
@@ -212,6 +221,27 @@ kbd)
 	pct=$((new * 100 / max))
 	if [ "$new" -eq 0 ]; then icon='󰌍'; else icon='󰌌'; fi
 	show "$icon  kbd $new/$max$note" "$pct"
+	;;
+
+# ----------------------------------------------------------------- nightlight
+nightlight | night)
+	# Blue-light shift. hyprsunset owns the gamma; this owns the STATE, because
+	# hyprsunset has no query -- you can ask whether the process exists and
+	# nothing more -- so "is it on" is a flag file, exactly like touchpad below.
+	#
+	# Kill and respawn rather than talk to it: hyprsunset's IPC has moved between
+	# versions, but a process either exists or it does not.
+	if pgrep -x hyprsunset >/dev/null 2>&1; then
+		pkill -x hyprsunset
+		rm -f "$NIGHT_FLAG"
+		show "󰖨  Night light off"
+	elif command -v hyprsunset >/dev/null 2>&1; then
+		setsid hyprsunset -t "$NIGHT_TEMP" >/dev/null 2>&1 &
+		touch "$NIGHT_FLAG"
+		show "󰖔  Night light ${NIGHT_TEMP}K"
+	else
+		show "󰖨  hyprsunset not installed"
+	fi
 	;;
 
 # -------------------------------------------------------------------- touchpad
