@@ -1,0 +1,37 @@
+#!/bin/sh
+# sfx — play a desktop event sound.
+#
+#   sfx <event>        volume | screenshot | plug | unplug | lock | theme |
+#                      notify | error | complete | low
+#
+# Names are freedesktop sound-theme event names, not file paths, so the theme can
+# be swapped by pointing SFX_THEME somewhere else.
+#
+# Always non-blocking and always exits 0: a desktop sound must never be the thing
+# that fails a keybind or wedges a handler that swayidle/hypridle is waiting on.
+#
+# Silence it by touching ~/.config/sfx-mute (a file, so it survives a reload and
+# both compositors see the same flag -- same pattern as osd's touchpad state).
+
+[ -f "$HOME/.config/sfx-mute" ] && exit 0
+command -v pw-play >/dev/null 2>&1 || exit 0
+
+THEME="${SFX_THEME:-/usr/share/sounds/freedesktop/stereo}"
+
+case "$1" in
+volume)     f=audio-volume-change ;;
+screenshot) f=camera-shutter ;;
+plug)       f=power-plug ;;
+unplug)     f=power-unplug ;;
+lock)       f=device-removed ;;
+theme)      f=complete ;;
+notify)     f=message ;;
+error)      f=dialog-error ;;
+complete)   f=complete ;;
+low)        f=battery-caution ;;
+*)          exit 0 ;;
+esac
+
+# -p 0 keeps it out of the way of whatever is already playing.
+[ -f "$THEME/$f.oga" ] && pw-play --volume=0.4 "$THEME/$f.oga" >/dev/null 2>&1 &
+exit 0

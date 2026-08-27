@@ -1,0 +1,66 @@
+#!/bin/sh
+# battery-watch — warn on low battery. Started from the compositor's exec-once.
+#
+# The battery device is resolved on EVERY poll, not once at startup. This machine
+# has shown /sys/class/power_supply with no BAT node at all for stretches, and a
+# watcher that resolved the path once would have latched onto that and reported
+# nothing for the rest of the session.
+#
+# hidpp_* and ucsi-* are skipped explicitly: a Logitech mouse and the USB-C PD
+# ports both present as type=Battery, and the mouse in particular will happily
+# report 15% and trigger a warning about the wrong device.
+#
+# Each threshold fires ONCE per discharge cycle. Plugging in resets them, so a
+# battery hovering at the boundary does not notify every minute.
+
+INTERVAL=60
+warned=""
+
+battery_path() {
+	for d in /sys/class/power_supply/*/; do
+		n=$(basename "$d")
+		case "$n" in hidpp_* | ucsi-* | ACAD | AC | ADP*) continue ;; esac
+		[ "$(cat "$d/type" 2>/dev/null)" = "Battery" ] || continue
+		[ -r "$d/capacity" ] || continue
+		echo "$d"
+		return 0
+	done
+	return 1
+}
+
+while :; do
+	sleep "$INTERVAL"
+	d=$(battery_path) || continue
+	cap=$(cat "$d/capacity" 2>/dev/null) || continue
+	status=$(cat "$d/status" 2>/dev/null)
+
+	case "$status" in
+	Discharging) ;;
+	*)
+		# On AC: clear the fired set so the next discharge warns again.
+		warned=""
+		continue
+		;;
+	esac
+
+	case "$cap" in '' | *[!0-9]*) continue ;; esac
+
+	for t in 20 10 5; do
+		[ "$cap" -le "$t" ] || continue
+		case " $warned " in *" $t "*) continue ;; esac
+		warned="$warned $t"
+		if [ "$t" -le 5 ]; then
+			urgency=critical
+			icon="󰂃"
+			msg="$cap% left — plug in now"
+		else
+			urgency=normal
+			icon="󰁻"
+			msg="$cap% left"
+		fi
+		command -v notify-send >/dev/null 2>&1 &&
+			notify-send -u "$urgency" "$icon  Battery" "$msg"
+		sfx low
+		break
+	done
+done

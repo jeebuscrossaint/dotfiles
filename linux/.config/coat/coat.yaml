@@ -20,7 +20,7 @@ enabled:
   - kitty
   - hyprland
 
-scheme: mountain
+scheme: square
 prefer_base24: false
 
 # Evens out whatever scheme is loaded. `coat docs normalize` lists the knobs.
@@ -37,9 +37,9 @@ opacity:
 
 font:
   emoji: "Noto Color Emoji"
-  monospace: "SFMono Nerd Font Mono Heavy"
-  sansserif: "SFMono Nerd Font Mono Heavy"
-  serif: "SFMono Nerd Font Mono Heavy"
+  monospace: "SFMono Nerd Font Mono"
+  sansserif: "SFMono Nerd Font Mono"
+  serif: "SFMono Nerd Font Mono"
   sizes:
     terminal: 10
     desktop: 10
