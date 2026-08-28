@@ -20,7 +20,7 @@ enabled:
   - kitty
   - hyprland
 
-scheme: square
+scheme: chalk
 prefer_base24: false
 
 # Evens out whatever scheme is loaded. `coat docs normalize` lists the knobs.
