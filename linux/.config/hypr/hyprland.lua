@@ -189,6 +189,11 @@ hl.animation({ leaf = "borderangle", enabled = false, speed = 80, bezier = "line
 --------------------------------------------------------------------- rules
 hl.window_rule({ name = "float-dialogs", match = { title = "^(Open File|Save File|Choose Files|Save As)$" }, float = true })
 hl.window_rule({ name = "pip-pin",       match = { title = "Picture-in-Picture" }, pin = true })
+-- Floating windows fade instead of sliding. popin scales from a percentage of the
+-- final size, so 100% leaves no scaling and only the fadeIn ramp shows -- there is
+-- no `fade` window style to ask for. Tiled windows keep the slide, which is what
+-- makes them read as pushing each other; a float has nothing to push.
+hl.window_rule({ name = "float-fade", match = { float = true }, animation = "popin 100%" })
 
 -- One strip of glass the full width of the bar, with the islands sitting on it.
 for _, ns in ipairs({ "waybar", "fnott", "notifications", "launcher" }) do
@@ -244,6 +249,10 @@ hl.bind(mod .. " + V", hl.dsp.exec_cmd("cliphist list | menu -i -p clip | cliphi
 hl.bind(mod .. " + SHIFT + V", hl.dsp.window.float({ action = "toggle" }))
 hl.bind(mod .. " + A", hl.dsp.exec_cmd("hyprctl dispatch gloview:toggle"))
 hl.bind(mod .. " + G", hl.dsp.exec_cmd("hyprctl dispatch togglegroup"))
+-- Alt+Tab. cyclenext moves focus and bringactivetotop raises it -- without the
+-- second, a floating window takes focus while staying buried.
+hl.bind("ALT + Tab",         hl.dsp.exec_cmd("hyprctl dispatch cyclenext; hyprctl dispatch bringactivetotop"))
+hl.bind("ALT + SHIFT + Tab", hl.dsp.exec_cmd("hyprctl dispatch cyclenext prev; hyprctl dispatch bringactivetotop"))
 hl.bind(mod .. " + backslash", hl.dsp.layout("togglesplit"))
 hl.bind(mod .. " + U", hl.dsp.window.pseudo())
 hl.bind(mod .. " + grave", hl.dsp.workspace.toggle_special("magic"))
