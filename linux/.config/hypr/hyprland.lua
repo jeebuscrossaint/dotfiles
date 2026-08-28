@@ -94,10 +94,10 @@ hl.config({
 })
 
 hl.gesture({ fingers = 3, direction = "horizontal", action = "workspace" })
--- The 4-finger-up -> gloview overview gesture does NOT port. hl.gesture accepts
--- only workspace, move, float, fullscreen and fullscreen_state -- there is no
--- dispatcher action, and dispatch/exec/command are all rejected too. $mod+A still
--- opens the overview; this is the one thing hyprland.conf can do and this cannot.
+-- action takes a Lua function, so plugin dispatchers ARE reachable from a
+-- gesture -- hl.gesture's string actions are only workspace/move/float/
+-- fullscreen/fullscreen_state, which is what made this look unportable.
+hl.gesture({ fingers = 4, direction = "up", action = function() hl.plugin.gloview.toggle() end })
 
 -- accel_profile flat above is for mice only.
 hl.device({ name = "asup1207:00-093a:3012-touchpad", accel_profile = "adaptive", natural_scroll = false })
