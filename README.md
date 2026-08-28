@@ -12,9 +12,13 @@ arch linux · openbsd · windows 11
 
 ```sh
 git clone https://github.com/jeebuscrossaint/.dotfiles ~/.dotfiles
-cd ~/.dotfiles && stow linux
-coat apply
+~/.dotfiles/install.fish
 ```
+
+The installer stows `linux/`, then applies coat. It backs up (or, with `--adopt`,
+absorbs) anything already sitting where a link belongs, since stow otherwise
+refuses the whole package, and verifies the links afterwards. `--dry-run`,
+`--uninstall` and `-h` do what they say.
 
 set canvas url for assignment notifications (`canvas-notify`):
 ```sh

@@ -1,36 +1,14 @@
-#!/usr/bin/env bash
+#!/bin/sh
+# Bootstrap for install.fish — the real installer.  Kept so `./install.sh` and
+# any old muscle memory still work on a machine where fish isn't installed yet.
 
 set -e
 
-DOTFILES_DIR="$(cd "$(dirname "$0")" && pwd)"
-
-# Colors
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-RED='\033[0;31m'
-NC='\033[0m'
-
-info()    { echo -e "${GREEN}=>${NC} $*"; }
-warn()    { echo -e "${YELLOW}=>${NC} $*"; }
-error()   { echo -e "${RED}=>${NC} $*"; exit 1; }
-
-# Check dependencies
-command -v stow &>/dev/null || error "GNU Stow is not installed. Install with: sudo pacman -S stow"
-
-cd "$DOTFILES_DIR"
-
-# Stow linux configs
-info "Symlinking dotfiles..."
-stow -v -t "$HOME" linux --restow 2>&1 | grep "^LINK" | sed 's/^/  /'
-echo ""
-
-# Optionally apply coat theme
-if command -v coat &>/dev/null; then
-    info "Applying coat theme..."
-    coat apply
-else
-    warn "coat not found — skipping theme. Install from: https://github.com/jeebuscrossaint/coat"
+if ! command -v fish >/dev/null 2>&1; then
+    echo "fish is not installed, and the installer is written in fish." >&2
+    echo "  pacman -S fish   ·   apt install fish   ·   pkg_add fish" >&2
+    echo "Or just: stow -d \"$(cd "$(dirname "$0")" && pwd)\" -t \"$HOME\" linux" >&2
+    exit 1
 fi
 
-echo ""
-info "Done! Open a new shell to pick up PATH changes."
+exec fish "$(cd "$(dirname "$0")" && pwd)/install.fish" "$@"
