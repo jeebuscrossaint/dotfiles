@@ -478,7 +478,7 @@ local media = {
 -- combination to avoid. Same fix applies to the Lid binds below.
 for _, m in ipairs(media) do
 	hl.bind(m[1], function()
-		hl.dispatch(hl.dsp.exec_cmd(m[2]))
+		hl.exec_cmd(m[2])
 	end, { locked = true, repeating = m[3] })
 end
 
@@ -546,18 +546,68 @@ local function kbd_backlight(delta)
 	osd("\u{f030c}  Keyboard", new, max)
 end
 
+-- XF86KbdBrightnessUp/Down are bound but the laptop never emits them: an
+-- input.keyboard.key log caught volume (xkb 123) arriving while xkb 238/237
+-- never appeared once, and asusd is not running to intercept them. The Super
+-- binds are the ones that actually work; the XF86 ones cost nothing and start
+-- working the day the keycode shows up.
 hl.bind("XF86KbdBrightnessUp", function()
 	kbd_backlight(1)
 end, { locked = true, repeating = true })
 hl.bind("XF86KbdBrightnessDown", function()
 	kbd_backlight(-1)
 end, { locked = true, repeating = true })
+hl.bind(mod .. " + bracketright", function()
+	kbd_backlight(1)
+end, { repeating = true })
+hl.bind(mod .. " + bracketleft", function()
+	kbd_backlight(-1)
+end, { repeating = true })
+
+-- Screen-share indicator. Payload shape is undocumented, so it is read
+-- defensively: boolean, string and table forms all resolve to a single bool.
+-- A badge is cheap insurance against the "was I still sharing?" question.
+local share_notif
+
+hl.on("screenshare.state", function(e)
+	local active
+	local t = type(e)
+	if t == "boolean" then
+		active = e
+	elseif t == "number" then
+		active = e ~= 0
+	elseif t == "string" then
+		active = e ~= "" and e ~= "0" and e ~= "false" and e ~= "off"
+	elseif t == "table" then
+		active = e.sharing or e.state or e.active or e.enabled or false
+		if type(active) == "string" then
+			active = active ~= "" and active ~= "0" and active ~= "false"
+		end
+	else
+		active = false
+	end
+
+	if share_notif then
+		pcall(function()
+			share_notif:dismiss()
+		end)
+		share_notif = nil
+	end
+	if active then
+		share_notif = hl.notification.create({
+			text = "  SCREEN IS BEING SHARED",
+			duration = 3600000,
+			color = c.base08,
+			font_size = 16,
+		})
+	end
+end)
 
 -- Lid: blank the panel, do not suspend. What actually suspends is elogind --
 -- HandleLidSwitch in /etc/elogind/logind.conf.
 hl.bind("switch:on:Lid", function()
-	hl.dispatch(hl.dsp.exec_cmd("hyprctl dispatch dpms off"))
+	hl.exec_cmd("hyprctl dispatch dpms off")
 end, { locked = true })
 hl.bind("switch:off:Lid", function()
-	hl.dispatch(hl.dsp.exec_cmd("hyprctl dispatch dpms on"))
+	hl.exec_cmd("hyprctl dispatch dpms on")
 end, { locked = true })
