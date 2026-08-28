@@ -470,8 +470,16 @@ local media = {
 	{ "Caps_Lock", "osd capslock", false },
 	{ "Num_Lock", "osd numlock", false },
 }
+-- Wrapped in a function rather than passing hl.dsp.exec_cmd(...) straight in.
+-- A dispatcher object combined with locked = true silently never fires: the key
+-- reaches input handling (input.keyboard.key sees it) and the bind is registered
+-- with the right modmask, but the body never runs. The same dispatcher works
+-- unlocked ($mod+Q), and a plain Lua function works locked -- so this is the one
+-- combination to avoid. Same fix applies to the Lid binds below.
 for _, m in ipairs(media) do
-	hl.bind(m[1], hl.dsp.exec_cmd(m[2]), { locked = true, repeating = m[3] })
+	hl.bind(m[1], function()
+		hl.dispatch(hl.dsp.exec_cmd(m[2]))
+	end, { locked = true, repeating = m[3] })
 end
 
 -- Config-drawn OSD. hl.notification is compositor-side: no D-Bus, no daemon, no
@@ -547,5 +555,9 @@ end, { locked = true, repeating = true })
 
 -- Lid: blank the panel, do not suspend. What actually suspends is elogind --
 -- HandleLidSwitch in /etc/elogind/logind.conf.
-hl.bind("switch:on:Lid", hl.dsp.exec_cmd("hyprctl dispatch dpms off"), { locked = true })
-hl.bind("switch:off:Lid", hl.dsp.exec_cmd("hyprctl dispatch dpms on"), { locked = true })
+hl.bind("switch:on:Lid", function()
+	hl.dispatch(hl.dsp.exec_cmd("hyprctl dispatch dpms off"))
+end, { locked = true })
+hl.bind("switch:off:Lid", function()
+	hl.dispatch(hl.dsp.exec_cmd("hyprctl dispatch dpms on"))
+end, { locked = true })
