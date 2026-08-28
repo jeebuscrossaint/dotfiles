@@ -142,8 +142,8 @@ set -g dep_table \
     "theme|cmd:cargo|rust toolchain|core|rustup||rustup|rust|https://rustup.rs" \
     "theme|cmd:coat|coat|core|||||cargo install --git https://github.com/jeebuscrossaint/coat" \
     "fonts|font:SFMono Nerd Font|SFMono Nerd Font|core||nerd-fonts-apple|||./install-nerdfonts.sh" \
-    "fonts|font:MartianMono Nerd Font|MartianMono Nerd Font|core|||||./install-nerdfonts.sh" \
     "fonts|font:Font Awesome|Font Awesome|core|otf-font-awesome||fonts-font-awesome|font-awesome|" \
+    "fonts|font:Noto Color Emoji|Noto Color Emoji|core|noto-fonts-emoji||fonts-noto-color-emoji|noto-emoji|" \
     "apps|cmd:btop|btop|opt|btop||btop|btop|" \
     "apps|cmd:mpv|mpv|opt|mpv||mpv|mpv|" \
     "apps|cmd:zathura|zathura|opt|zathura||zathura|zathura|" \

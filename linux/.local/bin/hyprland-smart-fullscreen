@@ -2,7 +2,7 @@
 # Smart fullscreen for Hyprland: when a workspace holds exactly one tiled window,
 # put it in true fullscreen (mode 0 — covers the whole monitor, bar hidden).
 # When a second window appears, it drops back to tiling. Runs as a daemon
-# (exec-once in hyprland.conf) on Hyprland's event socket. Deps: socat, jq.
+# (exec-once in hyprland.lua) on Hyprland's event socket. Deps: socat, jq.
 # (Prefer keeping the bar visible? Change `fullscreen 0` -> `fullscreen 1`.)
 
 [ -n "$HYPRLAND_INSTANCE_SIGNATURE" ] || exit 0
