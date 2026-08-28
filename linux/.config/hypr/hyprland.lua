@@ -288,6 +288,13 @@ hl.config({
 		-- },
 		-- },
 
+		-- NO TRAFFIC-LIGHT BUTTONS HERE. The conf's three `hyprbars-button =` lines
+		-- cannot be ported: the Lua config layer refuses any key containing a
+		-- hyphen. plugin.hyprbars.bar_height (underscore) applies;
+		-- plugin.hyprbars.hyprbars-button and plugin.dynamic-cursors.* do not --
+		-- both report "unknown config key". Nested tables, separate hl.config
+		-- calls, flat colon paths and `hyprctl eval` were all rejected. The bars
+		-- render, they just have no buttons. Only hyprland.conf can draw them.
 		hyprbars = {
 			bar_height = 28,
 			bar_color = c.surface,
@@ -321,7 +328,9 @@ hl.config({
 hl.bind(mod .. " + Q", hl.dsp.exec_cmd(terminal))
 hl.bind(mod .. " + D", hl.dsp.exec_cmd(menu))
 hl.bind(mod .. " + C", hl.dsp.window.close())
+hl.bind(mod .. " + SHIFT + C", hl.dsp.exec_cmd("hyprctl reload"))
 hl.bind(mod .. " + L", hl.dsp.exec_cmd("hyprlock"))
+hl.bind(mod .. " + Escape", hl.dsp.exec_cmd("pgrep -x swaylock >/dev/null || swaylock -f"))
 hl.bind(mod .. " + P", hl.dsp.exec_cmd("pkill -SIGUSR1 -x waybar")) -- NEVER SIGUSR2: it aborts waybar
 hl.bind(mod .. " + T", hl.dsp.exec_cmd("theme-pick"))
 hl.bind(mod .. " + SHIFT + T", hl.dsp.exec_cmd("theme-random"))
@@ -330,8 +339,17 @@ hl.bind(mod .. " + SHIFT + S", hl.dsp.exec_cmd("screenshot && sfx screenshot"))
 hl.bind(mod .. " + SHIFT + E", hl.dsp.exec_cmd("screenshot-edit"))
 hl.bind(mod .. " + V", hl.dsp.exec_cmd("cliphist list | menu -i -p clip | cliphist decode | wl-copy"))
 hl.bind(mod .. " + SHIFT + V", hl.dsp.window.float({ action = "toggle" }))
+-- mode "maximized" keeps the bar and gaps; "fullscreen" hides them. These are
+-- hyprlang's `fullscreen, 1` and `fullscreen, 0` -- the Lua names are the two
+-- the API accepts ("maximize" is rejected).
+hl.bind(mod .. " + F", hl.dsp.window.fullscreen({ mode = "maximized" }))
+hl.bind(mod .. " + SHIFT + F", hl.dsp.window.fullscreen({ mode = "fullscreen" }))
+hl.bind(mod .. " + M", hl.dsp.window.fullscreen({ mode = "maximized" })) -- muscle memory
 hl.bind(mod .. " + A", hl.dsp.exec_cmd("hyprctl dispatch gloview:toggle"))
 hl.bind(mod .. " + G", hl.dsp.exec_cmd("hyprctl dispatch togglegroup"))
+-- hyprlang's `changegroupactive, f`. hl.dsp.group.active takes only a numeric
+-- index, so forward/back go through group.next/prev instead.
+hl.bind(mod .. " + Tab", hl.dsp.group.next())
 -- Alt+Tab. cyclenext moves focus and bringactivetotop raises it -- without the
 -- second, a floating window takes focus while staying buried.
 hl.bind("ALT + Tab", hl.dsp.exec_cmd("hyprctl dispatch cyclenext; hyprctl dispatch bringactivetotop"))
@@ -346,6 +364,12 @@ for _, d in ipairs({ "left", "right", "up", "down" }) do
 	hl.bind(mod .. " + SHIFT + " .. d, hl.dsp.window.move({ direction = d }))
 end
 
+-- Vim keys for moving windows. The conf binds these on SHIFT only -- there is
+-- no plain $mod+HJKL focus bind to match.
+for _, v in ipairs({ { "H", "left" }, { "J", "down" }, { "K", "up" }, { "L", "right" } }) do
+	hl.bind(mod .. " + SHIFT + " .. v[1], hl.dsp.window.move({ direction = v[2] }))
+end
+
 -- 20 lines of workspace binds become 4.
 for i = 1, 10 do
 	local key = i % 10
@@ -355,6 +379,20 @@ end
 
 hl.bind(mod .. " + mouse:272", hl.dsp.window.drag(), { mouse = true })
 hl.bind(mod .. " + mouse:273", hl.dsp.window.resize(), { mouse = true })
+
+-- Resize submap. hyprlang used `binde` for key repeat; here that is
+-- { repeating = true }. escape and return both leave.
+hl.bind(mod .. " + R", hl.dsp.submap("resize"))
+hl.define_submap("resize", function()
+	for _, r in ipairs({
+		{ "left", -20, 0 }, { "right", 20, 0 }, { "up", 0, -20 }, { "down", 0, 20 },
+		{ "H", -20, 0 }, { "L", 20, 0 }, { "K", 0, -20 }, { "J", 0, 20 },
+	}) do
+		hl.bind(r[1], hl.dsp.window.resize({ x = r[2], y = r[3], relative = true }), { repeating = true })
+	end
+	hl.bind("escape", hl.dsp.submap("reset"))
+	hl.bind("return", hl.dsp.submap("reset"))
+end)
 
 -- Media and brightness. `osd` performs the change AND draws the notification, so
 -- there is no OSD daemon to die and take the keys with it. locked = works while
