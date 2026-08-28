@@ -1,0 +1,33 @@
+#!/bin/sh
+# hyprpm-check — catch a root-owned plugin cache before it costs an afternoon.
+#
+# Run from exec-once. A single `sudo hyprpm` leaves /var/cache/hyprpm/$USER owned
+# by root, and the failure is invisible: hyprpm cannot write its state, but the
+# state it leaves behind still claims the plugins are current, so `hyprpm update`
+# answers "up-to-date" and never rebuilds. The plugins then stop loading on the
+# next aquamarine bump with no error anywhere except `hyprctl plugin list` being
+# shorter than it should be.
+#
+# Also compares enabled-vs-loaded, which is the other half nothing surfaces:
+# `hyprpm list` reports intent, `hyprctl plugin list` reports reality, and a
+# version mismatch sits silently between them.
+
+CACHE="/var/cache/hyprpm/$USER"
+[ -d "$CACHE" ] || exit 0
+sleep 10   # let exec-once's `hyprpm reload` finish first
+
+bad=$(find "$CACHE" ! -user "$USER" -print -quit 2>/dev/null)
+if [ -n "$bad" ]; then
+	notify-send -u critical "󰅚  hyprpm" \
+		"Cache is root-owned — plugins will silently stop loading.
+sudo chown -R \$USER:\$USER $CACHE"
+	exit 0
+fi
+
+enabled=$(hyprpm list 2>/dev/null | grep -c 'enabled: *true')
+loaded=$(hyprctl plugin list 2>/dev/null | grep -c '^Plugin ')
+[ "$enabled" -gt 0 ] && [ "$loaded" -lt "$enabled" ] &&
+	notify-send -u critical "󰅚  hyprpm" \
+		"$loaded of $enabled plugins loaded — likely an ABI bump.
+hyprpm update -f && hyprpm reload -n"
+exit 0
