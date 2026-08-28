@@ -9,7 +9,7 @@
 set -g repo (path dirname (path resolve (status filename)))
 set -g pkg linux
 
-argparse -X 0 h/help n/dry-run v/verbose b/backup a/adopt y/yes no-coat uninstall t/target= -- $argv
+argparse -X 0 h/help n/dry-run v/verbose b/backup a/adopt y/yes no-coat uninstall c/check skip-checks install-deps t/target= -- $argv
 or exit 2
 
 if set -q _flag_help
@@ -19,6 +19,9 @@ if set -q _flag_help
   -b, --backup     move conflicting files aside instead of asking
   -a, --adopt      absorb conflicting files INTO the repo (git diff afterwards)
   -y, --yes        never prompt; implies --backup
+  -c, --check      only check for missing dependencies, then stop
+      --install-deps  install the missing packages without asking
+      --skip-checks   link without checking dependencies at all
   -v, --verbose    list every link, not a summary
   -t, --target DIR link into DIR instead of the home directory
       --no-coat    skip the coat theme step
@@ -86,16 +89,253 @@ function link_paths
     end
 end
 
-command -q stow
-or die "GNU Stow is missing.  pacman -S stow  ·  apt install stow  ·  pkg_add stow"
 test -d $repo/$pkg
 or die "no '$pkg' package in $repo — is this the dotfiles repo?"
 test -w $target
 or die "$target is not writable"
 
+# --- dependencies -------------------------------------------------------------
+#
+#   group | probe | label | tier | pacman | aur | apt | openbsd | hint
+#
+# probe  cmd:BINARY · font:FAMILY · path:P1 P2 (any one existing is enough)
+# tier   req  the installer itself cannot run
+#        core something tracked here calls it and breaks without it
+#        opt  one feature degrades
+#
+# Derived from what the tracked configs and ~/.local/bin scripts actually
+# invoke — grep before adding a row, and keep the paths in step with the
+# probes in start-polkit and hyprland.lua.
+set -g dep_table \
+    "installer|cmd:stow|stow|req|stow||stow|stow|" \
+    "installer|cmd:git|git|core|git||git|git|" \
+    "installer|cmd:fish|fish|req|fish||fish|fish|" \
+    "compositor|cmd:hyprland|hyprland|core|hyprland||hyprland||https://hyprland.org" \
+    "compositor|path:/usr/lib/xdg-desktop-portal-hyprland /usr/libexec/xdg-desktop-portal-hyprland|xdg-desktop-portal-hyprland|core|xdg-desktop-portal-hyprland||||" \
+    "compositor|path:/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 /usr/libexec/polkit-gnome-authentication-agent-1 /usr/local/libexec/polkit-gnome-authentication-agent-1|polkit agent|core|polkit-gnome||policykit-1-gnome|polkit-gnome|" \
+    "desktop|cmd:waybar|waybar|core|waybar||waybar|waybar|" \
+    "desktop|cmd:fnott|fnott|core|fnott||fnott|fnott|" \
+    "desktop|cmd:fuzzel|fuzzel|core|fuzzel||fuzzel|fuzzel|" \
+    "desktop|cmd:awww|awww|core||awww|||" \
+    "desktop|cmd:hypridle|hypridle|core|hypridle||||" \
+    "desktop|cmd:hyprlock|hyprlock|core|hyprlock||||" \
+    "desktop|cmd:swaylock|swaylock|core|swaylock||swaylock|swaylock|" \
+    "terminal|cmd:kitty|kitty|core|kitty||kitty|kitty|" \
+    "terminal|cmd:nvim|neovim|core|neovim||neovim|neovim|" \
+    "terminal|cmd:lsd|lsd|opt|lsd||lsd|lsd|" \
+    "terminal|cmd:bat|bat|opt|bat||bat|bat|" \
+    "terminal|cmd:pfetch|pfetch|opt||pfetch-rs|||" \
+    "clipboard|cmd:wl-copy|wl-clipboard|core|wl-clipboard||wl-clipboard|wl-clipboard|" \
+    "clipboard|cmd:cliphist|cliphist|core|cliphist||||" \
+    "clipboard|cmd:wl-clip-persist|wl-clip-persist|opt||wl-clip-persist|||" \
+    "clipboard|cmd:grim|grim|core|grim||grim|grim|" \
+    "clipboard|cmd:slurp|slurp|core|slurp||slurp|slurp|" \
+    "clipboard|cmd:satty|satty|opt|satty||||" \
+    "clipboard|cmd:swappy|swappy|opt|swappy||swappy|swappy|" \
+    "system|cmd:wpctl|wireplumber|core|wireplumber||wireplumber|wireplumber|" \
+    "system|cmd:notify-send|libnotify|core|libnotify||libnotify-bin|libnotify|" \
+    "system|cmd:brightnessctl|brightnessctl|core|brightnessctl||brightnessctl|brightnessctl|" \
+    "system|cmd:playerctl|playerctl|opt|playerctl||playerctl|playerctl|" \
+    "system|cmd:pavucontrol|pavucontrol|opt|pavucontrol||pavucontrol|pavucontrol|" \
+    "system|cmd:socat|socat|core|socat||socat|socat|" \
+    "system|cmd:jq|jq|core|jq||jq|jq|" \
+    "system|cmd:python3|python|core|python||python3|python|" \
+    "theme|cmd:cargo|rust toolchain|core|rustup||rustup|rust|https://rustup.rs" \
+    "theme|cmd:coat|coat|core|||||cargo install --git https://github.com/jeebuscrossaint/coat" \
+    "fonts|font:SFMono Nerd Font|SFMono Nerd Font|core||nerd-fonts-apple|||./install-nerdfonts.sh" \
+    "fonts|font:MartianMono Nerd Font|MartianMono Nerd Font|core|||||./install-nerdfonts.sh" \
+    "fonts|font:Font Awesome|Font Awesome|core|otf-font-awesome||fonts-font-awesome|font-awesome|" \
+    "apps|cmd:btop|btop|opt|btop||btop|btop|" \
+    "apps|cmd:mpv|mpv|opt|mpv||mpv|mpv|" \
+    "apps|cmd:zathura|zathura|opt|zathura||zathura|zathura|" \
+    "apps|cmd:wttrbar|wttrbar|opt||wttrbar|||" \
+    "apps|cmd:magick|imagemagick|opt|imagemagick||imagemagick|ImageMagick|" \
+    "apps|cmd:broot|broot|opt|broot||broot||" \
+    "apps|cmd:prime-run|nvidia-prime|opt|nvidia-prime||||" \
+    "mango|cmd:mmsg|mangowm|opt||mangowm|||" \
+    "mango|cmd:wlopm|wlopm|opt||wlopm|||" \
+    "mango|cmd:foot|foot|opt|foot||foot|foot|"
+
+function pkg_manager
+    test (uname -s) = OpenBSD; and echo openbsd; and return
+    command -q pacman; and echo pacman; and return
+    command -q apt-get; and echo apt; and return
+    echo unknown
+end
+
+function aur_helper
+    for h in paru yay
+        command -q $h; and echo $h; and return
+    end
+end
+
+function dep_present -a probe
+    set -l parts (string split -m1 : -- $probe)
+    switch $parts[1]
+        case cmd
+            command -q $parts[2]
+        case font
+            test (count $font_families) -gt 0; or return 0 # no fontconfig: don't cry wolf
+            string match -qi -- "*$parts[2]*" $font_families
+        case path
+            for p in (string split ' ' -- $parts[2])
+                test -e $p; and return 0
+            end
+            return 1
+    end
+end
+
+# Reports what is missing; returns 1 if anything req/core is.
+function check_deps
+    set -g font_families
+    command -q fc-list; and set -g font_families (fc-list : family 2>/dev/null | string split ,)
+
+    set -l pm (pkg_manager)
+    set -l aur (aur_helper)
+    set -l col 5
+    switch $pm
+        case apt; set col 7
+        case openbsd; set col 8
+        case unknown; set col 0
+    end
+
+    set -l groups
+    set -l rendered
+    set -l miss_req; set -l miss_core; set -l miss_opt
+    set -l want_pm; set -l want_aur; set -l hints; set -l orphans
+    set -l total 0
+
+    for rec in $dep_table
+        set -l f (string split '|' -- $rec)
+        set -l group $f[1]; set -l label $f[3]; set -l tier $f[4]
+        set total (math $total + 1)
+
+        set -l i (contains -i -- $group $groups)
+        or begin
+            set -a groups $group
+            set -a rendered ''
+            set i (count $groups)
+        end
+
+        set -l sep ''
+        test -n "$rendered[$i]"; and set sep " $c_dim·$c_off"
+
+        if dep_present $f[2]
+            set rendered[$i] "$rendered[$i]$sep $c_dim$label$c_off"
+            continue
+        end
+
+        switch $tier
+            case req; set -a miss_req $label; set rendered[$i] "$rendered[$i]$sep $c_err✗$label$c_off"
+            case core; set -a miss_core $label; set rendered[$i] "$rendered[$i]$sep $c_err✗$label$c_off"
+            case '*'; set -a miss_opt $label; set rendered[$i] "$rendered[$i]$sep $c_warn✗$label$c_off"
+        end
+
+        set -l pkg ''
+        test $col -gt 0; and set pkg $f[$col]
+        set -l apkg ''
+        test $pm = pacman; and set apkg $f[6]
+
+        if test -n "$pkg"
+            set -a want_pm $pkg
+        else if test -n "$apkg"
+            set -a want_aur $apkg
+        else if test -n "$f[9]"
+            contains -- "$label|$f[9]" $hints; or set -a hints "$label|$f[9]"
+        else
+            set -a orphans $label
+        end
+    end
+
+    step "Checking $total dependencies..."
+    for i in (seq (count $groups))
+        printf '   %s%-11s%s%s\n' "$c_step" $groups[$i] "$c_off" "$rendered[$i]"
+    end
+    echo
+
+    set -l gone (math (count $miss_req) + (count $miss_core) + (count $miss_opt))
+    if test $gone -eq 0
+        ok "everything is here"
+        return 0
+    end
+
+    note "$gone missing — "(count $miss_req)" required, "(count $miss_core)" core, "(count $miss_opt)" optional"
+    echo
+
+    # The paste-me block, and the same thing as runnable commands.
+    set -g dep_cmds
+    if test (count $want_pm) -gt 0
+        switch $pm
+            case pacman; set -g dep_cmds $dep_cmds "sudo pacman -S --needed $want_pm"
+            case apt; set -g dep_cmds $dep_cmds "sudo apt install $want_pm"
+            case openbsd; set -g dep_cmds $dep_cmds "doas pkg_add $want_pm"
+        end
+    end
+    if test (count $want_aur) -gt 0
+        if test -n "$aur"
+            set -g dep_cmds $dep_cmds "$aur -S --needed $want_aur"
+        else
+            printf '   %s# no AUR helper yet:%s git clone https://aur.archlinux.org/paru-bin.git && cd paru-bin && makepkg -si\n' "$c_warn" "$c_off"
+            printf '   %s# then:%s paru -S --needed %s\n' "$c_warn" "$c_off" "$want_aur"
+        end
+    end
+    for c in $dep_cmds
+        printf '   %s%s%s\n' "$c_ok" $c "$c_off"
+    end
+    for h in $hints
+        set -l parts (string split -m1 '|' -- $h)
+        printf '   %s%-22s%s %s\n' "$c_ok" $parts[2] "$c_off" "$c_dim# $parts[1]$c_off"
+    end
+    if test (count $orphans) -gt 0
+        printf '   %s# no package known here for:%s %s\n' "$c_dim" "$c_off" "$orphans"
+    end
+    test $pm = pacman; or printf '   %s# package names outside Arch are best-effort — check them%s\n' "$c_dim" "$c_off"
+    echo
+
+    # Offer to actually run it.  Once only, however badly it goes.
+    if test (count $dep_cmds) -gt 0; and not set -q deps_installed
+        set -l go
+        if set -q _flag_install_deps
+            set go yes
+        else if isatty stdin; and not set -q _flag_yes
+            read -P "  run the "(count $dep_cmds)" command(s) above now? [y/N] " -l answer
+            string match -qi 'y*' -- (string trim -- $answer); and set go yes
+            echo
+        end
+        if test -n "$go"
+            set -g deps_installed 1
+            for c in $dep_cmds
+                step $c
+                fish -c "$c"; or note "that failed — carry on by hand"
+            end
+            echo
+            step "Re-checking..."
+            set -e dep_cmds
+            check_deps
+            return $status
+        end
+    end
+
+    test (count $miss_req) -eq 0 -a (count $miss_core) -eq 0
+end
+
 printf '\n%sdotfiles%s  %s → %s\n' "$c_step" "$c_off" (string replace $HOME '~' $repo) (string replace $HOME '~' $target)
-dim (stow --version | string collect)
+command -q stow; and dim (stow --version | string collect)
 echo
+
+if set -q _flag_check
+    check_deps
+    exit $status
+end
+
+if not set -q _flag_skip_checks; and not set -q _flag_uninstall
+    check_deps
+    or note "linking anyway — the configs for the missing pieces are harmless on their own"
+    echo
+end
+
+command -q stow
+or die "GNU Stow is missing.  pacman -S stow  ·  apt install stow  ·  pkg_add stow"
 
 # --- uninstall ----------------------------------------------------------------
 

@@ -20,6 +20,11 @@ absorbs) anything already sitting where a link belongs, since stow otherwise
 refuses the whole package, and verifies the links afterwards. `--dry-run`,
 `--uninstall` and `-h` do what they say.
 
+On a fresh machine it first checks the 48 things the tracked configs actually
+call — binaries, fonts, the polkit agent — prints the missing ones grouped, and
+hands you the exact `pacman`/`paru`/`apt`/`pkg_add` line for them (or offers to
+run it). `./install.fish --check` is that report on its own.
+
 set canvas url for assignment notifications (`canvas-notify`):
 ```sh
 echo "YOUR_URL" > ~/.config/canvas/ical-url
