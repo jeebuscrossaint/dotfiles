@@ -414,6 +414,42 @@ hl.define_submap("resize", function()
 	hl.bind("return", hl.dsp.submap("reset"))
 end)
 
+-- Submap indicator. A submap is otherwise invisible: you are in a different
+-- keymap with nothing on screen saying so. keybinds.submap hands the name as a
+-- plain string and "" when leaving, so one handler covers enter, switch and exit.
+-- hl.notification.create returns a dismissable object, which is what makes a
+-- badge that lasts exactly as long as the submap possible -- the duration is just
+-- a ceiling, the dismiss on exit is what actually takes it down.
+local submap_hint = {
+	resize = "\u{2190}\u{2193}\u{2191}\u{2192} / hjkl resize   esc, return to exit",
+}
+local submap_notif
+
+local function clear_submap_notif()
+	if submap_notif then
+		pcall(function()
+			submap_notif:dismiss()
+		end)
+		submap_notif = nil
+	end
+end
+
+hl.on("keybinds.submap", function(name)
+	clear_submap_notif()
+	if name == "" then
+		return
+	end
+	submap_notif = hl.notification.create({
+		text = "  " .. name:upper() .. "    " .. (submap_hint[name] or ""),
+		duration = 3600000,
+		color = c.ov_accent,
+		font_size = 16,
+	})
+end)
+
+-- A reload while inside a submap would strand the badge on screen otherwise.
+hl.on("config.reloaded", clear_submap_notif)
+
 -- Media and brightness. `osd` performs the change AND draws the notification, so
 -- there is no OSD daemon to die and take the keys with it. locked = works while
 -- the session is locked; repeating = holding the key repeats.
