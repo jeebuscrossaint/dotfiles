@@ -3,7 +3,7 @@
 #
 #   idle-guard lock    lock, but wait out any audio that is still playing
 #   idle-guard dpms    same, for blanking the screen
-#   idle-guard cancel  abort a pending guard (the user came back)
+#   idle-guard cancel  abort every pending guard (the user came back)
 #
 # The problem this solves: hypridle fires on INPUT idleness alone, so watching a
 # video with the keyboard untouched locks the screen at the timeout. There is no
@@ -13,7 +13,7 @@
 # decline and expect to be asked again. It waits instead, re-checking until the
 # audio stops, and the on-resume hook kills it if input returns first.
 
-STATE="${XDG_RUNTIME_DIR:-/tmp}/idle-guard.pid"
+RUN="${XDG_RUNTIME_DIR:-/tmp}"
 
 audio_playing() {
 	# ALSA's own view, which covers anything routed through pipewire without
@@ -29,16 +29,23 @@ audio_playing() {
 do_lock() { pgrep -x hyprlock >/dev/null 2>&1 || { sfx lock; hyprlock >/dev/null 2>&1 & }; }
 do_dpms() { hyprctl dispatch dpms off >/dev/null 2>&1; }
 
+# One file per action, not one overall: the dpms and lock listeners both have a
+# guard pending during the same idle period, and a single pid file meant `cancel`
+# killed the newer one and left the other waiting to blank the screen under you.
 case "$1" in
 cancel)
-	[ -f "$STATE" ] && kill "$(cat "$STATE")" 2>/dev/null
-	rm -f "$STATE"
+	for f in "$RUN"/idle-guard.dpms.pid "$RUN"/idle-guard.lock.pid; do
+		[ -f "$f" ] || continue
+		kill "$(cat "$f")" 2>/dev/null
+		rm -f "$f"
+	done
 	exit 0
 	;;
 lock | dpms) action="$1" ;;
 *) exit 0 ;;
 esac
 
+STATE="$RUN/idle-guard.$action.pid"
 echo $$ > "$STATE"
 trap 'rm -f "$STATE"' EXIT
 

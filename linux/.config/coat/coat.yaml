@@ -15,7 +15,6 @@ enabled:
   - mango
   - waybar
   - fnott
-  - swaylock
   - fuzzel
   - kitty
   - hyprland

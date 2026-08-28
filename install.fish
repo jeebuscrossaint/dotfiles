@@ -119,7 +119,6 @@ set -g dep_table \
     "desktop|cmd:awww|awww|core||awww|||" \
     "desktop|cmd:hypridle|hypridle|core|hypridle||||" \
     "desktop|cmd:hyprlock|hyprlock|core|hyprlock||||" \
-    "desktop|cmd:swaylock|swaylock|core|swaylock||swaylock|swaylock|" \
     "terminal|cmd:kitty|kitty|core|kitty||kitty|kitty|" \
     "terminal|cmd:nvim|neovim|core|neovim||neovim|neovim|" \
     "terminal|cmd:lsd|lsd|opt|lsd||lsd|lsd|" \
@@ -150,11 +149,8 @@ set -g dep_table \
     "apps|cmd:zathura|zathura|opt|zathura||zathura|zathura|" \
     "apps|cmd:wttrbar|wttrbar|opt||wttrbar|||" \
     "apps|cmd:magick|imagemagick|opt|imagemagick||imagemagick|ImageMagick|" \
-    "apps|cmd:broot|broot|opt|broot||broot||" \
     "apps|cmd:prime-run|nvidia-prime|opt|nvidia-prime||||" \
-    "mango|cmd:mmsg|mangowm|opt||mangowm|||" \
-    "mango|cmd:wlopm|wlopm|opt||wlopm|||" \
-    "mango|cmd:foot|foot|opt|foot||foot|foot|"
+    "mango|cmd:mmsg|mangowm|opt||mangowm|||"
 
 function pkg_manager
     test (uname -s) = OpenBSD; and echo openbsd; and return
