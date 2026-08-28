@@ -191,7 +191,11 @@ local anims = {
 	{ "global", 4, "macOut" },
 	{ "windows", 4, "macOut", "slide" },
 	{ "windowsIn", 4, "macOut", "slide" },
-	{ "windowsOut", 4, "macOut", "slide" },
+	-- Slower than the rest on purpose: a close is the one animation with no
+	-- successor state to look at, so at 4 it was over before the eye caught it.
+	-- fadeOut MUST match -- at alpha 0 the geometry is still animating but
+	-- invisible, so the shorter of the two is the duration you actually see.
+	{ "windowsOut", 6, "macOut", "slide" },
 	{ "windowsMove", 4, "macMove", "slide" },
 	{ "border", 4, "macStd" },
 	{ "layers", 4, "macOut", "popin 96%" },
@@ -199,7 +203,7 @@ local anims = {
 	{ "layersOut", 2.7, "macOut", "popin 96%" },
 	{ "fade", 4, "macFade" },
 	{ "fadeIn", 4, "macFade" },
-	{ "fadeOut", 4, "macFade" },
+	{ "fadeOut", 6, "macFade" },
 	{ "fadeSwitch", 2.7, "macFade" },
 	{ "fadeShadow", 4, "macFade" },
 	{ "fadeDim", 2.7, "macFade" },
@@ -231,6 +235,22 @@ hl.window_rule({ name = "pip-pin", match = { title = "Picture-in-Picture" }, pin
 -- no `fade` window style to ask for. Tiled windows keep the slide, which is what
 -- makes them read as pushing each other; a float has nothing to push.
 hl.window_rule({ name = "float-fade", match = { float = true }, animation = "popin 100%" })
+
+-- The only tiled window on a workspace closes with nothing to push, so the slide
+-- had nothing to read against and looked instant however long it actually ran.
+-- popin gives it motion of its own. `w[tv1]` is one tiled visible window, and the
+-- rule is re-evaluated as that count changes, so this applies to the last window
+-- standing and to nothing else. The match key is `workspace`, NOT hyprlang's
+-- `onworkspace:` -- the Lua binding renames it, and accepts the same selectors.
+--
+-- Hyprland cannot vary animation DURATION per window -- speed is per-leaf and
+-- global. Style is the only thing a rule can pick, which is why the duration
+-- above had to move for everyone.
+hl.window_rule({
+	name = "lone-window-popin",
+	match = { float = false, workspace = "w[tv1]" },
+	animation = "popin 80%",
+})
 
 -- Blur only the surfaces meant to read as glass. waybar is deliberately NOT in this
 -- list: its window is transparent and every module is an rgba 0.85 island, so
