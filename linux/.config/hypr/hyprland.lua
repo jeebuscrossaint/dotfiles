@@ -62,7 +62,17 @@ hl.on("hyprland.start", function()
 		"wl-paste --type text --watch cliphist store",
 		"wl-paste --type image --watch cliphist store",
 		"wl-clip-persist --clipboard regular",
-		"hyprpm reload -n",
+		-- DISABLED 2026-08-27: hyprfocus.so segfaults the compositor on every window
+		-- focus (fullWindowFocus -> rawWindowFocus -> focus signal -> SEGV), so
+		-- spawning a single window kills the session. hyprpm cannot disable it while
+		-- /var/cache/hyprpm/$USER is root-owned from a `sudo hyprpm`, and this line
+		-- is what loads every plugin -- so it goes off until the cache is chowned:
+		--   sudo chown -R $USER:$USER /var/cache/hyprpm/$USER
+		--   hyprpm disable hyprwm/hyprfocus && hyprpm enable daxisunder/hyprfocus
+		--   hyprpm update -f
+		-- Re-enable this line after that. Costs hyprbars, gloview and
+		-- dynamic-cursors in the meantime; the compositor stays up.
+		-- "hyprpm reload -n",
 		"hyprpm-check",
 	}
 	for _, cmd in ipairs(once) do
