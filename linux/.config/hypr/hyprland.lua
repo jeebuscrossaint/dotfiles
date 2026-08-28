@@ -464,8 +464,6 @@ local media = {
 	{ "XF86AudioPrev", "osd prev", false },
 	{ "XF86MonBrightnessUp", "osd brightness up", true },
 	{ "XF86MonBrightnessDown", "osd brightness down", true },
-	{ "XF86KbdBrightnessUp", "osd kbd up", true },
-	{ "XF86KbdBrightnessDown", "osd kbd down", true },
 	{ "XF86TouchpadToggle", "osd touchpad", false },
 	-- Binding a lock key does not stop it working: xkb processes the keycode and
 	-- pushes the LED before the compositor declines to forward it.
@@ -475,6 +473,77 @@ local media = {
 for _, m in ipairs(media) do
 	hl.bind(m[1], hl.dsp.exec_cmd(m[2]), { locked = true, repeating = m[3] })
 end
+
+-- Config-drawn OSD. hl.notification is compositor-side: no D-Bus, no daemon, no
+-- fork. It does NOT replace fnott -- fnott serves *application* notifications
+-- over D-Bus, which Hyprland does not implement. This is config feedback only.
+--
+-- Only sysfs-backed controls live here. Volume stays in ~/.local/bin/osd because
+-- reading it back needs wpctl, and io.popen would fork on the compositor's main
+-- thread -- a frame hitch at 240Hz. Screen brightness stays there too: it steps
+-- in raw units against a floor, and that logic is worth more than the fork.
+local osd_notif
+
+local function osd(text, value, maxv)
+	if osd_notif then
+		pcall(function()
+			osd_notif:dismiss()
+		end)
+	end
+	local bar = ""
+	if value and maxv and maxv > 0 then
+		local filled = math.floor((value / maxv) * 10 + 0.5)
+		bar = "   " .. string.rep("\u{2588}", filled) .. string.rep("\u{2591}", 10 - filled) .. "   " .. value .. "/" .. maxv
+	end
+	osd_notif = hl.notification.create({
+		text = text .. bar,
+		duration = 1500,
+		color = c.ov_accent,
+		font_size = 16,
+	})
+end
+
+-- Keyboard backlight, read and written straight through sysfs. Four discrete
+-- steps, so the bar shows 2/3 rather than a rounded percentage. The write needs
+-- flush(): without it the value never reaches the kernel.
+local KBD_LED = "/sys/class/leds/asus::kbd_backlight"
+
+local function read_int(path)
+	local h = io.open(path, "r")
+	if not h then
+		return nil
+	end
+	local v = tonumber(h:read("*l"))
+	h:close()
+	return v
+end
+
+local function kbd_backlight(delta)
+	local cur = read_int(KBD_LED .. "/brightness")
+	local max = read_int(KBD_LED .. "/max_brightness")
+	if not cur or not max or max <= 0 then
+		return
+	end
+	local new = math.max(0, math.min(max, cur + delta))
+	if new ~= cur then
+		local h = io.open(KBD_LED .. "/brightness", "w")
+		if h then
+			h:write(tostring(new) .. "\n")
+			h:flush()
+			h:close()
+		else
+			return -- not in the input group; leave the LED and the OSD alone
+		end
+	end
+	osd("\u{f030c}  Keyboard", new, max)
+end
+
+hl.bind("XF86KbdBrightnessUp", function()
+	kbd_backlight(1)
+end, { locked = true, repeating = true })
+hl.bind("XF86KbdBrightnessDown", function()
+	kbd_backlight(-1)
+end, { locked = true, repeating = true })
 
 -- Lid: blank the panel, do not suspend. What actually suspends is elogind --
 -- HandleLidSwitch in /etc/elogind/logind.conf.
