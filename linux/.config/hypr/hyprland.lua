@@ -169,6 +169,11 @@ hl.config({
 hl.curve("macOut", { type = "bezier", points = { { 0.22, 1.00 }, { 0.36, 1.00 } } })
 hl.curve("macStd", { type = "bezier", points = { { 0.25, 0.10 }, { 0.25, 1.00 } } })
 hl.curve("macFade", { type = "bezier", points = { { 0.50, 0.50 }, { 0.75, 1.00 } } })
+-- Geometry changes get their own curve. macOut is so front-loaded it is nearly a
+-- step: fine for a window sliding in from an edge, wrong for one resizing to the
+-- whole screen, where it lurches and then crawls. A real S -- slow out of rest,
+-- sustained middle, soft settle -- keeps the motion continuous for the full 400ms.
+hl.curve("macMove", { type = "bezier", points = { { 0.40, 0.00 }, { 0.20, 1.00 } } })
 
 hl.config({ animations = { enabled = true } })
 
@@ -180,7 +185,7 @@ local anims = {
 	{ "windows", 4, "macOut", "slide" },
 	{ "windowsIn", 4, "macOut", "slide" },
 	{ "windowsOut", 4, "macOut", "slide" },
-	{ "windowsMove", 4, "macOut", "slide" },
+	{ "windowsMove", 4, "macMove", "slide" },
 	{ "border", 4, "macStd" },
 	{ "layers", 4, "macOut", "popin 96%" },
 	{ "layersIn", 4, "macOut", "popin 96%" },
