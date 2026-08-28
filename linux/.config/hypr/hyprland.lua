@@ -241,40 +241,52 @@ hl.config({
 		-- x86_64 only. stretch squishes the cursor in the direction of motion.
 		-- Dialled back from stock: nothing else here overshoots, and the default
 		-- limit smeared the pointer far enough to read as a glitch at 240Hz.
-		["dynamic-cursors"] = {
-			enabled = true,
-			mode = "stretch",
-			threshold = 2, -- min angle change (deg) before reshaping
-			stretch = {
-				limit = 2000,
-				["function"] = "quadratic", -- reserved word in Lua, so bracketed
-			},
-			-- Hyprcursor shapes rather than a rasterised xcursor, so the stretched
-			-- pointer stays sharp -- HYPRCURSOR_THEME is set at the top of this file.
-			hyprcursor = { nearest = false },
-			shake = { enabled = false },
-		},
+		-- COMMENTED 2026-08-27: these values never applied. dynamic-cursors IS
+		-- loaded, and `hyprctl getoption plugin:dynamic-cursors:mode` resolves --
+		-- but every key reports `set: false` and the parser calls them unknown, so
+		-- the plugin runs on defaults (mode=tilt, stretch:limit=3000). gloview and
+		-- hyprbars in the same hl.config call apply fine; the difference is the
+		-- hyphen in the namespace, which the Lua config layer will not assign to.
+		-- Nested table, own hl.config call, and flat colon paths were all rejected.
+		-- Kept verbatim so it can be restored if the Lua bridge learns to set them.
+		-- ["dynamic-cursors"] = {
+		-- enabled = true,
+		-- mode = "stretch",
+		-- threshold = 2, -- min angle change (deg) before reshaping
+		-- stretch = {
+		-- limit = 2000,
+		-- ["function"] = "quadratic", -- reserved word in Lua, so bracketed
+		-- },
+		-- -- Hyprcursor shapes rather than a rasterised xcursor, so the stretched
+		-- -- pointer stays sharp -- HYPRCURSOR_THEME is set at the top of this file.
+		-- hyprcursor = { nearest = false },
+		-- shake = { enabled = false },
+		-- },
 
 		-- Subtle flash on focus change. Lineage matters: VortexCoyote/hyprfocus is
 		-- unmaintained, daxisunder's fork is the one that tracks current Hyprland,
 		-- and hyprwm/hyprland-plugins ships its OWN hyprfocus (a different plugin,
 		-- same name). These keys are written for daxisunder's -- enabling the hyprwm
 		-- one instead segfaults the compositor on the first focus change.
-		hyprfocus = {
-			enabled = true,
-			animate_floating = true,
-			animate_workspacechange = true,
-			focus_animation = "flash",
-			-- Dip FAST, recover SLOW. 0.70 because inactive_opacity is 0.90 -- the
-			-- dip has to go clearly below where the eye is coming from.
-			flash = {
-				flash_opacity = 0.70,
-				in_bezier = "focusIn",
-				in_speed = 0.6,
-				out_bezier = "focusOut",
-				out_speed = 1.8,
-			},
-		},
+		-- COMMENTED 2026-08-27: hyprfocus is disabled in hyprpm (it segfaults on
+		-- window focus under the hyprutils 0.14.0/0.14.1 skew), so these keys are
+		-- unknown and only produce error-overlay noise. Restore together with
+		-- `hyprpm enable daxisunder/hyprfocus`.
+		-- hyprfocus = {
+		-- enabled = true,
+		-- animate_floating = true,
+		-- animate_workspacechange = true,
+		-- focus_animation = "flash",
+		-- -- Dip FAST, recover SLOW. 0.70 because inactive_opacity is 0.90 -- the
+		-- -- dip has to go clearly below where the eye is coming from.
+		-- flash = {
+		-- flash_opacity = 0.70,
+		-- in_bezier = "focusIn",
+		-- in_speed = 0.6,
+		-- out_bezier = "focusOut",
+		-- out_speed = 1.8,
+		-- },
+		-- },
 
 		hyprbars = {
 			bar_height = 28,
@@ -302,8 +314,8 @@ hl.config({
 -- --verify-config), so each curve needs its own hl.config call. 1.00, not 1.05,
 -- on the last control point: an overshoot there sprang the focus flash past its
 -- target opacity and let it settle back.
-hl.config({ plugin = { hyprfocus = { bezier = "focusIn, 0.15, 0.85, 0.30, 1.00" } } })
-hl.config({ plugin = { hyprfocus = { bezier = "focusOut, 0.20, 0.60, 0.35, 1.00" } } })
+-- hl.config({ plugin = { hyprfocus = { bezier = "focusIn, 0.15, 0.85, 0.30, 1.00" } } })
+-- hl.config({ plugin = { hyprfocus = { bezier = "focusOut, 0.20, 0.60, 0.35, 1.00" } } })
 
 ------------------------------------------------------------------ keybinds
 hl.bind(mod .. " + Q", hl.dsp.exec_cmd(terminal))
