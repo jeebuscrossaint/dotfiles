@@ -6,7 +6,7 @@
 // The outer definition wins on any key it defines, so everything else (right side,
 // geometry, style.css) comes from the include.
 //
-// Started from hyprland.conf: exec-once = waybar -c <this file>
+// Started from hyprland.lua: exec-once = waybar -c <this file>
 {
   "include": ["/home/amarnath/.config/waybar/config.jsonc"],
 

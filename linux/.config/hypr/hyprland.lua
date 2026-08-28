@@ -1,11 +1,12 @@
--- ~/.config/hypr/hyprland.lua — the Lua port of hyprland.conf.
+-- ~/.config/hypr/hyprland.lua — THE Hyprland config.
 --
--- THIS FILE IS THE LIVE CONFIG. Hyprland 0.56 prefers hyprland.lua over
--- hyprland.conf whenever both exist and picks it up with no --config flag:
+-- Hyprland 0.56 picks this up with no --config flag:
 --   [cfg] Using lua config found at ~/.config/hypr/hyprland.lua
--- So edits to hyprland.conf do NOTHING while this file is here. Both are kept
--- because coat writes the colours for both on every apply, but the .conf is a
--- fallback you have to move this file aside to reach -- not a parallel config.
+-- The hyprlang hyprland.conf it was ported from is deleted, not kept as a
+-- fallback -- it only ever collected stale edits that did nothing.
+--
+-- Colours AND the font come from coat via require("coat-colors"): c.base0X,
+-- c.font, c.font_size. Never write a font family or a colour literal here.
 --
 -- Verify without applying:  Hyprland --config ~/.config/hypr/hyprland.lua --verify-config
 --
@@ -309,7 +310,7 @@ hl.config({
 			bar_blur = true,
 			["col.text"] = c.base05,
 			bar_text_size = 12,
-			bar_text_font = "MartianMono Nerd Font Mono",
+			bar_text_font = c.font,
 			bar_text_weight = 600,
 			bar_text_align = "center",
 			bar_title_enabled = true,
