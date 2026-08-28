@@ -19,7 +19,7 @@ enabled:
   - kitty
   - hyprland
 
-scheme: chalk
+scheme: wall-a-snowy-mountain-tops-with-blue-sky
 prefer_base24: false
 
 # Evens out whatever scheme is loaded. `coat docs normalize` lists the knobs.

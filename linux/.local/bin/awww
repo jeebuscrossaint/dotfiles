@@ -1,0 +1,70 @@
+#!/bin/sh
+# awww — the wallpaper daemon's CLI, wrapped so the colours follow the wallpaper.
+#
+# `awww img ...` sets the wallpaper and then re-runs `coat match`, but ONLY when
+# the scheme in use is one coat generated from a wallpaper. Pin a real scheme and
+# nothing here fires:
+#
+#   coat match          from now on, wallpapers retheme the desktop
+#   coat set chalk      from now on, they do not
+#
+# The rule is not a flag to remember, it is just what the current scheme IS: a
+# generated scheme lives in schemes/generated/, a chosen one does not.
+#
+#   COAT_FOLLOW=0 awww img x.png    set the wallpaper, leave the theme alone
+#   COAT_FOLLOW=1 awww img x.png    retheme even from a hand-picked scheme
+#
+# Everything that is not `img` is handed straight through, `restore` included:
+# that runs at login with the wallpaper already themed, and a retheme there would
+# restart waybar and fnott for no reason every time you log in.
+
+COAT_YAML="${XDG_CONFIG_HOME:-$HOME/.config}/coat/coat.yaml"
+GENERATED="${XDG_CONFIG_HOME:-$HOME/.config}/coat/schemes/generated"
+
+# The real binary: the first awww on PATH that is not this script. Resolved
+# rather than hardcoded to /usr/bin so a cargo-installed or packaged awww both
+# work -- and so this cannot recurse into itself if either moves.
+self=$(readlink -f "$0" 2>/dev/null || echo "$0")
+real=''
+old_ifs=$IFS
+IFS=:
+for dir in $PATH; do
+	candidate="$dir/awww"
+	[ -x "$candidate" ] || continue
+	resolved=$(readlink -f "$candidate" 2>/dev/null || echo "$candidate")
+	[ "$resolved" = "$self" ] && continue
+	real=$candidate
+	break
+done
+IFS=$old_ifs
+
+if [ -z "$real" ]; then
+	echo "awww: the real awww is not on PATH (this is the theming wrapper)" >&2
+	exit 127
+fi
+
+"$real" "$@" || exit $?
+
+[ "$1" = img ] || exit 0
+[ "$COAT_FOLLOW" = 0 ] && exit 0
+command -v coat >/dev/null 2>&1 || exit 0
+
+scheme=$(sed -n 's/^scheme:[[:space:]]*//p' "$COAT_YAML" 2>/dev/null | head -1 | tr -d '"')
+
+if [ "$COAT_FOLLOW" != 1 ] && [ ! -f "$GENERATED/$scheme.yaml" ]; then
+	exit 0
+fi
+
+# Keep whatever flavour the current scheme was generated with -- the slug records
+# it, so following the wallpaper does not silently switch you from --slots back
+# to the default, or from a light scheme to a dark one.
+flags=''
+case "$scheme" in
+*-slots*) flags="$flags --slots" ;;
+esac
+case "$scheme" in
+*-light) flags="$flags --light" ;;
+esac
+
+# shellcheck disable=SC2086 # flags is a deliberate word-split, and never a path.
+exec coat match $flags

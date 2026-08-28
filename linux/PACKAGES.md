@@ -26,7 +26,7 @@ Remove one of these and something in this repo stops working.
 | Compositor | `hyprland`, `mangowm` (AUR), `scenefx0.5`, `xdg-desktop-portal-hyprland`, `polkit-gnome`, `elogind-runit` |
 | Bar / notify / launcher | `waybar`, `fnott`, `fuzzel`, `wttrbar` (AUR) |
 | Idle & lock | `hypridle`, `hyprlock`, `swayidle` |
-| Wallpaper | `awww` |
+| Wallpaper | `awww` (wrapped by `~/.local/bin/awww`, so `awww img` retheme-follows) |
 | Terminal & shell | `kitty`, `fish`, `lsd`, `bat`, `less`, `tree` |
 | Editor | `neovim` |
 | Files & monitoring | `yazi`, `btop`, `fastfetch`, `pfetch-rs` |
