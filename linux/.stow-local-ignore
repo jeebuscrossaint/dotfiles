@@ -25,3 +25,8 @@ _darcs
 ^/README.*
 ^/LICENSE.*
 ^/COPYING
+
+# Repo documentation, not home configuration -- without these stow links
+# ~/PACKAGES.md and ~/packages into the home directory.
+^/PACKAGES\.md
+^/packages
