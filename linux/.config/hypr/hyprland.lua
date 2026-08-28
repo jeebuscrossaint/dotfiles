@@ -231,8 +231,12 @@ hl.window_rule({ name = "pip-pin", match = { title = "Picture-in-Picture" }, pin
 -- makes them read as pushing each other; a float has nothing to push.
 hl.window_rule({ name = "float-fade", match = { float = true }, animation = "popin 100%" })
 
--- One strip of glass the full width of the bar, with the islands sitting on it.
-for _, ns in ipairs({ "waybar", "fnott", "notifications", "launcher" }) do
+-- Blur only the surfaces meant to read as glass. waybar is deliberately NOT in this
+-- list: its window is transparent and every module is an rgba 0.85 island, so
+-- blurring the layer frosted the wallpaper behind each slab -- that was the acrylic.
+-- Without the rule the islands are flat tint over the unblurred wallpaper. Layer
+-- blur is opt-in in Hyprland, so dropping the namespace is the whole change.
+for _, ns in ipairs({ "fnott", "notifications", "launcher" }) do
 	hl.layer_rule({ name = "blur-" .. ns, match = { namespace = "^" .. ns .. "$" }, blur = true })
 end
 
