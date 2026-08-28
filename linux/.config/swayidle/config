@@ -6,15 +6,10 @@
 #
 # The pgrep guard is not optional -- session-lock allows exactly one lock client,
 # so a manual lock plus an idle lock gave two password prompts.
-timeout 300 'pgrep -x swaylock >/dev/null || swaylock -f'
+timeout 300 'pgrep -x hyprlock >/dev/null || hyprlock'
 
-# wlopm, not `swaymsg output * dpms`: swaymsg needs a sway IPC socket, finds none
-# under mango, and the screen simply never blanked.
-timeout 600 'wlopm --off "*"' resume 'wlopm --on "*"'
+before-sleep 'pgrep -x hyprlock >/dev/null || hyprlock'
 
-before-sleep 'pgrep -x swaylock >/dev/null || swaylock -f'
-
-# `resume` above only fires as the 600s timeout's own handler, so waking from
-# suspend left the panel powered off -- awake, backlight dark, looking dead.
-# after-resume runs unconditionally.
-after-resume 'wlopm --on "*"'
+# No blanking timeout here: that needed wlopm (swaymsg wants a sway IPC socket
+# mango does not provide) and wlopm is gone. Hyprland's own path in
+# hypr/hypridle.conf uses hyprctl dpms and blanks at 120s.

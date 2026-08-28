@@ -19,7 +19,7 @@ stow -D -t ~ linux    # uninstall
 | bar | **waybar** | native modules + `mmsg watch` streamers for tags and title |
 | notifications | **fnott** | also draws the volume/brightness OSD, via `~/.local/bin/osd` |
 | launcher | **fuzzel** | .desktop entries with icons; `menu` / `menu-run` wrap it |
-| lock / idle | **swaylock** + **swayidle** | |
+| lock / idle | **hyprlock** + **swayidle** | |
 | terminal | **kitty** | coat writes `coat-theme.conf`; `kitty @ set-colors` recolours live |
 | shell | **fish** | |
 | editor | **nvim** | lazy.nvim |
@@ -65,7 +65,6 @@ linux/
 │   ├── fnott/         notifications and OSD
 │   ├── fuzzel/        launcher (colours patched in place by coat)
 │   ├── swayidle/      idle → lock → screen off
-│   ├── swaylock/
 │   ├── kitty/ fish/  nvim/  bat/  btop/  zathura/  gtk-3.0/  gtk-4.0/  paru/
 │   └── ...
 └── .local/
@@ -74,7 +73,7 @@ linux/
 ```
 
 Files coat *generates* (`coat-colors.conf`, `coat-colors.css`, `coat-theme.ini`,
-`fnott.ini`, `swaylock/config`, and the colour keys it patches into `fuzzel.ini`)
+`fnott.ini` and the colour keys it patches into `fuzzel.ini`)
 are gitignored or patched in place. Only hand-written config
 is tracked, so a scheme change never shows up as a diff.
 
@@ -101,7 +100,7 @@ survive being recoloured:
 
 **sway/swaybar** → mango/waybar · **dwl** → mango (compile-time config) ·
 **foot** → **kitty** · **tofi** → wmenu → **fuzzel** (tofi is not in OpenBSD ports; wmenu has no
-.desktop support and no config file) · **gtklock** → swaylock ·
+.desktop support and no config file) · **gtklock** → swaylock → hyprlock ·
 **dunst** → fnott · **labwc**, **wayfire** → mango does it all natively ·
 **swayrbar**, **slstatus**, **barstat** → native waybar
 modules · **ashell** · **avizo**, **swayosd**, **wob** → the OSD is a

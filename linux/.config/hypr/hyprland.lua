@@ -355,7 +355,7 @@ hl.bind(mod .. " + D", hl.dsp.exec_cmd(menu))
 hl.bind(mod .. " + C", hl.dsp.window.close())
 hl.bind(mod .. " + SHIFT + C", hl.dsp.exec_cmd("hyprctl reload"))
 hl.bind(mod .. " + L", hl.dsp.exec_cmd("hyprlock"))
-hl.bind(mod .. " + Escape", hl.dsp.exec_cmd("pgrep -x swaylock >/dev/null || swaylock -f"))
+hl.bind(mod .. " + Escape", hl.dsp.exec_cmd("pgrep -x hyprlock >/dev/null || hyprlock"))
 hl.bind(mod .. " + P", hl.dsp.exec_cmd("pkill -SIGUSR1 -x waybar")) -- NEVER SIGUSR2: it aborts waybar
 hl.bind(mod .. " + T", hl.dsp.exec_cmd("theme-pick"))
 hl.bind(mod .. " + SHIFT + T", hl.dsp.exec_cmd("theme-random"))
