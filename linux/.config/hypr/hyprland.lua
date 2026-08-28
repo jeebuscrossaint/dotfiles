@@ -62,17 +62,16 @@ hl.on("hyprland.start", function()
 		"wl-paste --type text --watch cliphist store",
 		"wl-paste --type image --watch cliphist store",
 		"wl-clip-persist --clipboard regular",
-		-- DISABLED 2026-08-27: hyprfocus.so segfaults the compositor on every window
-		-- focus (fullWindowFocus -> rawWindowFocus -> focus signal -> SEGV), so
-		-- spawning a single window kills the session. hyprpm cannot disable it while
-		-- /var/cache/hyprpm/$USER is root-owned from a `sudo hyprpm`, and this line
-		-- is what loads every plugin -- so it goes off until the cache is chowned:
-		--   sudo chown -R $USER:$USER /var/cache/hyprpm/$USER
-		--   hyprpm disable hyprwm/hyprfocus && hyprpm enable daxisunder/hyprfocus
-		--   hyprpm update -f
-		-- Re-enable this line after that. Costs hyprbars, gloview and
-		-- dynamic-cursors in the meantime; the compositor stays up.
-		-- "hyprpm reload -n",
+		-- hyprfocus is disabled in hyprpm, not here: its focus hook segfaults the
+		-- compositor on every window focus (fullWindowFocus -> rawWindowFocus ->
+		-- SEGV in hyprfocus.so). Both copies crash -- daxisunder's and hyprwm's --
+		-- so it is not the fork, it is the hyprutils skew: Hyprland 0.56.1-3 is
+		-- built against hyprutils 0.14.0 while the system runs 0.14.1, and plugins
+		-- rebuilt now compile against 0.14.1 headers. Same-soname (.so.13), so
+		-- nothing catches it until the signal machinery dereferences garbage.
+		-- Retry hyprfocus after Hyprland is rebuilt against 0.14.1 (extra/hyprland
+		-- 0.56.2-1 or later), then: hyprpm enable daxisunder/hyprfocus
+		"hyprpm reload -n",
 		"hyprpm-check",
 	}
 	for _, cmd in ipairs(once) do
