@@ -241,27 +241,24 @@ hl.config({
 		-- x86_64 only. stretch squishes the cursor in the direction of motion.
 		-- Dialled back from stock: nothing else here overshoots, and the default
 		-- limit smeared the pointer far enough to read as a glitch at 240Hz.
-		-- COMMENTED 2026-08-27: these values never applied. dynamic-cursors IS
-		-- loaded, and `hyprctl getoption plugin:dynamic-cursors:mode` resolves --
-		-- but every key reports `set: false` and the parser calls them unknown, so
-		-- the plugin runs on defaults (mode=tilt, stretch:limit=3000). gloview and
-		-- hyprbars in the same hl.config call apply fine; the difference is the
-		-- hyphen in the namespace, which the Lua config layer will not assign to.
-		-- Nested table, own hl.config call, and flat colon paths were all rejected.
-		-- Kept verbatim so it can be restored if the Lua bridge learns to set them.
-		-- ["dynamic-cursors"] = {
-		-- enabled = true,
-		-- mode = "stretch",
-		-- threshold = 2, -- min angle change (deg) before reshaping
-		-- stretch = {
-		-- limit = 2000,
-		-- ["function"] = "quadratic", -- reserved word in Lua, so bracketed
-		-- },
-		-- -- Hyprcursor shapes rather than a rasterised xcursor, so the stretched
-		-- -- pointer stays sharp -- HYPRCURSOR_THEME is set at the top of this file.
-		-- hyprcursor = { nearest = false },
-		-- shake = { enabled = false },
-		-- },
+		-- Namespace is dynamic_cursors with an UNDERSCORE. hyprlang spells it
+		-- `dynamic-cursors`; the Lua bridge maps the hyphen to an underscore and
+		-- rejects the hyphenated form as an unknown config key. With the underscore
+		-- `hyprctl getoption plugin:dynamic-cursors:mode` reports set: true.
+		dynamic_cursors = {
+			enabled = true,
+			mode = "stretch",
+			threshold = 2, -- min angle change (deg) before reshaping
+			stretch = {
+				-- No `function` key: `hyprctl getoption plugin:dynamic-cursors:stretch:function`
+				-- says "no such option". The conf carries a key this build dropped.
+				limit = 2000,
+			},
+			-- Hyprcursor shapes rather than a rasterised xcursor, so the stretched
+			-- pointer stays sharp -- HYPRCURSOR_THEME is set at the top of this file.
+			hyprcursor = { nearest = false },
+			shake = { enabled = false },
+		},
 
 		-- Subtle flash on focus change. Lineage matters: VortexCoyote/hyprfocus is
 		-- unmaintained, daxisunder's fork is the one that tracks current Hyprland,
@@ -288,13 +285,9 @@ hl.config({
 		-- },
 		-- },
 
-		-- NO TRAFFIC-LIGHT BUTTONS HERE. The conf's three `hyprbars-button =` lines
-		-- cannot be ported: the Lua config layer refuses any key containing a
-		-- hyphen. plugin.hyprbars.bar_height (underscore) applies;
-		-- plugin.hyprbars.hyprbars-button and plugin.dynamic-cursors.* do not --
-		-- both report "unknown config key". Nested tables, separate hl.config
-		-- calls, flat colon paths and `hyprctl eval` were all rejected. The bars
-		-- render, they just have no buttons. Only hyprland.conf can draw them.
+		-- Traffic-light buttons are not set here: hyprlang's `hyprbars-button =`
+		-- lines become hl.plugin.hyprbars.add_button() calls, in the deferred
+		-- block further down -- that API only exists once the plugin has loaded.
 		hyprbars = {
 			bar_height = 28,
 			bar_color = c.surface,
@@ -324,6 +317,23 @@ hl.config({
 -- hl.config({ plugin = { hyprfocus = { bezier = "focusIn, 0.15, 0.85, 0.30, 1.00" } } })
 -- hl.config({ plugin = { hyprfocus = { bezier = "focusOut, 0.20, 0.60, 0.35, 1.00" } } })
 
+-- macOS traffic lights. hl.plugin.hyprbars only exists once the plugin is
+-- loaded, and hyprpm's exec-once runs AFTER this file is parsed -- so load it
+-- here. hl.plugin.load is idempotent (hyprpm loading it again returns ok), and
+-- doing it synchronously beats hl.timer, which segfaults `--verify-config`.
+-- pcall'd so a missing .so costs the buttons, not the whole config.
+-- Actions must be Lua-form dispatches: `hyprctl dispatch killactive` fails on a
+-- Lua config, `hyprctl dispatch 'hl.dsp.window.close()'` works.
+pcall(hl.plugin.load, "/var/cache/hyprpm/amarnath/hyprland-plugins/hyprbars.so")
+if hl.plugin and hl.plugin.hyprbars then
+	local function button(bg, icon, action)
+		hl.plugin.hyprbars.add_button({ bg_color = bg, fg_color = c.base00, size = 12, icon = icon, action = action })
+	end
+	button(c.base08, "×", "hyprctl dispatch 'hl.dsp.window.close()'")
+	button(c.base0A, "−", [[hyprctl dispatch 'hl.dsp.window.move({ workspace = "special:magic" })']])
+	button(c.base0B, "+", [[hyprctl dispatch 'hl.dsp.window.fullscreen({ mode = "maximized" })']])
+end
+
 ------------------------------------------------------------------ keybinds
 hl.bind(mod .. " + Q", hl.dsp.exec_cmd(terminal))
 hl.bind(mod .. " + D", hl.dsp.exec_cmd(menu))
@@ -345,11 +355,10 @@ hl.bind(mod .. " + SHIFT + V", hl.dsp.window.float({ action = "toggle" }))
 hl.bind(mod .. " + F", hl.dsp.window.fullscreen({ mode = "maximized" }))
 hl.bind(mod .. " + SHIFT + F", hl.dsp.window.fullscreen({ mode = "fullscreen" }))
 hl.bind(mod .. " + M", hl.dsp.window.fullscreen({ mode = "maximized" })) -- muscle memory
--- BROKEN, and not fixable from Lua: gloview:toggle is a plugin dispatcher and
--- hl.dsp has no entry for it, while `exec hyprctl dispatch` is parsed as Lua
--- and fails. Same root cause as the 4-finger overview gesture noted above.
--- Only hyprland.conf can reach plugin dispatchers.
-hl.bind(mod .. " + A", hl.dsp.exec_cmd("hyprctl dispatch gloview:toggle"))
+-- gloview:toggle has no hl.dsp entry, but the plugin exports its own Lua API.
+-- Wrapped in a function so hl.plugin resolves when the key is pressed, not when
+-- this file is parsed -- the plugin is not loaded yet at parse time.
+hl.bind(mod .. " + A", function() hl.plugin.gloview.toggle() end)
 hl.bind(mod .. " + G", hl.dsp.group.toggle())
 -- hyprlang's `changegroupactive, f`. hl.dsp.group.active takes only a numeric
 -- index, so forward/back go through group.next/prev instead.
