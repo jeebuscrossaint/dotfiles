@@ -345,15 +345,26 @@ hl.bind(mod .. " + SHIFT + V", hl.dsp.window.float({ action = "toggle" }))
 hl.bind(mod .. " + F", hl.dsp.window.fullscreen({ mode = "maximized" }))
 hl.bind(mod .. " + SHIFT + F", hl.dsp.window.fullscreen({ mode = "fullscreen" }))
 hl.bind(mod .. " + M", hl.dsp.window.fullscreen({ mode = "maximized" })) -- muscle memory
+-- BROKEN, and not fixable from Lua: gloview:toggle is a plugin dispatcher and
+-- hl.dsp has no entry for it, while `exec hyprctl dispatch` is parsed as Lua
+-- and fails. Same root cause as the 4-finger overview gesture noted above.
+-- Only hyprland.conf can reach plugin dispatchers.
 hl.bind(mod .. " + A", hl.dsp.exec_cmd("hyprctl dispatch gloview:toggle"))
-hl.bind(mod .. " + G", hl.dsp.exec_cmd("hyprctl dispatch togglegroup"))
+hl.bind(mod .. " + G", hl.dsp.group.toggle())
 -- hyprlang's `changegroupactive, f`. hl.dsp.group.active takes only a numeric
 -- index, so forward/back go through group.next/prev instead.
 hl.bind(mod .. " + Tab", hl.dsp.group.next())
 -- Alt+Tab. cyclenext moves focus and bringactivetotop raises it -- without the
 -- second, a floating window takes focus while staying buried.
-hl.bind("ALT + Tab", hl.dsp.exec_cmd("hyprctl dispatch cyclenext; hyprctl dispatch bringactivetotop"))
-hl.bind("ALT + SHIFT + Tab", hl.dsp.exec_cmd("hyprctl dispatch cyclenext prev; hyprctl dispatch bringactivetotop"))
+-- Native dispatchers, NOT `exec hyprctl dispatch ...`: on a Lua config hyprctl
+-- wraps its argument as hl.dispatch(<arg>) and parses it as Lua, so every
+-- `hyprctl dispatch cyclenext` errors with "expected a dispatcher". The bind
+-- fired and the command failed, which is why Alt+Tab did nothing.
+-- Two binds per key, exactly as the conf had two `bind = ALT, Tab` lines.
+hl.bind("ALT + Tab", hl.dsp.window.cycle_next())
+hl.bind("ALT + Tab", hl.dsp.window.bring_to_top())
+hl.bind("ALT + SHIFT + Tab", hl.dsp.window.cycle_next({ prev = true }))
+hl.bind("ALT + SHIFT + Tab", hl.dsp.window.bring_to_top())
 hl.bind(mod .. " + backslash", hl.dsp.layout("togglesplit"))
 hl.bind(mod .. " + U", hl.dsp.window.pseudo())
 hl.bind(mod .. " + grave", hl.dsp.workspace.toggle_special("magic"))
