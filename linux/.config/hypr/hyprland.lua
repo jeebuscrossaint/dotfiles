@@ -180,6 +180,12 @@ hl.config({ animations = { enabled = true } })
 -- A table, not 24 near-identical lines. Windows slide so a new one travels in
 -- from the nearest edge while its neighbours slide over -- they read as pushing
 -- each other rather than one appearing on top.
+--
+-- macOut vs macMove is a distance call, not a taste call. macOut is nearly a step,
+-- which reads as snappy over a few pixels and as a lurch over a few hundred. So
+-- anything crossing the screen -- geometry changes, workspace slides -- takes
+-- macMove, and the layer popins stay on macOut because `popin 96%` travels 4% of
+-- a surface and an S-curve there just feels like dragging.
 local anims = {
 	{ "global", 4, "macOut" },
 	{ "windows", 4, "macOut", "slide" },
@@ -199,10 +205,10 @@ local anims = {
 	{ "fadeLayers", 4, "macFade" },
 	{ "fadeLayersIn", 4, "macFade" },
 	{ "fadeLayersOut", 2.7, "macFade" },
-	{ "workspaces", 4, "macOut", "slide" },
-	{ "workspacesIn", 4, "macOut", "slide" },
-	{ "workspacesOut", 4, "macOut", "slide" },
-	{ "specialWorkspace", 4, "macOut", "slidefadevert 30%" },
+	{ "workspaces", 4, "macMove", "slide" },
+	{ "workspacesIn", 4, "macMove", "slide" },
+	{ "workspacesOut", 4, "macMove", "slide" },
+	{ "specialWorkspace", 4, "macMove", "slidefadevert 30%" },
 	{ "zoomFactor", 4, "macOut" },
 }
 for _, a in ipairs(anims) do
