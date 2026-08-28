@@ -497,7 +497,7 @@ local function osd(text, value, maxv)
 	end
 	osd_notif = hl.notification.create({
 		text = text .. bar,
-		duration = 1500,
+		duration = 2500,
 		color = c.ov_accent,
 		font_size = 16,
 	})
