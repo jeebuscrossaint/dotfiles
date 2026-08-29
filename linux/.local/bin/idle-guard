@@ -29,12 +29,13 @@ audio_playing() {
 do_lock() { pgrep -x hyprlock >/dev/null 2>&1 || { sfx lock; hyprlock >/dev/null 2>&1 & }; }
 do_dpms() { hyprctl dispatch dpms off >/dev/null 2>&1; }
 
-# One file per action, not one overall: the dpms and lock listeners both have a
-# guard pending during the same idle period, and a single pid file meant `cancel`
-# killed the newer one and left the other waiting to blank the screen under you.
+# One file per invocation, not one per action: several guards are pending during
+# the same idle period -- dpms, lock, and the second dpms that re-blanks after
+# the lock surface wakes the outputs -- and a shared pid file meant `cancel`
+# killed the newest one and left the rest waiting to blank the screen under you.
 case "$1" in
 cancel)
-	for f in "$RUN"/idle-guard.dpms.pid "$RUN"/idle-guard.lock.pid; do
+	for f in "$RUN"/idle-guard.*.pid; do
 		[ -f "$f" ] || continue
 		kill "$(cat "$f")" 2>/dev/null
 		rm -f "$f"
@@ -45,7 +46,7 @@ lock | dpms) action="$1" ;;
 *) exit 0 ;;
 esac
 
-STATE="$RUN/idle-guard.$action.pid"
+STATE="$RUN/idle-guard.$action.$$.pid"
 echo $$ > "$STATE"
 trap 'rm -f "$STATE"' EXIT
 
