@@ -25,12 +25,6 @@ GENERATED="${XDG_CONFIG_HOME:-$HOME/.config}/coat/schemes/generated"
 # path pointing at the current image -- and this is the one place that always
 # knows one was set.
 WALLPAPER_LINK="${XDG_CACHE_HOME:-$HOME/.cache}/current-wallpaper"
-# ...and a small PNG copy of it. Two reasons it cannot just be the original:
-# kitty's graphics protocol accepts PNG or raw pixels, nothing else, and
-# fastfetch's own decoder cannot read a progressive JPEG -- which is what most
-# of the wallpapers here are. Both failures are SILENT: fastfetch reserves the
-# space and draws nothing, or quietly falls back to the distro logo.
-WALLPAPER_PNG="${XDG_CACHE_HOME:-$HOME/.cache}/current-wallpaper.png"
 
 # The real binary: the first awww on PATH that is not this script. Resolved
 # rather than hardcoded to /usr/bin so a cargo-installed or packaged awww both
@@ -67,20 +61,6 @@ img | restore)
 		sed -n 's/.*currently displaying: image: //p' | head -1)
 	if [ -n "$current" ] && [ -f "$current" ]; then
 		ln -sfn "$current" "$WALLPAPER_LINK"
-		# Downscaled: kitty draws it at a few dozen cells, so a 6016x4016
-		# original is pure cost. Via a temp file and a rename so a fastfetch
-		# running at the same moment never reads a half-written PNG.
-		if command -v magick >/dev/null 2>&1; then
-			# PNG: is not optional. ImageMagick picks the output format from
-			# the extension, and the temp file ends in .tmp -- so it fell back
-			# to the INPUT format and wrote a JPEG into a file named .png,
-			# which kitty then refused to draw.
-			if magick "$current" -resize 640x640 -strip "PNG:$WALLPAPER_PNG.tmp" 2>/dev/null; then
-				mv -f "$WALLPAPER_PNG.tmp" "$WALLPAPER_PNG"
-			else
-				rm -f "$WALLPAPER_PNG.tmp"
-			fi
-		fi
 	fi
 	;;
 esac
