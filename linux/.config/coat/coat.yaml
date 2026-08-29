@@ -12,6 +12,16 @@ enabled:
   - mpv
   - vscode
 
+  - yazi
+  - cava
+  - fastfetch
+  - lsd
+  - imv
+  - satty
+  - prismlauncher
+  # Teams + Outlook DESKTOP (Electron). Browser tabs are coat-webapps' job.
+  - msteams
+
   - mango
   - waybar
   - fnott
