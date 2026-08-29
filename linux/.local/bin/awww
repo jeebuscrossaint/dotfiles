@@ -20,6 +20,11 @@
 
 COAT_YAML="${XDG_CONFIG_HOME:-$HOME/.config}/coat/coat.yaml"
 GENERATED="${XDG_CONFIG_HOME:-$HOME/.config}/coat/schemes/generated"
+# A stable path to whatever is on screen. fastfetch draws the wallpaper as its
+# logo and cannot run a command to find it, so something has to hold a fixed
+# path pointing at the current image -- and this is the one place that always
+# knows one was set.
+WALLPAPER_LINK="${XDG_CACHE_HOME:-$HOME/.cache}/current-wallpaper"
 
 # The real binary: the first awww on PATH that is not this script. Resolved
 # rather than hardcoded to /usr/bin so a cargo-installed or packaged awww both
@@ -44,6 +49,21 @@ if [ -z "$real" ]; then
 fi
 
 "$real" "$@" || exit $?
+
+# Ask the daemon rather than parsing our own arguments: `restore` sets a
+# wallpaper without naming one, and `img` takes flags the parse would have to
+# track. query is authoritative for both. Done BEFORE the COAT_FOLLOW gates
+# below, which exist to decide whether to RETHEME -- the link should follow the
+# wallpaper either way.
+case "$1" in
+img | restore)
+	current=$("$real" query 2>/dev/null |
+		sed -n 's/.*currently displaying: image: //p' | head -1)
+	if [ -n "$current" ] && [ -f "$current" ]; then
+		ln -sfn "$current" "$WALLPAPER_LINK"
+	fi
+	;;
+esac
 
 [ "$1" = img ] || exit 0
 [ "$COAT_FOLLOW" = 0 ] && exit 0
