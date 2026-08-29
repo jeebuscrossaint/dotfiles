@@ -20,6 +20,15 @@ OUT = os.path.join(HERE, "coat-webapps.xpi")
 # ~/.mozilla/native-messaging-hosts/com.coat.webapp_theme.json.
 GECKO_ID = "coat-webapps@amarnath"
 
+# Firefox-only background scope: theming the browser chrome needs the surface
+# derivation in the background context, not just in content scripts.
+BACKGROUND_SCRIPTS = [
+    "coat-colors.js",
+    "coat-surfaces.js",
+    "coat-firefox-theme.js",
+    "background.js",
+]
+
 SRC_MANIFEST = os.path.join(EXT, "manifest.json")
 if not os.path.isfile(SRC_MANIFEST):
     sys.exit("no manifest.json in %s -- run make-manifest.py first" % EXT)
@@ -43,7 +52,14 @@ def firefox_manifest(m):
     }
     sw = m.get("background", {}).get("service_worker")
     if sw:
-        m["background"] = {"scripts": [sw]}
+        # Firefox loads these in order into one shared global, so the theme
+        # module and the colour helpers it needs must come before background.js.
+        # Chromium's single service_worker entry cannot express this, which is
+        # the other reason the two manifests are separate.
+        m["background"] = {"scripts": BACKGROUND_SCRIPTS}
+    # browser.theme.update() is what makes the chrome repaint live; Chromium has
+    # no equivalent, so the permission would only be an unknown-key warning there.
+    m["permissions"] = sorted(set(m.get("permissions", [])) | {"theme"})
     return m
 
 

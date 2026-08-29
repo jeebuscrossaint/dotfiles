@@ -97,3 +97,21 @@ The traditional `~/.mozilla/native-messaging-hosts/` path is stowed as well,
 since a build without the XDG migration still reads that one and an unused
 manifest is inert. If the host is not spawning, check which of the two that
 Firefox actually reads before assuming the extension is at fault.
+
+## Firefox's own chrome
+
+`coat-firefox-theme.js` repaints the browser itself — tab strip, toolbar,
+urlbar, popups, sidebar — through `browser.theme.update()`, live, with no
+restart. It runs in the background context and only ships in the xpi.
+
+This is why the Firefox build has its own background script list: the chrome
+theming needs `deriveSurfaces()` in the background scope, which Chromium's
+single `service_worker` entry cannot express.
+
+coat's `firefox.tera` (userChrome.css) does the same job statically and needs a
+restart per scheme change. Enabling both is redundant — the theme API wins,
+since it repaints live and does not need
+`toolkit.legacyUserProfileCustomizations.stylesheets`.
+
+**Chromium's chrome cannot be themed this way.** Its browser theme is a packaged
+theme extension with no runtime API, so only page content is themed there.

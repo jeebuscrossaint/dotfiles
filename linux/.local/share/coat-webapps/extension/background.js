@@ -62,6 +62,9 @@ function connect() {
     current = theme;
     api.storage.local.set({ theme });
     broadcast(theme);
+    // Firefox only: repaint the browser's own chrome. The Chromium build does
+    // not ship this file, and Chromium has no runtime theme API anyway.
+    if (typeof applyBrowserTheme === "function") applyBrowserTheme(theme);
   });
 
   nativePort.onDisconnect.addListener(() => {
@@ -90,6 +93,9 @@ api.storage.local.get("theme").then(({ theme }) => {
   if (theme && !current) {
     current = theme;
     broadcast(theme);
+    // Paint the chrome from cache immediately on startup, so the browser is
+    // themed before the native host has finished connecting.
+    if (typeof applyBrowserTheme === "function") applyBrowserTheme(theme);
   }
 }).catch(() => {});
 
