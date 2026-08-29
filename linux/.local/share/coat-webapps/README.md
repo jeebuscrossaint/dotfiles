@@ -84,3 +84,16 @@ the one file inside it, it symlinks the whole `~/.mozilla` to the repo. Firefox
 then builds its entire profile — history, cookies, cache, sessionstore — inside
 the git tree on first launch. Pre-creating the directory makes stow link just
 the leaf.
+
+### Where Firefox looks for the native-messaging manifest
+
+Firefox 155 on this machine uses XDG paths: its root is `~/.config/mozilla/`,
+not `~/.mozilla/` — profiles live in `~/.config/mozilla/firefox/`. So the
+manifest has to be at
+
+    ~/.config/mozilla/native-messaging-hosts/com.coat.webapp_theme.json
+
+The traditional `~/.mozilla/native-messaging-hosts/` path is stowed as well,
+since a build without the XDG migration still reads that one and an unused
+manifest is inert. If the host is not spawning, check which of the two that
+Firefox actually reads before assuming the extension is at fault.
