@@ -1,0 +1,69 @@
+{
+  "manifest_version": 3,
+  "name": "coat web app theme",
+  "version": "0.1.0",
+  "description": "Make web apps follow the active coat scheme: palette, accent, and light/dark.",
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAiPDZ74/IZQuC/xeEaCmsebJkzTSnUt+7peicwHXpy/DprYvp5OeXiHPoaOMGCTfbmLMVJGH1hKNa9LxzH4RsV4F+GqwR0IPPY45/mIOVZTgxuSscKfqwur30P/9T3cULia6uRWsPYhs9w3r1eg8Uy2AWaWKarfaAin28/t0US5pbzdDbZrolaiXLpH/ut1nzUuCNFXeflXEKsl8THBk3Ld7ouifjq/48JhbLMSiXfocuR6oVRsNuV/qpbBkQPfoizGNmQwyrUj9pboHdTbLOSqvH8qUZT/8VpH9dupbnCy6APdQ5ShV5fNOnEF4Y6aGXcWcFsTHRo68dXdIMKczMNQIDAQAB",
+  "permissions": [
+    "nativeMessaging",
+    "storage"
+  ],
+  "host_permissions": [
+    "*://discord.com/*",
+    "*://github.com/*",
+    "*://gist.github.com/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "*://discord.com/*",
+        "*://github.com/*",
+        "*://gist.github.com/*"
+      ],
+      "js": [
+        "inject-prefers-color-scheme.js"
+      ],
+      "run_at": "document_start",
+      "all_frames": false,
+      "world": "MAIN"
+    },
+    {
+      "matches": [
+        "*://discord.com/*",
+        "*://github.com/*",
+        "*://gist.github.com/*"
+      ],
+      "js": [
+        "coat-colors.js",
+        "coat-surfaces.js",
+        "coat-runtime.js"
+      ],
+      "run_at": "document_start",
+      "all_frames": false
+    },
+    {
+      "matches": [
+        "*://discord.com/*"
+      ],
+      "js": [
+        "discord.js"
+      ],
+      "run_at": "document_start",
+      "all_frames": false
+    },
+    {
+      "matches": [
+        "*://github.com/*",
+        "*://gist.github.com/*"
+      ],
+      "js": [
+        "github.js"
+      ],
+      "run_at": "document_start",
+      "all_frames": false
+    }
+  ]
+}
