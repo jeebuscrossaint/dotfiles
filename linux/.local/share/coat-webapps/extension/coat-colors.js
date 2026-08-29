@@ -103,3 +103,17 @@ function alphaForContrast(inkHex, bgs, target) {
   // DOWN to 2dp puts it back under the target it was solved for.
   return Math.min(1, Math.ceil(hi * 100) / 100);
 }
+
+// Rough perceptual distance, for "is this slot far enough from the accent to
+// read as a different thing". Weighted sRGB rather than a real dE: the decision
+// it feeds is a coarse one and this needs no colour-space conversion.
+function colorDistance(aHex, bHex) {
+  const a = hexToRgb(aHex);
+  const b = hexToRgb(bHex);
+  if (!a || !b) return 0;
+  const rm = (a.r + b.r) / 2;
+  const dr = a.r - b.r;
+  const dg = a.g - b.g;
+  const db = a.b - b.b;
+  return Math.sqrt((2 + rm / 256) * dr * dr + 4 * dg * dg + (2 + (255 - rm) / 256) * db * db);
+}

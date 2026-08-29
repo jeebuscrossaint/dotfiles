@@ -16,6 +16,17 @@ KEY = open(os.path.join(HERE, "chromium-key.txt")).read().strip()
 SITES = {
     "discord": ["*://discord.com/*"],
     "github": ["*://github.com/*", "*://gist.github.com/*"],
+    "outlook": [
+        "*://outlook.office.com/*",
+        "*://outlook.office365.com/*",
+        "*://outlook.live.com/*",
+        "*://outlook.cloud.microsoft/*",
+    ],
+    "teams": [
+        "*://teams.microsoft.com/*",
+        "*://teams.live.com/*",
+        "*://teams.cloud.microsoft/*",
+    ],
 }
 
 all_matches = [m for v in SITES.values() for m in v]
@@ -36,7 +47,7 @@ manifest = {
          "run_at": "document_start", "all_frames": False, "world": "MAIN"},
         # The engine. One entry, so these three share a scope.
         {"matches": all_matches,
-         "js": ["coat-colors.js", "coat-surfaces.js", "coat-runtime.js"],
+         "js": ["coat-colors.js", "coat-surfaces.js", "coat-fluent.js", "coat-runtime.js"],
          "run_at": "document_start", "all_frames": False},
     ] + [
         {"matches": m, "js": ["%s.js" % name], "run_at": "document_start", "all_frames": False}

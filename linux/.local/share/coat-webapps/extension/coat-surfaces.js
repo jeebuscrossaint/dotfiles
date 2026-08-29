@@ -20,15 +20,35 @@ function deriveSurfaces(theme) {
   // Shade direction: lighten on dark schemes, darken on light ones.
   const dir = isDark ? 1 : -1;
 
-  // Recessed chrome (sidebars, rails, nav). base24 defines base10/base11 as the
-  // darker/darkest background exactly for this, so use them literally when the
-  // scheme has them; base16 schemes get a shaded base00 instead.
+  // Recessed chrome (sidebars, rails, nav). Every app in this family steps its
+  // chrome DARKER than the reading surface, in both polarities -- Fluent's light
+  // ladder is #ffffff pane -> #f5f5f5 list -> #f0f0f0 rail, and Discord's rail is
+  // darker than its chat pane.
+  //
+  // base24 nominally defines base10/base11 as the darker/darkest background, but
+  // they are only usable when they are a STEP. On light schemes they are usually
+  // the dark-variant pair instead: 3024-day goes #f7f7f7 -> #3d3a38 and
+  // builtin-light #ffffff -> #383838, which is a full inversion, not a panel.
+  // Measured over the 30 light base24 schemes, so take them only when the
+  // luminance gap is small enough to read as elevation.
   //
   // base01/base02 would be the obvious base16 candidates and are deliberately
-  // NOT used: across the scheme library those slots land anywhere, and chrome
-  // built on them goes illegible on the schemes that put them near base05.
-  const recessed = c.base10 || shade(theme.bg, -dir * 0.03);
-  const recessedDeep = c.base11 || shade(theme.bg, -dir * 0.06);
+  // NOT used: across the library those slots land anywhere, and chrome built on
+  // them goes illegible on the schemes that put them near base05.
+  const bgLum = relLuminance(bgRgb);
+  // Below this there is no room left to go darker, so recession has to lift.
+  const recessDir = bgLum < 0.02 ? 1 : -1;
+
+  function recess(candidate, amount) {
+    if (candidate) {
+      const rgb = hexToRgb(candidate);
+      if (rgb && Math.abs(relLuminance(rgb) - bgLum) <= 0.12) return candidate;
+    }
+    return shade(theme.bg, recessDir * amount);
+  }
+
+  const recessed = recess(c.base10, 0.03);
+  const recessedDeep = recess(c.base11, 0.06);
 
   // A touch of accent in the chrome so the whole app reads as themed rather
   // than merely grey. Kept low -- heavier mixes flood the chrome on warm or
