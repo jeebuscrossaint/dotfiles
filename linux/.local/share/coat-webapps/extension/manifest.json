@@ -11,7 +11,14 @@
   "host_permissions": [
     "*://discord.com/*",
     "*://github.com/*",
-    "*://gist.github.com/*"
+    "*://gist.github.com/*",
+    "*://outlook.office.com/*",
+    "*://outlook.office365.com/*",
+    "*://outlook.live.com/*",
+    "*://outlook.cloud.microsoft/*",
+    "*://teams.microsoft.com/*",
+    "*://teams.live.com/*",
+    "*://teams.cloud.microsoft/*"
   ],
   "background": {
     "service_worker": "background.js"
@@ -21,7 +28,14 @@
       "matches": [
         "*://discord.com/*",
         "*://github.com/*",
-        "*://gist.github.com/*"
+        "*://gist.github.com/*",
+        "*://outlook.office.com/*",
+        "*://outlook.office365.com/*",
+        "*://outlook.live.com/*",
+        "*://outlook.cloud.microsoft/*",
+        "*://teams.microsoft.com/*",
+        "*://teams.live.com/*",
+        "*://teams.cloud.microsoft/*"
       ],
       "js": [
         "inject-prefers-color-scheme.js"
@@ -34,11 +48,19 @@
       "matches": [
         "*://discord.com/*",
         "*://github.com/*",
-        "*://gist.github.com/*"
+        "*://gist.github.com/*",
+        "*://outlook.office.com/*",
+        "*://outlook.office365.com/*",
+        "*://outlook.live.com/*",
+        "*://outlook.cloud.microsoft/*",
+        "*://teams.microsoft.com/*",
+        "*://teams.live.com/*",
+        "*://teams.cloud.microsoft/*"
       ],
       "js": [
         "coat-colors.js",
         "coat-surfaces.js",
+        "coat-fluent.js",
         "coat-runtime.js"
       ],
       "run_at": "document_start",
@@ -61,6 +83,31 @@
       ],
       "js": [
         "github.js"
+      ],
+      "run_at": "document_start",
+      "all_frames": false
+    },
+    {
+      "matches": [
+        "*://outlook.office.com/*",
+        "*://outlook.office365.com/*",
+        "*://outlook.live.com/*",
+        "*://outlook.cloud.microsoft/*"
+      ],
+      "js": [
+        "outlook.js"
+      ],
+      "run_at": "document_start",
+      "all_frames": false
+    },
+    {
+      "matches": [
+        "*://teams.microsoft.com/*",
+        "*://teams.live.com/*",
+        "*://teams.cloud.microsoft/*"
+      ],
+      "js": [
+        "teams.js"
       ],
       "run_at": "document_start",
       "all_frames": false
