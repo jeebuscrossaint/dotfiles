@@ -39,12 +39,42 @@ function deriveSurfaces(theme) {
   // Below this there is no room left to go darker, so recession has to lift.
   const recessDir = bgLum < 0.02 ? 1 : -1;
 
-  function recess(candidate, amount) {
-    if (candidate) {
-      const rgb = hexToRgb(candidate);
-      if (rgb && Math.abs(relLuminance(rgb) - bgLum) <= 0.12) return candidate;
+  // The floor every derived surface has to keep: the page's own text must read
+  // on it about as well as it reads on the page. Capped at AA so a scheme whose
+  // base05-on-base00 is already broken does not make this unsatisfiable -- 45 of
+  // the 534 schemes are in that state and nothing here can rescue them.
+  const floor = Math.min(contrastRatio(fg, theme.bg), 4.5);
+
+  // Pull a candidate surface back toward the page until fg reads on it. Any
+  // surface is allowed to be a step off the page; none is allowed to cost
+  // legibility to get there.
+  function legible(candidate) {
+    if (contrastRatio(fg, candidate) >= floor) return candidate;
+    for (let t = 0.1; t <= 1; t += 0.1) {
+      const pulled = mix(candidate, theme.bg, t);
+      if (contrastRatio(fg, pulled) >= floor) return pulled;
     }
-    return shade(theme.bg, recessDir * amount);
+    return theme.bg;
+  }
+
+  // Elevation, guarded. Conventionally lighter on dark schemes -- but on a
+  // scheme with little headroom that walks straight into the foreground, so the
+  // step gives way to legibility rather than the other way round.
+  function step(amount) {
+    return legible(shade(theme.bg, dir * amount));
+  }
+
+  // base24 nominally defines base10/base11 as the darker/darkest background, but
+  // they are usable only when they are a STEP. Measured as a CONTRAST ratio, not
+  // a luminance delta: a 0.12 luminance gap is imperceptible against a white page
+  // and an entire panel-worth against a near-black one, so the raw delta admits
+  // exactly the inversions it is meant to exclude.
+  function recess(candidate, amount) {
+    if (candidate && contrastRatio(theme.bg, candidate) <= 1.6) {
+      const guarded = legible(candidate);
+      if (guarded === candidate) return candidate;
+    }
+    return legible(shade(theme.bg, recessDir * amount));
   }
 
   const recessed = recess(c.base10, 0.03);
@@ -53,13 +83,13 @@ function deriveSurfaces(theme) {
   // A touch of accent in the chrome so the whole app reads as themed rather
   // than merely grey. Kept low -- heavier mixes flood the chrome on warm or
   // saturated accents.
-  const sidebarBg = mix(recessed, accent, isDark ? 0.08 : 0.05);
-  const railBg = mix(recessedDeep, accent, isDark ? 0.08 : 0.05);
+  const sidebarBg = legible(mix(recessed, accent, isDark ? 0.08 : 0.05));
+  const railBg = legible(mix(recessedDeep, accent, isDark ? 0.08 : 0.05));
 
   // Elevation ladder for popovers, menus and modals.
-  const surface = shade(theme.bg, dir * 0.05);
-  const surfaceHigh = shade(theme.bg, dir * 0.08);
-  const surfaceHigher = shade(theme.bg, dir * 0.11);
+  const surface = step(0.05);
+  const surfaceHigh = step(0.08);
+  const surfaceHigher = step(0.11);
 
   // Muted/secondary text. An rgba ink rather than an opaque mix, so it keeps
   // adapting to whichever surface it lands on -- but with the alpha solved for
