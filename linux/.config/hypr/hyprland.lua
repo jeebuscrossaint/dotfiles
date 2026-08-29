@@ -98,7 +98,13 @@ hl.gesture({ fingers = 3, direction = "horizontal", action = "workspace" })
 -- action takes a Lua function, so plugin dispatchers ARE reachable from a
 -- gesture -- hl.gesture's string actions are only workspace/move/float/
 -- fullscreen/fullscreen_state, which is what made this look unportable.
-hl.gesture({ fingers = 4, direction = "up", action = function() hl.plugin.gloview.toggle() end })
+hl.gesture({
+	fingers = 4,
+	direction = "up",
+	action = function()
+		hl.plugin.gloview.toggle()
+	end,
+})
 
 -- accel_profile flat above is for mice only.
 hl.device({ name = "asup1207:00-093a:3012-touchpad", accel_profile = "adaptive", natural_scroll = false })
@@ -327,7 +333,7 @@ hl.config({
 		hyprbars = {
 			bar_height = 28,
 			bar_color = c.surface,
-			bar_blur = true,
+			bar_blur = false,
 			["col.text"] = c.base05,
 			bar_text_size = 12,
 			bar_text_font = c.font,
@@ -394,7 +400,9 @@ hl.bind(mod .. " + M", hl.dsp.window.fullscreen({ mode = "maximized" })) -- musc
 -- gloview:toggle has no hl.dsp entry, but the plugin exports its own Lua API.
 -- Wrapped in a function so hl.plugin resolves when the key is pressed, not when
 -- this file is parsed -- the plugin is not loaded yet at parse time.
-hl.bind(mod .. " + A", function() hl.plugin.gloview.toggle() end)
+hl.bind(mod .. " + A", function()
+	hl.plugin.gloview.toggle()
+end)
 hl.bind(mod .. " + G", hl.dsp.group.toggle())
 -- hyprlang's `changegroupactive, f`. hl.dsp.group.active takes only a numeric
 -- index, so forward/back go through group.next/prev instead.
@@ -441,8 +449,14 @@ hl.bind(mod .. " + mouse:273", hl.dsp.window.resize(), { mouse = true })
 hl.bind(mod .. " + R", hl.dsp.submap("resize"))
 hl.define_submap("resize", function()
 	for _, r in ipairs({
-		{ "left", -20, 0 }, { "right", 20, 0 }, { "up", 0, -20 }, { "down", 0, 20 },
-		{ "H", -20, 0 }, { "L", 20, 0 }, { "K", 0, -20 }, { "J", 0, 20 },
+		{ "left", -20, 0 },
+		{ "right", 20, 0 },
+		{ "up", 0, -20 },
+		{ "down", 0, 20 },
+		{ "H", -20, 0 },
+		{ "L", 20, 0 },
+		{ "K", 0, -20 },
+		{ "J", 0, 20 },
 	}) do
 		hl.bind(r[1], hl.dsp.window.resize({ x = r[2], y = r[3], relative = true }), { repeating = true })
 	end
@@ -537,7 +551,13 @@ local function osd(text, value, maxv)
 	local bar = ""
 	if value and maxv and maxv > 0 then
 		local filled = math.floor((value / maxv) * 10 + 0.5)
-		bar = "   " .. string.rep("\u{2588}", filled) .. string.rep("\u{2591}", 10 - filled) .. "   " .. value .. "/" .. maxv
+		bar = "   "
+			.. string.rep("\u{2588}", filled)
+			.. string.rep("\u{2591}", 10 - filled)
+			.. "   "
+			.. value
+			.. "/"
+			.. maxv
 	end
 	osd_notif = hl.notification.create({
 		text = text .. bar,
