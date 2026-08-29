@@ -1,0 +1,242 @@
+#!/usr/bin/env python3
+"""Native-messaging host: report the active coat scheme to the web-app extension.
+
+The browser spawns this as a child and speaks stdio, each message prefixed with
+its byte length as a native-endian uint32. We are PUSH-ONLY -- the extension
+never asks for anything. We emit once on connect, then again every time coat
+applies a theme.
+
+coat has no hook system, so the "a theme just landed" signal is inotify on
+~/.local/state/coat/: coat rewrites manifest.json on every apply, unconditionally
+and last, whichever way it was invoked (`coat set`, `coat match`, the awww
+wrapper). Watching the directory rather than the file catches an atomic
+rename-into-place as well as a plain write.
+
+Stdin and the inotify fd are both driven from one select() loop. That is the
+whole reason this is Python and not sh: the bash equivalent needs a background
+reader, a FIFO and a signal trap to do the same job.
+"""
+
+import ctypes
+import ctypes.util
+import errno
+import json
+import os
+import re
+import select
+import struct
+import sys
+
+HOME = os.path.expanduser("~")
+CONFIG = os.environ.get("XDG_CONFIG_HOME") or os.path.join(HOME, ".config")
+STATE = os.environ.get("XDG_STATE_HOME") or os.path.join(HOME, ".local/state")
+
+COAT_YAML = os.path.join(CONFIG, "coat/coat.yaml")
+SCHEMES_DIR = os.path.join(CONFIG, "coat/schemes")
+WATCH_DIR = os.path.join(STATE, "coat")
+WATCH_FILE = "manifest.json"
+
+# ----------------------------------------------------------------- palette --
+
+# Every slot coat defines. base16 schemes stop at base0F; base24 adds base10-17.
+SLOTS = [f"base{n:02X}" for n in range(0x18)]
+
+_SCHEME_RE = re.compile(r"^\s*scheme\s*:\s*[\"']?([^\"'#\s]+)")
+_B24_RE = re.compile(r"^\s*prefer_base24\s*:\s*(true|yes|on)\s*$", re.I)
+_PAIR_RE = re.compile(r"^\s*([A-Za-z0-9_]+)\s*:\s*[\"']?(#[0-9a-fA-F]{6})[\"']?")
+_META_RE = re.compile(r"^\s*(name|variant)\s*:\s*[\"']?([^\"'#\n]*?)[\"']?\s*$")
+
+
+def read_config():
+    """The scheme coat.yaml pins, plus the base24 preference. That key is the
+    source of truth -- `coat match` writes a generated scheme into
+    schemes/generated/ and repoints it."""
+    slug, prefer_base24 = None, False
+    try:
+        with open(COAT_YAML, encoding="utf-8") as fh:
+            for line in fh:
+                if slug is None:
+                    m = _SCHEME_RE.match(line)
+                    if m:
+                        slug = m.group(1)
+                        continue
+                if _B24_RE.match(line):
+                    prefer_base24 = True
+    except OSError:
+        pass
+    return slug, prefer_base24
+
+
+def find_scheme_file(slug, prefer_base24):
+    """Mirror coat's own search order (scheme.rs:160). A slug can exist in both
+    libraries with DIFFERENT palettes -- mountain's base09 is #c6a679 in base24
+    and #ceb188 in base16 -- so walking the tree and taking the first hit gets
+    the browser a palette the rest of the desktop is not using."""
+    if not slug:
+        return None
+    order = ["base24", "base16", "generated"] if prefer_base24 else \
+            ["base16", "base24", "generated"]
+    for sub in order:
+        for ext in (".yaml", ".yml"):
+            path = os.path.join(SCHEMES_DIR, sub, slug + ext)
+            if os.path.isfile(path):
+                return path
+    return None
+
+
+def parse_scheme(path):
+    """Pull the palette and the display name out of a coat scheme file.
+
+    Deliberately a line scanner rather than a YAML parse: these files are a flat
+    `key: "#rrggbb"` block under `palette:`, and pyyaml is not in the stdlib --
+    a hard dependency here would mean the browser silently gets no theme on a
+    machine that lacks it.
+    """
+    colors, meta = {}, {}
+    try:
+        with open(path, encoding="utf-8") as fh:
+            for line in fh:
+                m = _PAIR_RE.match(line)
+                if m and m.group(1) in SLOTS:
+                    colors[m.group(1)] = m.group(2).lower()
+                    continue
+                m = _META_RE.match(line)
+                # Only take the top-level name/variant, before the palette block
+                # opens -- nothing inside palette: matches these keys anyway.
+                if m and m.group(1) not in meta:
+                    meta[m.group(1)] = m.group(2).strip()
+    except OSError:
+        return None, {}
+    return (colors or None), meta
+
+
+def build_state():
+    slug, prefer_base24 = read_config()
+    path = find_scheme_file(slug, prefer_base24)
+    colors, meta = (None, {}) if not path else parse_scheme(path)
+    if not colors or "base00" not in colors:
+        return None
+
+    return {
+        "scheme": slug,
+        "theme_name": meta.get("name") or slug,
+        # The named fields are the stable contract the extension's surface
+        # derivation reads; "colors" carries the whole palette so a site pack can
+        # reach for a specific slot (a red badge, a green diff) when it needs one.
+        #
+        # Only base00/base05/base0D are named. The mid neutrals (base01/02/04/06)
+        # are not reliable across schemes -- plenty of them put those slots
+        # nowhere near a usable contrast against base00 -- so the extension
+        # derives its own surfaces from base00 by shading instead of trusting
+        # them. Light vs dark is decided there too, from the luminance of bg.
+        "bg": colors["base00"],
+        "fg": colors.get("base05"),
+        "accent": colors.get("base0D"),
+        "variant": meta.get("variant"),
+        "colors": colors,
+    }
+
+
+# ----------------------------------------------------------------- framing --
+
+def emit(obj):
+    payload = json.dumps(obj, separators=(",", ":")).encode("utf-8")
+    try:
+        sys.stdout.buffer.write(struct.pack("@I", len(payload)))
+        sys.stdout.buffer.write(payload)
+        sys.stdout.buffer.flush()
+    except (BrokenPipeError, ValueError):
+        # Browser is gone. Nothing to report to and nowhere to report it.
+        sys.exit(0)
+
+
+def emit_theme():
+    state = build_state()
+    if state:
+        emit(state)
+
+
+# ------------------------------------------------------------------ inotify --
+
+IN_CLOSE_WRITE = 0x00000008
+IN_MOVED_TO = 0x00000080
+
+
+def open_inotify():
+    """Watch the state dir. Returns an fd, or None if inotify is unavailable --
+    in which case we still serve the theme we have, just without live updates."""
+    try:
+        libc = ctypes.CDLL(ctypes.util.find_library("c"), use_errno=True)
+        fd = libc.inotify_init1(os.O_NONBLOCK)
+        if fd < 0:
+            return None
+        os.makedirs(WATCH_DIR, exist_ok=True)
+        wd = libc.inotify_add_watch(
+            fd, WATCH_DIR.encode(), IN_CLOSE_WRITE | IN_MOVED_TO
+        )
+        if wd < 0:
+            os.close(fd)
+            return None
+        return fd
+    except Exception:
+        return None
+
+
+def drain_inotify(fd):
+    """Read every queued event; True if any of them was our manifest."""
+    hit = False
+    while True:
+        try:
+            buf = os.read(fd, 8192)
+        except OSError as e:
+            if e.errno in (errno.EAGAIN, errno.EWOULDBLOCK):
+                break
+            raise
+        if not buf:
+            break
+        off = 0
+        while off + 16 <= len(buf):
+            _wd, _mask, _cookie, length = struct.unpack_from("@iIII", buf, off)
+            name = buf[off + 16: off + 16 + length].split(b"\0", 1)[0].decode(
+                "utf-8", "replace"
+            )
+            if name == WATCH_FILE:
+                hit = True
+            off += 16 + length
+    return hit
+
+
+# --------------------------------------------------------------------- main --
+
+def main():
+    emit_theme()
+
+    stdin_fd = sys.stdin.fileno()
+    ino_fd = open_inotify()
+    watch = [stdin_fd] + ([ino_fd] if ino_fd is not None else [])
+
+    while True:
+        try:
+            ready, _, _ = select.select(watch, [], [])
+        except (InterruptedError, OSError):
+            continue
+
+        if stdin_fd in ready:
+            # The browser talks to us by closing the pipe, not by sending
+            # anything we act on. Anything that does arrive is drained and
+            # ignored; EOF means the browser is gone.
+            try:
+                if not os.read(stdin_fd, 65536):
+                    return
+            except OSError:
+                return
+
+        if ino_fd is not None and ino_fd in ready and drain_inotify(ino_fd):
+            emit_theme()
+
+
+if __name__ == "__main__":
+    try:
+        main()
+    except KeyboardInterrupt:
+        pass

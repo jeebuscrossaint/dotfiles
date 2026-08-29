@@ -1,0 +1,9 @@
+{
+  "name": "com.coat.webapp_theme",
+  "description": "coat scheme reader for the web-app theme extension",
+  "path": "/home/amarnath/.local/bin/coat-webapp-host",
+  "type": "stdio",
+  "allowed_origins": [
+    "chrome-extension://miifgcafnndcmaijinhnahgejmaplegb/"
+  ]
+}
