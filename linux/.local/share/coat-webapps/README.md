@@ -51,3 +51,36 @@ regenerate the manifest. Enumerate the tokens in devtools:
 Surfaces available on the `s` argument are defined in `coat-surfaces.js`.
 Semantic slots (`s.red`, `s.green`, …) come straight from the scheme — use them
 literally rather than re-deriving a hue from the accent.
+
+## Firefox
+
+Needs Developer Edition: release Firefox refuses unsigned add-ons outright, and
+`xpinstall.signatures.required` is only honoured on Developer/Nightly/ESR.
+
+    about:config → xpinstall.signatures.required = false
+    ./build-xpi.py
+    about:addons → gear → Install Add-on From File → coat-webapps.xpi
+
+`about:debugging`'s "Load Temporary Add-on" also works but is gone on restart,
+which is why the xpi exists at all.
+
+Then grant it access to the sites: about:addons → coat web app theme →
+Permissions. Firefox MV3 makes host permissions OPTIONAL, so without this the
+content scripts never run.
+
+The two browsers need slightly different manifests — Chromium pins its
+extension id with `key` and runs a service worker; Firefox identifies by
+`browser_specific_settings.gecko.id` and has no MV3 service worker. Rather than
+carry both sets of keys and have each browser warn about the other's,
+`extension/manifest.json` is the Chromium one and `build-xpi.py` transforms it
+on the way into the archive.
+
+### Before stowing on a fresh machine
+
+    mkdir -p ~/.mozilla/native-messaging-hosts
+
+stow FOLDS a directory that does not exist in the target: rather than linking
+the one file inside it, it symlinks the whole `~/.mozilla` to the repo. Firefox
+then builds its entire profile — history, cookies, cache, sessionstore — inside
+the git tree on first launch. Pre-creating the directory makes stow link just
+the leaf.

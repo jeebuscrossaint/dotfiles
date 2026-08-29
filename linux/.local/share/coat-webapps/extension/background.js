@@ -1,55 +1,73 @@
+// Chrome exposes a promise-based chrome.*; Firefox's chrome.* is callback-based
+// and its promise API lives on browser.*. Taking browser first gets promises on
+// both without a polyfill.
+const api = globalThis.browser ?? globalThis.chrome;
+
 const HOST = "com.coat.webapp_theme";
 
-// Every site a pack covers, taken straight from the manifest's content-script
-// matches -- adding a pack never touches this file.
-const MATCH_PATTERNS = [
-  ...new Set(chrome.runtime.getManifest().content_scripts.flatMap((cs) => cs.matches)),
-];
-const MATCH_HOSTS = [
-  ...new Set(
-    MATCH_PATTERNS.map((p) =>
-      p.replace(/^\*:\/\//, "").replace(/\/.*$/, "").replace(/^\*\./, "")
-    )
-  ),
-];
+let nativePort = null;
+let reconnectTimer = null;
+let current = null;
+// One long-lived port per themed tab.
+//
+// The obvious alternative -- tabs.query({url}) + tabs.sendMessage -- needs host
+// permissions, and Firefox MV3 makes those OPTIONAL: until the user grants them
+// by hand the query comes back empty and every push is silently dropped. Ports
+// are initiated by the content script, which is already running, so they need
+// no such grant. They also keep the service worker alive while a themed tab is
+// open, which the query approach does not.
+const clients = new Set();
 
-function isThemedUrl(url) {
-  try {
-    const host = new URL(url).hostname;
-    return MATCH_HOSTS.some((h) => host === h || host.endsWith("." + h));
-  } catch (_) {
-    return false;
+function broadcast(theme) {
+  for (const p of Array.from(clients)) {
+    try {
+      p.postMessage({ type: "coat-theme", theme });
+    } catch (_) {
+      clients.delete(p);
+    }
   }
 }
 
-let port = null;
-let reconnectTimer = null;
+api.runtime.onConnect.addListener((p) => {
+  if (!p || p.name !== "coat") return;
+  clients.add(p);
+  p.onDisconnect.addListener(() => clients.delete(p));
+  // Hand over whatever we already have, so a tab opened between theme changes
+  // is painted immediately instead of waiting for the next `coat apply`.
+  if (current) {
+    try {
+      p.postMessage({ type: "coat-theme", theme: current });
+    } catch (_) {
+      clients.delete(p);
+    }
+  }
+});
 
 function connect() {
-  // The service worker reaches this from three directions -- the module-level
-  // call below, onInstalled and onStartup. Without the guard each opens its own
-  // port, every port spawns its own native host, and each theme change then
-  // gets broadcast to the same tabs N times.
-  if (port) return;
+  // Reachable from three directions at once -- the module-level call below,
+  // onInstalled and onStartup. Without the guard each opens its own port, every
+  // port spawns its own native host, and each theme change then arrives N times.
+  if (nativePort) return;
   try {
-    port = chrome.runtime.connectNative(HOST);
+    nativePort = api.runtime.connectNative(HOST);
   } catch (e) {
     console.warn("[coat] connectNative threw:", e);
     scheduleReconnect();
     return;
   }
 
-  port.onMessage.addListener((theme) => {
+  nativePort.onMessage.addListener((theme) => {
     if (!theme || !theme.bg) return;
     console.log("[coat] theme pushed:", theme.theme_name, theme.bg);
-    chrome.storage.local.set({ theme });
+    current = theme;
+    api.storage.local.set({ theme });
     broadcast(theme);
   });
 
-  port.onDisconnect.addListener(() => {
-    const err = chrome.runtime.lastError;
+  nativePort.onDisconnect.addListener(() => {
+    const err = api.runtime.lastError;
     console.warn("[coat] native host disconnected:", err && err.message);
-    port = null;
+    nativePort = null;
     scheduleReconnect();
   });
 
@@ -65,29 +83,16 @@ function scheduleReconnect() {
   }, 3000);
 }
 
-function broadcast(theme) {
-  chrome.tabs.query({ url: MATCH_PATTERNS }, (tabs) => {
-    for (const t of tabs) {
-      chrome.tabs.sendMessage(t.id, { type: "coat-theme", theme }).catch(() => {});
-    }
-  });
-}
-
-chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
-  if (msg && msg.type === "request-theme") {
-    chrome.storage.local.get("theme").then(({ theme }) => sendResponse(theme || null));
-    return true; // keep the channel open for the async reply
+// The worker can be torn down and restarted with tabs still open, which loses
+// `current`. Seed it from storage so those tabs get a theme on reconnect even
+// before the native host has said anything.
+api.storage.local.get("theme").then(({ theme }) => {
+  if (theme && !current) {
+    current = theme;
+    broadcast(theme);
   }
-});
+}).catch(() => {});
 
-chrome.tabs.onUpdated.addListener((tabId, info, tab) => {
-  if (info.status !== "complete") return;
-  if (!tab.url || !isThemedUrl(tab.url)) return;
-  chrome.storage.local.get("theme").then(({ theme }) => {
-    if (theme) chrome.tabs.sendMessage(tabId, { type: "coat-theme", theme }).catch(() => {});
-  });
-});
-
-chrome.runtime.onInstalled.addListener(connect);
-chrome.runtime.onStartup.addListener(connect);
+api.runtime.onInstalled.addListener(connect);
+api.runtime.onStartup.addListener(connect);
 connect();

@@ -9,6 +9,8 @@ linux/.config/coat/schemes/
 # excluded directory, and `coat-webapps` matches *coat* itself.
 !/linux/.local/share/coat-webapps/
 !/linux/.local/share/coat-webapps/**
+# Build artifact: `build-xpi.py` regenerates it from extension/.
+linux/.local/share/coat-webapps/coat-webapps.xpi
 !/linux/.local/bin/coat-webapp-host
 !/linux/.config/chromium/NativeMessagingHosts/com.coat.webapp_theme.json
 

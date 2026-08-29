@@ -94,12 +94,29 @@ const CoatTheme = {
   },
 };
 
-// Themes arrive two ways: pushed live when coat applies one, and fetched once
-// on load. Both funnel through apply(), which pends until a pack registers.
-chrome.runtime.onMessage.addListener((msg) => {
-  if (msg && msg.type === "coat-theme") CoatTheme.apply(msg.theme);
-});
-chrome.runtime.sendMessage({ type: "request-theme" }, (theme) => {
-  if (chrome.runtime.lastError) return;
-  if (theme) CoatTheme.apply(theme);
-});
+// One long-lived port to background.js. It answers with the current theme as
+// soon as it is opened and pushes every later one down the same channel, so
+// there is no separate fetch-on-load path to keep in step.
+//
+// browser.* first: Firefox's chrome.* is callback-based, Chrome's is not.
+const api = globalThis.browser ?? globalThis.chrome;
+
+function connectBackground() {
+  let port;
+  try {
+    port = api.runtime.connect({ name: "coat" });
+  } catch (_) {
+    // Extension reloading or shutting down; try again shortly.
+    setTimeout(connectBackground, 1000);
+    return;
+  }
+  port.onMessage.addListener((msg) => {
+    if (msg && msg.type === "coat-theme") CoatTheme.apply(msg.theme);
+  });
+  // The service worker is torn down when idle and on every extension reload.
+  // Reconnecting is what makes a long-lived tab keep receiving themes instead
+  // of going stale the first time that happens.
+  port.onDisconnect.addListener(() => setTimeout(connectBackground, 1000));
+}
+
+connectBackground();
