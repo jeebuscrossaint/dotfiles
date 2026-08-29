@@ -1,6 +1,9 @@
 *coat*
 !/linux/.config/coat/
 !/linux/.config/coat/coat.yaml
+# ~/.config/coat is stow-symlinked, so anything coat GENERATES in there lands in
+# this tree. coat.yaml above is the hand-written one; the rest is output.
+/linux/.config/coat/msteams.css
 linux/.config/coat/schemes/
 
 # coat-webapps is SOURCE, not coat output -- coat never writes any of it, so the
