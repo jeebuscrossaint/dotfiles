@@ -7,6 +7,7 @@
 --
 -- Colours AND the font come from coat via require("coat-colors"): c.base0X,
 -- c.font, c.font_size. Never write a font family or a colour literal here.
+-- One exception, marked at the site: the window shadow is a fixed neutral dark.
 --
 -- Verify without applying:  Hyprland --config ~/.config/hypr/hyprland.lua --verify-config
 --
@@ -156,11 +157,15 @@ hl.config({
 		},
 		shadow = {
 			enabled = true,
-			range = 30,
-			render_power = 10,
-			offset = "0 0",
-			scale = 4.0,
-			color = c.shadow,
+			range = 36,
+			-- Low power = long gentle falloff, the macOS look. High power reads as
+			-- a hard dark halo hugging the border.
+			render_power = 2,
+			offset = "0 8",
+			scale = 1.0,
+			-- Deliberately NOT c.shadow: a scheme-derived shadow shifts hue with
+			-- the wallpaper. macOS shadows are always the same neutral dark.
+			color = "rgba(1c1c1e59)",
 		},
 	},
 
