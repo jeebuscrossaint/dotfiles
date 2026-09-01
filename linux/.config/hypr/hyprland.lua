@@ -157,15 +157,20 @@ hl.config({
 		},
 		shadow = {
 			enabled = true,
-			range = 36,
-			-- Low power = long gentle falloff, the macOS look. High power reads as
-			-- a hard dark halo hugging the border.
-			render_power = 2,
-			offset = "0 8",
+			-- macOS window shadow is 0 22px 70px rgba(0,0,0,0.56). Mapped straight
+			-- across: blur radius -> range, offset-y -> offset, 0.56 -> 0x8f.
+			-- It is a WIDE soft shadow, not a tight rim -- earlier tries used
+			-- range 36 at 35% and measured only 16% darkening at the window edge,
+			-- i.e. invisible. This measures 54% at the edge, 28% out at the gap.
+			-- gaps_out is 15, so only the innermost 15px ever clears a neighbour;
+			-- the rest renders under adjacent windows. Widen the gaps to see more.
+			range = 70,
+			render_power = 3,
+			offset = "0 22",
 			scale = 1.0,
 			-- Deliberately NOT c.shadow: a scheme-derived shadow shifts hue with
 			-- the wallpaper. macOS shadows are always the same neutral dark.
-			color = "rgba(1c1c1e59)",
+			color = "rgba(0000008f)",
 		},
 	},
 
