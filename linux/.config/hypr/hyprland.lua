@@ -116,8 +116,8 @@ hl.device({ name = "asup1207:00-093a:3012-touchpad", accel_profile = "adaptive",
 hl.config({
 	general = {
 		border_size = 0,
-		gaps_in = 15,
-		gaps_out = 15,
+		gaps_in = 30,
+		gaps_out = 35,
 		layout = "dwindle",
 		resize_on_border = false,
 		col = {
@@ -157,13 +157,18 @@ hl.config({
 		},
 		shadow = {
 			enabled = true,
-			-- macOS window shadow is 0 22px 70px rgba(0,0,0,0.56). Mapped straight
+			-- macOS window shadow is 0 22px 70px rgba(0,0,0,0.56), mapped straight
 			-- across: blur radius -> range, offset-y -> offset, 0.56 -> 0x8f.
-			-- It is a WIDE soft shadow, not a tight rim -- earlier tries used
-			-- range 36 at 35% and measured only 16% darkening at the window edge,
-			-- i.e. invisible. This measures 54% at the edge, 28% out at the gap.
-			-- gaps_out is 15, so only the innermost 15px ever clears a neighbour;
-			-- the rest renders under adjacent windows. Widen the gaps to see more.
+			--
+			-- This shadow NEEDS the gaps above. It is sized for a macOS desktop
+			-- where windows float in open space, so the falloff wants ~70px to
+			-- complete. At the old gaps_in/out of 15 it never got there: the gap
+			-- sat at a flat 28-54% darkening end to end, which reads as muddy
+			-- gutters rather than windows casting shadows. Shrink the gaps and you
+			-- have to shrink range with them or it goes back to mud.
+			--
+			-- Between two windows the gutter is 2*gaps_in and takes shadow from
+			-- both sides, so it always reads darker than a screen-edge gap.
 			range = 70,
 			render_power = 3,
 			offset = "0 22",
