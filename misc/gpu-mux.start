@@ -1,0 +1,82 @@
+#!/bin/sh
+# gpu-mux.start — pick the GPU MUX mode from the power source, one reboot late.
+#
+# Install: sudo install -m755 misc/gpu-mux.start /etc/local.d/gpu-mux.start
+# Disable: sudo rm /etc/local.d/gpu-mux.start
+#
+# Runs from runit stage 2 (/etc/runit/2 execs every /etc/local.d/*.start),
+# which is before runsvdir starts any service, so nothing is up to lose.
+#
+#   on AC      -> mux 0, Discrete: eDP on the dGPU. Direct scanout, HDMI-A-1
+#                 alive, and no D3cold ever -- the card IS the display engine.
+#   on battery -> mux 1, Hybrid:   eDP on Intel, dGPU free to park in D3cold.
+#
+# WHY THE REBOOT. The mux is a physical switch the EC flips at POST, so the
+# mode for THIS boot was latched before the kernel existed. Nothing reachable
+# from Linux -- sysfs, kernel cmdline, a GRUB entry -- can change it in place;
+# the cmdline is parsed by a kernel that starts two steps after the flip. The
+# kernel ABI for gpu_mux_mode says a reboot is required and the ACPI get method
+# does not even report the new value until then. So this stages the mode for
+# the NEXT boot and reboots immediately when it disagrees with the power
+# source: booting after a plug/unplug costs a double boot, and nothing else
+# does.
+#
+# WHY THE MODPROBE DROP-IN. In Hybrid the mux alone does not get you D3cold:
+# nvidia_drm pins the card at D0 merely by being loaded -- 0ms of suspend
+# across a 90s idle sample with it, suspended within 4s without (measured in
+# nvidia-rtd3.conf, which this deliberately does not edit). In Discrete it is
+# mandatory, since it drives the panel; blacklisting it there is a black
+# screen. So the drop-in is written for the mode being STAGED, before the
+# reboot -- writing it for the current mode would be a boot too late, because
+# udev has already coldplugged nvidia_drm by the time stage 2 runs.
+
+MUX=/sys/devices/platform/asus-nb-wmi/gpu_mux_mode
+AC=/sys/class/power_supply/ACAD/online
+DROPIN=/etc/modprobe.d/zz-gpu-mux.conf
+# Records the target last staged. Lives in /var so it survives the reboot this
+# script triggers, which is the whole point: it bounds the machine to ONE extra
+# boot. Without it, firmware that refuses the write reboots forever.
+STAMP=/var/lib/gpu-mux-staged
+
+[ -r "$MUX" ] && [ -r "$AC" ] || exit 0
+
+cur=$(cat "$MUX" 2>/dev/null) || exit 0
+case "$cur" in
+0 | 1) ;;
+*) exit 0 ;;
+esac
+
+if [ "$(cat "$AC" 2>/dev/null)" = "1" ]; then want=0; else want=1; fi
+
+# Keep the blacklist matched to the mode we are heading into. Idempotent, so
+# the no-switch path just rewrites the same bytes.
+if [ "$want" = "1" ]; then
+	printf '# Written by /etc/local.d/gpu-mux.start -- Hybrid: nvidia_drm pins the dGPU at D0.\nblacklist nvidia_drm\n' >"$DROPIN" 2>/dev/null
+else
+	rm -f "$DROPIN"
+fi
+
+if [ "$cur" = "$want" ]; then
+	rm -f "$STAMP"
+	exit 0
+fi
+
+# Staged this exact target already and it did not take: firmware refused, or
+# the interface went away (gpu_mux_mode is marked deprecated upstream). Boot on
+# through in the wrong mode rather than reboot into the same mismatch forever.
+if [ -r "$STAMP" ] && [ "$(cat "$STAMP" 2>/dev/null)" = "$want" ]; then
+	exit 0
+fi
+
+mkdir -p /var/lib
+echo "$want" >"$STAMP" 2>/dev/null
+
+if echo "$want" >"$MUX" 2>/dev/null; then
+	sync
+	# runit's reboot, so this goes through stage 3 and unmounts cleanly.
+	exec reboot
+fi
+
+# Write failed outright -- do not leave a stamp claiming we tried.
+rm -f "$STAMP"
+exit 0
