@@ -39,7 +39,7 @@ Singleton {
 	// Those are set to 1.0 in coat.yaml on purpose, and an opaque surface frosts
 	// nothing -- the compositor blur behind these panels needs something to show
 	// through. waybar's islands hardcode 0.85 for the same reason.
-	readonly property color surface: withBg(0.72)
+	readonly property color surface: withBg(0.82)
 	readonly property color raised: withBg(0.55)
 	readonly property color hairline: withFg(0.10)
 	readonly property color scrim: withBg(0.35)
