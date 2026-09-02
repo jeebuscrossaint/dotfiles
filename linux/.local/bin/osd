@@ -22,8 +22,13 @@
 SINK=@DEFAULT_AUDIO_SINK@
 SOURCE=@DEFAULT_AUDIO_SOURCE@
 
-# The OLED panel is on the Intel card, not nvidia_0.
-BACKLIGHT=intel_backlight
+# The panel's backlight device is NOT stable across boots. Which card drives eDP
+# is set by the BIOS MUX (asus-nb-wmi/gpu_mux_mode: 1=Hybrid, 0=Discrete), and
+# only the driver that owns the panel registers a backlight -- so it is
+# intel_backlight in Hybrid and nvidia_0 in Discrete, with the other name absent
+# entirely rather than present-but-dead. Hardcoding intel_backlight left the
+# brightness keys silently doing nothing for a whole MUX mode. Resolved at
+# runtime below, the same way hyprland.lua resolves the scanout card.
 
 VOL_STEP=5
 VOL_MAX=1.5 # wpctl ceiling (150%)
@@ -78,6 +83,36 @@ show() {
 	else
 		notify-send -a osd -r "$OSD_ID" "$1"
 	fi
+}
+
+# backlight_device -> the sysfs name of the panel's backlight, or empty.
+#
+# Order matters when more than one exists. A native "raw" device is the real
+# panel control; acpi_video0 is a "firmware" ACPI shim that is frequently
+# present and frequently does nothing, so it goes last. OSD_BACKLIGHT overrides
+# for testing without a reboot into the other MUX mode.
+backlight_device() {
+	if [ -n "${OSD_BACKLIGHT:-}" ]; then
+		echo "$OSD_BACKLIGHT"
+		return
+	fi
+	for _d in intel_backlight amdgpu_bl2 amdgpu_bl1 amdgpu_bl0 \
+		nvidia_wmi_ec_backlight nvidia_0 acpi_video0; do
+		if [ -r "/sys/class/backlight/$_d/brightness" ]; then
+			echo "$_d"
+			return
+		fi
+	done
+	# Unknown name: any raw device beats any firmware one.
+	for _want in raw firmware platform; do
+		for _p in /sys/class/backlight/*/; do
+			[ -r "$_p/brightness" ] || continue
+			read -r _type <"$_p/type" 2>/dev/null || continue
+			[ "$_type" = "$_want" ] || continue
+			basename "$_p"
+			return
+		done
+	done
 }
 
 # vol_state <target> -> VOL (integer percent), MUTED (0|1)
@@ -147,6 +182,15 @@ mic)
 
 # ---------------------------------------------------------------- brightness
 brightness)
+	BACKLIGHT=$(backlight_device)
+	if [ -z "$BACKLIGHT" ]; then
+		# Nothing registered a backlight, or the brightnessctl udev rule never ran
+		# (it chgrps the sysfs node to `video`). Say so rather than exiting mute --
+		# a dead brightness key with no feedback is what made this hard to spot.
+		show "󰃞  No backlight device"
+		exit 1
+	fi
+
 	# Read through sysfs, write through brightnessctl: reading is two builtin
 	# reads with no fork, but writing needs brightnessctl's udev/seat privileges.
 	read -r cur <"/sys/class/backlight/$BACKLIGHT/brightness" || exit 1
