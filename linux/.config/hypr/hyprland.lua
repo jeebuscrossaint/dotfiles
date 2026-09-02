@@ -116,7 +116,10 @@ hl.on("hyprland.start", function()
 		-- notification server, so fnott is gone from this list -- only one
 		-- process can own org.freedesktop.Notifications. waybar and hyprlock
 		-- are still the real thing.
-		"qs",
+		-- QT_QPA_PLATFORMTHEME=gtk3 is what points Qt's icon lookup at the GTK
+		-- icon theme -- WhiteSur-dark -- instead of leaving it on hicolor. Set
+		-- here rather than globally so it only affects the shell.
+		"env QT_QPA_PLATFORMTHEME=gtk3 qs",
 		"awww-daemon",
 		"start-polkit",
 		-- NOT a bare artix-pipewire-launcher: that skips wireplumber and leaves a
@@ -368,7 +371,7 @@ hl.window_rule({
 -- blurring the layer frosted the wallpaper behind each slab -- that was the acrylic.
 -- Without the rule the islands are flat tint over the unblurred wallpaper. Layer
 -- blur is opt-in in Hyprland, so dropping the namespace is the whole change.
-for _, ns in ipairs({ "notifications", "launcher", "qs-spotlight", "qs-notifications" }) do
+for _, ns in ipairs({ "notifications", "launcher", "qs-spotlight", "qs-picker", "qs-notifications" }) do
 	hl.layer_rule({ name = "blur-" .. ns, match = { namespace = "^" .. ns .. "$" }, blur = true })
 end
 
@@ -383,7 +386,7 @@ hl.bind(mod .. " + Q", hl.dsp.exec_cmd(terminal))
 hl.bind(mod .. " + D", hl.dsp.exec_cmd(menu))
 -- Cmd+Space, near enough. mod+D above reaches the same launcher: `menu-run` is
 -- Spotlight now, so the swap away from fuzzel needed no keybind change at all.
--- fuzzel is still what `menu` uses for the dmenu-style pickers.
+-- `menu`, the dmenu-style picker for scripts, is the shell's Picker component.
 hl.bind(mod .. " + SPACE", hl.dsp.exec_cmd("qs ipc call spotlight toggle"))
 hl.bind(mod .. " + C", hl.dsp.window.close())
 hl.bind(mod .. " + SHIFT + C", hl.dsp.exec_cmd("hyprctl reload"))
@@ -395,7 +398,10 @@ hl.bind(mod .. " + SHIFT + T", hl.dsp.exec_cmd("theme-random"))
 hl.bind(mod .. " + SHIFT + N", hl.dsp.exec_cmd("osd nightlight"))
 hl.bind(mod .. " + SHIFT + S", hl.dsp.exec_cmd("screenshot && sfx screenshot"))
 hl.bind(mod .. " + SHIFT + E", hl.dsp.exec_cmd("screenshot-edit"))
-hl.bind(mod .. " + V", hl.dsp.exec_cmd("cliphist list | menu -i -p clip | cliphist decode | wl-copy"))
+-- Clipboard history is a mode of the launcher now, not a shell pipeline into a
+-- dmenu. Same cliphist store underneath; the palette does the listing, the
+-- filtering and the decode.
+hl.bind(mod .. " + V", hl.dsp.exec_cmd("qs ipc call spotlight search 'c '"))
 hl.bind(mod .. " + SHIFT + V", hl.dsp.window.float({ action = "toggle" }))
 -- mode "maximized" keeps the bar and gaps; "fullscreen" hides them. These are
 -- hyprlang's `fullscreen, 1` and `fullscreen, 0` -- the Lua names are the two
