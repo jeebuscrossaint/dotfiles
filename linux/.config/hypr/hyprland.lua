@@ -314,12 +314,9 @@ local anims = {
 	{ "fadeLayers", 2.5, "macFade" },
 	{ "fadeLayersIn", 2.5, "macFade" },
 	{ "fadeLayersOut", 1.7, "macFade" },
-	-- slidefade, not slide: the outgoing workspace drops to 15% opacity as it
-	-- travels, so the two never read as one flat sheet sliding past. This is the
-	-- single most common thing the smooth rices do that a stock config does not.
-	{ "workspaces", 2.5, "macMove", "slidefade 15%" },
-	{ "workspacesIn", 2.5, "macMove", "slidefade 15%" },
-	{ "workspacesOut", 2.5, "macMove", "slidefade 15%" },
+	{ "workspaces", 2.5, "macMove", "slide" },
+	{ "workspacesIn", 2.5, "macMove", "slide" },
+	{ "workspacesOut", 2.5, "macMove", "slide" },
 	{ "specialWorkspace", 2.5, "macMove", "slidefadevert 30%" },
 	{ "zoomFactor", 2.5, "macOut" },
 }
