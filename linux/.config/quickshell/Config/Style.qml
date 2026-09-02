@@ -35,6 +35,8 @@ Singleton {
 
 	// macOS banners are narrower than the 420 fnott used and the icon is much
 	// bigger relative to the card -- that proportion is most of the look.
+	readonly property int barHeight: 28
+
 	readonly property int notifWidth: 380
 	readonly property int notifIcon: 38
 	readonly property int notifSpacing: 10
