@@ -35,19 +35,23 @@ hl.monitor({ output = "", mode = "preferred", position = "auto", scale = "auto" 
 -- So resolve the scanout card from which one actually has the panel attached.
 -- aquamarine wants the REAL cardN node and rejects by-path symlinks.
 local function panel_card()
-    local f = io.popen("grep -l '^connected$' /sys/class/drm/card*-eDP-*/status 2>/dev/null")
-    if not f then return nil end
-    local line = f:read("*l")
-    f:close()
-    return line and line:match("/(card%d+)%-eDP")
+	local f = io.popen("grep -l '^connected$' /sys/class/drm/card*-eDP-*/status 2>/dev/null")
+	if not f then
+		return nil
+	end
+	local line = f:read("*l")
+	f:close()
+	return line and line:match("/(card%d+)%-eDP")
 end
 
 local function vendor_of(card)
-    local f = io.open("/sys/class/drm/" .. card .. "/device/vendor")
-    if not f then return nil end
-    local v = f:read("*l")
-    f:close()
-    return v
+	local f = io.open("/sys/class/drm/" .. card .. "/device/vendor")
+	if not f then
+		return nil
+	end
+	local v = f:read("*l")
+	f:close()
+	return v
 end
 
 local scanout = panel_card() or "card1"
@@ -56,38 +60,38 @@ local nvidia_primary = vendor_of(scanout) == "0x10de"
 hl.env("AQ_DRM_DEVICES", "/dev/dri/" .. scanout)
 
 if nvidia_primary then
-    -- Discrete MUX. The dGPU drives the panel, so the loaders must NOT be
-    -- pinned to Mesa/Intel -- doing that renders the compositor on a GPU that
-    -- cannot reach the display. RTD3 is moot in this mode anyway: the card is
-    -- the scanout engine, it can never park in D3cold. HDMI-A-1 works here,
-    -- since it was always wired to the dGPU.
-    hl.env("__GLX_VENDOR_LIBRARY_NAME", "nvidia")
-    hl.env("LIBVA_DRIVER_NAME", "nvidia")
-    hl.env("NVD_BACKEND", "direct")
+	-- Discrete MUX. The dGPU drives the panel, so the loaders must NOT be
+	-- pinned to Mesa/Intel -- doing that renders the compositor on a GPU that
+	-- cannot reach the display. RTD3 is moot in this mode anyway: the card is
+	-- the scanout engine, it can never park in D3cold. HDMI-A-1 works here,
+	-- since it was always wired to the dGPU.
+	hl.env("__GLX_VENDOR_LIBRARY_NAME", "nvidia")
+	hl.env("LIBVA_DRIVER_NAME", "nvidia")
+	hl.env("NVD_BACKEND", "direct")
 else
-    -- Hybrid MUX. Intel is primary: it scans out with no cross-GPU copy, where
-    -- making NVIDIA primary would render on the dGPU and copy every frame back
-    -- (reverse PRIME), stuttering at 240Hz.
-    --
-    -- The dGPU node is deliberately not in AQ_DRM_DEVICES. Listing it made
-    -- aquamarine open /dev/dri/cardN + /dev/nvidia0 at backend init and hold
-    -- them for the life of the session, pinning the RTX 4070 at D0 forever:
-    -- 39h uptime, 576ms of PCI runtime suspend. Dropping it lets fine-grained
-    -- RTD3 park the card in D3cold and wake it on demand for prime-run.
-    -- The price: HDMI-A-1 hangs off the dGPU and is dead in this mode. USB-C/DP
-    -- is on the Intel side (card*-DP-1..4) and still works.
-    --
-    -- Dropping the card still left Hyprland opening renderD129 + /dev/nvidia0,
-    -- because libglvnd enumerates EVERY EGL vendor at init and NVIDIA's ICD
-    -- instantiates a device merely by being listed. One open handle holds the
-    -- card at D0. Pinning the loaders to Mesa/Intel keeps NVIDIA untouched
-    -- until asked. Inherited by every child, so prime-run (shadowed in
-    -- ~/.local/bin) flips both back to the NVIDIA ICDs for the one process
-    -- that wants the dGPU.
-    hl.env("__EGL_VENDOR_LIBRARY_FILENAMES", "/usr/share/glvnd/egl_vendor.d/50_mesa.json")
-    hl.env("VK_DRIVER_FILES", "/usr/share/vulkan/icd.d/intel_icd.json")
-    hl.env("__GLX_VENDOR_LIBRARY_NAME", "mesa")
-    hl.env("LIBVA_DRIVER_NAME", "iHD")
+	-- Hybrid MUX. Intel is primary: it scans out with no cross-GPU copy, where
+	-- making NVIDIA primary would render on the dGPU and copy every frame back
+	-- (reverse PRIME), stuttering at 240Hz.
+	--
+	-- The dGPU node is deliberately not in AQ_DRM_DEVICES. Listing it made
+	-- aquamarine open /dev/dri/cardN + /dev/nvidia0 at backend init and hold
+	-- them for the life of the session, pinning the RTX 4070 at D0 forever:
+	-- 39h uptime, 576ms of PCI runtime suspend. Dropping it lets fine-grained
+	-- RTD3 park the card in D3cold and wake it on demand for prime-run.
+	-- The price: HDMI-A-1 hangs off the dGPU and is dead in this mode. USB-C/DP
+	-- is on the Intel side (card*-DP-1..4) and still works.
+	--
+	-- Dropping the card still left Hyprland opening renderD129 + /dev/nvidia0,
+	-- because libglvnd enumerates EVERY EGL vendor at init and NVIDIA's ICD
+	-- instantiates a device merely by being listed. One open handle holds the
+	-- card at D0. Pinning the loaders to Mesa/Intel keeps NVIDIA untouched
+	-- until asked. Inherited by every child, so prime-run (shadowed in
+	-- ~/.local/bin) flips both back to the NVIDIA ICDs for the one process
+	-- that wants the dGPU.
+	hl.env("__EGL_VENDOR_LIBRARY_FILENAMES", "/usr/share/glvnd/egl_vendor.d/50_mesa.json")
+	hl.env("VK_DRIVER_FILES", "/usr/share/vulkan/icd.d/intel_icd.json")
+	hl.env("__GLX_VENDOR_LIBRARY_NAME", "mesa")
+	hl.env("LIBVA_DRIVER_NAME", "iHD")
 end
 -- GTK4's Vulkan renderer picks the discrete GPU when both are present.
 hl.env("GSK_RENDERER", "gl")
@@ -116,6 +120,8 @@ hl.on("hyprland.start", function()
 		"audio-ensure",
 		"refresh-paru-completions",
 		"battery-watch",
+		-- 240Hz on AC, 60Hz on battery.
+		"auto-refresh",
 		"wl-paste --type text --watch cliphist store",
 		"wl-paste --type image --watch cliphist store",
 		"wl-clip-persist --clipboard regular",
@@ -205,7 +211,7 @@ hl.config({
 			xray = false,
 		},
 		shadow = {
-			enabled = true,
+			enabled = false,
 			-- Small range, HIGH render_power -- the opposite of the macOS 70/1 spec
 			-- that was here before. Falloff is exponential in render_power, so at 3
 			-- nearly all the darkness sits in the first few pixels and the tail is
@@ -226,7 +232,6 @@ hl.config({
 			color = c.shadow,
 			color_inactive = shadow_inactive,
 		},
-
 	},
 
 	misc = {
