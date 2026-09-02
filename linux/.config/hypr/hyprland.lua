@@ -277,9 +277,7 @@ hl.curve("macFade", { type = "bezier", points = { { 0.50, 0.50 }, { 0.75, 1.00 }
 -- everything else, but it glides in rather than arriving.
 hl.curve("macMove", { type = "bezier", points = { { 0.32, 0.00 }, { 0.06, 1.00 } } })
 
--- wraparound: 10 -> 1 takes the one-step slide instead of sweeping back past
--- eight workspaces it never renders.
-hl.config({ animations = { enabled = true, workspace_wraparound = true } })
+hl.config({ animations = { enabled = true } })
 
 -- A table, not 24 near-identical lines. Windows slide so a new one travels in
 -- from the nearest edge while its neighbours slide over -- they read as pushing
