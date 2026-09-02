@@ -1,5 +1,6 @@
 import Quickshell
 import "Launcher"
+import "Notifications"
 
 // Components are added here one at a time and only once they beat what they
 // replace. waybar, fnott, fuzzel and hyprlock all keep running until then --
@@ -7,4 +8,5 @@ import "Launcher"
 // shell died from doing everything at once.
 ShellRoot {
 	Spotlight {}
+	Daemon {}
 }

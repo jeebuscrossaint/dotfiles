@@ -1,15 +1,20 @@
 #!/bin/sh
 # menu-run — the application launcher.
 #
-# Now a one-liner, and that is the whole reason for moving to fuzzel. What this script
-# used to be: a loop over every directory in $PATH listing every executable file, piped
-# into wmenu, because wmenu has no .desktop support. That offered up `[`, `zgrep`,
-# `x86_64-pc-linux-gnu-gcc-ranlib` and several hundred other things nobody launches by
-# hand, with no real names and no icons.
+# Spotlight, in the Quickshell shell (~/.config/quickshell/Launcher). The script
+# is kept rather than binding the launcher directly so that all three compositor
+# configs keep calling one stable name -- it was wmenu, then fuzzel, now this,
+# and none of those swaps touched a keybind.
 #
-# fuzzel's default mode IS .desktop launching, with icons, the app's proper name, and
-# its actions (so Firefox offers "New Private Window"). Nothing to reimplement.
+# fuzzel is still installed and is still what `menu` uses for the dmenu-style
+# pickers (cliphist, theme-pick). Only the .desktop launcher moved.
 #
-# The script is kept rather than binding fuzzel directly so that all three compositor
-# configs keep calling one stable name.
+# Reachability is `pgrep`, NOT the exit status of the call: `qs ipc call` exits 0
+# even for a target that does not exist, so a dead shell would look like a
+# successful launch and the fallback would never fire. That matters in a mango
+# session, where nothing starts the shell.
+if pgrep -x qs >/dev/null 2>&1; then
+	exec qs ipc call spotlight toggle
+fi
+
 exec fuzzel "$@"

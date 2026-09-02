@@ -112,10 +112,10 @@ hl.on("hyprland.start", function()
 		"/usr/libexec/xdg-desktop-portal",
 		"hypridle",
 		"waybar -c /home/amarnath/.config/waybar/config-hyprland.jsonc",
-		"fnott",
-		-- The Quickshell shell. Additive for now: it carries the Spotlight
-		-- launcher only, and waybar/fnott/fuzzel above are all still the real
-		-- thing until a component beats them.
+		-- The Quickshell shell. Carries the Spotlight launcher and the
+		-- notification server, so fnott is gone from this list -- only one
+		-- process can own org.freedesktop.Notifications. waybar and hyprlock
+		-- are still the real thing.
 		"qs",
 		"awww-daemon",
 		"start-polkit",
@@ -368,7 +368,7 @@ hl.window_rule({
 -- blurring the layer frosted the wallpaper behind each slab -- that was the acrylic.
 -- Without the rule the islands are flat tint over the unblurred wallpaper. Layer
 -- blur is opt-in in Hyprland, so dropping the namespace is the whole change.
-for _, ns in ipairs({ "fnott", "notifications", "launcher", "qs-spotlight" }) do
+for _, ns in ipairs({ "notifications", "launcher", "qs-spotlight", "qs-notifications" }) do
 	hl.layer_rule({ name = "blur-" .. ns, match = { namespace = "^" .. ns .. "$" }, blur = true })
 end
 
@@ -381,8 +381,9 @@ end
 ------------------------------------------------------------------ keybinds
 hl.bind(mod .. " + Q", hl.dsp.exec_cmd(terminal))
 hl.bind(mod .. " + D", hl.dsp.exec_cmd(menu))
--- Cmd+Space, near enough. fuzzel stays on mod+D until Spotlight has earned the
--- swap, so both launchers are reachable and neither is in the other's way.
+-- Cmd+Space, near enough. mod+D above reaches the same launcher: `menu-run` is
+-- Spotlight now, so the swap away from fuzzel needed no keybind change at all.
+-- fuzzel is still what `menu` uses for the dmenu-style pickers.
 hl.bind(mod .. " + SPACE", hl.dsp.exec_cmd("qs ipc call spotlight toggle"))
 hl.bind(mod .. " + C", hl.dsp.window.close())
 hl.bind(mod .. " + SHIFT + C", hl.dsp.exec_cmd("hyprctl reload"))
@@ -532,8 +533,9 @@ for _, m in ipairs(media) do
 end
 
 -- Config-drawn OSD. hl.notification is compositor-side: no D-Bus, no daemon, no
--- fork. It does NOT replace fnott -- fnott serves *application* notifications
--- over D-Bus, which Hyprland does not implement. This is config feedback only.
+-- fork. It does NOT replace the notification daemon -- the Quickshell shell
+-- serves *application* notifications over D-Bus, which Hyprland does not
+-- implement. This is config feedback only.
 --
 -- Only sysfs-backed controls live here. Volume stays in ~/.local/bin/osd because
 -- reading it back needs wpctl, and io.popen would fork on the compositor's main
