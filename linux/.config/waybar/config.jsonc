@@ -30,13 +30,22 @@
   // renders empty but NOT the group around it, so with nothing playing it left a
   // bare slab.
   "group/link": { "orientation": "horizontal", "modules": ["mpris", "network"] },
+  // Drawer: only the first module (the "group leader") stays visible; the rest
+  // slide out on hover. cpu leads because its per-core bars are the one readout
+  // worth watching continuously -- the other five are glance-on-demand. Net width
+  // DROPS despite the sliders added below, since five modules leave the row.
   "group/load":  {
     "orientation": "horizontal",
-    "modules": ["disk", "cpu", "memory", "temperature", "temperature#nvme", "custom/fan"]
+    "drawer": {
+      "transition-duration": 300,
+      "children-class": "load-child",
+      "transition-left-to-right": false
+    },
+    "modules": ["cpu", "memory", "disk", "temperature", "temperature#nvme", "custom/fan"]
   },
   "group/knobs": {
     "orientation": "horizontal",
-    "modules": ["backlight", "wireplumber", "battery"]
+    "modules": ["backlight", "backlight/slider", "wireplumber", "pulseaudio/slider", "battery"]
   },
   "group/time": {
     "orientation": "horizontal",
@@ -79,7 +88,9 @@
     "format-ethernet": "󰇚 {bandwidthDownBytes} 󰕒 {bandwidthUpBytes}  󰈀 {ipaddr}",
     "format-disconnected": "󰖪 offline",
     "interval": 2,
-    "tooltip": false,
+    "tooltip": true,
+    "tooltip-format-wifi": "{essid} ({signalStrength}%)\n{ipaddr}/{cidr} via {gwaddr}\n{frequency} MHz on {ifname}",
+    "tooltip-format-ethernet": "{ipaddr}/{cidr} via {gwaddr} on {ifname}",
     "on-click": "kitty nmtui"
   },
 
@@ -87,13 +98,19 @@
     "format": "󰋊 {percentage_used}% {free}",
     "path": "/",
     "interval": 30,
-    "tooltip": false
+    "tooltip": true,
+    "tooltip-format": "{used} of {total} used on {path}, {free} free"
   },
 
+  // {icon0}..{icon15} is one block glyph per thread, height tracking that thread's
+  // usage -- 16 on this CPU, matching nproc. Cheap: it is the same /proc/stat read
+  // the percentage already does, just rendered per core instead of averaged.
   "cpu": {
-    "format": "󰻠 {usage}% {avg_frequency}G 󰬺 {load}",
-    "interval": 2,
-    "tooltip": false,
+    "format": "󰻠 {icon0}{icon1}{icon2}{icon3}{icon4}{icon5}{icon6}{icon7}{icon8}{icon9}{icon10}{icon11}{icon12}{icon13}{icon14}{icon15} {usage}%",
+    "format-icons": ["▁", "▂", "▃", "▄", "▅", "▆", "▇", "█"],
+    "interval": 1,
+    "tooltip": true,
+    "tooltip-format": "{usage}% of 16 threads\n{avg_frequency} GHz avg, {max_frequency} GHz peak\nload {load}",
     "on-click": "kitty btop"
   },
 
@@ -102,7 +119,8 @@
     // showed swap INSTEAD of RAM.
     "format": "󰍛 {percentage}% 󰾵 {swapPercentage}%",
     "interval": 5,
-    "tooltip": false,
+    "tooltip": true,
+    "tooltip-format": "{used:0.1f} GiB of {total:0.1f} GiB\nswap {swapUsed:0.1f} of {swapTotal:0.1f} GiB",
     "on-click": "kitty btop"
   },
 
@@ -167,7 +185,26 @@
     "format-time": "{H}h{m}m",
     "format-icons": ["󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"],
     "interval": 10,
-    "tooltip": false
+    "tooltip": true,
+    "tooltip-format": "{capacity}% \u2014 {timeTo}\n{power:.2f} W, {health}% health, {cycles} cycles"
+  },
+
+  // Draggable, unlike scrolling the text modules above -- which stay, since a
+  // slider shows no number and no mute state. min 5 on the backlight because 0 is
+  // a black screen (osd enforces the same floor).
+  "backlight/slider": {
+    "min": 5,
+    "max": 100,
+    "orientation": "horizontal",
+    "device": "intel_backlight"
+  },
+
+  // PipeWire's pulse server is what this talks to, so it coexists with the
+  // wireplumber module above rather than competing with it.
+  "pulseaudio/slider": {
+    "min": 0,
+    "max": 100,
+    "orientation": "horizontal"
   },
 
   "custom/uptime": {

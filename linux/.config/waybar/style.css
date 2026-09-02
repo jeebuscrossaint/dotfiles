@@ -92,3 +92,46 @@
 #workspaces {
   padding-right: 10px;
 }
+
+/* Drawer children (group/load). children-class in the config names this; the
+ * group leader (cpu) never gets it. Padding matches the id rule above, which
+ * these cannot inherit -- that rule is a list of ids, and a revealed child is
+ * still its own id, so #memory etc. already match it. This exists to give the
+ * revealed strip a little breathing room from the leader. */
+.load-child {
+  padding: 0 6px;
+}
+
+/* Sliders are GtkScale, not labels, so they have no natural width in a bar and
+ * collapse to a few pixels without one. 90px is about the width of the text
+ * readout each sits next to. */
+#backlight-slider,
+#pulseaudio-slider {
+  min-width: 90px;
+  padding: 0 6px;
+}
+
+/* GtkScale paints trough + highlight + slider as separate nodes. Only geometry
+ * here -- colour would have to come from coat, and hardcoding it would be
+ * overwritten on the next theme change anyway. min-height on the trough because
+ * GTK gives it a default tall enough to blow out the 26px island. */
+#backlight-slider trough,
+#pulseaudio-slider trough {
+  min-height: 4px;
+  min-width: 80px;
+  border-radius: 2px;
+}
+
+#backlight-slider highlight,
+#pulseaudio-slider highlight {
+  border-radius: 2px;
+}
+
+/* The drag handle. GTK's default is a large circle that forces the island
+ * taller; shrinking it keeps the bar's height. */
+#backlight-slider slider,
+#pulseaudio-slider slider {
+  min-height: 10px;
+  min-width: 10px;
+  border-radius: 5px;
+}
