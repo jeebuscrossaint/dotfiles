@@ -30,7 +30,23 @@
 # reboot -- writing it for the current mode would be a boot too late, because
 # udev has already coldplugged nvidia_drm by the time stage 2 runs.
 
-MUX=/sys/devices/platform/asus-nb-wmi/gpu_mux_mode
+# asus-armoury (kernel 6.19+, present here) exposes this through the standard
+# firmware_attributes class -- the same ABI Lenovo and Dell use for BIOS
+# settings -- and the ad-hoc asus-nb-wmi attribute is marked "DEPRECATED, WILL
+# BE REMOVED SOON", targeted for the next LTS cycle. Same 0/1 encoding
+# (possible_values "0;1"), so preferring the new path and falling back to the
+# old one covers both sides of the removal with no other change.
+ARMOURY=/sys/class/firmware-attributes/asus-armoury/attributes
+LEGACY=/sys/devices/platform/asus-nb-wmi/gpu_mux_mode
+if [ -e "$ARMOURY/gpu_mux_mode/current_value" ]; then
+	MUX=$ARMOURY/gpu_mux_mode/current_value
+else
+	MUX=$LEGACY
+fi
+# firmware_attributes signals a staged-but-not-applied change here. Only the
+# new interface has it; absent on the legacy path.
+PENDING=$ARMOURY/pending_reboot
+
 AC=/sys/class/power_supply/ACAD/online
 DROPIN=/etc/modprobe.d/zz-gpu-mux.conf
 # Records the target last staged. Lives in /var so it survives the reboot this
@@ -72,6 +88,13 @@ mkdir -p /var/lib
 echo "$want" >"$STAMP" 2>/dev/null
 
 if echo "$want" >"$MUX" 2>/dev/null; then
+	# Trust the firmware's own answer over the fact that the write returned 0.
+	# If it says nothing is pending, the change did not stage and rebooting
+	# would just land us back here.
+	if [ -r "$PENDING" ] && [ "$(cat "$PENDING" 2>/dev/null)" = "0" ]; then
+		rm -f "$STAMP"
+		exit 0
+	fi
 	sync
 	# runit's reboot, so this goes through stage 3 and unmounts cleanly.
 	exec reboot
