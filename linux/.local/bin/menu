@@ -1,43 +1,59 @@
 #!/bin/sh
 # menu — a dmenu-style picker reading choices on stdin, for scripts.
 #
-# `fuzzel --dmenu`. The NAME is the point: every caller says `menu`, so the
-# launcher underneath swaps with no edits anywhere else (it was wmenu until
-# 2026-08-18). No colour flags to pass -- fuzzel reads its own config.
+# The NAME is the point: every caller says `menu`, so the picker underneath swaps
+# with no edits anywhere else. It was wmenu, then `fuzzel --dmenu`, and since
+# 2026-09-02 it is the Quickshell shell's Picker component.
 #
-# wmenu's flags are TRANSLATED, since fuzzel spells them differently:
-#     -p PROMPT  ->  --prompt="PROMPT ❯ "
-#     -l LINES   ->  --lines=LINES
-#     -i         ->  dropped; fuzzel is always case-insensitive, and an unknown
-#                    flag would make it exit
+# Flags kept for source compatibility with the callers that already exist:
+#     -p PROMPT   placeholder text in the field
+#     -l LINES    accepted and ignored; the palette sizes itself
+#     -i          accepted and ignored; matching is always case-insensitive
 #
-# Arguments are rebuilt with `set --`, not accumulated in a string: unquoted
-# word-splitting broke `--prompt=theme ❯` in two and lost the arrow.
+# How the answer gets back: an IPC call cannot block waiting for a human, so the
+# choices go to a temp file, a FIFO is created for the reply, the shell is told
+# about both, and this script then sits in `cat` on the FIFO until the Picker
+# writes to it. A cancelled pick writes an empty line, so `cat` always returns
+# and the caller's `[ -n "$pick" ] || exit 0` still works.
+set -u
 
 prompt=""
-lines=""
 
 while [ $# -gt 0 ]; do
 	case "$1" in
 	-p)
-		shift
-		prompt="$1"
+		prompt="${2:-}"
+		shift 2
 		;;
 	-l)
-		shift
-		lines="$1"
+		shift 2
 		;;
-	-i) ;;
+	-i)
+		shift
+		;;
 	*)
-		# Anything else is assumed to be a fuzzel flag already and is kept.
-		set -- "$@" "$1"
+		shift
 		;;
 	esac
-	shift
 done
 
-set --
-[ -n "$prompt" ] && set -- "$@" "--prompt=$prompt ❯ "
-[ -n "$lines" ] && set -- "$@" "--lines=$lines"
+if ! pgrep -x qs >/dev/null 2>&1; then
+	echo "menu: the Quickshell shell is not running" >&2
+	exit 1
+fi
 
-exec fuzzel --dmenu "$@"
+dir=$(mktemp -d) || exit 1
+trap 'rm -rf "$dir"' EXIT INT TERM
+
+items="$dir/items"
+reply="$dir/reply"
+
+cat > "$items"
+mkfifo "$reply" || exit 1
+
+qs ipc call picker open "$items" "$reply" "$prompt" >/dev/null 2>&1
+
+# Blocks until the Picker writes. An empty line means cancelled.
+read -r pick < "$reply"
+[ -n "$pick" ] || exit 0
+printf '%s\n' "$pick"

@@ -1,3 +1,4 @@
 module qs.Config
 singleton Theme 1.0 Theme.qml
 singleton Style 1.0 Style.qml
+singleton Icons 1.0 Icons.qml

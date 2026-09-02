@@ -3,10 +3,12 @@ import "Launcher"
 import "Notifications"
 
 // Components are added here one at a time and only once they beat what they
-// replace. waybar, fnott, fuzzel and hyprlock all keep running until then --
-// a Quickshell layer coexists with them fine, and the last attempt at a QML
-// shell died from doing everything at once.
+// replace. fnott and fuzzel are gone -- Spotlight is the launcher, Picker is the
+// dmenu for scripts, Daemon is the notification server. waybar and hyprlock are
+// still the real thing; the last attempt at a QML shell died from trying to do
+// everything at once.
 ShellRoot {
 	Spotlight {}
+	Picker {}
 	Daemon {}
 }

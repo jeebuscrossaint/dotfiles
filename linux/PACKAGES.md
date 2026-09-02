@@ -24,7 +24,7 @@ Remove one of these and something in this repo stops working.
 | Role | Packages |
 |---|---|
 | Compositor | `hyprland`, `mangowm` (AUR), `scenefx0.5`, `xdg-desktop-portal-hyprland`, `polkit-gnome`, `elogind-runit` |
-| Bar / notify / launcher | `waybar`, `fnott`, `fuzzel`, `wttrbar` (AUR) |
+| Bar / notify / launcher | `waybar`, `wttrbar` (AUR), `quickshell` (notifications + launcher) |
 | Idle & lock | `hypridle`, `hyprlock`, `swayidle` |
 | Wallpaper | `awww` (wrapped by `~/.local/bin/awww`, so `awww img` retheme-follows) |
 | Terminal & shell | `kitty`, `fish`, `lsd`, `bat`, `less`, `tree` |

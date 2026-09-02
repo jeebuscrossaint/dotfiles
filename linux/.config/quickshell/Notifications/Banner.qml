@@ -84,7 +84,7 @@ Card {
 				implicitSize: Style.notifIcon
 				asynchronous: true
 				visible: source != ""
-				source: banner.notif.image !== "" ? banner.resolveIcon(banner.notif.image) : banner.resolveIcon(banner.notif.appIcon)
+				source: banner.notif.image !== "" ? Icons.resolve(banner.notif.image) : Icons.resolve(banner.notif.appIcon)
 			}
 
 			Column {
@@ -262,27 +262,5 @@ Card {
 		if (mins < 60)
 			return mins + "m";
 		return Math.floor(mins / 60) + "h";
-	}
-
-	// A notification icon can arrive as an absolute path, a file:// or data: url,
-	// a pixmap the server already turned into an image:// url, or a bare icon
-	// theme name. Anything that ends up being a theme NAME has to be resolved
-	// with iconPath's check flag: without it, a name the theme does not have
-	// comes back as a url that renders Qt's magenta missing-image checkerboard
-	// instead of as nothing.
-	//
-	// image://icon/ is unwrapped rather than passed through, and that is the
-	// case that matters in practice. `notify-send -i` travels as the image-path
-	// HINT, not as app_icon, and Quickshell rewrites the hint to
-	// image://icon/<name> without ever asking whether the theme has it -- so the
-	// one form that looks pre-resolved is the one that is not.
-	function resolveIcon(spec: string): string {
-		if (spec === "")
-			return "";
-		if (spec.startsWith("image://icon/"))
-			return Quickshell.iconPath(spec.substring("image://icon/".length), true);
-		if (spec.startsWith("/") || spec.startsWith("file:") || spec.startsWith("image:") || spec.startsWith("data:"))
-			return spec;
-		return Quickshell.iconPath(spec, true);
 	}
 }
