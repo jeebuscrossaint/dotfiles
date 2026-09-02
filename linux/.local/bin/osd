@@ -300,15 +300,22 @@ touchpad)
 		# mango's own toggle -- one dispatch, no device name to resolve.
 		mmsg dispatch toggle_trackpad_enable >/dev/null 2>&1 || exit 1
 	elif [ -n "${HYPRLAND_INSTANCE_SIGNATURE:-}" ]; then
-		# Hyprland takes the device name as libinput reports it.
+		# Hyprland takes the device name as libinput reports it. It has to go
+		# through `eval` in Lua form: the non-legacy parser rejects `hyprctl
+		# keyword` outright ("keyword can't work with non-legacy parsers") and
+		# STILL exits 0, so the keyword version flipped the flag, drew the
+		# popup and never touched the device. Same trap as auto-refresh.
 		command -v jq >/dev/null || exit 0
 		tp=$(hyprctl devices -j 2>/dev/null |
 			jq -r '.mice[]? | select(.name | test("touchpad"; "i")) | .name' | head -1)
 		[ -n "$tp" ] || exit 0
 		case $want in
-		on) hyprctl keyword "device[$tp]:enabled" true >/dev/null 2>&1 || exit 1 ;;
-		off) hyprctl keyword "device[$tp]:enabled" false >/dev/null 2>&1 || exit 1 ;;
+		on) en=true ;;
+		off) en=false ;;
 		esac
+		# eval reports failure in its OUTPUT, not its exit status -- it prints
+		# "ok" on success and the Lua error otherwise, exiting 0 either way.
+		[ "$(hyprctl eval "hl.device({ name = \"$tp\", enabled = $en })" 2>&1)" = ok ] || exit 1
 	else
 		# No compositor to ask (a TTY, or a session that does not do this).
 		exit 0
