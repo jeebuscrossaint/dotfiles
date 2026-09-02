@@ -22,7 +22,7 @@ Singleton {
 	readonly property int durExit: 130
 	readonly property int durResize: 160
 
-	readonly property int radiusPanel: 16
+	readonly property int radiusPanel: 18
 	readonly property int radiusRow: 8
 	readonly property int hairline: 1
 
@@ -32,6 +32,12 @@ Singleton {
 	// around as it grows.
 	readonly property real spotlightTop: 0.18
 	readonly property int spotlightMaxRows: 8
+
+	// macOS banners are narrower than the 420 fnott used and the icon is much
+	// bigger relative to the card -- that proportion is most of the look.
+	readonly property int notifWidth: 380
+	readonly property int notifIcon: 38
+	readonly property int notifSpacing: 10
 
 	readonly property int rowHeight: 46
 	readonly property int iconSize: 30
