@@ -42,7 +42,7 @@ Scope {
 		margins.top: 10
 		margins.right: 10
 
-		implicitWidth: 420
+		implicitWidth: Style.notifWidth
 		implicitHeight: Math.max(1, stack.implicitHeight)
 		color: "transparent"
 
@@ -65,7 +65,7 @@ Scope {
 			id: stack
 
 			anchors.fill: parent
-			spacing: 8
+			spacing: Style.notifSpacing
 
 			Repeater {
 				model: server.trackedNotifications
