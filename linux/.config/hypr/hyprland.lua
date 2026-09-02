@@ -113,6 +113,10 @@ hl.on("hyprland.start", function()
 		"hypridle",
 		"waybar -c /home/amarnath/.config/waybar/config-hyprland.jsonc",
 		"fnott",
+		-- The Quickshell shell. Additive for now: it carries the Spotlight
+		-- launcher only, and waybar/fnott/fuzzel above are all still the real
+		-- thing until a component beats them.
+		"qs",
 		"awww-daemon",
 		"start-polkit",
 		-- NOT a bare artix-pipewire-launcher: that skips wireplumber and leaves a
@@ -364,7 +368,7 @@ hl.window_rule({
 -- blurring the layer frosted the wallpaper behind each slab -- that was the acrylic.
 -- Without the rule the islands are flat tint over the unblurred wallpaper. Layer
 -- blur is opt-in in Hyprland, so dropping the namespace is the whole change.
-for _, ns in ipairs({ "fnott", "notifications", "launcher" }) do
+for _, ns in ipairs({ "fnott", "notifications", "launcher", "qs-spotlight" }) do
 	hl.layer_rule({ name = "blur-" .. ns, match = { namespace = "^" .. ns .. "$" }, blur = true })
 end
 
@@ -377,6 +381,9 @@ end
 ------------------------------------------------------------------ keybinds
 hl.bind(mod .. " + Q", hl.dsp.exec_cmd(terminal))
 hl.bind(mod .. " + D", hl.dsp.exec_cmd(menu))
+-- Cmd+Space, near enough. fuzzel stays on mod+D until Spotlight has earned the
+-- swap, so both launchers are reachable and neither is in the other's way.
+hl.bind(mod .. " + SPACE", hl.dsp.exec_cmd("qs ipc call spotlight toggle"))
 hl.bind(mod .. " + C", hl.dsp.window.close())
 hl.bind(mod .. " + SHIFT + C", hl.dsp.exec_cmd("hyprctl reload"))
 hl.bind(mod .. " + L", hl.dsp.exec_cmd("hyprlock"))

@@ -1,0 +1,3 @@
+module qs.Config
+singleton Theme 1.0 Theme.qml
+singleton Style 1.0 Style.qml

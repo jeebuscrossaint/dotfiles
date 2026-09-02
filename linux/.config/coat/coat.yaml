@@ -24,6 +24,7 @@ enabled:
 
   - mango
   - waybar
+  - quickshell
   - fnott
   - fuzzel
   - kitty
