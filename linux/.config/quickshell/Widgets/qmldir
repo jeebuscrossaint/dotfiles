@@ -1,0 +1,3 @@
+module qs.Widgets
+Card 1.0 Card.qml
+StyledText 1.0 StyledText.qml
