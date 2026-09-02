@@ -1,0 +1,21 @@
+# 99-pci-runtime-pm.rules — let every PCI device use runtime power management.
+#
+# Install: sudo install -m644 misc/99-pci-runtime-pm.rules /etc/udev/rules.d/
+# Applies at next boot, or immediately with:
+#   sudo udevadm control --reload && sudo udevadm trigger --subsystem-match=pci
+#
+# Nine PCI devices on this machine ship with power/control=on, i.e. runtime PM
+# disabled outright: the NPU, GNA, Dynamic Tuning, CNVi WiFi, NVMe, shared
+# SRAM, eSPI and SPI. Flipping them to auto let HD Audio, SMBus, eSPI and a
+# Realtek device actually reach suspended. It matters beyond their individual
+# draw -- any single device pinned in D0 can keep the whole package out of
+# PC8/PC10, which is where the multi-watt idle savings are.
+#
+# This is the PCI half of what `powertop --auto-tune` does, and deliberately
+# NOT the rest of it. Auto-tune also enables USB autosuspend across the board,
+# which is the usual cause of a laggy mouse or a keyboard that drops the first
+# keypress after idle. Restricting the rule to the PCI subsystem keeps the
+# win without that class of breakage.
+#
+# To undo: rm /etc/udev/rules.d/99-pci-runtime-pm.rules
+ACTION=="add", SUBSYSTEM=="pci", ATTR{power/control}="auto"
