@@ -27,13 +27,68 @@ hl.monitor({ output = "HDMI-A-1", mode = "3840x2160@30", position = "2560x0", sc
 hl.monitor({ output = "", mode = "preferred", position = "auto", scale = "auto" })
 
 ----------------------------------------------------------------------- env
--- The eDP panel is wired to the Intel iGPU in Hybrid mode, so Intel MUST be
--- primary: it scans out with no cross-GPU copy. Making NVIDIA primary renders on
--- the dGPU then copies every frame back (reverse PRIME) and stutters at 240Hz.
--- aquamarine wants the REAL cardN nodes and rejects by-path symlinks.
-hl.env("AQ_DRM_DEVICES", "/dev/dri/card1:/dev/dri/card0")
-hl.env("__GLX_VENDOR_LIBRARY_NAME", "mesa")
-hl.env("LIBVA_DRIVER_NAME", "iHD")
+-- Which card the panel hangs off is decided by the BIOS MUX
+-- (asus-nb-wmi/gpu_mux_mode: 1=Hybrid -> eDP on Intel, 0=Discrete -> eDP on the
+-- dGPU). Flipping it in setup moves eDP-1 between cards, and a hardcoded node
+-- strands Hyprland on a GPU with zero connected outputs: it starts, grabs the
+-- card, finds no output and renders into the void. Looks exactly like a freeze.
+-- So resolve the scanout card from which one actually has the panel attached.
+-- aquamarine wants the REAL cardN node and rejects by-path symlinks.
+local function panel_card()
+    local f = io.popen("grep -l '^connected$' /sys/class/drm/card*-eDP-*/status 2>/dev/null")
+    if not f then return nil end
+    local line = f:read("*l")
+    f:close()
+    return line and line:match("/(card%d+)%-eDP")
+end
+
+local function vendor_of(card)
+    local f = io.open("/sys/class/drm/" .. card .. "/device/vendor")
+    if not f then return nil end
+    local v = f:read("*l")
+    f:close()
+    return v
+end
+
+local scanout = panel_card() or "card1"
+local nvidia_primary = vendor_of(scanout) == "0x10de"
+
+hl.env("AQ_DRM_DEVICES", "/dev/dri/" .. scanout)
+
+if nvidia_primary then
+    -- Discrete MUX. The dGPU drives the panel, so the loaders must NOT be
+    -- pinned to Mesa/Intel -- doing that renders the compositor on a GPU that
+    -- cannot reach the display. RTD3 is moot in this mode anyway: the card is
+    -- the scanout engine, it can never park in D3cold. HDMI-A-1 works here,
+    -- since it was always wired to the dGPU.
+    hl.env("__GLX_VENDOR_LIBRARY_NAME", "nvidia")
+    hl.env("LIBVA_DRIVER_NAME", "nvidia")
+    hl.env("NVD_BACKEND", "direct")
+else
+    -- Hybrid MUX. Intel is primary: it scans out with no cross-GPU copy, where
+    -- making NVIDIA primary would render on the dGPU and copy every frame back
+    -- (reverse PRIME), stuttering at 240Hz.
+    --
+    -- The dGPU node is deliberately not in AQ_DRM_DEVICES. Listing it made
+    -- aquamarine open /dev/dri/cardN + /dev/nvidia0 at backend init and hold
+    -- them for the life of the session, pinning the RTX 4070 at D0 forever:
+    -- 39h uptime, 576ms of PCI runtime suspend. Dropping it lets fine-grained
+    -- RTD3 park the card in D3cold and wake it on demand for prime-run.
+    -- The price: HDMI-A-1 hangs off the dGPU and is dead in this mode. USB-C/DP
+    -- is on the Intel side (card*-DP-1..4) and still works.
+    --
+    -- Dropping the card still left Hyprland opening renderD129 + /dev/nvidia0,
+    -- because libglvnd enumerates EVERY EGL vendor at init and NVIDIA's ICD
+    -- instantiates a device merely by being listed. One open handle holds the
+    -- card at D0. Pinning the loaders to Mesa/Intel keeps NVIDIA untouched
+    -- until asked. Inherited by every child, so prime-run (shadowed in
+    -- ~/.local/bin) flips both back to the NVIDIA ICDs for the one process
+    -- that wants the dGPU.
+    hl.env("__EGL_VENDOR_LIBRARY_FILENAMES", "/usr/share/glvnd/egl_vendor.d/50_mesa.json")
+    hl.env("VK_DRIVER_FILES", "/usr/share/vulkan/icd.d/intel_icd.json")
+    hl.env("__GLX_VENDOR_LIBRARY_NAME", "mesa")
+    hl.env("LIBVA_DRIVER_NAME", "iHD")
+end
 -- GTK4's Vulkan renderer picks the discrete GPU when both are present.
 hl.env("GSK_RENDERER", "gl")
 hl.env("QT_QPA_PLATFORM", "wayland")
@@ -96,16 +151,6 @@ hl.config({
 })
 
 hl.gesture({ fingers = 3, direction = "horizontal", action = "workspace" })
--- action takes a Lua function, so plugin dispatchers ARE reachable from a
--- gesture -- hl.gesture's string actions are only workspace/move/float/
--- fullscreen/fullscreen_state, which is what made this look unportable.
-hl.gesture({
-	fingers = 4,
-	direction = "up",
-	action = function()
-		hl.plugin.gloview.toggle()
-	end,
-})
 
 -- accel_profile flat above is for mice only.
 hl.device({ name = "asup1207:00-093a:3012-touchpad", accel_profile = "adaptive", natural_scroll = false })
@@ -113,11 +158,15 @@ hl.device({ name = "asup1207:00-093a:3012-touchpad", accel_profile = "adaptive",
 ------------------------------------------------------------ look and feel
 -- gaps_in is HALF mango's gappi: Hyprland puts it on each window's own edge, so
 -- two neighbours make 30px of gutter.
+-- Opacity variant of the scheme's shadow slot, not a recoloured one: the hue
+-- still comes from coat, only the alpha changes.
+local shadow_inactive = (c.shadow:gsub("%x%x%)$", "38)"))
+
 hl.config({
 	general = {
-		border_size = 0,
-		gaps_in = 30,
-		gaps_out = 35,
+		border_size = 4,
+		gaps_in = 15,
+		gaps_out = 15,
 		layout = "dwindle",
 		resize_on_border = false,
 		col = {
@@ -157,47 +206,80 @@ hl.config({
 		},
 		shadow = {
 			enabled = true,
-			-- macOS window shadow is 0 22px 70px rgba(0,0,0,0.56), mapped straight
-			-- across: blur radius -> range, offset-y -> offset, 0.56 -> 0x8f.
-			--
-			-- This shadow NEEDS the gaps above. It is sized for a macOS desktop
-			-- where windows float in open space, so the falloff wants ~70px to
-			-- complete. At the old gaps_in/out of 15 it never got there: the gap
-			-- sat at a flat 28-54% darkening end to end, which reads as muddy
-			-- gutters rather than windows casting shadows. Shrink the gaps and you
-			-- have to shrink range with them or it goes back to mud.
-			--
-			-- Between two windows the gutter is 2*gaps_in and takes shadow from
-			-- both sides, so it always reads darker than a screen-edge gap.
-			range = 70,
+			-- Small range, HIGH render_power -- the opposite of the macOS 70/1 spec
+			-- that was here before. Falloff is exponential in render_power, so at 3
+			-- nearly all the darkness sits in the first few pixels and the tail is
+			-- gone well inside a 15px gap. 70/1 instead spread a flat wash across the
+			-- whole gutter, which is why it read as mud instead of as a shadow, and
+			-- why it needed gaps nobody wants. This is what the rices actually run:
+			-- range 15-30, power 2-3, small or no offset.
+			range = 24,
 			render_power = 3,
-			offset = "0 22",
-			scale = 1.0,
-			-- Deliberately NOT c.shadow: a scheme-derived shadow shifts hue with
-			-- the wallpaper. macOS shadows are always the same neutral dark.
-			color = "rgba(0000008f)",
+			-- Enough drop to lift the window off the wallpaper without implying a
+			-- light source the rest of the theme does not have.
+			offset = "0 4",
+			-- Scheme slot, used literally. An unfocused window gets the same colour at
+			-- a much lower alpha so it sits closer to the surface -- and fadeShadow in
+			-- the animation table cross-fades the two, so a focus change is a change
+			-- in HEIGHT, not just in opacity. That transition is the whole point of
+			-- turning shadows back on.
+			color = c.shadow,
+			color_inactive = shadow_inactive,
 		},
+
 	},
 
 	misc = {
 		disable_hyprland_logo = true,
 		disable_splash_rendering = true,
 		force_default_wallpaper = 0,
+		-- Off by default, which means a keyboard/mouse resize snapped its geometry
+		-- every frame and never touched the windowsMove curve. On, a resize is the
+		-- same animated travel as any other geometry change.
+		animate_manual_resizes = true,
+		-- The window eases toward the cursor through windowsMove instead of being
+		-- pinned to it. Reads as weight; revert this one first if it reads as lag.
+		animate_mouse_windowdragging = true,
+	},
+})
+
+-- The 3-finger swipe above is the one interaction that tracks a finger rather
+-- than playing a canned curve, so it is worth tuning. `gestures:workspace_swipe`
+-- itself is gone in 0.56 (hl.gesture replaced it) but these knobs still feed it.
+hl.config({
+	gestures = {
+		-- Finger travel for one full workspace. Below the 300 default the
+		-- workspace moves further per mm, which reads as lighter.
+		workspace_swipe_distance = 250,
+		-- Keep swiping past the first workspace to cross several in one motion,
+		-- instead of the gesture ending at each boundary.
+		workspace_swipe_forever = true,
+		-- How fast a flick has to be to commit the switch on its own. The 30
+		-- default swallowed slow drags and snapped them back.
+		workspace_swipe_min_speed_to_force = 15,
+		-- Fraction of the distance that commits rather than reverts. 0.5 meant a
+		-- swipe stopped just short of halfway undid itself.
+		workspace_swipe_cancel_ratio = 0.35,
 	},
 })
 
 ---------------------------------------------------------------- animations
 -- No overshoot anywhere: every curve ends at 1.00 and approaches from below.
-hl.curve("macOut", { type = "bezier", points = { { 0.22, 1.00 }, { 0.36, 1.00 } } })
+hl.curve("macOut", { type = "bezier", points = { { 0.25, 0.90 }, { 0.32, 1.00 } } })
 hl.curve("macStd", { type = "bezier", points = { { 0.25, 0.10 }, { 0.25, 1.00 } } })
 hl.curve("macFade", { type = "bezier", points = { { 0.50, 0.50 }, { 0.75, 1.00 } } })
 -- Geometry changes get their own curve. macOut is so front-loaded it is nearly a
 -- step: fine for a window sliding in from an edge, wrong for one resizing to the
 -- whole screen, where it lurches and then crawls. A real S -- slow out of rest,
--- sustained middle, soft settle -- keeps the motion continuous for the full 400ms.
-hl.curve("macMove", { type = "bezier", points = { { 0.40, 0.00 }, { 0.20, 1.00 } } })
+-- sustained middle, soft settle -- keeps the motion continuous for the full 250ms.
+-- The tail is where "sweepy" lives: the second control point sits at x=0.06 so
+-- the last few percent of travel spends a long time landing. Same 250ms as
+-- everything else, but it glides in rather than arriving.
+hl.curve("macMove", { type = "bezier", points = { { 0.32, 0.00 }, { 0.06, 1.00 } } })
 
-hl.config({ animations = { enabled = true } })
+-- wraparound: 10 -> 1 takes the one-step slide instead of sweeping back past
+-- eight workspaces it never renders.
+hl.config({ animations = { enabled = true, workspace_wraparound = true } })
 
 -- A table, not 24 near-identical lines. Windows slide so a new one travels in
 -- from the nearest edge while its neighbours slide over -- they read as pushing
@@ -209,33 +291,37 @@ hl.config({ animations = { enabled = true } })
 -- macMove, and the layer popins stay on macOut because `popin 96%` travels 4% of
 -- a surface and an S-curve there just feels like dragging.
 local anims = {
-	{ "global", 4, "macOut" },
-	{ "windows", 4, "macOut", "slide" },
-	{ "windowsIn", 4, "macOut", "slide" },
+	{ "global", 2.5, "macOut" },
+	{ "windows", 2.5, "macOut", "slide" },
+	{ "windowsIn", 2.5, "macOut", "slide" },
 	-- Slower than the rest on purpose: a close is the one animation with no
-	-- successor state to look at, so at 4 it was over before the eye caught it.
+	-- successor state to look at, so at the common duration it was over before
+	-- the eye caught it.
 	-- fadeOut MUST match -- at alpha 0 the geometry is still animating but
 	-- invisible, so the shorter of the two is the duration you actually see.
-	{ "windowsOut", 6, "macOut", "slide" },
-	{ "windowsMove", 4, "macMove", "slide" },
-	{ "border", 4, "macStd" },
-	{ "layers", 4, "macOut", "popin 96%" },
-	{ "layersIn", 4, "macOut", "popin 96%" },
-	{ "layersOut", 2.7, "macOut", "popin 96%" },
-	{ "fade", 4, "macFade" },
-	{ "fadeIn", 4, "macFade" },
-	{ "fadeOut", 6, "macFade" },
-	{ "fadeSwitch", 2.7, "macFade" },
-	{ "fadeShadow", 4, "macFade" },
-	{ "fadeDim", 2.7, "macFade" },
-	{ "fadeLayers", 4, "macFade" },
-	{ "fadeLayersIn", 4, "macFade" },
-	{ "fadeLayersOut", 2.7, "macFade" },
-	{ "workspaces", 4, "macMove", "slide" },
-	{ "workspacesIn", 4, "macMove", "slide" },
-	{ "workspacesOut", 4, "macMove", "slide" },
-	{ "specialWorkspace", 4, "macMove", "slidefadevert 30%" },
-	{ "zoomFactor", 4, "macOut" },
+	{ "windowsOut", 3.5, "macOut", "slide" },
+	{ "windowsMove", 2.5, "macMove", "slide" },
+	{ "border", 2.5, "macStd" },
+	{ "layers", 2.5, "macOut", "popin 96%" },
+	{ "layersIn", 2.5, "macOut", "popin 96%" },
+	{ "layersOut", 1.7, "macOut", "popin 96%" },
+	{ "fade", 2.5, "macFade" },
+	{ "fadeIn", 2.5, "macFade" },
+	{ "fadeOut", 3.5, "macFade" },
+	{ "fadeSwitch", 1.7, "macFade" },
+	{ "fadeShadow", 2.5, "macFade" },
+	{ "fadeDim", 1.7, "macFade" },
+	{ "fadeLayers", 2.5, "macFade" },
+	{ "fadeLayersIn", 2.5, "macFade" },
+	{ "fadeLayersOut", 1.7, "macFade" },
+	-- slidefade, not slide: the outgoing workspace drops to 15% opacity as it
+	-- travels, so the two never read as one flat sheet sliding past. This is the
+	-- single most common thing the smooth rices do that a stock config does not.
+	{ "workspaces", 2.5, "macMove", "slidefade 15%" },
+	{ "workspacesIn", 2.5, "macMove", "slidefade 15%" },
+	{ "workspacesOut", 2.5, "macMove", "slidefade 15%" },
+	{ "specialWorkspace", 2.5, "macMove", "slidefadevert 30%" },
+	{ "zoomFactor", 2.5, "macOut" },
 }
 for _, a in ipairs(anims) do
 	hl.animation({ leaf = a[1], enabled = true, speed = a[2], bezier = a[3], style = a[4] })
@@ -283,113 +369,10 @@ for _, ns in ipairs({ "fnott", "notifications", "launcher" }) do
 end
 
 -------------------------------------------------------------------- plugins
--- NOTE: `--verify-config` reports these as unknown keys, because it does not load
--- plugins. They should apply at runtime once hyprpm has loaded them -- check with
--- `hyprctl getoption plugin:hyprbars:bar_height` after switching.
-hl.config({
-	plugin = {
-		gloview = {
-			strip_offset = 46,
-			backdrop_color = c.ov_backdrop,
-			strip_active_border = c.ov_accent,
-			select_border = c.ov_accent,
-			hover_border = c.ov_accent2,
-		},
-		-- x86_64 only. stretch squishes the cursor in the direction of motion.
-		-- Dialled back from stock: nothing else here overshoots, and the default
-		-- limit smeared the pointer far enough to read as a glitch at 240Hz.
-		-- Namespace is dynamic_cursors with an UNDERSCORE. hyprlang spells it
-		-- `dynamic-cursors`; the Lua bridge maps the hyphen to an underscore and
-		-- rejects the hyphenated form as an unknown config key. With the underscore
-		-- `hyprctl getoption plugin:dynamic-cursors:mode` reports set: true.
-		dynamic_cursors = {
-			enabled = true,
-			mode = "stretch",
-			threshold = 2, -- min angle change (deg) before reshaping
-			stretch = {
-				-- No `function` key: `hyprctl getoption plugin:dynamic-cursors:stretch:function`
-				-- says "no such option". The conf carries a key this build dropped.
-				limit = 2000,
-			},
-			-- Hyprcursor shapes rather than a rasterised xcursor, so the stretched
-			-- pointer stays sharp -- HYPRCURSOR_THEME is set at the top of this file.
-			hyprcursor = { nearest = false },
-			shake = { enabled = false },
-		},
-
-		-- Subtle flash on focus change. Lineage matters: VortexCoyote/hyprfocus is
-		-- unmaintained, daxisunder's fork is the one that tracks current Hyprland,
-		-- and hyprwm/hyprland-plugins ships its OWN hyprfocus (a different plugin,
-		-- same name). These keys are written for daxisunder's -- enabling the hyprwm
-		-- one instead segfaults the compositor on the first focus change.
-		-- COMMENTED 2026-08-27: hyprfocus is disabled in hyprpm (it segfaults on
-		-- window focus under the hyprutils 0.14.0/0.14.1 skew), so these keys are
-		-- unknown and only produce error-overlay noise. Restore together with
-		-- `hyprpm enable daxisunder/hyprfocus`.
-		-- hyprfocus = {
-		-- enabled = true,
-		-- animate_floating = true,
-		-- animate_workspacechange = true,
-		-- focus_animation = "flash",
-		-- -- Dip FAST, recover SLOW. 0.70 because inactive_opacity is 0.90 -- the
-		-- -- dip has to go clearly below where the eye is coming from.
-		-- flash = {
-		-- flash_opacity = 0.70,
-		-- in_bezier = "focusIn",
-		-- in_speed = 0.6,
-		-- out_bezier = "focusOut",
-		-- out_speed = 1.8,
-		-- },
-		-- },
-
-		-- Traffic-light buttons are not set here: hyprlang's `hyprbars-button =`
-		-- lines become hl.plugin.hyprbars.add_button() calls, in the deferred
-		-- block further down -- that API only exists once the plugin has loaded.
-		hyprbars = {
-			bar_height = 28,
-			bar_color = c.surface,
-			bar_blur = false,
-			["col.text"] = c.base05,
-			bar_text_size = 12,
-			bar_text_font = c.font,
-			bar_text_weight = 600,
-			bar_text_align = "center",
-			bar_title_enabled = true,
-			bar_buttons_alignment = "left",
-			bar_padding = 12,
-			bar_button_padding = 8,
-			icon_on_hover = true,
-			inactive_button_color = c.base03,
-			bar_part_of_window = true,
-			bar_precedence_over_border = true,
-		},
-	},
-})
-
--- hyprfocus takes two `bezier =` lines. A Lua table cannot repeat a key, and a
--- list value is silently DROPPED (no key registers at all -- verified against
--- --verify-config), so each curve needs its own hl.config call. 1.00, not 1.05,
--- on the last control point: an overshoot there sprang the focus flash past its
--- target opacity and let it settle back.
--- hl.config({ plugin = { hyprfocus = { bezier = "focusIn, 0.15, 0.85, 0.30, 1.00" } } })
--- hl.config({ plugin = { hyprfocus = { bezier = "focusOut, 0.20, 0.60, 0.35, 1.00" } } })
-
--- macOS traffic lights. hl.plugin.hyprbars only exists once the plugin is
--- loaded, and hyprpm's exec-once runs AFTER this file is parsed -- so load it
--- here. hl.plugin.load is idempotent (hyprpm loading it again returns ok), and
--- doing it synchronously beats hl.timer, which segfaults `--verify-config`.
--- pcall'd so a missing .so costs the buttons, not the whole config.
--- Actions must be Lua-form dispatches: `hyprctl dispatch killactive` fails on a
--- Lua config, `hyprctl dispatch 'hl.dsp.window.close()'` works.
-pcall(hl.plugin.load, "/var/cache/hyprpm/amarnath/hyprland-plugins/hyprbars.so")
-if hl.plugin and hl.plugin.hyprbars then
-	local function button(bg, icon, action)
-		hl.plugin.hyprbars.add_button({ bg_color = bg, fg_color = c.base00, size = 12, icon = icon, action = action })
-	end
-	button(c.base08, "×", "hyprctl dispatch 'hl.dsp.window.close()'")
-	button(c.base0A, "−", [[hyprctl dispatch 'hl.dsp.window.move({ workspace = "special:magic" })']])
-	button(c.base0B, "+", [[hyprctl dispatch 'hl.dsp.window.fullscreen({ mode = "maximized" })']])
-end
+-- None. dynamic-cursors, hyprbars and gloview were all enabled and all unused in
+-- practice, so they are disabled in hyprpm too (`hyprpm list` to confirm) -- the
+-- config keys below them are gone with them. Re-enabling any of these means both
+-- `hyprpm enable <repo>/<plugin>` AND restoring its block here; git log has them.
 
 ------------------------------------------------------------------ keybinds
 hl.bind(mod .. " + Q", hl.dsp.exec_cmd(terminal))
@@ -412,12 +395,6 @@ hl.bind(mod .. " + SHIFT + V", hl.dsp.window.float({ action = "toggle" }))
 hl.bind(mod .. " + F", hl.dsp.window.fullscreen({ mode = "maximized" }))
 hl.bind(mod .. " + SHIFT + F", hl.dsp.window.fullscreen({ mode = "fullscreen" }))
 hl.bind(mod .. " + M", hl.dsp.window.fullscreen({ mode = "maximized" })) -- muscle memory
--- gloview:toggle has no hl.dsp entry, but the plugin exports its own Lua API.
--- Wrapped in a function so hl.plugin resolves when the key is pressed, not when
--- this file is parsed -- the plugin is not loaded yet at parse time.
-hl.bind(mod .. " + A", function()
-	hl.plugin.gloview.toggle()
-end)
 hl.bind(mod .. " + G", hl.dsp.group.toggle())
 -- hyprlang's `changegroupactive, f`. hl.dsp.group.active takes only a numeric
 -- index, so forward/back go through group.next/prev instead.
