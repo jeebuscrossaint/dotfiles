@@ -13,6 +13,7 @@ import "Notifications"
 // everything at once.
 ShellRoot {
 	ScreenCorners {}
+	Dashboard {}
 	MissionControl {}
 	Bar {}
 	Dock {}

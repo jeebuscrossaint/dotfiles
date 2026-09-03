@@ -4,3 +4,6 @@ StyledText 1.0 StyledText.qml
 Slider 1.0 Slider.qml
 Popover 1.0 Popover.qml
 MenuRow 1.0 MenuRow.qml
+Calendar 1.0 Calendar.qml
+Meter 1.0 Meter.qml
+NowPlaying 1.0 NowPlaying.qml

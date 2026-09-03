@@ -13,18 +13,6 @@ Popover {
 
 	panelWidth: 340
 
-	// First of the month, and how many days it has. Day 0 of the NEXT month is
-	// the last day of this one, which avoids a leap-year table.
-	readonly property date today: clock.date
-	readonly property int firstWeekday: new Date(nc.today.getFullYear(), nc.today.getMonth(), 1).getDay()
-	readonly property int daysInMonth: new Date(nc.today.getFullYear(), nc.today.getMonth() + 1, 0).getDate()
-
-	SystemClock {
-		id: clock
-
-		precision: SystemClock.Minutes
-	}
-
 	IpcHandler {
 		target: "notifications"
 
@@ -41,68 +29,8 @@ Popover {
 		anchors.top: parent.top
 		spacing: 8
 
-		StyledText {
-			text: Qt.formatDateTime(nc.today, "MMMM yyyy")
-			font.weight: Font.DemiBold
-		}
-
-		Grid {
+		Calendar {
 			width: parent.width
-			columns: 7
-			spacing: 0
-
-			Repeater {
-				model: ["S", "M", "T", "W", "T", "F", "S"]
-
-				StyledText {
-					required property var modelData
-
-					width: body.width / 7
-					horizontalAlignment: Text.AlignHCenter
-					text: modelData
-					color: Theme.dim
-					font.pointSize: Theme.fontSize - 2
-				}
-			}
-
-			// Leading blanks so the 1st lands under its weekday.
-			Repeater {
-				model: nc.firstWeekday
-
-				Item {
-					width: body.width / 7
-					height: 26
-				}
-			}
-
-			Repeater {
-				model: nc.daysInMonth
-
-				Item {
-					required property int index
-
-					readonly property bool isToday: index + 1 === nc.today.getDate()
-
-					width: body.width / 7
-					height: 26
-
-					Rectangle {
-						anchors.centerIn: parent
-						width: 22
-						height: 22
-						radius: 11
-						visible: parent.isToday
-						color: Theme.accent
-					}
-
-					StyledText {
-						anchors.centerIn: parent
-						text: index + 1
-						color: parent.isToday ? Theme.bg : Theme.fg
-						font.pointSize: Theme.fontSize - 1
-					}
-				}
-			}
 		}
 
 		Rectangle {
