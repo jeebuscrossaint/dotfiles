@@ -1,6 +1,7 @@
 import QtQuick
 import Quickshell.Hyprland
 import qs.Config
+import qs.Services
 
 // Pips, not numbered buttons. macOS has no workspace row in the menu bar at all,
 // so this is the smallest thing that still answers "where am I" without turning
@@ -13,7 +14,7 @@ Row {
 
 	WheelHandler {
 		// e+1 / e-1, exactly what the waybar module bound to scroll.
-		onWheel: event => Hyprland.dispatch(event.angleDelta.y > 0 ? "workspace e+1" : "workspace e-1")
+		onWheel: event => Hypr.dispatch(event.angleDelta.y > 0 ? "workspace e+1" : "workspace e-1")
 	}
 
 	Repeater {
@@ -43,7 +44,7 @@ Row {
 			}
 
 			TapHandler {
-				onTapped: Hyprland.dispatch("workspace " + modelData.id)
+				onTapped: Hypr.dispatch("workspace " + modelData.id)
 			}
 		}
 	}

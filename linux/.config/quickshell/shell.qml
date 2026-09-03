@@ -1,5 +1,6 @@
 import Quickshell
 import "Bar"
+import "Desktop"
 import "Dock"
 import "Launcher"
 import "Notifications"
@@ -10,6 +11,8 @@ import "Notifications"
 // still the real thing; the last attempt at a QML shell died from trying to do
 // everything at once.
 ShellRoot {
+	ScreenCorners {}
+	MissionControl {}
 	Bar {}
 	Dock {}
 	Spotlight {}

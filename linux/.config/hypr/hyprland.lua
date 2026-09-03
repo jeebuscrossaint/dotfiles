@@ -381,6 +381,7 @@ for _, ns in ipairs({
 	"qs-dock",
 	"qs-popover",
 	"qs-hud",
+	"qs-mission",
 	"qs-spotlight",
 	"qs-picker",
 	"qs-notifications",
@@ -409,6 +410,8 @@ hl.bind(mod .. " + Escape", hl.dsp.exec_cmd("pgrep -x hyprlock >/dev/null || hyp
 -- now opens Control Centre, which is where the sliders and the load readouts
 -- that used to live in the bar ended up.
 hl.bind(mod .. " + P", hl.dsp.exec_cmd("qs ipc call control toggle"))
+-- Mission Control. Ctrl+Up on a Mac; mod+Up here.
+hl.bind(mod .. " + up", hl.dsp.exec_cmd("qs ipc call mission toggle"))
 hl.bind(mod .. " + T", hl.dsp.exec_cmd("theme-pick"))
 hl.bind(mod .. " + SHIFT + T", hl.dsp.exec_cmd("theme-random"))
 hl.bind(mod .. " + SHIFT + N", hl.dsp.exec_cmd("osd nightlight"))
