@@ -113,9 +113,7 @@ set -g dep_table \
     "compositor|cmd:hyprland|hyprland|core|hyprland||hyprland||https://hyprland.org" \
     "compositor|path:/usr/lib/xdg-desktop-portal-hyprland /usr/libexec/xdg-desktop-portal-hyprland|xdg-desktop-portal-hyprland|core|xdg-desktop-portal-hyprland||||" \
     "compositor|path:/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 /usr/libexec/polkit-gnome-authentication-agent-1 /usr/local/libexec/polkit-gnome-authentication-agent-1|polkit agent|core|polkit-gnome||policykit-1-gnome|polkit-gnome|" \
-    "desktop|cmd:waybar|waybar|core|waybar||waybar|waybar|" \
-    "desktop|cmd:fnott|fnott|core|fnott||fnott|fnott|" \
-    "desktop|cmd:fuzzel|fuzzel|core|fuzzel||fuzzel|fuzzel|" \
+    "desktop|cmd:qs|quickshell|core|quickshell||||https://quickshell.org" \
     "desktop|cmd:awww|awww|core||awww|||" \
     "desktop|cmd:hypridle|hypridle|core|hypridle||||" \
     "desktop|cmd:hyprlock|hyprlock|core|hyprlock||||" \
@@ -123,7 +121,7 @@ set -g dep_table \
     "terminal|cmd:nvim|neovim|core|neovim||neovim|neovim|" \
     "terminal|cmd:lsd|lsd|opt|lsd||lsd|lsd|" \
     "terminal|cmd:bat|bat|opt|bat||bat|bat|" \
-    "terminal|cmd:pfetch|pfetch|opt||pfetch-rs|||" \
+    "terminal|cmd:fastfetch|fastfetch|opt|fastfetch||fastfetch|fastfetch|" \
     "clipboard|cmd:wl-copy|wl-clipboard|core|wl-clipboard||wl-clipboard|wl-clipboard|" \
     "clipboard|cmd:cliphist|cliphist|core|cliphist||||" \
     "clipboard|cmd:wl-clip-persist|wl-clip-persist|opt||wl-clip-persist|||" \
@@ -137,20 +135,27 @@ set -g dep_table \
     "system|cmd:playerctl|playerctl|opt|playerctl||playerctl|playerctl|" \
     "system|cmd:pavucontrol|pavucontrol|opt|pavucontrol||pavucontrol|pavucontrol|" \
     "system|cmd:socat|socat|core|socat||socat|socat|" \
+    "system|cmd:nmcli|networkmanager|core|networkmanager||network-manager|||" \
+    "system|cmd:qalc|libqalculate|core|libqalculate||libqalculate-dev|libqalculate|" \
     "system|cmd:jq|jq|core|jq||jq|jq|" \
     "system|cmd:python3|python|core|python||python3|python|" \
     "theme|cmd:cargo|rust toolchain|core|rustup||rustup|rust|https://rustup.rs" \
     "theme|cmd:coat|coat|core|||||cargo install --git https://github.com/jeebuscrossaint/coat" \
     "fonts|font:SFMono Nerd Font|SFMono Nerd Font|core||nerd-fonts-apple|||./install-nerdfonts.sh" \
+    "fonts|font:SFProText Nerd Font|SF Pro (shell UI font)|core||nerd-fonts-apple|||./install-nerdfonts.sh" \
+    "fonts|path:/usr/share/icons/WhiteSur-dark /usr/share/icons/WhiteSur|WhiteSur icon theme|core||whitesur-icon-theme|||" \
     "fonts|font:Font Awesome|Font Awesome|core|otf-font-awesome||fonts-font-awesome|font-awesome|" \
     "fonts|font:Noto Color Emoji|Noto Color Emoji|core|noto-fonts-emoji||fonts-noto-color-emoji|noto-emoji|" \
     "apps|cmd:btop|btop|opt|btop||btop|btop|" \
     "apps|cmd:mpv|mpv|opt|mpv||mpv|mpv|" \
     "apps|cmd:zathura|zathura|opt|zathura||zathura|zathura|" \
     "apps|cmd:wttrbar|wttrbar|opt||wttrbar|||" \
+    "apps|cmd:pdftoppm|poppler|opt|poppler||poppler-utils|poppler|" \
+    "apps|cmd:fd|fd|opt|fd||fd-find|fd|" \
+    "greeter|cmd:greetd|greetd|opt|greetd||greetd||see system/greetd/INSTALL.md" \
     "apps|cmd:magick|imagemagick|opt|imagemagick||imagemagick|ImageMagick|" \
     "apps|cmd:prime-run|nvidia-prime|opt|nvidia-prime||||" \
-    "mango|cmd:mmsg|mangowm|opt||mangowm|||"
+    "greeter|cmd:cage|cage|opt|cage||cage||see system/greetd/INSTALL.md"
 
 function pkg_manager
     test (uname -s) = OpenBSD; and echo openbsd; and return
@@ -470,5 +475,23 @@ end
 
 contains -- $target/.local/bin $PATH
 or note "~/.local/bin is not on PATH — the scripts in it will not be found"
+
+# A stale copy of a cargo-installed binary in ~/.local/bin wins over ~/.cargo/bin
+# under the compositor's PATH, which puts ~/.local/bin first so that menu, lock,
+# awww and prime-run can shadow their system namesakes. That is how an August
+# build of coat kept re-theming everything except the shell for a whole day.
+if test -f $target/.local/bin/coat
+    note "stale $target/.local/bin/coat shadows ~/.cargo/bin/coat under the compositor — delete it"
+end
+
+# stow only makes symlinks under $HOME. Anything rooted outside it has to be
+# installed by hand, and the greeter is entirely outside it.
+if not test -f /etc/greetd/greeter.qml
+    note "greeter not installed — root-owned files, see system/greetd/INSTALL.md"
+end
+
+# The todo widget reads this and shows an empty card without it.
+test -f $target/todo.md
+or note "no ~/todo.md — the desktop todo widget will be empty until you make one"
 
 printf '\n%sdone%s — open a new shell to pick it up.\n\n' "$c_ok" "$c_off"
