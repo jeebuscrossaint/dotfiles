@@ -382,6 +382,7 @@ for _, ns in ipairs({
 	"qs-popover",
 	"qs-hud",
 	"qs-mission",
+	"qs-mission",
 	"qs-spotlight",
 	"qs-picker",
 	"qs-notifications",
@@ -404,12 +405,18 @@ hl.bind(mod .. " + D", hl.dsp.exec_cmd(menu))
 hl.bind(mod .. " + SPACE", hl.dsp.exec_cmd("qs ipc call spotlight toggle"))
 hl.bind(mod .. " + C", hl.dsp.window.close())
 hl.bind(mod .. " + SHIFT + C", hl.dsp.exec_cmd("hyprctl reload"))
-hl.bind(mod .. " + L", hl.dsp.exec_cmd("hyprlock"))
+hl.bind(mod .. " + L", hl.dsp.exec_cmd("qs ipc call lock lock"))
+-- hyprlock, kept deliberately. hypridle still calls it, and it is the way back
+-- if the shell's lock ever misbehaves -- a lock is the one component where the
+-- failure mode is a machine you cannot get into.
+hl.bind(mod .. " + SHIFT + L", hl.dsp.exec_cmd("hyprlock"))
 hl.bind(mod .. " + Escape", hl.dsp.exec_cmd("pgrep -x hyprlock >/dev/null || hyprlock"))
 -- Was waybar's SIGUSR1 show/hide toggle. waybar is gone; the equivalent gesture
 -- now opens Control Centre, which is where the sliders and the load readouts
 -- that used to live in the bar ended up.
 hl.bind(mod .. " + P", hl.dsp.exec_cmd("qs ipc call control toggle"))
+-- Mission Control. Ctrl+Up on a Mac; mod+Up here.
+hl.bind(mod .. " + up", hl.dsp.exec_cmd("qs ipc call mission toggle"))
 -- Mission Control. Ctrl+Up on a Mac; mod+Up here.
 hl.bind(mod .. " + up", hl.dsp.exec_cmd("qs ipc call mission toggle"))
 hl.bind(mod .. " + T", hl.dsp.exec_cmd("theme-pick"))

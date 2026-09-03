@@ -3,6 +3,7 @@ import "Bar"
 import "Desktop"
 import "Dock"
 import "Launcher"
+import "Lock"
 import "Notifications"
 
 // Components are added here one at a time and only once they beat what they
@@ -15,6 +16,7 @@ ShellRoot {
 	MissionControl {}
 	Bar {}
 	Dock {}
+	Lock {}
 	Spotlight {}
 	Picker {}
 	Daemon {}
