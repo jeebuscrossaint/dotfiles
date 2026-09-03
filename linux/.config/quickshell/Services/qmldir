@@ -1,0 +1,2 @@
+module qs.Services
+singleton Sys 1.0 Sys.qml

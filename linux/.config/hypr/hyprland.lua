@@ -111,11 +111,10 @@ hl.on("hyprland.start", function()
 		"/usr/lib/xdg-desktop-portal-hyprland",
 		"/usr/libexec/xdg-desktop-portal",
 		"hypridle",
-		"waybar -c /home/amarnath/.config/waybar/config-hyprland.jsonc",
-		-- The Quickshell shell. Carries the Spotlight launcher and the
-		-- notification server, so fnott is gone from this list -- only one
-		-- process can own org.freedesktop.Notifications. waybar and hyprlock
-		-- are still the real thing.
+		-- The Quickshell shell: menu bar, Control Centre, Spotlight, the dmenu
+		-- Picker and the notification server. waybar and fnott are both gone
+		-- from this list -- the bar carries their modules now, and only one
+		-- process can own org.freedesktop.Notifications. hyprlock still stands.
 		-- QT_QPA_PLATFORMTHEME=gtk3 is what points Qt's icon lookup at the GTK
 		-- icon theme -- WhiteSur-dark -- instead of leaving it on hicolor. Set
 		-- here rather than globally so it only affects the shell.
@@ -371,7 +370,7 @@ hl.window_rule({
 -- blurring the layer frosted the wallpaper behind each slab -- that was the acrylic.
 -- Without the rule the islands are flat tint over the unblurred wallpaper. Layer
 -- blur is opt-in in Hyprland, so dropping the namespace is the whole change.
-for _, ns in ipairs({ "notifications", "launcher", "qs-bar", "qs-spotlight", "qs-picker", "qs-notifications" }) do
+for _, ns in ipairs({ "notifications", "launcher", "qs-bar", "qs-control", "qs-spotlight", "qs-picker", "qs-notifications" }) do
 	hl.layer_rule({ name = "blur-" .. ns, match = { namespace = "^" .. ns .. "$" }, blur = true })
 end
 
@@ -392,7 +391,10 @@ hl.bind(mod .. " + C", hl.dsp.window.close())
 hl.bind(mod .. " + SHIFT + C", hl.dsp.exec_cmd("hyprctl reload"))
 hl.bind(mod .. " + L", hl.dsp.exec_cmd("hyprlock"))
 hl.bind(mod .. " + Escape", hl.dsp.exec_cmd("pgrep -x hyprlock >/dev/null || hyprlock"))
-hl.bind(mod .. " + P", hl.dsp.exec_cmd("pkill -SIGUSR1 -x waybar")) -- NEVER SIGUSR2: it aborts waybar
+-- Was waybar's SIGUSR1 show/hide toggle. waybar is gone; the equivalent gesture
+-- now opens Control Centre, which is where the sliders and the load readouts
+-- that used to live in the bar ended up.
+hl.bind(mod .. " + P", hl.dsp.exec_cmd("qs ipc call control toggle"))
 hl.bind(mod .. " + T", hl.dsp.exec_cmd("theme-pick"))
 hl.bind(mod .. " + SHIFT + T", hl.dsp.exec_cmd("theme-random"))
 hl.bind(mod .. " + SHIFT + N", hl.dsp.exec_cmd("osd nightlight"))
