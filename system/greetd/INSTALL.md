@@ -45,35 +45,45 @@ sudo install -Dm755 sv/greetd/run /etc/runit/sv/greetd/run
 sudo install -Dm644 pam.d-greetd-greeter /etc/pam.d/greetd-greeter
 ```
 
-## Test it WITHOUT committing to it
+## You cannot test this while logged in
 
-Running `greetd` by hand skips the runit service, so the runtime directory it
-would have created has to be made first. Without it greetd exits with
-"greeter exited without creating a session":
+Running `sudo greetd` from inside a running session does NOT work, and it is
+not a configuration problem. The logged-in session owns `seat0`, and elogind
+will not let a second session take control of a seat the active session owns:
 
-```sh
-sudo install -d -m 0700 -o greeter -g greeter /run/greeter
-sudo install -d -m 0700 -o greeter -g greeter /run/greeter/cache
-sudo install -d -m 0700 -o greeter -g greeter /run/greeter/state
-
-sudo sv down agetty-tty1        # release vt1
-sudo greetd                     # Ctrl+C to stop; watch the output
+```
+libseat logind: Could not take control of session:
+                Only owner of session may take control
+No backend was able to open a seat
 ```
 
-/run is a tmpfs, so those directories vanish on reboot -- which is fine,
-because from then on the runit service recreates them on every start.
+cage then cannot build a wlroots backend and exits, which greetd reports as
+"greeter exited without creating a session". The seat is behaving correctly --
+there is only one, and it is in use.
 
-If the greeter comes up on vt1 and logs you in, it works. If it does not, `sv up
-agetty-tty1` puts things back exactly as they were.
+So the greeter can only be exercised with no session holding the seat, which in
+practice means enabling the service and rebooting. That is safe here, and the
+next section explains why.
+
+Only the LOOK can be checked from inside a session, because a nested compositor
+uses the Wayland backend instead of DRM and never asks for a seat:
+
+```sh
+cage -- qs -p /etc/greetd/greeter.qml     # opens as a window; greetd is absent,
+                                          # so it renders but cannot log in
+```
 
 ## Enable at boot
-
-Only once the manual test passes:
 
 ```sh
 sudo ln -s /etc/runit/sv/greetd /etc/runit/runsvdir/default/
 sudo rm /etc/runit/runsvdir/default/agetty-tty1
 ```
+
+Then reboot. **agetty-tty2 .. agetty-tty6 stay enabled**, and that is the whole
+safety net: if the greeter fails to come up, vt1 is blank but `Ctrl+Alt+F2` is
+still a working text login, from which the next section backs the change out.
+Do not disable those, and do not do this over SSH-only access.
 
 ## Back out
 
