@@ -2,7 +2,6 @@ import QtQuick
 import QtQuick.Effects
 import Quickshell
 import Quickshell.Services.Greetd
-import Quickshell.Wayland
 
 // The login window, laid out exactly like the shell's lock screen so login and
 // lock are one design.
@@ -97,18 +96,21 @@ ShellRoot {
 		precision: SystemClock.Seconds
 	}
 
-	PanelWindow {
+	// FloatingWindow, NOT PanelWindow, and this is the whole reason the greeter
+	// came up black under cage:
+	//
+	//   WARN: Failed to initialize layershell integration
+	//
+	// cage is a kiosk compositor and does not implement wlr-layer-shell, so a
+	// PanelWindow has no surface to draw into. A plain xdg-toplevel does, and
+	// cage fullscreens its single window by definition -- which is exactly the
+	// geometry a greeter wants anyway. It also gets keyboard focus as a normal
+	// toplevel, so the layershell focus mode is not needed either.
+	FloatingWindow {
 		id: win
 
-		anchors.top: true
-		anchors.bottom: true
-		anchors.left: true
-		anchors.right: true
+		visible: true
 		color: greeter.bg
-
-		WlrLayershell.layer: WlrLayer.Overlay
-		WlrLayershell.namespace: "greeter"
-		WlrLayershell.keyboardFocus: WlrKeyboardFocus.Exclusive
 
 		Image {
 			id: paper
