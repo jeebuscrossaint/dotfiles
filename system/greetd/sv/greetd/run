@@ -1,4 +1,15 @@
 #!/bin/sh
 # runit service for greetd. Install to /etc/runit/sv/greetd/run, chmod +x.
+#
+# The runtime directory is created HERE, as root, before greetd drops to the
+# `greeter` user -- which cannot create it itself. elogind only makes
+# /run/user/<uid> for real login sessions, and the greeter is not one, so
+# without this cage and Quickshell both exit immediately and greetd reports
+# "greeter exited without creating a session".
 exec 2>&1
+
+install -d -m 0700 -o greeter -g greeter /run/greeter
+install -d -m 0700 -o greeter -g greeter /run/greeter/cache
+install -d -m 0700 -o greeter -g greeter /run/greeter/state
+
 exec greetd
