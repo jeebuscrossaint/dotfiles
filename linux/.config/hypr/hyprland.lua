@@ -370,7 +370,7 @@ hl.window_rule({
 -- blurring the layer frosted the wallpaper behind each slab -- that was the acrylic.
 -- Without the rule the islands are flat tint over the unblurred wallpaper. Layer
 -- blur is opt-in in Hyprland, so dropping the namespace is the whole change.
-for _, ns in ipairs({ "notifications", "launcher", "qs-bar", "qs-control", "qs-hud", "qs-spotlight", "qs-picker", "qs-notifications" }) do
+for _, ns in ipairs({ "notifications", "launcher", "qs-bar", "qs-dock", "qs-control", "qs-hud", "qs-spotlight", "qs-picker", "qs-notifications" }) do
 	hl.layer_rule({ name = "blur-" .. ns, match = { namespace = "^" .. ns .. "$" }, blur = true })
 end
 
