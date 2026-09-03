@@ -4,6 +4,7 @@ import Quickshell.Wayland
 import Quickshell.Hyprland
 import Quickshell.Widgets
 import qs.Config
+import qs.Services
 import qs.Widgets
 
 // The command-palette window: search field over a sectioned result list.
@@ -61,6 +62,8 @@ Scope {
 
 	PanelWindow {
 		id: win
+
+		screen: Screens.focused
 
 		// Kept alive through the closing animation instead of being torn down
 		// with the open flag, otherwise dismissal just blinks out of existence.

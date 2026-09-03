@@ -3,6 +3,7 @@ import Quickshell
 import Quickshell.Hyprland
 import Quickshell.Wayland
 import qs.Config
+import qs.Services
 
 // A panel hanging off the menu bar. Control Centre, Notification Centre and the
 // Tux menu are all this plus content -- the window, the dismissal and the
@@ -35,6 +36,10 @@ Scope {
 
 	PanelWindow {
 		id: win
+
+		// The bar exists on every screen; the panel hanging off it should only
+		// exist on the one being looked at.
+		screen: Screens.focused
 
 		visible: pop.open || card.opacity > 0.01
 

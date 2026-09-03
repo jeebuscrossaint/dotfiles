@@ -3,6 +3,7 @@ import Quickshell
 import Quickshell.Wayland
 import Quickshell.Services.Notifications
 import qs.Config
+import qs.Services
 import qs.Widgets
 
 // The volume / brightness / keyboard-backlight HUD: a centred rounded square
@@ -58,6 +59,9 @@ Scope {
 
 	PanelWindow {
 		id: win
+
+		// On the display being used, not whichever one Quickshell picked.
+		screen: Screens.focused
 
 		// Both clauses matter. With only the opacity test the window is never
 		// created in the first place -- opacity starts at 0, so nothing renders,
