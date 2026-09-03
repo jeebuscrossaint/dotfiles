@@ -116,8 +116,8 @@ hl.on("hyprland.start", function()
 		-- from this list -- the bar carries their modules now, and only one
 		-- process can own org.freedesktop.Notifications. hyprlock still stands.
 		-- QT_QPA_PLATFORMTHEME=gtk3 is what points Qt's icon lookup at the GTK
-		-- icon theme -- WhiteSur-dark -- instead of leaving it on hicolor. Set
-		-- here rather than globally so it only affects the shell.
+		-- icon theme -- WhiteSur-dark -- instead of leaving it on hicolor. It is
+		-- set here and not globally so it only affects the shell.
 		"env QT_QPA_PLATFORMTHEME=gtk3 qs",
 		"awww-daemon",
 		"start-polkit",
@@ -166,8 +166,8 @@ hl.gesture({ fingers = 3, direction = "horizontal", action = "workspace" })
 
 -- Four fingers up for Mission Control, which is the macOS gesture exactly. The
 -- action field takes a FUNCTION as well as one of the built-in names, so a
--- gesture can call anything -- the dispatcher does not have to be one Hyprland
--- already knows about.
+-- gesture can call anything -- there is no need for the dispatcher to be one
+-- Hyprland already knows about.
 hl.gesture({
 	fingers = 4,
 	direction = "up",
@@ -188,11 +188,11 @@ local shadow_inactive = (c.shadow:gsub("%x%x%)$", "38)"))
 
 hl.config({
 	general = {
-		border_size = 4,
-		gaps_in = 15,
+		border_size = 0,
+		gaps_in = 25,
 		gaps_out = 15,
 		layout = "dwindle",
-		resize_on_border = false,
+		resize_on_border = true,
 		col = {
 			-- THREE stops with the first and last the same colour: a symmetric
 			-- gradient has no seam. base03 for inactive -- base01/02/04/06 sit
@@ -209,7 +209,7 @@ hl.config({
 		-- Squircle: 2.0 is a circular arc, higher is a superellipse.
 		rounding_power = 4.0,
 		active_opacity = 1.0,
-		inactive_opacity = 0.90,
+		inactive_opacity = 1.0,
 		dim_inactive = false,
 		blur = {
 			enabled = true,
@@ -229,7 +229,7 @@ hl.config({
 			xray = false,
 		},
 		shadow = {
-			enabled = false,
+			enabled = true,
 			-- Small range, HIGH render_power -- the opposite of the macOS 70/1 spec
 			-- that was here before. Falloff is exponential in render_power, so at 3
 			-- nearly all the darkness sits in the first few pixels and the tail is
@@ -241,14 +241,15 @@ hl.config({
 			render_power = 3,
 			-- Enough drop to lift the window off the wallpaper without implying a
 			-- light source the rest of the theme does not have.
-			offset = "0 4",
+			offset = "0 0",
 			-- Scheme slot, used literally. An unfocused window gets the same colour at
 			-- a much lower alpha so it sits closer to the surface -- and fadeShadow in
 			-- the animation table cross-fades the two, so a focus change is a change
 			-- in HEIGHT, not just in opacity. That transition is the whole point of
 			-- turning shadows back on.
 			color = c.shadow,
-			color_inactive = shadow_inactive,
+			-- color_inactive = shadow_inactive,
+			color_inactive = c.shadow,
 		},
 	},
 
@@ -394,9 +395,6 @@ for _, ns in ipairs({
 	"qs-popover",
 	"qs-hud",
 	"qs-mission",
-	"qs-dashboard",
-	"qs-mission",
-	"qs-mission",
 	"qs-spotlight",
 	"qs-picker",
 	"qs-notifications",
@@ -429,14 +427,8 @@ hl.bind(mod .. " + Escape", hl.dsp.exec_cmd("pgrep -x hyprlock >/dev/null || hyp
 -- now opens Control Centre, which is where the sliders and the load readouts
 -- that used to live in the bar ended up.
 hl.bind(mod .. " + P", hl.dsp.exec_cmd("qs ipc call control toggle"))
--- Mission Control. Ctrl+Up on a Mac; mod+Up here.
-hl.bind(mod .. " + up", hl.dsp.exec_cmd("qs ipc call mission toggle"))
--- The day's dashboard. It shows itself once a day on its own; this is for the
--- other times.
-hl.bind(mod .. " + A", hl.dsp.exec_cmd("qs ipc call dashboard toggle"))
--- Mission Control. Ctrl+Up on a Mac; mod+Up here.
-hl.bind(mod .. " + up", hl.dsp.exec_cmd("qs ipc call mission toggle"))
--- Mission Control. Ctrl+Up on a Mac; mod+Up here.
+-- Mission Control. Ctrl+Up on a Mac; mod+Up here, since the arrow keys are
+-- otherwise only used for focus movement with a modifier this bind does not use.
 hl.bind(mod .. " + up", hl.dsp.exec_cmd("qs ipc call mission toggle"))
 hl.bind(mod .. " + T", hl.dsp.exec_cmd("theme-pick"))
 hl.bind(mod .. " + SHIFT + T", hl.dsp.exec_cmd("theme-random"))
