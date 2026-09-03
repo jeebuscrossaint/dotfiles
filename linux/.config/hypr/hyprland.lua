@@ -262,7 +262,7 @@ hl.config({
 		inactive_opacity = 1.0,
 		dim_inactive = false,
 		blur = {
-			enabled = true,
+			enabled = false,
 			size = 10,
 			passes = 3,
 			noise = 0.02,
@@ -362,16 +362,27 @@ hl.config({ animations = { enabled = true } })
 -- anything crossing the screen -- geometry changes, workspace slides -- takes
 -- macMove, and the layer popins stay on macOut because `popin 96%` travels 4% of
 -- a surface and an S-curve there just feels like dragging.
+-- STYLE is where this reads as Linux rather than macOS, more than any duration.
+-- `slide` is a tiling-WM idiom: the window travels in from an edge and the
+-- neighbours shove over. macOS never does that. A window appears by scaling up
+-- from about 90% AT ITS FINAL POSITION with a fade -- no travel at all -- and
+-- leaves by scaling slightly down and fading. `popin` is exactly that, and the
+-- percentage is the start scale.
+--
+-- 90% not 80%: at 80% the scale is a visible zoom and reads as Android. macOS is
+-- a small, quick settle you feel more than see.
 local anims = {
 	{ "global", 2.5, "macOut" },
-	{ "windows", 2.5, "macOut", "slide" },
-	{ "windowsIn", 2.5, "macOut", "slide" },
+	{ "windows", 2.5, "macOut", "popin 90%" },
+	{ "windowsIn", 2.5, "macOut", "popin 90%" },
 	-- Slower than the rest on purpose: a close is the one animation with no
 	-- successor state to look at, so at the common duration it was over before
 	-- the eye caught it.
 	-- fadeOut MUST match -- at alpha 0 the geometry is still animating but
 	-- invisible, so the shorter of the two is the duration you actually see.
-	{ "windowsOut", 3.5, "macOut", "slide" },
+	-- Closing scales DOWN slightly rather than sliding away, and only to 92%:
+	-- past that it becomes a shrink-into-nothing, which is a Windows gesture.
+	{ "windowsOut", 3.0, "macFade", "popin 92%" },
 	{ "windowsMove", 2.5, "macMove", "slide" },
 	{ "border", 2.5, "macStd" },
 	{ "layers", 2.5, "macOut", "popin 96%" },
@@ -386,10 +397,15 @@ local anims = {
 	{ "fadeLayers", 2.5, "macFade" },
 	{ "fadeLayersIn", 2.5, "macFade" },
 	{ "fadeLayersOut", 1.7, "macFade" },
-	{ "workspaces", 2.5, "macMove", "slide" },
-	{ "workspacesIn", 2.5, "macMove", "slide" },
-	{ "workspacesOut", 2.5, "macMove", "slide" },
-	{ "specialWorkspace", 2.5, "macMove", "slidefadevert 30%" },
+	-- Spaces are the one thing macOS animates SLOWLY, and deliberately: the whole
+	-- desktop slides as a single sheet over roughly 400ms. At 250ms it reads as a
+	-- cut rather than a movement, which is what made workspace switching feel
+	-- un-Mac even with the right curve.
+	{ "workspaces", 4.0, "macMove", "slide" },
+	{ "workspacesIn", 4.0, "macMove", "slide" },
+	{ "workspacesOut", 4.0, "macMove", "slide" },
+	-- A sheet coming down, so it gets the sheet timing rather than the window one.
+	{ "specialWorkspace", 3.0, "macMove", "slidefadevert 20%" },
 	{ "zoomFactor", 2.5, "macOut" },
 }
 for _, a in ipairs(anims) do
@@ -412,21 +428,6 @@ hl.window_rule({ name = "pip-pin", match = { title = "Picture-in-Picture" }, pin
 -- makes them read as pushing each other; a float has nothing to push.
 hl.window_rule({ name = "float-fade", match = { float = true }, animation = "popin 100%" })
 
--- The only tiled window on a workspace closes with nothing to push, so the slide
--- had nothing to read against and looked instant however long it actually ran.
--- popin gives it motion of its own. `w[tv1]` is one tiled visible window, and the
--- rule is re-evaluated as that count changes, so this applies to the last window
--- standing and to nothing else. The match key is `workspace`, NOT hyprlang's
--- `onworkspace:` -- the Lua binding renames it, and accepts the same selectors.
---
--- Hyprland cannot vary animation DURATION per window -- speed is per-leaf and
--- global. Style is the only thing a rule can pick, which is why the duration
--- above had to move for everyone.
-hl.window_rule({
-	name = "lone-window-popin",
-	match = { float = false, workspace = "w[tv1]" },
-	animation = "popin 80%",
-})
 
 -- Blur only the surfaces meant to read as glass. Every qs-* namespace is one:
 -- the shell paints translucent surfaces and relies on the compositor to frost
