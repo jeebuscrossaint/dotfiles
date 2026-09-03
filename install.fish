@@ -503,11 +503,27 @@ or note "no ~/todo.md — the desktop todo widget will be empty until you make o
 # over vt1 and is the one step in this repo that can leave a machine you cannot
 # log into.
 
+# Artix runs runit here, the ThinkPad runs Arch, and the greeter has to be
+# enabled through whichever one is actually booting the machine.
+function greeter_init
+    if test -d /run/systemd/system
+        echo systemd
+    else if test -d /etc/runit/runsvdir/default
+        echo runit
+    else
+        echo unknown
+    end
+end
+
 function greeter_files
     set -l src $repo/system/greetd
 
     command -q greetd; or die "greetd is not installed — pacman -S greetd"
     command -q cage; or die "cage is not installed — pacman -S cage"
+    # Created by the greetd package, and the session runs as it.
+    id -u greeter >/dev/null 2>&1; or die "no greeter user — reinstall the greetd package"
+    # Created by the greetd package, and the session runs as it.
+    id -u greeter >/dev/null 2>&1; or die "no greeter user — reinstall the greetd package"
 
     step "Installing the greeter (sudo)..."
 
@@ -527,7 +543,27 @@ function greeter_files
     # Without this there is no elogind session for the greeter, libseat is
     # refused, and cage exits with "No backend was able to open a seat".
     sudo install -Dm644 $src/pam.d-greetd-greeter /etc/pam.d/greetd-greeter; or die "install pam file failed"
-    sudo install -Dm755 $src/sv/greetd/run /etc/runit/sv/greetd/run; or die "install runit service failed"
+    # /run/greeter has to exist, owned by greeter, before greetd drops
+    # privileges -- the greeter user cannot create it, and without it cage and
+    # Quickshell both exit instantly. Under runit our own run script does that;
+    # under systemd the unit is the package's and not ours to edit, so tmpfiles
+    # does the same job at boot.
+    switch (greeter_init)
+        case runit
+            sudo install -Dm755 $src/sv/greetd/run /etc/runit/sv/greetd/run
+            or die "install runit service failed"
+        case systemd
+            printf '%s\n' \
+                "d /run/greeter       0700 greeter greeter -" \
+                "d /run/greeter/cache 0700 greeter greeter -" \
+                "d /run/greeter/state 0700 greeter greeter -" \
+                | sudo tee /etc/tmpfiles.d/greeter.conf >/dev/null
+            or die "could not write /etc/tmpfiles.d/greeter.conf"
+            sudo systemd-tmpfiles --create /etc/tmpfiles.d/greeter.conf
+            or note "systemd-tmpfiles --create failed — it still runs at boot"
+        case '*'
+            die "unrecognised init: no /run/systemd/system, no /etc/runit/runsvdir/default"
+    end
 
     # Wallpaper drop, owned by this user so awww can write it without sudo.
     # $HOME is mode 700 and traversal needs +x on every parent, so nothing under
@@ -552,36 +588,66 @@ function greeter_files
 end
 
 function greeter_enable
-    # The fallback consoles are the entire safety net. Refuse without them.
-    #
-    # Tested one path at a time on purpose. `ls | string match` reads as the
-    # obvious way to do this and is wrong twice over: fish sources config.fish
-    # even non-interactively, so `ls` is the lsd alias and its icons never match
-    # a bare service name -- and a glob cannot stand in either, because fish
-    # leaves an unmatched wildcard as its own literal, so `count` reports 1
-    # whether or not anything is there.
-    set -l ttys
-    for n in 2 3 4 5 6
-        test -e /etc/runit/runsvdir/default/agetty-tty$n; and set -a ttys $n
-    end
-    test (count $ttys) -ge 1
-    or die "refusing to enable: no agetty-tty2..6 left as a fallback login"
-
     # Over SSH there is no way to see whether the greeter came up, and no
     # console to recover from.
     set -q SSH_CONNECTION
     and die "refusing to enable over SSH — do this at the machine"
 
-    step "Enabling the greeter (sudo)..."
-    test -e /etc/runit/runsvdir/default/greetd
-    or sudo ln -s /etc/runit/sv/greetd /etc/runit/runsvdir/default/
-    or die "could not enable the greetd service"
-    sudo rm -f /etc/runit/runsvdir/default/agetty-tty1
+    switch (greeter_init)
+        case runit
+            # The fallback consoles are the entire safety net. Refuse without
+            # them. Tested one path at a time on purpose: `ls | string match`
+            # reads as the obvious way and is wrong twice over -- fish sources
+            # config.fish even non-interactively, so `ls` is the lsd alias and
+            # its icons never match a bare service name, and a glob cannot
+            # stand in either, because fish leaves an unmatched wildcard as its
+            # own literal, so `count` reports 1 whether anything is there.
+            set -l ttys
+            for n in 2 3 4 5 6
+                test -e /etc/runit/runsvdir/default/agetty-tty$n; and set -a ttys $n
+            end
+            test (count $ttys) -ge 1
+            or die "refusing to enable: no agetty-tty2..6 left as a fallback login"
 
-    ok "greetd enabled on vt1 — reboot to use it"
-    dim "if it does not come up: Ctrl+Alt+F2 still logs in, then"
-    dim "  sudo rm /etc/runit/runsvdir/default/greetd"
-    dim "  sudo ln -s /etc/runit/sv/agetty-tty1 /etc/runit/runsvdir/default/"
+            step "Enabling the greeter (sudo)..."
+            test -e /etc/runit/runsvdir/default/greetd
+            or sudo ln -s /etc/runit/sv/greetd /etc/runit/runsvdir/default/
+            or die "could not enable the greetd service"
+            sudo rm -f /etc/runit/runsvdir/default/agetty-tty1
+
+            ok "greetd enabled on vt1 — reboot to use it"
+            dim "if it does not come up: Ctrl+Alt+F2 still logs in, then"
+            dim "  sudo rm /etc/runit/runsvdir/default/greetd"
+            dim "  sudo ln -s /etc/runit/sv/agetty-tty1 /etc/runit/runsvdir/default/"
+
+        case systemd
+            # No agetty services to check here: logind spawns a getty on demand
+            # when you switch VT, so the escape hatch exists unless NAutoVTs has
+            # been turned off, which is the one setting that removes it.
+            if grep -qsE '^[ \t]*NAutoVTs[ \t]*=[ \t]*0' /etc/systemd/logind.conf /etc/systemd/logind.conf.d/*.conf
+                die "refusing to enable: NAutoVTs=0 leaves no fallback console"
+            end
+
+            systemctl cat greetd.service >/dev/null 2>&1
+            or die "no greetd.service — the greetd package should ship one"
+
+            step "Enabling the greeter (sudo)..."
+            sudo systemctl enable greetd.service; or die "systemctl enable greetd failed"
+
+            # This is what keeps greetd and getty@tty1 off each other on vt1,
+            # in place of runit's delete-the-service step. It is normally in the
+            # packaged unit; say so if this one lacks it.
+            systemctl cat greetd.service | grep -q 'Conflicts=.*getty@tty1'
+            or note "greetd.service has no Conflicts=getty@tty1.service — run: sudo systemctl mask getty@tty1.service"
+
+            test (systemctl get-default) = graphical.target
+            or note "default target is not graphical.target — greetd is WantedBy=graphical.target"
+
+            ok "greetd enabled — reboot to use it"
+            dim "if it does not come up: Ctrl+Alt+F2 still logs in, then"
+            dim "  sudo systemctl disable --now greetd"
+    end
+
     dim "and sudo cat /run/greeter/session.log says why it failed"
 end
 
