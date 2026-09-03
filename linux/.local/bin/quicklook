@@ -1,0 +1,22 @@
+#!/bin/sh
+# quicklook — preview a file without opening the app that owns it.
+#
+# macOS's spacebar preview, which Linux has no equivalent of. Bind it wherever
+# a file path is to hand; from yazi, a plugin or `:shell quicklook "$0"` works.
+#
+# Toggles: running it again while a preview is up closes it, so the same key can
+# do both. Paths are made absolute because the shell has its own cwd and will
+# not resolve a relative one the way this process would.
+set -u
+
+[ $# -ge 1 ] || { echo "usage: quicklook <file>" >&2; exit 2; }
+
+if ! pgrep -x qs >/dev/null 2>&1; then
+	echo "quicklook: the Quickshell shell is not running" >&2
+	exit 1
+fi
+
+path=$(realpath -- "$1" 2>/dev/null) || exit 1
+[ -e "$path" ] || { echo "quicklook: no such file: $1" >&2; exit 1; }
+
+exec qs ipc call quicklook toggle "$path"
