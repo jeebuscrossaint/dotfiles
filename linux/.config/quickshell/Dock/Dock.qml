@@ -100,7 +100,7 @@ Scope {
 	function activate(item: var): void {
 		const wins = dock.windowsFor(item);
 		if (wins.length > 0) {
-			Hypr.dispatch("focuswindow address:" + wins[0].address);
+			Hypr.focusWindow(wins[0].address);
 			return;
 		}
 		Quickshell.execDetached({

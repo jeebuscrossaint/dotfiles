@@ -11,18 +11,17 @@ import qs.Config
 import qs.Widgets
 import qs.Services
 
-// The day's first screen: a board of widget cards over the blurred desktop.
+// Desktop widgets: the board you see when nothing is covering the desktop.
 //
-// macOS's own version of this is the widget half of Notification Centre, so the
-// cards follow those proportions rather than the dense dashboard look -- rounded
-// tiles with a lot of air, one idea each.
+// It lives on the BACKGROUND layer, above the wallpaper and below every window,
+// which is what makes it a desktop rather than an overlay -- there is nothing to
+// summon and nothing to dismiss, it is simply what an empty screen looks like.
+// macOS Sonoma does the same thing with its widgets.
 //
-// It shows itself once a day, on the first shell start after midnight, which is
-// the moment it is actually for. After that it is mod+A.
+// Card proportions follow the widget half of macOS Notification Centre rather
+// than the dense dashboard look: rounded tiles with air, one idea each.
 Scope {
 	id: dash
-
-	property bool open: false
 
 	readonly property string greeting: {
 		const h = clock.date.getHours();
@@ -43,44 +42,8 @@ Scope {
 		precision: SystemClock.Seconds
 	}
 
-	IpcHandler {
-		target: "dashboard"
-
-		function toggle(): void { dash.open = !dash.open; }
-		function open(): void { dash.open = true; }
-		function close(): void { dash.open = false; }
-	}
-
-	// Once a day, unprompted. The stamp is the local date, so the trigger is the
-	// first launch after midnight rather than "every N hours".
-	FileView {
-		id: stamp
-
-		path: Quickshell.statePath("dashboard-shown")
-		blockLoading: true
-		printErrors: false
-
-		onLoaded: dash.considerAutoShow()
-		onLoadFailed: dash.considerAutoShow()
-	}
-
-	function considerAutoShow(): void {
-		const today = Qt.formatDateTime(new Date(), "yyyy-MM-dd");
-		let last = "";
-		try {
-			last = stamp.text().trim();
-		} catch (e) {
-		}
-		if (last === today)
-			return;
-		stamp.setText(today);
-		dash.open = true;
-	}
-
 	PanelWindow {
 		id: win
-
-		visible: dash.open || backdrop.opacity > 0.01
 
 		anchors.top: true
 		anchors.bottom: true
@@ -88,36 +51,24 @@ Scope {
 		anchors.right: true
 		color: "transparent"
 
-		WlrLayershell.layer: WlrLayer.Overlay
+		// BACKGROUND, not Overlay: above the wallpaper, below every window. No
+		// scrim and no keyboard focus -- this is scenery, not a dialog.
+		WlrLayershell.layer: WlrLayer.Background
 		WlrLayershell.namespace: "qs-dashboard"
-		WlrLayershell.keyboardFocus: dash.open ? WlrKeyboardFocus.Exclusive : WlrKeyboardFocus.None
+		WlrLayershell.keyboardFocus: WlrKeyboardFocus.None
 		exclusionMode: ExclusionMode.Ignore
 
-		Rectangle {
+		Item {
 			id: backdrop
 
 			anchors.fill: parent
-			// Heavy, and not relying on the compositor: Hyprland's layer blur
-			// does not appear to reach a fullscreen overlay, so the dim has to
-			// carry the separation on its own. macOS dims hard here regardless.
-			color: Theme.withBg(0.92)
-			opacity: dash.open ? 1 : 0
-			focus: true
 
-			Behavior on opacity {
-				NumberAnimation {
-					duration: dash.open ? Style.durEnter : Style.durExit
-					easing.type: Easing.Bezier
-					easing.bezierCurve: Style.macFade
-				}
-			}
-
-			Keys.onEscapePressed: dash.open = false
-
-			MouseArea {
-				anchors.fill: parent
-				onClicked: dash.open = false
-			}
+			// Desktop widgets sit directly on the wallpaper with no scrim behind
+			// them, and Hyprland's layer blur does not reach a fullscreen layer,
+			// so the cards carry their own contrast. 0.82 -- the value that works
+			// for a blurred panel -- washed out completely over a bright
+			// wallpaper.
+			readonly property color cardColour: Theme.withBg(0.93)
 
 			Row {
 				anchors.centerIn: parent
@@ -129,6 +80,7 @@ Scope {
 
 					Card {
 						width: 300
+						color: backdrop.cardColour
 						implicitHeight: 150
 
 						Column {
@@ -156,6 +108,7 @@ Scope {
 
 					Card {
 						width: 300
+						color: backdrop.cardColour
 						implicitHeight: cal.implicitHeight + Style.padding * 2
 
 						Calendar {
@@ -175,6 +128,7 @@ Scope {
 
 					Card {
 						width: 330
+						color: backdrop.cardColour
 						implicitHeight: 100
 
 						NowPlaying {
@@ -194,6 +148,7 @@ Scope {
 
 					Card {
 						width: 330
+						color: backdrop.cardColour
 						implicitHeight: stats.implicitHeight + Style.padding * 2
 
 						Column {
@@ -256,6 +211,7 @@ Scope {
 
 					Card {
 						width: 300
+						color: backdrop.cardColour
 						implicitHeight: 170
 
 						Column {
@@ -295,6 +251,7 @@ Scope {
 
 					Card {
 						width: 300
+						color: backdrop.cardColour
 						implicitHeight: 74
 
 						Row {
@@ -349,6 +306,7 @@ Scope {
 
 					Card {
 						width: 300
+						color: backdrop.cardColour
 						implicitHeight: 140
 
 						Column {
@@ -379,11 +337,6 @@ Scope {
 					}
 				}
 			}
-		}
-
-		onVisibleChanged: {
-			if (win.visible)
-				backdrop.forceActiveFocus();
 		}
 	}
 }
