@@ -109,6 +109,19 @@ hl.env("XCURSOR_THEME", "macOS")
 hl.env("XCURSOR_SIZE", "24")
 
 ----------------------------------------------------------------- autostart
+-- PATH must be set HERE, not left to whatever launched the compositor.
+--
+-- Almost every keybind below runs a script from ~/.local/bin -- osd, lock,
+-- menu-run, screenshot, theme-pick -- and greetd starts Hyprland with a login
+-- environment that does not include it. The result is not an error anywhere: the
+-- binds fire, the exec fails silently, and it looks exactly like "no keybinds
+-- work". A TTY login happened to work only because fish had already prepended it
+-- before exec'ing Hyprland.
+--
+-- Prepended so a script here still shadows a system binary of the same name,
+-- which is the point of `menu`, `lock` and `prime-run`.
+hl.env("PATH", os.getenv("HOME") .. "/.local/bin:" .. os.getenv("HOME") .. "/.cargo/bin:" .. os.getenv("PATH"))
+
 hl.on("hyprland.start", function()
 	local once = {
 		"dbus-update-activation-environment --all",
@@ -116,6 +129,10 @@ hl.on("hyprland.start", function()
 		"/usr/lib/xdg-desktop-portal-hyprland",
 		"/usr/libexec/xdg-desktop-portal",
 		"hypridle",
+		-- Full brightness at login. The firmware brings the panel up at about a
+		-- quarter and nothing else was setting it; brightnessctl is in /usr/bin,
+		-- so this works regardless of the PATH problem above.
+		"brightnessctl --quiet set 100%",
 		-- The Quickshell shell: menu bar, Control Centre, Spotlight, the dmenu
 		-- Picker and the notification server. waybar and fnott are both gone
 		-- from this list -- the bar carries their modules now, and only one

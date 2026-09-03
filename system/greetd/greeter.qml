@@ -85,8 +85,16 @@ ShellRoot {
 		}
 
 		function onStateChanged() {
-			if (Greetd.state === GreetdState.ReadyToLaunch)
-				Greetd.launch(["Hyprland"]);
+			if (Greetd.state !== GreetdState.ReadyToLaunch)
+				return;
+
+			// PATH is set here, not left to greetd. greetd's login environment
+			// does not include ~/.local/bin, and almost every keybind in
+			// hyprland.lua runs a script from there -- osd, lock, menu-run,
+			// screenshot. They fail silently, which looks exactly like "no
+			// keybinds work". A TTY login only worked because fish had already
+			// prepended it before exec'ing the compositor.
+			Greetd.launch(["sh", "-c", "export PATH=\"$HOME/.local/bin:$HOME/.cargo/bin:$PATH\"; exec Hyprland"]);
 		}
 	}
 
