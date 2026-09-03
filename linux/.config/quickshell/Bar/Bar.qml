@@ -57,6 +57,10 @@ Scope {
 		id: control
 	}
 
+	NotificationCentre {
+		id: notifications
+	}
+
 	SystemClock {
 		id: clock
 
@@ -261,12 +265,12 @@ Scope {
 			}
 
 			StatusItem {
-				interactive: false
+				onClicked: notifications.open = !notifications.open
 
 				StyledText {
 					// macOS order: weekday, month, day, then the time.
 					text: Qt.formatDateTime(clock.date, "ddd d MMM  h:mm AP")
-					color: Theme.fg
+					color: notifications.open ? Theme.accent : Theme.fg
 				}
 			}
 		}
