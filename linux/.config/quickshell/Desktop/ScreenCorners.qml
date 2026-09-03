@@ -13,7 +13,10 @@ import qs.Config
 Scope {
 	id: corners
 
-	readonly property int radius: 12
+	// 16, not 12. A MacBook's display corners are noticeably rounder than a
+	// phone's, and at 12 the effect reads as an artifact rather than as the
+	// shape of the screen.
+	readonly property int radius: 16
 
 	Variants {
 		model: Quickshell.screens

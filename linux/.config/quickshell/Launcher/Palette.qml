@@ -303,9 +303,28 @@ Scope {
 								source: row.isHeader ? "" : Icons.resolve(row.modelData.icon)
 							}
 
+							// A glyph stands in where there is no app icon --
+							// the calculator, files, clipboard and web rows.
+							// Without it those rows had a blank gap exactly the
+							// width of an icon, which made the list look broken
+							// rather than deliberate.
+							StyledText {
+								id: glyphIcon
+
+								anchors.verticalCenter: parent.verticalCenter
+								x: Style.padding + 4
+								width: Style.iconSize
+								horizontalAlignment: Text.AlignHCenter
+								visible: !row.isHeader && !icon.visible && text.length > 0
+								text: row.isHeader ? "" : (row.modelData.glyph || "")
+								font.family: Theme.fontMono
+								font.pointSize: Theme.fontSize + 3
+								color: row.active ? Theme.bg : Theme.dim
+							}
+
 							Column {
 								anchors.verticalCenter: parent.verticalCenter
-								x: icon.visible ? icon.x + icon.width + Style.gap : Style.padding + 4
+								x: icon.visible || glyphIcon.visible ? Style.padding + 4 + Style.iconSize + Style.gap : Style.padding + 4
 								width: parent.width - x - Style.padding
 								spacing: 0
 
