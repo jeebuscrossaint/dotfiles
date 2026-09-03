@@ -3,6 +3,7 @@ import Quickshell
 import Quickshell.Io
 import Quickshell.Wayland
 import qs.Config
+import qs.Services
 import qs.Widgets
 
 // Region picker: a drop-in replacement for `slurp`.
@@ -70,6 +71,9 @@ Scope {
 
 	PanelWindow {
 		id: win
+
+		// On the display being used, not whichever one Quickshell picked.
+		screen: Screens.focused
 
 		visible: region.active
 

@@ -48,6 +48,9 @@ Scope {
 	PanelWindow {
 		id: win
 
+		// On the display being used, not whichever one Quickshell picked.
+		screen: Screens.focused
+
 		visible: mission.open || backdrop.opacity > 0.01
 
 		anchors.top: true
