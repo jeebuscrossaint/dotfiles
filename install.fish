@@ -9,7 +9,7 @@
 set -g repo (path dirname (path resolve (status filename)))
 set -g pkg linux
 
-argparse -X 0 h/help n/dry-run v/verbose b/backup a/adopt y/yes no-coat uninstall c/check skip-checks install-deps t/target= -- $argv
+argparse -X 0 h/help n/dry-run v/verbose b/backup a/adopt y/yes no-coat uninstall c/check skip-checks install-deps greeter greeter-enable t/target= -- $argv
 or exit 2
 
 if set -q _flag_help
@@ -25,6 +25,8 @@ if set -q _flag_help
   -v, --verbose    list every link, not a summary
   -t, --target DIR link into DIR instead of the home directory
       --no-coat    skip the coat theme step
+      --greeter    install the greetd login screen (needs sudo, does NOT enable it)
+      --greeter-enable  also switch the login screen on -- read the warning it prints
       --uninstall  remove the links this script created
   -h, --help       this"
     exit 0
@@ -486,12 +488,101 @@ end
 
 # stow only makes symlinks under $HOME. Anything rooted outside it has to be
 # installed by hand, and the greeter is entirely outside it.
-if not test -f /etc/greetd/greeter.qml
-    note "greeter not installed — root-owned files, see system/greetd/INSTALL.md"
+if not test -f /etc/greetd/greeter.qml; and not set -q _flag_greeter
+    note "greeter not installed — run: install.fish --greeter"
 end
 
 # The todo widget reads this and shows an empty card without it.
 test -f $target/todo.md
 or note "no ~/todo.md — the desktop todo widget will be empty until you make one"
+
+# --- greeter ------------------------------------------------------------------
+#
+# Root-owned and entirely outside $HOME, so a stow run can never place it.
+# Split in two on purpose: installing the files is harmless, ENABLING it takes
+# over vt1 and is the one step in this repo that can leave a machine you cannot
+# log into.
+
+function greeter_files
+    set -l src $repo/system/greetd
+
+    command -q greetd; or die "greetd is not installed — pacman -S greetd"
+    command -q cage; or die "cage is not installed — pacman -S cage"
+
+    step "Installing the greeter (sudo)..."
+
+    # The account is substituted at install time. The repo copy names this
+    # machine's user, which is wrong on any other machine, and the greeter has
+    # no way to ask -- it runs before anyone has logged in.
+    set -l tmp (mktemp)
+    sed "s/^\(\s*readonly property string account:\).*/\1 \"$USER\"/" $src/greeter.qml >$tmp
+    grep -q "account: \"$USER\"" $tmp; or begin
+        rm -f $tmp
+        die "could not substitute the account into greeter.qml"
+    end
+
+    sudo install -Dm644 $tmp /etc/greetd/greeter.qml; or begin; rm -f $tmp; die "install greeter.qml failed"; end
+    rm -f $tmp
+    sudo install -Dm644 $src/config.toml /etc/greetd/config.toml; or die "install config.toml failed"
+    # Without this there is no elogind session for the greeter, libseat is
+    # refused, and cage exits with "No backend was able to open a seat".
+    sudo install -Dm644 $src/pam.d-greetd-greeter /etc/pam.d/greetd-greeter; or die "install pam file failed"
+    sudo install -Dm755 $src/sv/greetd/run /etc/runit/sv/greetd/run; or die "install runit service failed"
+
+    # Wallpaper drop, owned by this user so awww can write it without sudo.
+    # $HOME is mode 700 and traversal needs +x on every parent, so nothing under
+    # it is reachable from the greeter however the file itself is chmodded.
+    sudo install -d -m 0755 -o $USER -g $USER /var/lib/greeter; or die "could not create /var/lib/greeter"
+
+    # video is usually already there; input is what cage needs to open devices.
+    sudo usermod -aG video,input greeter; or note "could not add greeter to video,input"
+
+    # Seed the wallpaper from whatever is on screen. As the user, not root.
+    if command -q awww
+        set -l cur (awww query 2>/dev/null | head -1 | string replace -r '.*currently displaying: image: ' '')
+        if test -n "$cur" -a -f "$cur"
+            awww img "$cur" >/dev/null 2>&1
+            ok "greeter wallpaper seeded from the current one"
+        else
+            note "could not read the current wallpaper — the greeter falls back to a flat background"
+        end
+    end
+
+    ok "greeter installed (not enabled)"
+end
+
+function greeter_enable
+    # The fallback consoles are the entire safety net. Refuse without them.
+    set -l ttys (ls /etc/runit/runsvdir/default/ 2>/dev/null | string match 'agetty-tty*' | string match -v 'agetty-tty1')
+    test (count $ttys) -ge 1
+    or die "refusing to enable: no agetty-tty2..6 left as a fallback login"
+
+    # Over SSH there is no way to see whether the greeter came up, and no
+    # console to recover from.
+    set -q SSH_CONNECTION
+    and die "refusing to enable over SSH — do this at the machine"
+
+    step "Enabling the greeter (sudo)..."
+    test -e /etc/runit/runsvdir/default/greetd
+    or sudo ln -s /etc/runit/sv/greetd /etc/runit/runsvdir/default/
+    or die "could not enable the greetd service"
+    sudo rm -f /etc/runit/runsvdir/default/agetty-tty1
+
+    ok "greetd enabled on vt1 — reboot to use it"
+    dim "if it does not come up: Ctrl+Alt+F2 still logs in, then"
+    dim "  sudo rm /etc/runit/runsvdir/default/greetd"
+    dim "  sudo ln -s /etc/runit/sv/agetty-tty1 /etc/runit/runsvdir/default/"
+    dim "and sudo cat /run/greeter/session.log says why it failed"
+end
+
+if set -q _flag_greeter; or set -q _flag_greeter_enable
+    echo
+    if set -q _flag_dry_run
+        note "--dry-run: skipping the greeter, it writes outside \$HOME"
+    else
+        greeter_files
+        set -q _flag_greeter_enable; and greeter_enable
+    end
+end
 
 printf '\n%sdone%s — open a new shell to pick it up.\n\n' "$c_ok" "$c_off"
