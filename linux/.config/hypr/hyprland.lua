@@ -164,6 +164,18 @@ hl.config({
 
 hl.gesture({ fingers = 3, direction = "horizontal", action = "workspace" })
 
+-- Four fingers up for Mission Control, which is the macOS gesture exactly. The
+-- action field takes a FUNCTION as well as one of the built-in names, so a
+-- gesture can call anything -- the dispatcher does not have to be one Hyprland
+-- already knows about.
+hl.gesture({
+	fingers = 4,
+	direction = "up",
+	action = function()
+		hl.exec_cmd("qs ipc call mission toggle")
+	end,
+})
+
 -- accel_profile flat above is for mice only.
 hl.device({ name = "asup1207:00-093a:3012-touchpad", accel_profile = "adaptive", natural_scroll = false })
 
@@ -383,6 +395,7 @@ for _, ns in ipairs({
 	"qs-hud",
 	"qs-mission",
 	"qs-mission",
+	"qs-mission",
 	"qs-spotlight",
 	"qs-picker",
 	"qs-notifications",
@@ -415,6 +428,8 @@ hl.bind(mod .. " + Escape", hl.dsp.exec_cmd("pgrep -x hyprlock >/dev/null || hyp
 -- now opens Control Centre, which is where the sliders and the load readouts
 -- that used to live in the bar ended up.
 hl.bind(mod .. " + P", hl.dsp.exec_cmd("qs ipc call control toggle"))
+-- Mission Control. Ctrl+Up on a Mac; mod+Up here.
+hl.bind(mod .. " + up", hl.dsp.exec_cmd("qs ipc call mission toggle"))
 -- Mission Control. Ctrl+Up on a Mac; mod+Up here.
 hl.bind(mod .. " + up", hl.dsp.exec_cmd("qs ipc call mission toggle"))
 -- Mission Control. Ctrl+Up on a Mac; mod+Up here.
