@@ -1,3 +1,4 @@
 module qs.Services
 singleton Sys 1.0 Sys.qml
 singleton History 1.0 History.qml
+singleton Frecency 1.0 Frecency.qml

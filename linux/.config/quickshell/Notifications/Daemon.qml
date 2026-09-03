@@ -45,7 +45,7 @@ Scope {
 		bodySupported: true
 		bodyMarkupSupported: true
 		imageSupported: true
-		actionsSupported: false
+		actionsSupported: true
 
 		// osd(1) relies on `notify-send -r` collapsing repeats onto one popup, so
 		// a held volume key updates a single banner instead of stacking fifteen.
