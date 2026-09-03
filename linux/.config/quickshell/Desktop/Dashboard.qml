@@ -70,36 +70,46 @@ Scope {
 			// wallpaper.
 			readonly property color cardColour: Theme.withBg(0.93)
 
-			Row {
+			// A real grid, not three columns of whatever height their contents
+			// came out as. macOS widgets are laid out in fixed units for exactly
+			// this reason: ragged edges read as a bug even when nothing is wrong.
+			readonly property int cellW: 320
+			readonly property int rowTop: 160
+			readonly property int rowBottom: 200
+
+			Column {
 				anchors.centerIn: parent
 				spacing: 16
 
-				// ── Column one: the day itself ──────────────────────────────
-				Column {
+				Grid {
+					columns: 3
 					spacing: 16
 
+					// ── Row one ─────────────────────────────────────────────
 					Card {
-						width: 300
+						width: backdrop.cellW
+						height: backdrop.rowTop
 						color: backdrop.cardColour
-						implicitHeight: 150
 
 						Column {
 							anchors.centerIn: parent
 							spacing: 2
 
 							StyledText {
+								anchors.horizontalCenter: parent.horizontalCenter
 								text: dash.greeting + ", " + Quickshell.env("USER")
 								color: Theme.dim
-								font.pointSize: Theme.fontSize
 							}
 
 							StyledText {
+								anchors.horizontalCenter: parent.horizontalCenter
 								text: Qt.formatDateTime(clock.date, "h:mm")
 								font.pointSize: 46
 								font.weight: Font.DemiBold
 							}
 
 							StyledText {
+								anchors.horizontalCenter: parent.horizontalCenter
 								text: Qt.formatDateTime(clock.date, "dddd, d MMMM")
 								color: Theme.dim
 							}
@@ -107,35 +117,16 @@ Scope {
 					}
 
 					Card {
-						width: 300
+						width: backdrop.cellW
+						height: backdrop.rowTop
 						color: backdrop.cardColour
-						implicitHeight: cal.implicitHeight + Style.padding * 2
-
-						Calendar {
-							id: cal
-
-							anchors.left: parent.left
-							anchors.right: parent.right
-							anchors.top: parent.top
-							anchors.margins: Style.padding
-						}
-					}
-				}
-
-				// ── Column two: what is playing and what the machine is doing ─
-				Column {
-					spacing: 16
-
-					Card {
-						width: 330
-						color: backdrop.cardColour
-						implicitHeight: 100
 
 						NowPlaying {
 							anchors.left: parent.left
 							anchors.right: parent.right
 							anchors.margins: Style.padding
 							anchors.verticalCenter: parent.verticalCenter
+							visible: Mpris.players.values.length > 0
 						}
 
 						StyledText {
@@ -147,16 +138,66 @@ Scope {
 					}
 
 					Card {
-						width: 330
+						width: backdrop.cellW
+						height: backdrop.rowTop
 						color: backdrop.cardColour
-						implicitHeight: stats.implicitHeight + Style.padding * 2
 
 						Column {
-							id: stats
+							anchors.centerIn: parent
+							width: parent.width - Style.padding * 2
+							spacing: 2
 
+							StyledText {
+								anchors.horizontalCenter: parent.horizontalCenter
+								text: Sys.weather.length > 0 ? Sys.weather : "—"
+								font.family: Theme.fontMono
+								font.pointSize: 32
+								font.weight: Font.DemiBold
+							}
+
+							StyledText {
+								anchors.horizontalCenter: parent.horizontalCenter
+								// First line of wttrbar's tooltip is the current
+								// condition; the hourly table belongs in the bar's
+								// forecast panel, not here.
+								text: Sys.weatherTip.split("\n")[0].replace(/<[^>]*>/g, "")
+								color: Theme.dim
+							}
+
+							StyledText {
+								width: parent.width
+								horizontalAlignment: Text.AlignHCenter
+								elide: Text.ElideRight
+								text: Sys.weatherTip.split("\n").length > 4 ? Sys.weatherTip.split("\n")[4].replace(/<[^>]*>/g, "") : ""
+								color: Theme.dim
+								font.pointSize: Theme.fontSize - 1
+							}
+						}
+					}
+
+					// ── Row two ─────────────────────────────────────────────
+					Card {
+						width: backdrop.cellW
+						height: backdrop.rowBottom
+						color: backdrop.cardColour
+
+						Calendar {
 							anchors.left: parent.left
 							anchors.right: parent.right
-							anchors.top: parent.top
+							anchors.verticalCenter: parent.verticalCenter
+							anchors.margins: Style.padding
+						}
+					}
+
+					Card {
+						width: backdrop.cellW
+						height: backdrop.rowBottom
+						color: backdrop.cardColour
+
+						Column {
+							anchors.left: parent.left
+							anchors.right: parent.right
+							anchors.verticalCenter: parent.verticalCenter
 							anchors.margins: Style.padding
 							spacing: 6
 
@@ -183,7 +224,7 @@ Scope {
 
 							Item {
 								width: parent.width
-								height: 16
+								height: 14
 
 								StyledText {
 									anchors.left: parent.left
@@ -203,111 +244,11 @@ Scope {
 							}
 						}
 					}
-				}
-
-				// ── Column three: outside, and what you missed ──────────────
-				Column {
-					spacing: 16
 
 					Card {
-						width: 300
+						width: backdrop.cellW
+						height: backdrop.rowBottom
 						color: backdrop.cardColour
-						implicitHeight: 170
-
-						Column {
-							anchors.centerIn: parent
-							spacing: 2
-
-							StyledText {
-								anchors.horizontalCenter: parent.horizontalCenter
-								text: Sys.weather.length > 0 ? Sys.weather : "—"
-								font.family: Theme.fontMono
-								font.pointSize: 30
-								font.weight: Font.DemiBold
-							}
-
-							StyledText {
-								anchors.horizontalCenter: parent.horizontalCenter
-								// First line of wttrbar's tooltip is the current
-								// condition; the rest is the hourly table, which
-								// belongs in the bar's forecast panel, not here.
-								text: Sys.weatherTip.split("\n")[0].replace(/<[^>]*>/g, "")
-								color: Theme.dim
-							}
-
-							Item {
-								width: 1
-								height: 8
-							}
-
-							StyledText {
-								anchors.horizontalCenter: parent.horizontalCenter
-								text: Sys.weatherTip.split("\n").length > 4 ? Sys.weatherTip.split("\n")[4].replace(/<[^>]*>/g, "") : ""
-								color: Theme.dim
-								font.pointSize: Theme.fontSize - 1
-							}
-						}
-					}
-
-					Card {
-						width: 300
-						color: backdrop.cardColour
-						implicitHeight: 74
-
-						Row {
-							anchors.centerIn: parent
-							spacing: 10
-
-							Repeater {
-								model: [
-									{ glyph: "󰖩", key: "wifi" },
-									{ glyph: "󰂯", key: "bt" },
-									{ glyph: "󰂛", key: "dnd" }
-								]
-
-								Rectangle {
-									required property var modelData
-
-									readonly property bool on: {
-										if (modelData.key === "wifi")
-											return Networking.wifiEnabled;
-										if (modelData.key === "bt")
-											return Bluetooth.defaultAdapter && Bluetooth.defaultAdapter.enabled;
-										return History.dnd;
-									}
-
-									width: 54
-									height: 42
-									radius: 10
-									color: on ? Theme.accent : Theme.withFg(0.12)
-
-									StyledText {
-										anchors.centerIn: parent
-										text: modelData.glyph
-										font.family: Theme.fontMono
-										font.pointSize: Theme.fontSize + 3
-										color: parent.on ? Theme.bg : Theme.fg
-									}
-
-									TapHandler {
-										onTapped: {
-											if (modelData.key === "wifi")
-												Networking.wifiEnabled = !Networking.wifiEnabled;
-											else if (modelData.key === "bt" && Bluetooth.defaultAdapter)
-												Bluetooth.defaultAdapter.enabled = !Bluetooth.defaultAdapter.enabled;
-											else
-												History.dnd = !History.dnd;
-										}
-									}
-								}
-							}
-						}
-					}
-
-					Card {
-						width: 300
-						color: backdrop.cardColour
-						implicitHeight: 140
 
 						Column {
 							anchors.left: parent.left
@@ -323,7 +264,7 @@ Scope {
 							}
 
 							Repeater {
-								model: History.items.slice(0, 3)
+								model: History.items.slice(0, 4)
 
 								StyledText {
 									required property var modelData
@@ -331,6 +272,64 @@ Scope {
 									width: parent.width
 									text: modelData.summary
 									font.pointSize: Theme.fontSize - 1
+								}
+							}
+						}
+					}
+				}
+
+				// Toggles get their own strip under the grid rather than a cell
+				// of their own: three buttons in a 320x200 tile is mostly air.
+				Card {
+					anchors.horizontalCenter: parent.horizontalCenter
+					width: backdrop.cellW
+					height: 62
+					color: backdrop.cardColour
+
+					Row {
+						anchors.centerIn: parent
+						spacing: 10
+
+						Repeater {
+							model: [
+								{ glyph: "󰖩", key: "wifi" },
+								{ glyph: "󰂯", key: "bt" },
+								{ glyph: "󰂛", key: "dnd" }
+							]
+
+							Rectangle {
+								required property var modelData
+
+								readonly property bool on: {
+									if (modelData.key === "wifi")
+										return Networking.wifiEnabled;
+									if (modelData.key === "bt")
+										return Bluetooth.defaultAdapter && Bluetooth.defaultAdapter.enabled;
+									return History.dnd;
+								}
+
+								width: 54
+								height: 40
+								radius: 10
+								color: on ? Theme.accent : Theme.withFg(0.12)
+
+								StyledText {
+									anchors.centerIn: parent
+									text: modelData.glyph
+									font.family: Theme.fontMono
+									font.pointSize: Theme.fontSize + 3
+									color: parent.on ? Theme.bg : Theme.fg
+								}
+
+								TapHandler {
+									onTapped: {
+										if (modelData.key === "wifi")
+											Networking.wifiEnabled = !Networking.wifiEnabled;
+										else if (modelData.key === "bt" && Bluetooth.defaultAdapter)
+											Bluetooth.defaultAdapter.enabled = !Bluetooth.defaultAdapter.enabled;
+										else
+											History.dnd = !History.dnd;
+									}
 								}
 							}
 						}
