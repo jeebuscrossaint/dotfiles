@@ -553,7 +553,17 @@ end
 
 function greeter_enable
     # The fallback consoles are the entire safety net. Refuse without them.
-    set -l ttys (ls /etc/runit/runsvdir/default/ 2>/dev/null | string match 'agetty-tty*' | string match -v 'agetty-tty1')
+    #
+    # Tested one path at a time on purpose. `ls | string match` reads as the
+    # obvious way to do this and is wrong twice over: fish sources config.fish
+    # even non-interactively, so `ls` is the lsd alias and its icons never match
+    # a bare service name -- and a glob cannot stand in either, because fish
+    # leaves an unmatched wildcard as its own literal, so `count` reports 1
+    # whether or not anything is there.
+    set -l ttys
+    for n in 2 3 4 5 6
+        test -e /etc/runit/runsvdir/default/agetty-tty$n; and set -a ttys $n
+    end
     test (count $ttys) -ge 1
     or die "refusing to enable: no agetty-tty2..6 left as a fallback login"
 

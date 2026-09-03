@@ -288,7 +288,7 @@ hl.config({
 			-- why it needed gaps nobody wants. This is what the rices actually run:
 			-- range 15-30, power 2-3, small or no offset.
 			range = 30,
-			render_power = 2,
+			render_power = 10,
 			-- Enough drop to lift the window off the wallpaper without implying a
 			-- light source the rest of the theme does not have.
 			offset = "0 0",
