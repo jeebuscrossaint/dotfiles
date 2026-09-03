@@ -26,6 +26,10 @@ Scope {
 	// you burn it in.
 	property bool revealed: false
 
+	// The dock item a right-click menu is open for, and where to put it.
+	property var menuItem: null
+	property real menuX: 0
+
 	// Whether the blurred window is mapped at all. Kept separate from `revealed`
 	// so the slide-out has somewhere to finish before the surface goes away.
 	property bool mapped: false
@@ -96,6 +100,21 @@ Scope {
 			if (DesktopEntries.heuristicLookup(id) === item.entry)
 				return dock.running[id];
 		return [];
+	}
+
+	function launch(item: var): void {
+		Quickshell.execDetached({
+			command: item.entry.command,
+			workingDirectory: item.entry.workingDirectory || Quickshell.env("HOME")
+		});
+	}
+
+	function quit(item: var): void {
+		// Every window of the app, not just the first: "Quit" on macOS closes
+		// the application, and closing one of three windows would look broken.
+		const wins = dock.windowsFor(item);
+		for (let i = 0; i < wins.length; i++)
+			Hypr.closeWindow(wins[i].address);
 	}
 
 	function activate(item: var): void {
@@ -252,6 +271,18 @@ Scope {
 						TapHandler {
 							onTapped: dock.activate(slot.modelData)
 						}
+
+						TapHandler {
+							acceptedButtons: Qt.RightButton
+							onTapped: {
+								// The dock window is centred and as wide as its
+								// card, so the icon's screen x is the dock's left
+								// edge plus its offset inside the row.
+								const screenW = win.screen ? win.screen.width : 0;
+								dock.menuX = (screenW - row.width) / 2 + slot.x + slot.width / 2;
+								dock.menuItem = slot.modelData;
+							}
+						}
 					}
 				}
 			}
@@ -264,6 +295,114 @@ Scope {
 		}
 	}
 
+	PanelWindow {
+		id: itemMenu
+
+		visible: dock.menuItem !== null
+
+		screen: Screens.focused
+		anchors.bottom: true
+		anchors.left: true
+		// Above the dock, and clamped so a menu on the first or last icon does
+		// not hang off the edge of the screen.
+		margins.bottom: 84
+		margins.left: Math.max(8, Math.min(dock.menuX - itemMenu.implicitWidth / 2,
+			(itemMenu.screen ? itemMenu.screen.width : 0) - itemMenu.implicitWidth - 8))
+
+		implicitWidth: 200
+		implicitHeight: menuBody.implicitHeight + Style.padding * 2
+		color: "transparent"
+
+		WlrLayershell.layer: WlrLayer.Overlay
+		// qs-popover so it picks up the same blur rule as every other panel.
+		WlrLayershell.namespace: "qs-popover"
+		WlrLayershell.keyboardFocus: WlrKeyboardFocus.None
+		exclusionMode: ExclusionMode.Ignore
+
+		HyprlandFocusGrab {
+			id: menuGrab
+
+			property bool armed: false
+
+			windows: [itemMenu]
+			onActiveChanged: {
+				if (menuGrab.active) {
+					menuGrab.armed = true;
+				} else if (menuGrab.armed) {
+					menuGrab.armed = false;
+					dock.menuItem = null;
+				}
+			}
+		}
+
+		Connections {
+			target: dock
+
+			function onMenuItemChanged() {
+				menuGrab.armed = false;
+				menuGrab.active = dock.menuItem !== null;
+				if (dock.menuItem === null)
+					hideTimer.restart();
+			}
+		}
+
+		Card {
+			anchors.fill: parent
+
+			Column {
+				id: menuBody
+
+				anchors.left: parent.left
+				anchors.right: parent.right
+				anchors.top: parent.top
+				anchors.margins: Style.padding
+				spacing: 2
+
+				StyledText {
+					width: parent.width
+					text: dock.menuItem ? dock.menuItem.entry.name : ""
+					font.weight: Font.DemiBold
+					elide: Text.ElideRight
+				}
+
+				Rectangle {
+					width: parent.width
+					height: Style.hairline
+					color: Theme.hairline
+				}
+
+				Item {
+					width: 1
+					height: 3
+				}
+
+				MenuRow {
+					width: parent.width
+					glyph: ""
+					label: "New Window"
+					onTriggered: {
+						if (dock.menuItem)
+							dock.launch(dock.menuItem);
+						dock.menuItem = null;
+					}
+				}
+
+				MenuRow {
+					width: parent.width
+					visible: dock.menuItem !== null && dock.windowsFor(dock.menuItem).length > 0
+					glyph: ""
+					label: "Quit"
+					danger: true
+					onTriggered: {
+						if (dock.menuItem)
+							dock.quit(dock.menuItem);
+						dock.menuItem = null;
+					}
+				}
+			}
+		}
+	}
+
 	// Reveal is instant; hiding waits, or the dock flickers away the moment the
 	// pointer crosses a gap between two icons. Unmapping waits for the slide to
 	// finish so the window is not torn out from under its own animation.
@@ -271,7 +410,10 @@ Scope {
 		id: hideTimer
 
 		interval: 450
-		onTriggered: dock.revealed = false
+		onTriggered: {
+			if (dock.menuItem === null)
+				dock.revealed = false;
+		}
 	}
 
 	Timer {
