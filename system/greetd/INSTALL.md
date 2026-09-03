@@ -40,13 +40,21 @@ sudo install -Dm755 sv/greetd/run /etc/runit/sv/greetd/run
 
 ## Test it WITHOUT committing to it
 
-Start greetd by hand, on a vt that is not your current one, before enabling
-anything:
+Running `greetd` by hand skips the runit service, so the runtime directory it
+would have created has to be made first. Without it greetd exits with
+"greeter exited without creating a session":
 
 ```sh
+sudo install -d -m 0700 -o greeter -g greeter /run/greeter
+sudo install -d -m 0700 -o greeter -g greeter /run/greeter/cache
+sudo install -d -m 0700 -o greeter -g greeter /run/greeter/state
+
 sudo sv down agetty-tty1        # release vt1
 sudo greetd                     # Ctrl+C to stop; watch the output
 ```
+
+/run is a tmpfs, so those directories vanish on reboot -- which is fine,
+because from then on the runit service recreates them on every start.
 
 If the greeter comes up on vt1 and logs you in, it works. If it does not, `sv up
 agetty-tty1` puts things back exactly as they were.

@@ -22,6 +22,11 @@ local mod = "SUPER"
 
 ------------------------------------------------------------------ monitors
 -- bitdepth 10 keeps the 10-bit OLED output.
+-- 240Hz, always. The ProMotion-style switcher that used to drop this to 60Hz on
+-- battery is gone at the user's request: the measured saving was ~1.6W (15.3 ->
+-- 13.7) in Hybrid MUX with the dGPU asleep, which is real but not worth a panel
+-- that visibly changes character every time the charger moves. Do not reinstate
+-- it as an optimisation.
 hl.monitor({ output = "eDP-1", mode = "2560x1600@240", position = "0x0", scale = 1, bitdepth = 10 })
 hl.monitor({ output = "HDMI-A-1", mode = "3840x2160@30", position = "2560x0", scale = 1, bitdepth = 10 })
 hl.monitor({ output = "", mode = "preferred", position = "auto", scale = "auto" })
@@ -126,8 +131,6 @@ hl.on("hyprland.start", function()
 		"audio-ensure",
 		"refresh-paru-completions",
 		"battery-watch",
-		-- 240Hz on AC, 60Hz on battery.
-		"auto-refresh",
 		"wl-paste --type text --watch cliphist store",
 		"wl-paste --type image --watch cliphist store",
 		"wl-clip-persist --clipboard regular",
