@@ -37,6 +37,17 @@ Popover {
 		anchors.top: parent.top
 		spacing: 10
 
+		NowPlaying {
+			width: parent.width
+		}
+
+		Rectangle {
+			width: parent.width
+			height: Style.hairline
+			color: Theme.hairline
+			visible: parent.children[0].visible
+		}
+
 		Slider {
 			width: parent.width
 			glyph: cc.sink && cc.sink.audio && cc.sink.audio.muted ? "󰝟" : "󰕾"
