@@ -2,6 +2,7 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 import Quickshell.Services.Pipewire
+import Quickshell.Services.UPower
 import qs.Config
 import qs.Widgets
 import qs.Services
@@ -66,6 +67,50 @@ Popover {
 			// is root-owned, and this is the same path the osd script
 			// already relies on.
 			onMoved: v => Quickshell.execDetached(["brightnessctl", "--quiet", "set", Math.max(1, Math.round(v * 100)) + "%"])
+		}
+
+		// Power profiles, macOS's Low Power Mode with the middle ground Linux
+		// actually has. Backed by tuned-ppd here, which speaks the
+		// power-profiles-daemon interface -- I had assumed nothing did, because
+		// `powerprofilesctl` is not on PATH. The D-Bus name is what matters.
+		Row {
+			width: parent.width
+			spacing: 6
+			visible: Sys.powerProfiles
+
+			Repeater {
+				model: [
+					{ label: "Low Power", value: PowerProfile.PowerSaver },
+					{ label: "Balanced", value: PowerProfile.Balanced },
+					{ label: "High", value: PowerProfile.Performance }
+				]
+
+				Rectangle {
+					required property var modelData
+
+					readonly property bool active: PowerProfiles.profile === modelData.value
+
+					width: (parent.width - 12) / 3
+					height: 28
+					radius: 7
+					color: active ? Theme.accent : Theme.withFg(0.12)
+					// Performance is not offered on every machine; greying it out
+					// beats letting it be selected and silently ignored.
+					opacity: modelData.value === PowerProfile.Performance && !PowerProfiles.hasPerformanceProfile ? 0.4 : 1
+
+					StyledText {
+						anchors.centerIn: parent
+						text: modelData.label
+						font.pointSize: Theme.fontSize - 1
+						color: parent.active ? Theme.bg : Theme.fg
+					}
+
+					TapHandler {
+						enabled: modelData.value !== PowerProfile.Performance || PowerProfiles.hasPerformanceProfile
+						onTapped: PowerProfiles.profile = modelData.value
+					}
+				}
+			}
 		}
 
 		Rectangle {

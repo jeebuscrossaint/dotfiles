@@ -24,6 +24,15 @@ Singleton {
 	property string uptime: ""
 	property real brightness: 0
 
+	// Whether power-profiles-daemon's D-Bus name is actually SERVED, not merely
+	// activatable. Both names are activatable on this machine and neither can be
+	// launched -- tuned is running but the tuned-ppd shim that provides the
+	// interface is not -- and `PowerProfiles.profile` still reads Balanced
+	// regardless, so the control looks live while doing nothing. Probed once,
+	// because a segmented switch that silently ignores you is worse than one
+	// that is not there.
+	property bool powerProfiles: false
+
 	// The NVMe drive has its own hwmon, nowhere near coretemp's, and waybar
 	// carried it as a second temperature module with a 70 degree critical -- it
 	// runs much closer to its limit than the CPU does.
@@ -213,6 +222,14 @@ Singleton {
 
 	// Same command and same flags waybar used, including the connectivity guard:
 	// wttrbar hangs rather than failing when the network is down.
+	Process {
+		id: ppdProbe
+
+		running: true
+		command: ["busctl", "--system", "--timeout=3", "introspect", "net.hadess.PowerProfiles", "/net/hadess/PowerProfiles"]
+		onExited: code => sys.powerProfiles = code === 0
+	}
+
 	Process {
 		id: wttr
 
