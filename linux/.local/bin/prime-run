@@ -1,11 +1,28 @@
 #!/bin/sh
-# Offload a single app to the NVIDIA dGPU (wakes the RTX 4070 from D3cold),
-# while the desktop stays composited on the Intel iGPU. macOS-style on-demand
-# discrete GPU. Usage:  prime-run <command>   e.g.  prime-run steam
-#   Steam launch options:  prime-run %command%
-export __NV_PRIME_RENDER_OFFLOAD=1
-export __NV_PRIME_RENDER_OFFLOAD_PROVIDER=NVIDIA-G0
-export __GLX_VENDOR_LIBRARY_NAME=nvidia
-export __VK_LAYER_NV_optimus=NVIDIA_only
-export VK_ICD_FILENAMES=/usr/share/vulkan/icd.d/nvidia_icd.json
+# Run one process on the RTX 4070.
+#
+# In Hybrid MUX the compositor pins the EGL/Vulkan/GLX loaders to Mesa+Intel so
+# libglvnd never instantiates the NVIDIA device and RTD3 can park the card
+# (see hyprland.lua). Those pins are inherited by every child, so anything that
+# actually wants the dGPU has to flip them back here.
+# In Discrete MUX the compositor sets no such pins and NVIDIA is already
+# primary; re-asserting them is harmless.
+if [ -d /sys/module/nvidia_drm ]; then
+    [ -f /usr/share/glvnd/egl_vendor.d/10_nvidia.json ] && \
+        export __EGL_VENDOR_LIBRARY_FILENAMES=/usr/share/glvnd/egl_vendor.d/10_nvidia.json
+    [ -f /usr/share/vulkan/icd.d/nvidia_icd.json ] && \
+        export VK_DRIVER_FILES=/usr/share/vulkan/icd.d/nvidia_icd.json
+    export __GLX_VENDOR_LIBRARY_NAME=nvidia
+
+    # Only meaningful in Hybrid; inert once the dGPU is the scanout engine.
+    export __NV_PRIME_RENDER_OFFLOAD=1
+    export __NV_PRIME_RENDER_OFFLOAD_PROVIDER=NVIDIA-G0
+    export __VK_LAYER_NV_optimus=NVIDIA_only
+
+    # 1.8.9 submits GL from a single thread; this moves driver work off it.
+    # Measured 57% -> 95% GPU utilisation in Minecraft 1.8.9.
+    export __GL_THREADED_OPTIMIZATIONS=1
+    export __GL_SYNC_TO_VBLANK=0
+    export __GL_MaxFramesAllowed=1
+fi
 exec "$@"
