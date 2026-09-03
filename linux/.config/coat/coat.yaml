@@ -26,7 +26,7 @@ enabled:
   - kitty
   - hyprland
 
-scheme: classic-dark
+scheme: gruvbox-dark
 prefer_base24: false
 
 # Evens out whatever scheme is loaded. `coat docs normalize` lists the knobs.
