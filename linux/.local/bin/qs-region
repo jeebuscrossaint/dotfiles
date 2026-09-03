@@ -1,0 +1,30 @@
+#!/bin/sh
+# qs-region — region selector, printing slurp's "X,Y WxH" on stdout.
+#
+# A drop-in for `slurp`, so `screenshot` and `screenshot-edit` did not have to
+# change: only the selection UI differs. The shell's version dims everything
+# outside the selection and shows live dimensions.
+#
+# An IPC call cannot block waiting for a human, so the geometry comes back over
+# a FIFO -- the same arrangement `menu` uses. A cancelled selection writes an
+# empty line, so `cat` always returns and callers still see an empty result.
+#
+# Falls back to slurp when the shell is not running, which keeps the screenshot
+# keybinds working in any session that does not start it.
+set -u
+
+if ! pgrep -x qs >/dev/null 2>&1; then
+	exec slurp "$@"
+fi
+
+dir=$(mktemp -d) || exit 1
+trap 'rm -rf "$dir"' EXIT INT TERM
+
+reply="$dir/geometry"
+mkfifo "$reply" || exit 1
+
+qs ipc call region pick "$reply" >/dev/null 2>&1
+
+read -r geometry < "$reply"
+[ -n "$geometry" ] || exit 1
+printf '%s\n' "$geometry"
