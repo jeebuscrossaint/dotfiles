@@ -3,6 +3,7 @@ import Quickshell
 import Quickshell.Wayland
 import Quickshell.Services.Notifications
 import qs.Config
+import qs.Services
 
 // Replaces fnott. Only one process can own org.freedesktop.Notifications, so
 // unlike the launcher this one is not additive -- fnott has to be gone from the
@@ -50,6 +51,7 @@ Scope {
 		// a held volume key updates a single banner instead of stacking fifteen.
 		// That is handled by the server itself; the model below just reflects it.
 		onNotification: notif => {
+			History.push(notif);
 			notif.tracked = true;
 		}
 	}
