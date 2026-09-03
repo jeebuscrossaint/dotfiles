@@ -365,12 +365,26 @@ hl.window_rule({
 	animation = "popin 80%",
 })
 
--- Blur only the surfaces meant to read as glass. waybar is deliberately NOT in this
--- list: its window is transparent and every module is an rgba 0.85 island, so
--- blurring the layer frosted the wallpaper behind each slab -- that was the acrylic.
--- Without the rule the islands are flat tint over the unblurred wallpaper. Layer
--- blur is opt-in in Hyprland, so dropping the namespace is the whole change.
-for _, ns in ipairs({ "notifications", "launcher", "qs-bar", "qs-dock", "qs-control", "qs-notification-centre", "qs-hud", "qs-spotlight", "qs-picker", "qs-notifications" }) do
+-- Blur only the surfaces meant to read as glass. Every qs-* namespace is one:
+-- the shell paints translucent surfaces and relies on the compositor to frost
+-- what is behind them, so a missing namespace here is a panel that looks flat
+-- and see-through rather than one that looks broken -- which is exactly why it
+-- is easy to miss. Layer blur is opt-in in Hyprland; the namespace IS the rule.
+--
+-- (waybar was deliberately absent from this list: its window was transparent and
+-- each module an rgba island, so blurring the layer frosted the wallpaper behind
+-- every slab instead of behind the bar.)
+for _, ns in ipairs({
+	"notifications",
+	"launcher",
+	"qs-bar",
+	"qs-dock",
+	"qs-popover",
+	"qs-hud",
+	"qs-spotlight",
+	"qs-picker",
+	"qs-notifications",
+}) do
 	hl.layer_rule({ name = "blur-" .. ns, match = { namespace = "^" .. ns .. "$" }, blur = true })
 end
 
