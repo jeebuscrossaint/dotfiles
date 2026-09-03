@@ -8,10 +8,10 @@
 #                   Only owner of session may take control
 #   No backend was able to open a seat
 #
-# With no PAM service there is no elogind session, so libseat's logind backend
+# With no PAM service there is no logind session, so libseat's logind backend
 # looks at the ACTIVE session -- which belongs to the logged-in user -- and is
-# correctly refused. pam_elogind.so below gives the greeter a session of its
-# own, which it does own, and cage can then take control of the seat.
+# correctly refused. The session module below gives the greeter a session of
+# its own, which it does own, and cage can then take control of the seat.
 #
 # auth is pam_permit because the greeter does not authenticate anybody: greetd
 # starts it as a trusted local user, and the login it presents is authenticated
@@ -21,5 +21,14 @@ account    required   pam_permit.so
 
 session    required   pam_limits.so
 session    required   pam_unix.so
-# elogind, not systemd -- Artix. Leading dash so a missing module is not fatal.
+# Both are listed because this file installs on Artix (elogind) and on Arch
+# (systemd), and exactly one of them exists on each. The leading dash skips the
+# absent one silently.
+#
+# Do NOT be reassured by "optional" here. If neither module loads, PAM succeeds
+# and the greeter still starts -- with no logind session, so cage cannot take
+# the seat and exits, greetd exits with it, and the service restart-loops until
+# systemd reports only "start request repeated too quickly". Nothing in that
+# message points here.
+-session   optional   pam_systemd.so
 -session   optional   pam_elogind.so
