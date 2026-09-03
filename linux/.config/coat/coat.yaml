@@ -22,8 +22,6 @@ enabled:
   # Teams + Outlook DESKTOP (Electron). Browser tabs are coat-webapps' job.
   - msteams
 
-  - mango
-  - waybar
   - quickshell
   - kitty
   - hyprland

@@ -51,7 +51,7 @@ Scope {
 
 		WlrLayershell.layer: WlrLayer.Overlay
 		WlrLayershell.namespace: "qs-popover"
-		WlrLayershell.keyboardFocus: root.keyboard ? WlrKeyboardFocus.Exclusive : WlrKeyboardFocus.None
+		WlrLayershell.keyboardFocus: pop.keyboard ? WlrKeyboardFocus.Exclusive : WlrKeyboardFocus.None
 		exclusionMode: ExclusionMode.Ignore
 
 		// Armed, like every other grab in the shell: a request that simply FAILS

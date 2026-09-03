@@ -142,8 +142,19 @@ Scope {
 		precision: SystemClock.Seconds
 	}
 
+	// One bar per monitor. Everything above is shared state -- clocks, services,
+	// the panels -- and only the strip itself is per-screen. Without this the bar
+	// exists on exactly one display, which is invisible on a single-monitor
+	// laptop right up to the moment something is plugged in.
+	Variants {
+		model: Quickshell.screens
+
 	PanelWindow {
 		id: win
+
+		required property var modelData
+
+		screen: win.modelData
 
 		anchors.top: true
 		anchors.left: true
@@ -416,5 +427,6 @@ Scope {
 				}
 			}
 		}
+	}
 	}
 }
