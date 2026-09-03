@@ -4,6 +4,7 @@ import Quickshell.Wayland
 import Quickshell.Hyprland
 import Quickshell.Widgets
 import qs.Config
+import qs.Services
 import qs.Widgets
 
 Scope {
@@ -99,7 +100,7 @@ Scope {
 	function activate(item: var): void {
 		const wins = dock.windowsFor(item);
 		if (wins.length > 0) {
-			Hyprland.dispatch("focuswindow address:" + wins[0].address);
+			Hypr.dispatch("focuswindow address:" + wins[0].address);
 			return;
 		}
 		Quickshell.execDetached({
