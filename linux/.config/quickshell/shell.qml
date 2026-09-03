@@ -1,5 +1,6 @@
 import Quickshell
 import "Bar"
+import "Dock"
 import "Launcher"
 import "Notifications"
 
@@ -10,6 +11,7 @@ import "Notifications"
 // everything at once.
 ShellRoot {
 	Bar {}
+	Dock {}
 	Spotlight {}
 	Picker {}
 	Daemon {}
