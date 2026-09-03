@@ -5,7 +5,7 @@
 # the timestamp doesn't need building here. Ctrl+S saves, Ctrl+C copies;
 # --early-exit closes the window once one of those happens.
 mkdir -p ~/Pictures/Screenshots
-grim -g "$(slurp)" - | satty \
+grim -g "$(qs-region)" - | satty \
     --filename - \
     --output-filename '~/Pictures/Screenshots/%Y%m%d_%H%M%S.png' \
     --copy-command wl-copy \

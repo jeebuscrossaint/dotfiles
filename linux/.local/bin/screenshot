@@ -1,4 +1,4 @@
 #!/bin/sh
 mkdir -p ~/Pictures/Screenshots
 file=~/Pictures/Screenshots/$(date +%Y%m%d_%H%M%S).png
-grim -g "$(slurp)" "$file" && wl-copy < "$file"
+grim -g "$(qs-region)" "$file" && wl-copy < "$file"
