@@ -28,16 +28,12 @@ Scope {
 	// sits at the bottom until then, and the field crossfades in.
 	property bool prompting: false
 
-	// The wallpaper awww is currently showing. Queried at lock time rather than
-	// cached, since it changes whenever the theme does.
-	property string wallpaper: ""
 
 	function begin(): void {
 		lock.buffer = "";
 		lock.status = "";
 		lock.failed = false;
 		lock.prompting = false;
-		wallpaperQuery.running = true;
 		lock.active = true;
 	}
 
@@ -67,18 +63,6 @@ Scope {
 		function unlock(): void { lock.active = false; }
 	}
 
-	Process {
-		id: wallpaperQuery
-
-		command: ["sh", "-c", "awww query 2>/dev/null | head -1 | sed 's/.*currently displaying: image: //'"]
-		stdout: StdioCollector {
-			id: wallpaperOut
-		}
-		onExited: {
-			const path = wallpaperOut.text.trim();
-			lock.wallpaper = path.length > 0 && path.startsWith("/") ? "file://" + path : "";
-		}
-	}
 
 	PamContext {
 		id: pam
@@ -144,10 +128,18 @@ Scope {
 				id: paper
 
 				anchors.fill: parent
-				source: lock.wallpaper
+				// From the shared service, not a query fired at lock time: that raced
+		// the surface appearing and the lock came up on a flat background
+		// instead of the wallpaper.
+		source: Wallpaper.url
 				fillMode: Image.PreserveAspectCrop
 				asynchronous: true
 				visible: false
+				// layer.enabled is what makes a hidden Image usable as a
+				// MultiEffect source. Without it the effect has nothing to
+				// sample: the image loaded (status Ready) and the lock still
+				// came up on a flat background.
+				layer.enabled: true
 			}
 
 			// The wallpaper is blurred in the shell rather than by the

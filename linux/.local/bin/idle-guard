@@ -26,7 +26,7 @@ audio_playing() {
 	return 1
 }
 
-do_lock() { pgrep -x hyprlock >/dev/null 2>&1 || { sfx lock; hyprlock >/dev/null 2>&1 & }; }
+do_lock() { sfx lock; lock >/dev/null 2>&1 & }
 do_dpms() { hyprctl dispatch dpms off >/dev/null 2>&1; }
 
 # One file per invocation, not one per action: several guards are pending during
