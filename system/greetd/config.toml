@@ -29,5 +29,8 @@ vt = 1
 #
 # `qs -p <file>` runs a single-file Quickshell config. The greeter has to live
 # somewhere world-readable, since $HOME here is 700.
-command = "sh -c 'export XDG_RUNTIME_DIR=/run/greeter HOME=/run/greeter XDG_CACHE_HOME=/run/greeter/cache XDG_STATE_HOME=/run/greeter/state; exec cage -s -m last -- qs -p /etc/greetd/greeter.qml'"
+# stderr goes to a log because greetd swallows it: all you get on failure is
+# "greeter exited without creating a session", which says nothing about why.
+# /run/greeter is a tmpfs, so this is not a file that accumulates.
+command = "sh -c 'export XDG_RUNTIME_DIR=/run/greeter HOME=/run/greeter XDG_CACHE_HOME=/run/greeter/cache XDG_STATE_HOME=/run/greeter/state; exec cage -s -m last -- qs -p /etc/greetd/greeter.qml >/run/greeter/session.log 2>&1'"
 user = "greeter"
