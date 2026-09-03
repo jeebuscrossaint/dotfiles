@@ -61,6 +61,17 @@ Scope {
 		id: notifications
 	}
 
+	WeatherPanel {
+		id: forecast
+	}
+
+	SystemMenu {
+		id: system
+
+		// Drops from under the Tux glyph rather than from the right-hand edge.
+		anchorX: Style.gap
+	}
+
 	SystemClock {
 		id: clock
 
@@ -106,7 +117,7 @@ Scope {
 
 			StatusItem {
 				interactive: true
-				onClicked: Quickshell.execDetached(["qs", "ipc", "call", "spotlight", "toggle"])
+				onClicked: system.open = !system.open
 
 				StyledText {
 					text: ""
@@ -244,13 +255,13 @@ Scope {
 
 			StatusItem {
 				visible: Sys.weather.length > 0
-				interactive: false
+				onClicked: forecast.open = !forecast.open
 
 				StyledText {
 					// wttrbar's own indicator string, unchanged from waybar.
 					text: Sys.weather
 					font.family: Theme.fontMono
-					color: Theme.fg
+					color: forecast.open ? Theme.accent : Theme.fg
 				}
 			}
 
