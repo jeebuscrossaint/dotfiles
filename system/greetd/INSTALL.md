@@ -75,16 +75,24 @@ sudo rm /etc/runit/runsvdir/default/greetd
 sudo ln -s /etc/runit/sv/agetty-tty1 /etc/runit/runsvdir/default/
 ```
 
-## If the greeter starts but the keyboard does nothing
+## Input devices
 
-The `greeter` user is in `video` but may also need `input`:
+The `greeter` user needs `input` as well as `video`, and this is NOT optional:
 
 ```sh
 sudo usermod -aG input greeter
 ```
 
-logind is running here, so it normally grants input through the seat and this is
-not needed -- try it only if the greeter is visibly up and unresponsive.
+logind grants input through a seat, but greetd's greeter is not a logind
+session, so cage falls back to opening the devices directly. Without the group
+it cannot, and exits -- which greetd reports only as "greeter exited without
+creating a session".
+
+## When it fails and you cannot see why
+
+greetd swallows the greeter's stderr, so the session is wrapped to log to
+`/run/greeter/session.log`. Read that after a failed attempt; it is where cage
+and Quickshell actually say what went wrong.
 
 ## What it launches
 
