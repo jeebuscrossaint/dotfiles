@@ -394,6 +394,7 @@ for _, ns in ipairs({
 	"qs-popover",
 	"qs-hud",
 	"qs-mission",
+	"qs-dashboard",
 	"qs-mission",
 	"qs-mission",
 	"qs-spotlight",
@@ -430,6 +431,9 @@ hl.bind(mod .. " + Escape", hl.dsp.exec_cmd("pgrep -x hyprlock >/dev/null || hyp
 hl.bind(mod .. " + P", hl.dsp.exec_cmd("qs ipc call control toggle"))
 -- Mission Control. Ctrl+Up on a Mac; mod+Up here.
 hl.bind(mod .. " + up", hl.dsp.exec_cmd("qs ipc call mission toggle"))
+-- The day's dashboard. It shows itself once a day on its own; this is for the
+-- other times.
+hl.bind(mod .. " + A", hl.dsp.exec_cmd("qs ipc call dashboard toggle"))
 -- Mission Control. Ctrl+Up on a Mac; mod+Up here.
 hl.bind(mod .. " + up", hl.dsp.exec_cmd("qs ipc call mission toggle"))
 -- Mission Control. Ctrl+Up on a Mac; mod+Up here.

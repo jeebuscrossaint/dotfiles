@@ -1,6 +1,5 @@
 import QtQuick
 import qs.Config
-import qs.Widgets
 
 // One labelled readout with a fill bar. The Control Centre equivalent of the
 // waybar load drawer: same numbers, but visible at a glance instead of behind a

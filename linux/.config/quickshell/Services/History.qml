@@ -20,6 +20,10 @@ Singleton {
 
 	readonly property int limit: 60
 
+	// Do Not Disturb. Notifications still land in the history -- that is where
+	// macOS puts the ones it held back -- they just never appear as a banner.
+	property bool dnd: false
+
 	function push(notif: var): void {
 		// osd is the volume/brightness HUD. Logging "󰕾 60%" sixty times because
 		// a volume key was held would bury everything worth keeping.

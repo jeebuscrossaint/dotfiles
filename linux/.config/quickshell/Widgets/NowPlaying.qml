@@ -2,7 +2,6 @@ import QtQuick
 import Quickshell
 import Quickshell.Services.Mpris
 import qs.Config
-import qs.Widgets
 
 // Now Playing, as macOS puts it at the top of Control Centre: art on the left,
 // track and artist beside it, transport underneath.

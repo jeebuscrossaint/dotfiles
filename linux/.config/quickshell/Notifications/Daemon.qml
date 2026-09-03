@@ -52,7 +52,12 @@ Scope {
 		// That is handled by the server itself; the model below just reflects it.
 		onNotification: notif => {
 			History.push(notif);
-			notif.tracked = true;
+
+			// Under DND the notification is acknowledged and closed rather than
+			// left tracked: an untracked notification is one the client has been
+			// told about, where a tracked-but-hidden one would pile up forever.
+			// It is already in the history either way.
+			notif.tracked = !History.dnd || notif.appName === "osd";
 		}
 	}
 
