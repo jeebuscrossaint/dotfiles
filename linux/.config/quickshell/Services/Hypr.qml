@@ -32,4 +32,8 @@ Singleton {
 	function focusWindow(address: string): void {
 		lua('hl.dsp.focus({ window = "address:' + address + '" })');
 	}
+
+	function closeWindow(address: string): void {
+		lua('hl.dsp.window.close({ window = "address:' + address + '" })');
+	}
 }

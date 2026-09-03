@@ -1,0 +1,20 @@
+# Quick Look on space, the way macOS does it.
+#
+# yazi binds space to select-toggle by default, so that moves to `t` rather than
+# being lost -- visual mode (v) and select-all (ctrl+a) still work either way.
+#
+# `--confirm` skips the "press enter to continue" prompt: quicklook returns
+# immediately, since the panel it toggles lives in the shell rather than in this
+# terminal.
+#
+# [mgr], not [manager]: yazi renamed the section in 25.x and silently ignores
+# the old name.
+[[mgr.prepend_keymap]]
+on = "<Space>"
+run = 'shell "quicklook \"$0\"" --confirm'
+desc = "Quick Look the hovered file"
+
+[[mgr.prepend_keymap]]
+on = "t"
+run = "toggle --state=none"
+desc = "Toggle selection (was space)"

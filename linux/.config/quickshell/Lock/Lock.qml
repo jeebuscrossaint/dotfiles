@@ -6,6 +6,7 @@ import Quickshell.Services.Pam
 import Quickshell.Wayland
 import qs.Config
 import qs.Widgets
+import qs.Services
 
 // The lock screen. macOS layout: big clock high on the screen, avatar and name
 // centred, password pill under them, all over the blurred wallpaper.
@@ -42,6 +43,12 @@ Scope {
 
 	function submit(): void {
 		if (pam.active)
+			return;
+		// Empty submissions are dropped here rather than sent. PAM does reject
+		// them -- verified against this machine's config, which is `auth include
+		// login` -- but a lock screen should not be spending round trips to find
+		// that out, and it should not depend on the PAM stack to say no.
+		if (lock.buffer.length === 0)
 			return;
 		lock.status = "";
 		pam.active = true;
@@ -107,6 +114,20 @@ Scope {
 		id: clock
 
 		precision: SystemClock.Seconds
+	}
+
+	// Just an existence check for the avatar; the image itself is loaded by the
+	// surface below.
+	FileView {
+		id: faceFile
+
+		property bool exists: false
+
+		path: `${Quickshell.env("HOME")}/.face`
+		blockLoading: true
+		printErrors: false
+		onLoaded: faceFile.exists = true
+		onLoadFailed: faceFile.exists = false
 	}
 
 	WlSessionLock {
@@ -192,6 +213,74 @@ Scope {
 				}
 			}
 
+			// Notification cards, which macOS shows on the lock screen and this
+			// did not. They come from the shell's own history rather than the
+			// live server, so what accumulated while the screen was locked is
+			// still here when you look at it -- a banner that expired during
+			// the lock would otherwise be gone unseen.
+			Column {
+				anchors.horizontalCenter: parent.horizontalCenter
+				anchors.top: parent.top
+				anchors.topMargin: parent.height * 0.34
+				width: 420
+				spacing: 8
+				visible: History.items.length > 0 && !lock.prompting
+
+				Repeater {
+					model: History.items.slice(0, 3)
+
+					Rectangle {
+						required property var modelData
+
+						width: parent.width
+						implicitHeight: text.implicitHeight + 20
+						radius: 14
+						// Its own translucency rather than Theme.surface: this
+						// sits on a wallpaper, not on a blurred panel.
+						color: Qt.rgba(0, 0, 0, 0.42)
+
+						Column {
+							id: text
+
+							anchors.left: parent.left
+							anchors.right: parent.right
+							anchors.verticalCenter: parent.verticalCenter
+							anchors.margins: 12
+							spacing: 1
+
+							StyledText {
+								width: parent.width
+								text: modelData.summary
+								font.weight: Font.DemiBold
+								color: "white"
+								elide: Text.ElideRight
+							}
+
+							StyledText {
+								width: parent.width
+								visible: text.length > 0
+								text: modelData.body
+								textFormat: Text.StyledText
+								wrapMode: Text.Wrap
+								maximumLineCount: 2
+								font.pointSize: Theme.fontSize - 1
+								color: "white"
+								opacity: 0.75
+							}
+						}
+					}
+				}
+
+				StyledText {
+					anchors.horizontalCenter: parent.horizontalCenter
+					visible: History.items.length > 3
+					text: (History.items.length - 3) + " more"
+					color: "white"
+					opacity: 0.6
+					font.pointSize: Theme.fontSize - 1
+				}
+			}
+
 			Column {
 				id: prompt
 
@@ -216,7 +305,10 @@ Scope {
 
 						anchors.fill: parent
 						anchors.margins: 1
-						source: "file://" + Quickshell.env("HOME") + "/.face"
+						// Guarded on the file existing: Image logs a warning per
+						// frame for a source it cannot open, and most people have
+						// no ~/.face.
+						source: faceFile.exists ? "file://" + Quickshell.env("HOME") + "/.face" : ""
 						fillMode: Image.PreserveAspectCrop
 						asynchronous: true
 						visible: false
