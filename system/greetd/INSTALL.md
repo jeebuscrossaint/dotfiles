@@ -36,6 +36,13 @@ awww img "$(awww query | sed 's/.*currently displaying: image: //')"
 
 # runit service.
 sudo install -Dm755 sv/greetd/run /etc/runit/sv/greetd/run
+
+# PAM service for the greeter. This one is NOT optional and does not exist by
+# default: without it the greeter gets no elogind session, so libseat asks to
+# take control of the LOGGED-IN user's session instead and is refused --
+# "Only owner of session may take control", then "No backend was able to open a
+# seat", and cage exits.
+sudo install -Dm644 pam.d-greetd-greeter /etc/pam.d/greetd-greeter
 ```
 
 ## Test it WITHOUT committing to it
@@ -77,16 +84,21 @@ sudo ln -s /etc/runit/sv/agetty-tty1 /etc/runit/runsvdir/default/
 
 ## Input devices
 
-The `greeter` user needs `input` as well as `video`, and this is NOT optional:
+The `greeter` user needs `input` as well as `video`:
 
 ```sh
 sudo usermod -aG input greeter
 ```
 
-logind grants input through a seat, but greetd's greeter is not a logind
-session, so cage falls back to opening the devices directly. Without the group
-it cannot, and exits -- which greetd reports only as "greeter exited without
-creating a session".
+With the PAM service in place elogind brokers a seat and this may not be
+needed, but it is harmless and removes one variable.
+
+## Seats, if it still fails
+
+`seatd` is installed here and could host the seat instead of elogind, but it
+needs its own runit service and the `greeter` user in the `seat` group. The PAM
+route above is preferred: no extra daemon, and it leaves how the main session
+gets its seat completely untouched.
 
 ## When it fails and you cannot see why
 

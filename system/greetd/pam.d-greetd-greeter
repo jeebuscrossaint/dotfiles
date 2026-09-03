@@ -1,0 +1,25 @@
+#%PAM-1.0
+#
+# PAM service for the greeter itself. Install to /etc/pam.d/greetd-greeter --
+# greetd's default_session.service names it, and it does NOT exist by default
+# on this system, which is what made cage fail with:
+#
+#   libseat logind: Could not take control of session:
+#                   Only owner of session may take control
+#   No backend was able to open a seat
+#
+# With no PAM service there is no elogind session, so libseat's logind backend
+# looks at the ACTIVE session -- which belongs to the logged-in user -- and is
+# correctly refused. pam_elogind.so below gives the greeter a session of its
+# own, which it does own, and cage can then take control of the seat.
+#
+# auth is pam_permit because the greeter does not authenticate anybody: greetd
+# starts it as a trusted local user, and the login it presents is authenticated
+# separately through the `greetd` service.
+auth       required   pam_permit.so
+account    required   pam_permit.so
+
+session    required   pam_limits.so
+session    required   pam_unix.so
+# elogind, not systemd -- Artix. Leading dash so a missing module is not fatal.
+-session   optional   pam_elogind.so
