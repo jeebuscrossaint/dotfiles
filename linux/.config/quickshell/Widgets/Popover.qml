@@ -18,6 +18,12 @@ Scope {
 	property int anchorX: -1
 	property int panelWidth: 240
 
+	// Most panels want no keyboard at all -- they are glyph rows, and grabbing
+	// the keyboard from whatever you were typing in is hostile. The Wi-Fi picker
+	// is the exception: entering a password needs keys, so it asks for them only
+	// while its prompt is open.
+	property bool keyboard: false
+
 	default property alias content: holder.data
 
 	signal dismissed
@@ -45,7 +51,7 @@ Scope {
 
 		WlrLayershell.layer: WlrLayer.Overlay
 		WlrLayershell.namespace: "qs-popover"
-		WlrLayershell.keyboardFocus: WlrKeyboardFocus.None
+		WlrLayershell.keyboardFocus: root.keyboard ? WlrKeyboardFocus.Exclusive : WlrKeyboardFocus.None
 		exclusionMode: ExclusionMode.Ignore
 
 		// Armed, like every other grab in the shell: a request that simply FAILS
