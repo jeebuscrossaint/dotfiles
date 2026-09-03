@@ -17,6 +17,21 @@ Scope {
 
 	property real hoverX: -1000
 
+	// The dock follows the focused display rather than living on one, which is
+	// what macOS does -- a dock on every monitor at once is a row of icons you
+	// are not looking at. Matched by NAME because Hyprland's monitor objects and
+	// Quickshell's ShellScreens are different types with no direct mapping.
+	readonly property var activeScreen: {
+		const focused = Hyprland.focusedMonitor;
+		if (!focused)
+			return null;
+		const screens = Quickshell.screens;
+		for (let i = 0; i < screens.length; i++)
+			if (screens[i].name === focused.name)
+				return screens[i];
+		return null;
+	}
+
 	// Hidden at rest, and that is not a preference -- it is the whole reason the
 	// dock is allowed to exist here. Parked, it reserves no screen space and
 	// paints no pixels, which matters twice on this machine: 86px of a 1600px
@@ -122,6 +137,7 @@ Scope {
 	PanelWindow {
 		id: trigger
 
+		screen: dock.activeScreen
 		anchors.bottom: true
 		anchors.left: true
 		anchors.right: true
@@ -147,6 +163,7 @@ Scope {
 		// Only mapped while it is on screen or sliding off it.
 		visible: dock.mapped
 
+		screen: dock.activeScreen
 		anchors.bottom: true
 		implicitWidth: card.implicitWidth
 		implicitHeight: 80

@@ -23,9 +23,9 @@ Remove one of these and something in this repo stops working.
 
 | Role | Packages |
 |---|---|
-| Compositor | `hyprland`, `mangowm` (AUR), `scenefx0.5`, `xdg-desktop-portal-hyprland`, `polkit-gnome`, `elogind-runit` |
-| Bar / notify / launcher | `waybar`, `wttrbar` (AUR), `quickshell` (notifications + launcher) |
-| Idle & lock | `hypridle`, `hyprlock`, `swayidle` |
+| Compositor | `hyprland`, `xdg-desktop-portal-hyprland`, `polkit-gnome`, `elogind-runit` |
+| Shell | `quickshell` — bar, Control Centre, Spotlight, dmenu picker, notifications, OSD HUD, dock, Mission Control, desktop widgets, lock. `wttrbar` (AUR) feeds the weather. `waybar` is kept installed as a fallback but is not started. |
+| Idle & lock | `hypridle`, `hyprlock` (fallback locker and what hypridle calls; the shell has its own on mod+L) |
 | Wallpaper | `awww` (wrapped by `~/.local/bin/awww`, so `awww img` retheme-follows) |
 | Terminal & shell | `kitty`, `fish`, `lsd`, `bat`, `less`, `tree` |
 | Editor | `neovim` |
