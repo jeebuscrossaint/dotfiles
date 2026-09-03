@@ -4,6 +4,7 @@ import Quickshell.Io
 import qs.Config
 import qs.Widgets
 import qs.Services
+import qs.Services
 
 // The  menu, in Tux's clothing: machine identity at the top, session and power
 // actions below.
@@ -123,7 +124,10 @@ Popover {
 			label: "Log Out"
 			onTriggered: {
 				menu.close();
-				Quickshell.execDetached(["hyprctl", "dispatch", "exit"]);
+				// Through the Lua dispatcher, not `hyprctl dispatch exit`:
+				// this config is Lua, so a bare dispatcher name is parsed as
+				// Lua source and fails silently.
+				Hypr.lua("hl.dsp.exit()");
 			}
 		}
 
