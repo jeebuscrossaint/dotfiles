@@ -83,10 +83,34 @@ cage -- qs -p /etc/greetd/greeter.qml     # opens as a window; greetd is absent,
 
 ## Enable at boot
 
+`install.fish --greeter-enable` picks the right one of these by init.
+
+### runit (Artix)
+
 ```sh
 sudo ln -s /etc/runit/sv/greetd /etc/runit/runsvdir/default/
 sudo rm /etc/runit/runsvdir/default/agetty-tty1
 ```
+
+### systemd (Arch)
+
+```sh
+sudo systemctl enable greetd.service
+```
+
+The packaged unit declares `Conflicts=getty@tty1.service`, so there is nothing
+to delete -- and nothing to restore on the way out, which is why backing this
+one out is a single `systemctl disable --now greetd`.
+
+`sv/greetd/run` has no systemd equivalent to install: greetd's unit is the
+package's. The one thing that script does besides `exec greetd` is create
+`/run/greeter` as root before privileges drop, so that job moves to
+`/etc/tmpfiles.d/greeter.conf`.
+
+The fallback console is different too. There are no `agetty-tty2..6` services
+to keep enabled -- logind spawns a getty when you switch VT, so `Ctrl+Alt+F2`
+works unless `NAutoVTs=0` is set, which is the only thing the installer checks
+for here.
 
 Then reboot. **agetty-tty2 .. agetty-tty6 stay enabled**, and that is the whole
 safety net: if the greeter fails to come up, vt1 is blank but `Ctrl+Alt+F2` is
