@@ -167,14 +167,41 @@ Scope {
 							}
 						}
 
-						StyledText {
+						// App icon beside the title, the way macOS labels a
+						// thumbnail. A title alone is ambiguous the moment two
+						// windows of the same app are open -- and worse for
+						// terminals, where every title is the shell prompt.
+						Row {
 							anchors.bottom: parent.bottom
-							anchors.left: parent.left
-							anchors.right: parent.right
-							horizontalAlignment: Text.AlignHCenter
-							text: cell.modelData.title
-							color: cellHover.hovered ? Theme.fg : Theme.dim
-							font.pointSize: Theme.fontSize - 1
+							anchors.horizontalCenter: parent.horizontalCenter
+							width: Math.min(implicitWidth, cell.width)
+							spacing: 6
+
+							IconImage {
+								anchors.verticalCenter: parent.verticalCenter
+								implicitSize: 16
+								asynchronous: true
+								visible: source != ""
+								source: {
+									const ipc = cell.modelData.lastIpcObject;
+									// ipc["class"], never ipc.class -- `class` is
+									// a reserved word and dot access silently
+									// yields nothing.
+									const cls = ipc && ipc["class"] ? ipc["class"] : "";
+									if (cls === "")
+										return "";
+									const entry = DesktopEntries.heuristicLookup(cls);
+									return Icons.resolve(entry ? entry.icon : cls);
+								}
+							}
+
+							StyledText {
+								anchors.verticalCenter: parent.verticalCenter
+								text: cell.modelData.title
+								elide: Text.ElideRight
+								color: cellHover.hovered ? Theme.fg : Theme.dim
+								font.pointSize: Theme.fontSize - 1
+							}
 						}
 
 						HoverHandler {
