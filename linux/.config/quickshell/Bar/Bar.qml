@@ -8,6 +8,7 @@ import Quickshell.Services.Mpris
 import Quickshell.Networking
 import qs.Config
 import qs.Widgets
+import qs.Services
 
 // The menu bar. Full width, thin, translucent, blurred -- deliberately one
 // surface rather than the row of separate island slabs waybar drew, because a
@@ -50,6 +51,10 @@ Scope {
 			if (ps[i].isPlaying)
 				return ps[i];
 		return ps.length > 0 ? ps[0] : null;
+	}
+
+	ControlCentre {
+		id: control
 	}
 
 	SystemClock {
@@ -100,7 +105,7 @@ Scope {
 				onClicked: Quickshell.execDetached(["qs", "ipc", "call", "spotlight", "toggle"])
 
 				StyledText {
-					text: ""
+					text: ""
 					font.family: Theme.fontMono
 					font.pointSize: Theme.fontSize + 1
 					color: Theme.fg
@@ -230,6 +235,28 @@ Scope {
 						text: bar.battery ? Math.round(bar.battery.percentage * 100) + "%" : ""
 						color: Theme.fg
 					}
+				}
+			}
+
+			StatusItem {
+				visible: Sys.weather.length > 0
+				interactive: false
+
+				StyledText {
+					// wttrbar's own indicator string, unchanged from waybar.
+					text: Sys.weather
+					font.family: Theme.fontMono
+					color: Theme.fg
+				}
+			}
+
+			StatusItem {
+				onClicked: control.open = !control.open
+
+				StyledText {
+					text: ""
+					font.family: Theme.fontMono
+					color: control.open ? Theme.accent : Theme.fg
 				}
 			}
 
