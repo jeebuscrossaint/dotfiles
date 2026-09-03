@@ -5,6 +5,7 @@ import Quickshell.Hyprland
 import Quickshell.Services.Pipewire
 import Quickshell.Services.UPower
 import Quickshell.Services.Mpris
+import Quickshell.Bluetooth
 import Quickshell.Networking
 import qs.Config
 import qs.Widgets
@@ -118,6 +119,14 @@ Scope {
 
 	WeatherPanel {
 		id: forecast
+	}
+
+	NetworkMenu {
+		id: wifiMenu
+	}
+
+	BluetoothMenu {
+		id: btMenu
 	}
 
 	SystemMenu {
@@ -243,7 +252,7 @@ Scope {
 			}
 
 			StatusItem {
-				onClicked: Quickshell.execDetached({ command: ["kitty", "nmtui"], workingDirectory: Quickshell.env("HOME") })
+				onClicked: wifiMenu.open = !wifiMenu.open
 
 				StyledText {
 					text: {
@@ -256,6 +265,31 @@ Scope {
 					}
 					font.family: Theme.fontMono
 					color: bar.netDevice ? Theme.fg : Theme.dim
+				}
+			}
+
+			StatusItem {
+				visible: Bluetooth.defaultAdapter !== null
+				onClicked: btMenu.open = !btMenu.open
+
+				StyledText {
+					text: {
+						const a = Bluetooth.defaultAdapter;
+						if (!a || !a.enabled)
+							return "󰂲";
+						const ds = Bluetooth.devices.values;
+						for (let i = 0; i < ds.length; i++)
+							if (ds[i].connected)
+								return "󰂱";
+						return "󰂯";
+					}
+					font.family: Theme.fontMono
+					color: {
+						const a = Bluetooth.defaultAdapter;
+						if (!a || !a.enabled)
+							return Theme.dim;
+						return btMenu.open ? Theme.accent : Theme.fg;
+					}
 				}
 			}
 
