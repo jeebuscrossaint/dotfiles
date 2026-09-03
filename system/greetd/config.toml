@@ -1,0 +1,20 @@
+# greetd, hosting the Quickshell greeter.
+#
+# Install to /etc/greetd/config.toml. See INSTALL.md in this directory -- the
+# ordering matters, because a greeter that fails to start on vt1 with no agetty
+# behind it is a machine you cannot log into.
+
+[terminal]
+# vt1, where agetty-tty1 normally sits. Disable that service or they fight over
+# the console.
+vt = 1
+
+[default_session]
+# cage is a one-window kiosk compositor; it exists to host exactly this. -s
+# enables client-side scaling; -m last keeps the greeter on the last-used output
+# rather than mirroring.
+#
+# `qs -p <file>` runs a single-file Quickshell config. The greeter has to live
+# somewhere world-readable: greetd runs it as `greeter`, and $HOME here is 700.
+command = "cage -s -m last -- qs -p /etc/greetd/greeter.qml"
+user = "greeter"

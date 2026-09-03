@@ -1,0 +1,4 @@
+#!/bin/sh
+# runit service for greetd. Install to /etc/runit/sv/greetd/run, chmod +x.
+exec 2>&1
+exec greetd
