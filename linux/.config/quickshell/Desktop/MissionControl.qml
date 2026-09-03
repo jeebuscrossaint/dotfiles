@@ -34,7 +34,7 @@ Scope {
 
 	function focusWindow(top: var): void {
 		mission.open = false;
-		Hypr.dispatch("focuswindow address:" + top.address);
+		Hypr.focusWindow(top.address);
 	}
 
 	IpcHandler {

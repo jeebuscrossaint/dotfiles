@@ -14,7 +14,7 @@ Row {
 
 	WheelHandler {
 		// e+1 / e-1, exactly what the waybar module bound to scroll.
-		onWheel: event => Hypr.dispatch(event.angleDelta.y > 0 ? "workspace e+1" : "workspace e-1")
+		onWheel: event => Hypr.focusWorkspace(event.angleDelta.y > 0 ? "e+1" : "e-1")
 	}
 
 	Repeater {
@@ -44,7 +44,7 @@ Row {
 			}
 
 			TapHandler {
-				onTapped: Hypr.dispatch("workspace " + modelData.id)
+				onTapped: Hypr.focusWorkspace(modelData.id)
 			}
 		}
 	}
