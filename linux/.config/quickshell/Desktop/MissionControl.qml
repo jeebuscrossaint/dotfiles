@@ -64,16 +64,22 @@ Scope {
 		WlrLayershell.keyboardFocus: mission.open ? WlrKeyboardFocus.Exclusive : WlrKeyboardFocus.None
 		exclusionMode: ExclusionMode.Ignore
 
-		Rectangle {
+		Item {
 			id: backdrop
 
 			anchors.fill: parent
-			// Heavy. macOS dims the desktop hard behind Mission Control, and at
-			// 0.55 the terminal text underneath was still perfectly readable --
-			// which makes the thumbnails compete with it instead of replacing it.
-			color: Theme.withBg(0.82)
 			opacity: mission.open ? 1 : 0
 			focus: true
+
+			// A blurred copy of the wallpaper, drawn here rather than by the
+			// compositor: Hyprland's layer blur does not reach a fullscreen
+			// layer, which is why this used to be a flat 0.82 scrim with the
+			// desktop still legible through it.
+			BlurredWallpaper {
+				anchors.fill: parent
+				amount: 1
+				dim: -0.35
+			}
 
 			Behavior on opacity {
 				NumberAnimation {
@@ -101,8 +107,17 @@ Scope {
 			Grid {
 				id: grid
 
+				// Cells are capped, not just divided. With two windows open a
+				// pure division gave 1200px thumbnails -- technically correct and
+				// nothing like Mission Control, which keeps them modest however
+				// few there are. The grid then sizes to its content so it stays
+				// centred instead of hugging the left edge.
+				readonly property int maxCell: 520
+				readonly property int available: parent.width - 120
+				readonly property int cellW: Math.min(grid.maxCell, (grid.available - (mission.columns - 1) * 24) / mission.columns)
+
 				anchors.centerIn: parent
-				width: parent.width - 120
+				width: mission.columns * grid.cellW + (mission.columns - 1) * 24
 				columns: mission.columns
 				spacing: 24
 
@@ -114,7 +129,7 @@ Scope {
 
 						required property var modelData
 
-						readonly property real cellW: (grid.width - (grid.columns - 1) * grid.spacing) / grid.columns
+						readonly property real cellW: grid.cellW
 
 						width: cell.cellW
 						// 16:10, matching the panel, so thumbnails do not letterbox

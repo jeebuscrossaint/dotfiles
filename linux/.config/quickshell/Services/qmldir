@@ -5,3 +5,4 @@ singleton Frecency 1.0 Frecency.qml
 singleton Hypr 1.0 Hypr.qml
 singleton Todo 1.0 Todo.qml
 singleton Wifi 1.0 Wifi.qml
+singleton Wallpaper 1.0 Wallpaper.qml
