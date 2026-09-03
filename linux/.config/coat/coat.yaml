@@ -52,3 +52,14 @@ font:
     terminal: 10
     desktop: 10
     popups: 10
+
+# Per-app overrides of the blocks above. Only the keys listed are replaced;
+# everything else falls through, so an override is a patch, not a second config.
+overrides:
+  # A UI drawn in a monospace font never reads right, and macOS uses SF Pro for
+  # chrome with SF Mono kept for code. That distinction cannot be expressed
+  # globally -- there is one `sansserif` key and the terminal has to stay on SF
+  # Mono -- which is exactly what this block is for.
+  quickshell:
+    font:
+      sansserif: "SFProText Nerd Font"
