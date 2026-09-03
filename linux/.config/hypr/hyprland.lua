@@ -27,7 +27,37 @@ local mod = "SUPER"
 -- 13.7) in Hybrid MUX with the dGPU asleep, which is real but not worth a panel
 -- that visibly changes character every time the charger moves. Do not reinstate
 -- it as an optimisation.
-hl.monitor({ output = "eDP-1", mode = "2560x1600@240", position = "0x0", scale = 1, bitdepth = 10 })
+-- HDR. The panel does support it, and the EDID is a red herring: its DisplayID
+-- 2.0 block advertises no colour-space/EOTF combination at all, so parsing the
+-- EDID says "no HDR". The DRM connector says otherwise, which is what counts --
+-- aquamarine logs it at startup:
+--
+--   drm: connector eDP-1 crtc supports HDR (8)
+--   drm: connector eDP-1 crtc supports Colorspace (514)
+--
+-- render:cm_enabled and render:cm_auto_hdr are already on by default in 0.56,
+-- and auto_hdr means the output only switches into HDR when a surface actually
+-- asks for it -- the desktop stays SDR the rest of the time, so this is not a
+-- permanent change in how everything looks.
+--
+-- sdr_max_luminance is the one that matters. It is what SDR white maps to once
+-- the output IS in HDR mode, and the default of 80 nits is why Linux HDR is
+-- famous for looking washed out and dim: the whole desktop drops to 80 nits the
+-- moment a video goes HDR. 220 is in the right region for a DisplayHDR True
+-- Black panel; raise it if SDR still looks flat next to HDR content.
+--
+-- bitdepth 10 is NOT hdr and never was: that is precision (1024 steps per
+-- channel instead of 256), not transfer function or gamut. It was already set.
+hl.monitor({
+	output = "eDP-1",
+	mode = "2560x1600@240",
+	position = "0x0",
+	scale = 1,
+	bitdepth = 10,
+	supports_hdr = true,
+	sdr_max_luminance = 220,
+	sdr_min_luminance = 0.0,
+})
 hl.monitor({ output = "HDMI-A-1", mode = "3840x2160@30", position = "2560x0", scale = 1, bitdepth = 10 })
 hl.monitor({ output = "", mode = "preferred", position = "auto", scale = "auto" })
 
