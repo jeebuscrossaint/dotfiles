@@ -240,7 +240,7 @@ hl.config({
 	general = {
 		border_size = 1,
 		gaps_in = 25,
-		gaps_out = 15,
+		gaps_out = 25,
 		layout = "dwindle",
 		resize_on_border = true,
 		col = {
@@ -255,7 +255,7 @@ hl.config({
 	dwindle = { preserve_split = false },
 
 	decoration = {
-		rounding = 10,
+		rounding = 20,
 		-- Squircle: 2.0 is a circular arc, higher is a superellipse.
 		rounding_power = 4.0,
 		active_opacity = 1.0,
@@ -287,8 +287,8 @@ hl.config({
 			-- whole gutter, which is why it read as mud instead of as a shadow, and
 			-- why it needed gaps nobody wants. This is what the rices actually run:
 			-- range 15-30, power 2-3, small or no offset.
-			range = 24,
-			render_power = 3,
+			range = 30,
+			render_power = 2,
 			-- Enough drop to lift the window off the wallpaper without implying a
 			-- light source the rest of the theme does not have.
 			offset = "0 0",
