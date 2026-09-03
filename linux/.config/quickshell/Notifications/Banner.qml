@@ -143,6 +143,49 @@ Card {
 			}
 		}
 
+		// Action buttons, when the client offers any. The server advertises
+		// actionsSupported now, so these arrive instead of being dropped -- and
+		// a notification that says "Reply" with no way to reply is worse than
+		// one that never mentioned it.
+		Row {
+			width: parent.width
+			spacing: 6
+			visible: banner.notif.actions.length > 0
+
+			Repeater {
+				model: banner.notif.actions
+
+				Rectangle {
+					required property var modelData
+
+					implicitWidth: label.implicitWidth + 18
+					implicitHeight: 24
+					radius: 6
+					color: press.hovered ? Theme.accent : Theme.withFg(0.12)
+
+					StyledText {
+						id: label
+
+						anchors.centerIn: parent
+						text: modelData.text
+						font.pointSize: Theme.fontSize - 1
+						color: press.hovered ? Theme.bg : Theme.fg
+					}
+
+					HoverHandler {
+						id: press
+					}
+
+					TapHandler {
+						onTapped: {
+							modelData.invoke();
+							banner.dismiss();
+						}
+					}
+				}
+			}
+		}
+
 		// Level meter for the OSD.
 		Rectangle {
 			width: parent.width

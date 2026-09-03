@@ -2,6 +2,7 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 import qs.Config
+import qs.Services
 import "Search.js" as Search
 
 // Everything the launcher can find, assembled into sections.
@@ -89,11 +90,31 @@ Item {
 		return out;
 	}
 
+	// Empty query is not empty any more: macOS shows top hits rather than a bare
+	// field, and once launches are being counted there is something to show.
+	readonly property bool topHits: results.term.length === 0 && !results.runMode && !results.fileMode && !results.clipMode && !results.calcMode
+
 	readonly property var appRows: {
 		if (results.runMode || results.fileMode || results.clipMode || results.calcMode)
 			return [];
 
-		const hits = Search.rank(results.appItems, results.term);
+		let hits;
+		if (results.topHits) {
+			const wanted = Frecency.top(6);
+			hits = [];
+			for (let w = 0; w < wanted.length; w++)
+				for (let i = 0; i < results.appItems.length; i++)
+					if (results.appItems[i].name === wanted[w]) {
+						hits.push(results.appItems[i]);
+						break;
+					}
+		} else {
+			// Frecency is a BONUS on the fuzzy score, not a replacement for it:
+			// typing "fi" should favour the browser opened twenty times a day
+			// over a settings panel that matches better on paper, without ever
+			// floating an unrelated favourite above an exact match.
+			hits = Search.rank(results.appItems, results.term, item => Frecency.score(item.name));
+		}
 		const out = [];
 		for (let i = 0; i < Math.min(hits.length, 8); i++) {
 			const hit = hits[i];
@@ -103,6 +124,7 @@ Item {
 				icon: hit.entry.icon,
 				glyph: "",
 				run: function () {
+					Frecency.bump(hit.name);
 					results.launch(hit.action ? hit.action.command : hit.entry.command, hit.entry);
 				}
 			});
@@ -149,7 +171,7 @@ Item {
 		}
 
 		if (results.appRows.length > 0)
-			out.push({ title: "Applications", rows: results.appRows });
+			out.push({ title: results.topHits ? "Top Hits" : "Applications", rows: results.appRows });
 
 		if (results.fileRows.length > 0)
 			out.push({ title: "Files", rows: results.fileRows });

@@ -68,15 +68,21 @@ function best(query, entry) {
 	return top;
 }
 
-function rank(entries, query) {
+// `bonus` is optional and returns extra score for an entry -- frecency, in
+// practice. It is added rather than multiplied so it can nudge ties without
+// overturning a clearly better textual match.
+function rank(entries, query, bonus) {
 	if (!query) return [];
 
 	const scored = [];
 	for (let i = 0; i < entries.length; i++) {
 		const entry = entries[i];
 		if (entry.noDisplay) continue;
-		const s = best(query, entry);
-		if (s >= 0) scored.push({ entry: entry, score: s });
+		let s = best(query, entry);
+		if (s >= 0) {
+			if (bonus) s += bonus(entry);
+			scored.push({ entry: entry, score: s });
+		}
 	}
 
 	scored.sort(function (a, b) {
