@@ -77,9 +77,12 @@ Scope {
 			readonly property int rowTop: 160
 			readonly property int rowBottom: 200
 
-			Column {
+			Row {
 				anchors.centerIn: parent
 				spacing: 16
+
+				Column {
+					spacing: 16
 
 				Grid {
 					columns: 3
@@ -330,6 +333,107 @@ Scope {
 										else
 											History.dnd = !History.dnd;
 									}
+								}
+							}
+						}
+					}
+				}
+				}
+
+				// Tall, because a list wants height -- a 320x160 tile would show
+				// three of these and hide the rest.
+				Card {
+					width: backdrop.cellW
+					height: backdrop.rowTop + backdrop.rowBottom + 16 + 62 + 16
+					color: backdrop.cardColour
+
+					Column {
+						anchors.left: parent.left
+						anchors.right: parent.right
+						anchors.top: parent.top
+						anchors.margins: Style.padding
+						spacing: 3
+
+						Item {
+							width: parent.width
+							height: 20
+
+							StyledText {
+								anchors.left: parent.left
+								text: "Todo"
+								font.weight: Font.DemiBold
+							}
+
+							StyledText {
+								anchors.right: parent.right
+								text: Todo.remaining + " left"
+								color: Theme.dim
+								font.pointSize: Theme.fontSize - 1
+							}
+						}
+
+						Rectangle {
+							width: parent.width
+							height: Style.hairline
+							color: Theme.hairline
+						}
+
+						Item {
+							width: 1
+							height: 3
+						}
+
+						Repeater {
+							model: Todo.items
+
+							Item {
+								id: row
+
+								required property int index
+								required property var modelData
+
+								width: parent.width
+								implicitHeight: Math.max(20, label.implicitHeight + 6)
+
+								Rectangle {
+									id: box
+
+									anchors.left: parent.left
+									anchors.top: parent.top
+									anchors.topMargin: 3
+									width: 13
+									height: 13
+									radius: 6.5
+									color: row.modelData.done ? Theme.accent : "transparent"
+									border.width: 1
+									border.color: row.modelData.done ? Theme.accent : Theme.dim
+
+									StyledText {
+										anchors.centerIn: parent
+										visible: row.modelData.done
+										text: "✓"
+										color: Theme.bg
+										font.pointSize: Theme.fontSize - 4
+									}
+								}
+
+								StyledText {
+									id: label
+
+									anchors.left: box.right
+									anchors.leftMargin: 7
+									anchors.right: parent.right
+									text: row.modelData.text
+									wrapMode: Text.Wrap
+									font.pointSize: Theme.fontSize - 1
+									color: row.modelData.done ? Theme.dim : Theme.fg
+									// Struck through when done, which is the one
+									// affordance that reads without a legend.
+									font.strikeout: row.modelData.done
+								}
+
+								TapHandler {
+									onTapped: Todo.toggle(row.index)
 								}
 							}
 						}
