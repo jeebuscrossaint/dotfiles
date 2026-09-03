@@ -11,6 +11,7 @@ Item {
 	property bool interactive: true
 
 	signal clicked
+	signal scrolled(real delta)
 
 	implicitWidth: inner.childrenRect.width + Style.gap * 2
 	// A fixed height, NOT parent.height. Taking it from the Row makes the Row's
@@ -44,5 +45,13 @@ Item {
 	TapHandler {
 		enabled: item.interactive
 		onTapped: item.clicked()
+	}
+
+	WheelHandler {
+		enabled: item.interactive
+		// Vertical only: a horizontal flick on a trackpad should not change the
+		// volume by accident.
+		acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad
+		onWheel: event => item.scrolled(event.angleDelta.y)
 	}
 }

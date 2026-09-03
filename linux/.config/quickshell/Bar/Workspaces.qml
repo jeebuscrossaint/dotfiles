@@ -11,6 +11,11 @@ Row {
 	spacing: 6
 	anchors.verticalCenter: parent.verticalCenter
 
+	WheelHandler {
+		// e+1 / e-1, exactly what the waybar module bound to scroll.
+		onWheel: event => Hyprland.dispatch(event.angleDelta.y > 0 ? "workspace e+1" : "workspace e-1")
+	}
+
 	Repeater {
 		model: Hyprland.workspaces
 
