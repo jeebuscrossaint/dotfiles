@@ -144,7 +144,7 @@ Item {
 						title: results.term,
 						subtitle: "Run in a shell",
 						icon: "",
-						glyph: "",
+						glyph: "",
 						run: function () {
 							results.exec(["sh", "-c", results.term]);
 						}
@@ -161,7 +161,7 @@ Item {
 						title: results.calcAnswer,
 						subtitle: "Return to copy",
 						icon: "",
-						glyph: "",
+						glyph: "",
 						run: function () {
 							results.exec(["wl-copy", "--", results.calcAnswer]);
 						}
@@ -189,7 +189,7 @@ Item {
 						title: "Search the web for “" + results.term + "”",
 						subtitle: "duckduckgo.com",
 						icon: "",
-						glyph: "",
+						glyph: "",
 						run: function () {
 							results.exec(["xdg-open", "https://duckduckgo.com/?q=" + encodeURIComponent(results.term)]);
 						}
@@ -301,7 +301,7 @@ Item {
 					title: path.split("/").pop(),
 					subtitle: path.replace(Quickshell.env("HOME"), "~"),
 					icon: "",
-					glyph: "",
+					glyph: "",
 					run: function () {
 						results.exec(["xdg-open", path]);
 					}
@@ -345,7 +345,7 @@ Item {
 					title: hit.name,
 					subtitle: "Copy to clipboard",
 					icon: "",
-					glyph: "",
+					glyph: "",
 					run: function () {
 						results.exec(["sh", "-c", "cliphist decode " + hit.id + " | wl-copy"]);
 					}
