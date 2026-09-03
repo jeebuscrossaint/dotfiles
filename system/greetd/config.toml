@@ -23,14 +23,23 @@ vt = 1
 # so anything Quickshell wants to cache or write state to would land in an
 # unwritable place.
 #
-# cage is a one-window kiosk compositor; it exists to host exactly this. -s
-# enables client-side scaling, -m last keeps the greeter on the last-used output
-# rather than mirroring.
+# cage is a one-window kiosk compositor; it exists to host exactly this.
+#
+#   -d  do not draw client side decorations. The greeter is an xdg-toplevel
+#       (cage has no layer-shell), and without this Qt decorated itself -- a
+#       white frame and a "quickshell" titlebar across a login screen.
+#   -s  allow VT switching, so Ctrl+Alt+F2 still reaches a text console from
+#       the login screen. That is the escape hatch; do not drop it.
+#   -m last  use the last connected output rather than extending across all.
+#
+# QT_WAYLAND_DISABLE_WINDOWDECORATION belongs with -d rather than instead of
+# it: -d asks cage to advertise server-side decorations, the env var tells Qt
+# not to draw its own regardless.
 #
 # `qs -p <file>` runs a single-file Quickshell config. The greeter has to live
 # somewhere world-readable, since $HOME here is 700.
 # stderr goes to a log because greetd swallows it: all you get on failure is
 # "greeter exited without creating a session", which says nothing about why.
 # /run/greeter is a tmpfs, so this is not a file that accumulates.
-command = "sh -c 'export XDG_RUNTIME_DIR=/run/greeter HOME=/run/greeter XDG_CACHE_HOME=/run/greeter/cache XDG_STATE_HOME=/run/greeter/state; exec cage -s -m last -- qs -p /etc/greetd/greeter.qml >/run/greeter/session.log 2>&1'"
+command = "sh -c 'export XDG_RUNTIME_DIR=/run/greeter HOME=/run/greeter XDG_CACHE_HOME=/run/greeter/cache XDG_STATE_HOME=/run/greeter/state QT_WAYLAND_DISABLE_WINDOWDECORATION=1; exec cage -d -s -m last -- qs -p /etc/greetd/greeter.qml >/run/greeter/session.log 2>&1'"
 user = "greeter"
