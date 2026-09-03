@@ -238,7 +238,7 @@ local shadow_inactive = (c.shadow:gsub("%x%x%)$", "38)"))
 
 hl.config({
 	general = {
-		border_size = 0,
+		border_size = 1,
 		gaps_in = 25,
 		gaps_out = 15,
 		layout = "dwindle",
@@ -427,7 +427,6 @@ hl.window_rule({ name = "pip-pin", match = { title = "Picture-in-Picture" }, pin
 -- no `fade` window style to ask for. Tiled windows keep the slide, which is what
 -- makes them read as pushing each other; a float has nothing to push.
 hl.window_rule({ name = "float-fade", match = { float = true }, animation = "popin 100%" })
-
 
 -- Blur only the surfaces meant to read as glass. Every qs-* namespace is one:
 -- the shell paints translucent surfaces and relies on the compositor to frost

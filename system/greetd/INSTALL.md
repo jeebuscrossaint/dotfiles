@@ -17,6 +17,14 @@ them, and do not do this over SSH-only access.
 
 ## Install
 
+`install.fish --greeter` does all of this, and `install.fish --greeter --greeter-enable`
+does the enable step too. It refuses to enable over SSH or with no `agetty-tty2..6`
+left, and it substitutes the current `$USER` into the installed copy of
+`greeter.qml` -- the account in the repo copy is this machine's, and the greeter
+cannot ask, since it runs before anyone has logged in.
+
+The rest of this file is what the flag does, and why each step is there.
+
 ```sh
 sudo pacman -S --needed cage
 
