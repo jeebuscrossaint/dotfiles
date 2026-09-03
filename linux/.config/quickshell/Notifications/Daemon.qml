@@ -10,6 +10,30 @@ import qs.Config
 Scope {
 	id: root
 
+	// osd(1) notifications are pulled out of the banner stack and drawn as a
+	// centred HUD instead. Matching on app_name is why the osd script needed no
+	// change at all -- it has always passed `-a osd`.
+	readonly property var osdNotif: {
+		const all = server.trackedNotifications.values;
+		for (let i = 0; i < all.length; i++)
+			if (all[i].appName === "osd")
+				return all[i];
+		return null;
+	}
+
+	readonly property var banners: {
+		const out = [];
+		const all = server.trackedNotifications.values;
+		for (let i = 0; i < all.length; i++)
+			if (all[i].appName !== "osd")
+				out.push(all[i]);
+		return out;
+	}
+
+	Hud {
+		notif: root.osdNotif
+	}
+
 	NotificationServer {
 		id: server
 
@@ -33,7 +57,7 @@ Scope {
 	PanelWindow {
 		id: win
 
-		visible: server.trackedNotifications.values.length > 0
+		visible: root.banners.length > 0
 
 		anchors.top: true
 		anchors.right: true
@@ -68,7 +92,7 @@ Scope {
 			spacing: Style.notifSpacing
 
 			Repeater {
-				model: server.trackedNotifications
+				model: root.banners
 
 				Banner {
 					required property var modelData

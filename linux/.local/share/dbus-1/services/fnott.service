@@ -1,0 +1,18 @@
+# Mask fnott's D-Bus activation.
+#
+# fnott ships /usr/share/dbus-1/services/fnott.service, so org.freedesktop.
+# Notifications is an ACTIVATABLE name: any notify-send sent while the shell is
+# not holding the bus starts fnott, and fnott then keeps it. Killing fnott is not
+# enough -- it came back three separate times during the migration, each time
+# silently taking notifications away from the shell mid-session.
+#
+# A file of the same name under ~/.local/share/dbus-1/services wins over the
+# system one. Pointing Exec at /bin/false makes activation fail cleanly instead
+# of starting a second notification daemon; the shell registers the name itself
+# at startup, so the only window this covers is the gap while it restarts.
+#
+# Delete this once `pacman -Rns fnott` has actually happened -- at that point the
+# system file is gone and this is just confusing.
+[D-BUS Service]
+Name=org.freedesktop.Notifications
+Exec=/bin/false
