@@ -19,18 +19,52 @@ Scope {
 	// The focused window's APP, not its title. macOS puts the application name
 	// in bold at the left and leaves the document name to the window itself;
 	// a 60-character title bar is the thing that never looks right.
-	readonly property var activeEntry: {
+	// `wayland` is null for XWayland windows -- Minecraft focused showed
+	// "Desktop" -- so the class comes from Hyprland's own IPC object, which is
+	// populated for X11 and Wayland alike.
+	readonly property string activeClass: {
 		const top = Hyprland.activeToplevel;
-		if (!top || !top.wayland || !top.wayland.appId)
-			return null;
-		return DesktopEntries.heuristicLookup(top.wayland.appId);
+		if (!top)
+			return "";
+		if (top.wayland && top.wayland.appId)
+			return top.wayland.appId;
+		// ipc["class"], not ipc.class. `class` is a reserved word, and reading it
+		// with dot notation silently yields nothing here -- which looked exactly
+		// like Hyprland not reporting the window at all.
+		const ipc = top.lastIpcObject;
+		return ipc && ipc["class"] ? ipc["class"] : "";
 	}
+
+	readonly property var activeEntry: bar.activeClass === "" ? null : DesktopEntries.heuristicLookup(bar.activeClass)
 
 	readonly property string activeApp: {
 		if (bar.activeEntry)
 			return bar.activeEntry.name;
+		return bar.activeClass === "" ? "Desktop" : bar.activeClass;
+	}
+
+	// The focused window's title, with the app's own name trimmed off the end.
+	// Every toolkit appends it -- "README.md — Firefox Developer Edition" -- and
+	// with the app already shown in bold beside this, repeating it is noise.
+	// waybar did the same thing with a table of per-app rewrite rules; deriving
+	// it from the app name covers every app instead of the five that were listed.
+	readonly property string activeTitle: {
 		const top = Hyprland.activeToplevel;
-		return top && top.wayland ? top.wayland.appId : "Desktop";
+		if (!top || !top.title)
+			return "";
+
+		let title = top.title;
+		const app = bar.activeApp;
+		for (const sep of [" — ", " - ", " – "]) {
+			const tail = sep + app;
+			if (title.endsWith(tail)) {
+				title = title.substring(0, title.length - tail.length);
+				break;
+			}
+		}
+		if (title === app)
+			return "";
+		return title.length > 60 ? title.substring(0, 59) + "…" : title;
 	}
 
 	// Pipewire hands out node objects but does not keep their audio data live
@@ -43,6 +77,27 @@ Scope {
 	readonly property var sink: Pipewire.defaultAudioSink
 	readonly property bool muted: bar.sink && bar.sink.audio ? bar.sink.audio.muted : false
 	readonly property int volume: bar.sink && bar.sink.audio ? Math.round(bar.sink.audio.volume * 100) : 0
+
+	// Networking.devices, not the Network type. `Network` describes a single
+	// network, and reading `.connected` off the type itself reported offline
+	// forever on a machine that was plainly connected.
+	readonly property var netDevice: {
+		const ds = Networking.devices.values;
+		for (let i = 0; i < ds.length; i++)
+			if (ds[i].connected)
+				return ds[i];
+		return null;
+	}
+
+	readonly property var wifi: {
+		if (!bar.netDevice || bar.netDevice.type !== DeviceType.Wifi)
+			return null;
+		const ns = bar.netDevice.networks.values;
+		for (let i = 0; i < ns.length; i++)
+			if (ns[i].connected)
+				return ns[i];
+		return null;
+	}
 
 	readonly property var battery: UPower.displayDevice
 	readonly property var player: {
@@ -137,6 +192,16 @@ Scope {
 				}
 			}
 
+			StatusItem {
+				interactive: false
+				visible: bar.activeTitle.length > 0
+
+				StyledText {
+					text: bar.activeTitle
+					color: Theme.dim
+				}
+			}
+
 			Item {
 				width: Style.gap
 				height: 1
@@ -165,43 +230,62 @@ Scope {
 					text: {
 						if (!bar.player)
 							return "";
-						const t = bar.player.trackTitle;
 						const glyph = bar.player.isPlaying ? "󰎈" : "󰏤";
-						return glyph + "  " + (t.length > 34 ? t.substring(0, 33) + "…" : t);
+						// artist then title, and elided as one string rather than
+						// per-field, so a long artist does not push the title out
+						// entirely.
+						const artist = bar.player.trackArtist;
+						const label = artist.length > 0 ? artist + " - " + bar.player.trackTitle : bar.player.trackTitle;
+						return glyph + "  " + (label.length > 38 ? label.substring(0, 37) + "…" : label);
 					}
 					color: bar.player && bar.player.isPlaying ? Theme.fg : Theme.dim
 				}
 			}
 
 			StatusItem {
-				interactive: false
+				onClicked: Quickshell.execDetached({ command: ["kitty", "nmtui"], workingDirectory: Quickshell.env("HOME") })
 
 				StyledText {
 					text: {
-						if (!Network.connected)
-							return "󰤮";
-						return Network.device && Network.device.type === DeviceType.Ethernet ? "󰈀" : "󰖩";
+						if (!bar.netDevice)
+							return "󰤮 offline";
+						const wired = bar.netDevice.type === DeviceType.Ethernet;
+						const glyph = wired ? "󰈀" : "󰖩";
+						const who = bar.wifi ? " " + bar.wifi.name + " " + Math.round(bar.wifi.signalStrength * (bar.wifi.signalStrength <= 1 ? 100 : 1)) + "%" : "";
+						return glyph + who + "  󰇚 " + Sys.rate(Sys.netDown) + " 󰕒 " + Sys.rate(Sys.netUp);
 					}
 					font.family: Theme.fontMono
-					color: Network.connected ? Theme.fg : Theme.dim
+					color: bar.netDevice ? Theme.fg : Theme.dim
 				}
 			}
 
 			StatusItem {
 				onClicked: Quickshell.execDetached(["osd", "volume", "mute"])
+				// Through osd, not straight at the Pipewire node: osd owns the
+				// step size, the 150% ceiling and the HUD, and a second path to
+				// the same setting would disagree with all three.
+				onScrolled: delta => Quickshell.execDetached(["osd", "volume", delta > 0 ? "up" : "down"])
 
 				StyledText {
 					text: {
 						if (bar.muted)
-							return "󰝟";
-						if (bar.volume < 34)
-							return "󰕿";
-						if (bar.volume < 67)
-							return "󰖀";
-						return "󰕾";
+							return "󰝟 muted";
+						const glyph = bar.volume < 34 ? "󰕿" : (bar.volume < 67 ? "󰖀" : "󰕾");
+						return glyph + " " + bar.volume + "%";
 					}
 					font.family: Theme.fontMono
 					color: bar.muted ? Theme.dim : Theme.fg
+				}
+			}
+
+			StatusItem {
+				onClicked: control.open = !control.open
+				onScrolled: delta => Quickshell.execDetached(["osd", "brightness", delta > 0 ? "up" : "down"])
+
+				StyledText {
+					text: "󰃠 " + Math.round(Sys.brightness * 100) + "%"
+					font.family: Theme.fontMono
+					color: Theme.fg
 				}
 			}
 
@@ -247,7 +331,20 @@ Scope {
 
 					StyledText {
 						anchors.verticalCenter: parent.verticalCenter
-						text: bar.battery ? Math.round(bar.battery.percentage * 100) + "%" : ""
+						text: {
+							if (!bar.battery)
+								return "";
+							let out = Math.round(bar.battery.percentage * 100) + "%";
+							// changeRate is signed by direction; the sign is
+							// already carried by the charging glyph.
+							const watts = Math.abs(bar.battery.changeRate);
+							if (watts > 0.05)
+								out += " " + watts.toFixed(1) + "W";
+							const secs = bar.battery.state === UPowerDeviceState.Charging ? bar.battery.timeToFull : bar.battery.timeToEmpty;
+							if (secs > 0)
+								out += " " + Math.floor(secs / 3600) + "h" + Math.floor((secs % 3600) / 60) + "m";
+							return out;
+						}
 						color: Theme.fg
 					}
 				}
@@ -280,7 +377,7 @@ Scope {
 
 				StyledText {
 					// macOS order: weekday, month, day, then the time.
-					text: Qt.formatDateTime(clock.date, "ddd d MMM  h:mm AP")
+					text: Qt.formatDateTime(clock.date, "ddd d MMM  h:mm:ss AP")
 					color: notifications.open ? Theme.accent : Theme.fg
 				}
 			}

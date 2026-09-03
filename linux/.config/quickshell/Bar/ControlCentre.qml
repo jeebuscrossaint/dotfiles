@@ -103,26 +103,40 @@ Popover {
 
 		Meter {
 			width: parent.width
-			label: "CPU"
+			label: "CPU  " + Sys.freqAvg.toFixed(1) + " GHz avg, " + Sys.freqMax.toFixed(1) + " peak"
 			value: Math.round(Sys.cpu) + "%  " + Sys.temperature + "°"
 			fill: Sys.cpu / 100
+			// waybar's temperature module went critical at 90.
 			tint: Sys.temperature >= 90 ? Theme.error : Theme.accent
+
+			TapHandler {
+				onTapped: Quickshell.execDetached({ command: ["kitty", "btop"], workingDirectory: Quickshell.env("HOME") })
+			}
 		}
 
 		Meter {
 			width: parent.width
 			label: "Memory"
-			// Swap on the same line as RAM, the way the waybar module had
-			// it -- shown instead of RAM is the mistake that format-swap
-			// makes, and it is why that module spelled it out inline.
-			value: Sys.memUsedGiB.toFixed(1) + " / " + Sys.memTotalGiB.toFixed(0) + " GiB" + (Sys.swap >= 1 ? "   swap " + Math.round(Sys.swap) + "%" : "")
+			value: Sys.memUsedGiB.toFixed(1) + " / " + Sys.memTotalGiB.toFixed(0) + " GiB"
 			fill: Sys.memory / 100
+
+			TapHandler {
+				onTapped: Quickshell.execDetached({ command: ["kitty", "btop"], workingDirectory: Quickshell.env("HOME") })
+			}
 		}
 
 		Meter {
 			width: parent.width
-			label: "Disk"
-			value: Sys.diskFree
+			label: "Swap"
+			visible: Sys.swapTotalGiB > 0
+			value: Sys.swapUsedGiB.toFixed(1) + " / " + Sys.swapTotalGiB.toFixed(0) + " GiB"
+			fill: Sys.swap / 100
+		}
+
+		Meter {
+			width: parent.width
+			label: "Disk  " + Sys.diskFree
+			value: Sys.diskUsed
 			fill: Sys.disk / 100
 		}
 
@@ -138,9 +152,12 @@ Popover {
 
 			StyledText {
 				anchors.left: parent.left
-				text: Sys.fan
+				// NVMe runs far closer to its limit than the CPU does -- waybar
+				// gave it a 70 degree critical against the CPU's 90 -- and it had
+				// no home at all in the first version of this panel.
+				text: Sys.fan + (Sys.nvmeTemp > 0 ? "   󰋊 " + Sys.nvmeTemp + "°" : "")
 				font.family: Theme.fontMono
-				color: Theme.dim
+				color: Sys.nvmeTemp >= 70 ? Theme.error : Theme.dim
 				font.pointSize: Theme.fontSize - 1
 			}
 
@@ -151,6 +168,18 @@ Popover {
 				color: Theme.dim
 				font.pointSize: Theme.fontSize - 1
 			}
+		}
+
+		// Load gets its own line. On one row with the fan and the uptime the
+		// three ran into each other -- the whole point of a load average is that
+		// it is three numbers, and it is the widest thing in the panel.
+		StyledText {
+			width: parent.width
+			visible: Sys.load.length > 0
+			text: "load  " + Sys.load
+			font.family: Theme.fontMono
+			color: Theme.dim
+			font.pointSize: Theme.fontSize - 1
 		}
 	}
 }
