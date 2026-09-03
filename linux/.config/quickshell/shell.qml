@@ -4,6 +4,7 @@ import "Desktop"
 import "Dock"
 import "Launcher"
 import "Lock"
+import "Preview"
 import "Screenshot"
 import "Notifications"
 
@@ -20,6 +21,7 @@ ShellRoot {
 	Dock {}
 	Lock {}
 	Region {}
+	QuickLook {}
 	Spotlight {}
 	Picker {}
 	Daemon {}
