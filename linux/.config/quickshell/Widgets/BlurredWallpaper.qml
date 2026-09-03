@@ -37,6 +37,9 @@ Item {
 		// Hidden: MultiEffect draws it. Showing both would double the cost and
 		// paint the sharp copy over the blurred one.
 		visible: false
+		// And layer.enabled is what makes a hidden Image usable as an effect
+		// source at all -- without it MultiEffect has nothing to sample.
+		layer.enabled: true
 	}
 
 	MultiEffect {

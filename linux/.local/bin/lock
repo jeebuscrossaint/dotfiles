@@ -1,0 +1,22 @@
+#!/bin/sh
+# lock — engage the screen lock, whichever one is available.
+#
+# The Quickshell shell's lock when it is running, hyprlock otherwise. One script
+# so hypridle, idle-guard and the mod+L keybind cannot disagree about which
+# locker is in charge.
+#
+# The guard is not optional: the wlr session-lock protocol allows exactly ONE
+# lock client, so a manual lock on top of an idle lock used to produce two
+# password prompts stacked on each other. hyprlock is detectable with pgrep; the
+# shell's lock is not a separate process, so `qs ipc call lock lock` is written
+# to be idempotent -- calling it while already locked just resets the field.
+set -u
+
+# hyprlock already holds the session: leave it alone.
+pgrep -x hyprlock >/dev/null 2>&1 && exit 0
+
+if pgrep -x qs >/dev/null 2>&1; then
+	qs ipc call lock lock >/dev/null 2>&1 && exit 0
+fi
+
+exec hyprlock

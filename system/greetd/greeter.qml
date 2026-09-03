@@ -117,6 +117,8 @@ ShellRoot {
 			source: greeter.wallpapers[greeter.paperIndex]
 			fillMode: Image.PreserveAspectCrop
 			visible: false
+			// Required for MultiEffect to have anything to sample.
+			layer.enabled: true
 			// Walk the candidate list rather than showing a broken image.
 			onStatusChanged: {
 				if (status === Image.Error && greeter.paperIndex + 1 < greeter.wallpapers.length)
