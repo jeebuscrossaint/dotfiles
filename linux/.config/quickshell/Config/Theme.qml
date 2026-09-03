@@ -10,97 +10,155 @@ import Quickshell.Io
 // The file is JSON watched by a FileView rather than a generated QML singleton,
 // because QML source is only re-read on a full shell reload. This way `coat
 // apply` repaints a running shell mid-frame.
+//
+// Parsed BY HAND rather than through JsonAdapter, and that is the whole point of
+// this file working at all. With an adapter the initial read populates correctly
+// and a later reload does not: the file is re-read, the adapter is not
+// re-applied, and the theme silently never changes until the shell restarts.
+// That is exactly how it behaved -- an in-place edit of coat.json moved nothing,
+// while restarting picked it up. Todo and History always used manual parsing and
+// always worked live, which is what gave it away.
 Singleton {
 	id: root
 
-	// Semantic roles. Widgets use these; the raw slots below exist for the rare
-	// case that genuinely wants "the scheme's yellow" rather than "warning".
-	readonly property color bg: json.role.bg
-	readonly property color fg: json.role.fg
-	readonly property color dim: json.role.dim
-	readonly property color accent: json.role.accent
-	readonly property color error: json.role.error
-	readonly property color warning: json.role.warning
-	readonly property color success: json.role.success
+	// Defaults are a real, readable dark palette, not placeholders: they are
+	// what the shell runs on before coat has ever been applied, and on any
+	// machine where the file is missing or unparseable.
+	property color bg: "#16181d"
+	property color fg: "#c9ccd3"
+	property color dim: "#6b7280"
+	property color accent: "#7aa2f7"
+	property color error: "#f7768e"
+	property color warning: "#e0af68"
+	property color success: "#9ece6a"
 
-	readonly property bool isDark: json.scheme.isDark
-	readonly property string schemeName: json.scheme.name
+	property bool isDark: true
+	property string schemeName: "unthemed"
 
-	readonly property string fontSans: json.font.sans
-	readonly property string fontMono: json.font.mono
-	readonly property int fontSize: json.font.sizePopup
+	property string fontSans: "sans-serif"
+	property string fontMono: "monospace"
+	property int fontSize: 10
 
-	// Alpha over the background, precomputed as properties rather than exposed
-	// as a function: a binding onto a function call never re-evaluates when the
-	// scheme changes underneath it, so live retheming would silently stop
-	// working for every surface that used one.
+	// Kept as separate channels because Qt.rgba() takes floats, and rebuilding a
+	// translucent tint from a hex string on every binding is wasteful.
+	property int bgR: 22
+	property int bgG: 24
+	property int bgB: 29
+	property int fgR: 201
+	property int fgG: 204
+	property int fgB: 211
+
+	// Alpha over the background, as properties rather than function calls: a
+	// binding onto a function never re-evaluates when the scheme changes
+	// underneath it, so live retheming would stop working for every surface that
+	// used one.
 	//
 	// The alphas are rice constants and deliberately NOT coat's opacity knobs.
-	// Those are set to 1.0 in coat.yaml on purpose, and an opaque surface frosts
+	// Those are 1.0 in coat.yaml on purpose, and an opaque surface frosts
 	// nothing -- the compositor blur behind these panels needs something to show
-	// through. waybar's islands hardcode 0.85 for the same reason.
-	readonly property color surface: withBg(0.82)
-	readonly property color raised: withBg(0.55)
-	readonly property color hairline: withFg(0.10)
-	readonly property color scrim: withBg(0.35)
+	// through.
+	readonly property color surface: root.withBg(0.82)
+	readonly property color raised: root.withBg(0.55)
+	readonly property color hairline: root.withFg(0.10)
+	readonly property color scrim: root.withBg(0.35)
 
 	function withBg(a: real): color {
-		return Qt.rgba(json.bgRgb.r / 255, json.bgRgb.g / 255, json.bgRgb.b / 255, a);
+		return Qt.rgba(root.bgR / 255, root.bgG / 255, root.bgB / 255, a);
 	}
 
 	function withFg(a: real): color {
-		return Qt.rgba(json.fgRgb.r / 255, json.fgRgb.g / 255, json.fgRgb.b / 255, a);
+		return Qt.rgba(root.fgR / 255, root.fgG / 255, root.fgB / 255, a);
 	}
 
+	function reload(text: string): void {
+		let j;
+		try {
+			j = JSON.parse(text);
+		} catch (e) {
+			// coat writes non-atomically, so a save can be observed mid-truncate.
+			// Keeping the last good palette and waiting for the next change event
+			// is better than flashing the fallback.
+			return;
+		}
+		if (!j || !j.role)
+			return;
+
+		root.bg = j.role.bg;
+		root.fg = j.role.fg;
+		root.dim = j.role.dim;
+		root.accent = j.role.accent;
+		root.error = j.role.error;
+		root.warning = j.role.warning;
+		root.success = j.role.success;
+
+		if (j.scheme) {
+			root.isDark = j.scheme.isDark;
+			root.schemeName = j.scheme.name;
+		}
+
+		if (j.bgRgb) {
+			root.bgR = j.bgRgb.r;
+			root.bgG = j.bgRgb.g;
+			root.bgB = j.bgRgb.b;
+		}
+		if (j.fgRgb) {
+			root.fgR = j.fgRgb.r;
+			root.fgG = j.fgRgb.g;
+			root.fgB = j.fgRgb.b;
+		}
+
+		if (j.font) {
+			root.fontSans = j.font.sans;
+			root.fontMono = j.font.mono;
+			root.fontSize = j.font.sizePopup;
+		}
+	}
+
+	readonly property string coatPath: `${Quickshell.shellDir}/coat.json`
+
+	// FileView is used ONLY as a change notifier here, and the content is read
+	// with `cat`. That is deliberate, after trying the alternatives:
+	//
+	//   JsonAdapter          populates on the first read and is never
+	//                        re-applied on a reload
+	//   text() on change     returns the CACHED contents; FileView only
+	//                        re-reads when the path changes
+	//   blockLoading         makes the read synchronous, not fresh
+	//   bouncing the path    two assignments in one tick coalesce, so nothing
+	//                        is re-read
+	//
+	// Every one of those left the shell insisting on the previous palette while
+	// coat.json on disk plainly said otherwise -- the theme only ever changed
+	// when the shell restarted. onFileChanged itself is reliable; it is the
+	// content that goes stale. One fork per theme switch is a rounding error
+	// against a feature that did not work.
 	FileView {
-		// Same directory as this file: coat writes into the shell's own config
-		// dir, which is what `coat apply quickshell` targets.
-		path: `${Quickshell.shellDir}/coat.json`
+		id: watcher
+
+		path: root.coatPath
 		watchChanges: true
-		// coat writes non-atomically, so a save can be observed mid-truncate.
-		// The adapter keeps its last good values and the following change event
-		// picks up the finished file; an error log for every theme switch is
-		// just noise.
 		printErrors: false
 
-		// Defaults are a real, readable dark palette, not placeholders: they are
-		// what the shell runs on before coat has ever been applied, and on any
-		// machine where the file is missing.
-		adapter: JsonAdapter {
-			id: json
+		onLoaded: reader.read()
+		onFileChanged: reader.read()
+	}
 
-			property JsonObject scheme: JsonObject {
-				property string name: "unthemed"
-				property bool isDark: true
-			}
+	Process {
+		id: reader
 
-			property JsonObject role: JsonObject {
-				property color bg: "#16181d"
-				property color fg: "#c9ccd3"
-				property color dim: "#6b7280"
-				property color accent: "#7aa2f7"
-				property color error: "#f7768e"
-				property color warning: "#e0af68"
-				property color success: "#9ece6a"
-			}
+		running: true
+		command: ["cat", root.coatPath]
+		stdout: StdioCollector {
+			id: out
+		}
+		onExited: code => {
+			if (code === 0)
+				root.reload(out.text);
+		}
 
-			property JsonObject bgRgb: JsonObject {
-				property int r: 22
-				property int g: 24
-				property int b: 29
-			}
-
-			property JsonObject fgRgb: JsonObject {
-				property int r: 201
-				property int g: 204
-				property int b: 211
-			}
-
-			property JsonObject font: JsonObject {
-				property string sans: "sans-serif"
-				property string mono: "monospace"
-				property int sizePopup: 10
-			}
+		function read(): void {
+			reader.running = false;
+			reader.running = true;
 		}
 	}
 }
