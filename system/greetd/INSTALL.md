@@ -24,10 +24,15 @@ sudo pacman -S --needed cage
 sudo install -Dm644 greeter.qml /etc/greetd/greeter.qml
 sudo install -Dm644 config.toml /etc/greetd/config.toml
 
-# A wallpaper the greeter user can actually read. $HOME is 700, so it cannot see
-# ~/jbwallpapers -- without this the greeter falls back to a flat background.
-sudo install -Dm644 ~/jbwallpapers/wallpapers/<pick-one>.jpg \
-  /usr/share/backgrounds/login.jpg
+# Drop directory for the wallpaper, owned by you so no sudo is needed later.
+# $HOME is mode 700 and traversal needs +x on every parent, so nothing under
+# ~/jbwallpapers is reachable from the greeter user however the file itself is
+# chmodded. ~/.local/bin/awww copies each wallpaper it sets into here, so the
+# login screen follows the desktop from then on.
+sudo install -d -o "$USER" -g "$USER" /var/lib/greeter
+
+# Seed it with whatever is on screen right now.
+awww img "$(awww query | sed 's/.*currently displaying: image: //')"
 
 # runit service.
 sudo install -Dm755 sv/greetd/run /etc/runit/sv/greetd/run

@@ -46,6 +46,34 @@ fi
 "$real" "$@" || exit $?
 
 [ "$1" = img ] || exit 0
+
+# Hand the greeter a copy it can actually read.
+#
+# greetd runs the login screen as the `greeter` user and $HOME is mode 700, so
+# nothing under ~/jbwallpapers is reachable from there -- not even with the file
+# itself world-readable, because traversal needs +x on every parent. A drop
+# directory outside $HOME is the way round it, owned by this user so no sudo is
+# needed on every wallpaper change.
+#
+# The extension is preserved: Qt picks the image format from it, and a file
+# called plain "wallpaper" fails to load. Older copies are cleared so a jpg
+# never lingers behind a png.
+#
+# Silent no-op when the directory does not exist, which is the case until the
+# greeter is installed. Create it with:
+#   sudo install -d -o "$USER" -g "$USER" /var/lib/greeter
+GREETER_DIR=/var/lib/greeter
+if [ -d "$GREETER_DIR" ] && [ -w "$GREETER_DIR" ]; then
+	for arg in "$@"; do
+		case "$arg" in
+		/*.jpg | /*.jpeg | /*.png | /*.webp)
+			rm -f "$GREETER_DIR"/wallpaper.*
+			cp -f "$arg" "$GREETER_DIR/wallpaper.${arg##*.}" 2>/dev/null
+			break
+			;;
+		esac
+	done
+fi
 [ "$COAT_FOLLOW" = 0 ] && exit 0
 command -v coat >/dev/null 2>&1 || exit 0
 

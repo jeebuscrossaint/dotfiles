@@ -29,12 +29,20 @@ ShellRoot {
 	// user list to draw -- macOS shows exactly this when it has one account.
 	readonly property string account: "amarnath"
 
-	// Anywhere world-readable. $HOME is 700, so the user's own wallpaper
-	// directory is unreachable from here; copy one into /usr/share/backgrounds
-	// to have it show up.
+	// The CURRENT wallpaper, not a hand-picked copy. ~/.local/bin/awww drops the
+	// image it just set into /var/lib/greeter on every change, because $HOME is
+	// mode 700 and nothing under it is reachable from the greeter user -- file
+	// permissions on the image itself do not help, since traversal needs +x on
+	// every parent directory.
+	//
+	// The extension is part of the filename because Qt picks the image format
+	// from it. Tried in order, first one that loads wins.
 	readonly property var wallpapers: [
+		"file:///var/lib/greeter/wallpaper.jpg",
+		"file:///var/lib/greeter/wallpaper.jpeg",
+		"file:///var/lib/greeter/wallpaper.png",
+		"file:///var/lib/greeter/wallpaper.webp",
 		"file:///usr/share/backgrounds/login.jpg",
-		"file:///usr/share/backgrounds/login.png",
 		"file:///usr/share/hypr/wall0.png"
 	]
 
