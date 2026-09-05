@@ -30,7 +30,9 @@ Popover {
 		spacing: 8
 
 		StyledText {
-			text: Sys.weather.length > 0 ? "Orlando  " + Sys.weather : "Weather unavailable"
+			text: Sys.weather.length > 0
+				? (Sys.weatherPlace.length > 0 ? Sys.weatherPlace + "  " : "") + Sys.weather
+				: "Weather unavailable"
 			font.weight: Font.DemiBold
 		}
 
