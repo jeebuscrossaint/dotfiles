@@ -52,6 +52,9 @@ Singleton {
 	// wttrbar's own output, verbatim -- same binary and same flags waybar ran.
 	property string weather: ""
 	property string weatherTip: ""
+	// Where wttr.in decided we are, so the panel heading is not a claim of its
+	// own that goes stale the moment the laptop leaves the city.
+	property string weatherPlace: ""
 
 	// /proc/stat is cumulative since boot, so a percentage needs the delta
 	// between two samples. Anything else reports the average since power-on,
@@ -220,8 +223,15 @@ Singleton {
 		}
 	}
 
-	// Same command and same flags waybar used, including the connectivity guard:
-	// wttrbar hangs rather than failing when the network is down.
+	// Same flags waybar used, minus --location: with no place named, wttr.in
+	// resolves one from the request's IP, so the forecast follows the laptop
+	// with nothing to configure. A VPN moves it to the exit node, which is the
+	// one case worth knowing about.
+	//
+	// The connectivity guard is still here -- wttrbar hangs rather than failing
+	// when the network is down -- but its response is no longer thrown away.
+	// It is the j1 document, which carries the resolved place name, so one
+	// fetch now does both jobs.
 	Process {
 		id: ppdProbe
 
@@ -233,15 +243,29 @@ Singleton {
 	Process {
 		id: wttr
 
-		command: ["sh", "-c", "curl -sf --max-time 10 -o /dev/null 'https://wttr.in/Orlando?format=j1' && exec wttrbar --location Orlando --fahrenheit --mph --ampm --nerd --hide-conditions --custom-indicator '{ICON} {temp_F}°'"]
+		// Two JSON documents on one stdout, so they need a separator that
+		// cannot occur inside either. printf rather than echo because the j1
+		// response ends without a trailing newline -- `echo '@@'` produced
+		// `}@@` and the split never matched.
+		command: ["sh", "-c", "curl -sf --max-time 10 'https://wttr.in/?format=j1' && printf '\\n@@\\n' && exec wttrbar --fahrenheit --mph --ampm --nerd --hide-conditions --custom-indicator '{ICON} {temp_F}°'"]
 		stdout: StdioCollector {
 			id: wttrOut
 		}
 		onExited: code => {
 			if (code !== 0)
 				return;
+			const parts = wttrOut.text.split("\n@@\n");
+			if (parts.length < 2)
+				return;
 			try {
-				const j = JSON.parse(wttrOut.text);
+				const area = JSON.parse(parts[0]).nearest_area[0];
+				const city = area.areaName[0].value;
+				const region = area.region.length > 0 ? area.region[0].value : "";
+				sys.weatherPlace = region.length > 0 && region !== city ? city + ", " + region : city;
+			} catch (e) {
+			}
+			try {
+				const j = JSON.parse(parts[1]);
 				sys.weather = j.text || "";
 				sys.weatherTip = j.tooltip || "";
 			} catch (e) {

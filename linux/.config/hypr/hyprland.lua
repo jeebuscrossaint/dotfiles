@@ -57,6 +57,13 @@ hl.monitor({
 	supports_hdr = true,
 	sdr_max_luminance = 220,
 	sdr_min_luminance = 0.0,
+	-- VRR 2 = fullscreen only, deliberately not 1. This is an OLED: with VRR
+	-- always on, the desktop flickers as the refresh rate chases an idle redraw
+	-- rate, because OLED gamma shifts with refresh. Fullscreen-only confines it
+	-- to games, which is the only place it buys anything. Only does anything
+	-- while the dGPU drives eDP (Discrete MUX) -- under Hybrid the panel hangs
+	-- off Intel and the frame copy paces the output, not the GPU.
+	vrr = 0,
 })
 hl.monitor({ output = "HDMI-A-1", mode = "3840x2160@30", position = "2560x0", scale = 1, bitdepth = 10 })
 hl.monitor({ output = "", mode = "preferred", position = "auto", scale = "auto" })
@@ -159,6 +166,7 @@ hl.on("hyprland.start", function()
 		"/usr/lib/xdg-desktop-portal-hyprland",
 		"/usr/libexec/xdg-desktop-portal",
 		"hypridle",
+		"nvibrant 1023 1023 1023 1023",
 		-- Full brightness at login. The firmware brings the panel up at about a
 		-- quarter and nothing else was setting it; brightnessctl is in /usr/bin,
 		-- so this works regardless of the PATH problem above.
@@ -255,7 +263,7 @@ hl.config({
 	dwindle = { preserve_split = false },
 
 	decoration = {
-		rounding = 20,
+		rounding = 5,
 		-- Squircle: 2.0 is a circular arc, higher is a superellipse.
 		rounding_power = 4.0,
 		active_opacity = 1.0,
