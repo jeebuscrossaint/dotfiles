@@ -6,16 +6,15 @@
 # configs keep calling one stable name -- it was wmenu, then fuzzel, now this,
 # and none of those swaps touched a keybind.
 #
-# fuzzel is gone entirely as of 2026-09-02; `menu` is the shell's Picker now too.
-# There is no second launcher to fall back to, so a dead shell is an error rather
-# than a silent no-op -- in a mango session, where nothing starts the shell, this
-# says so instead of appearing to do nothing.
+# fuzzel is back as the fallback, because the mango session starts no shell and
+# a launcher that only errors is not a launcher. Spotlight when the shell is
+# there, fuzzel when it is not -- one keybind, either session.
 #
 # The test is `pgrep`, NOT the exit status of the call: `qs ipc call` exits 0 even
-# for a target that does not exist.
-if ! pgrep -x qs >/dev/null 2>&1; then
-	echo "menu-run: the Quickshell shell is not running" >&2
-	exit 1
+# for a target that does not exist, so a dead shell would look like a success and
+# the fallback would never fire.
+if pgrep -x qs >/dev/null 2>&1; then
+	exec qs ipc call spotlight toggle
 fi
 
-exec qs ipc call spotlight toggle
+exec fuzzel

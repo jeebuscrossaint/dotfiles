@@ -37,9 +37,12 @@ while [ $# -gt 0 ]; do
 	esac
 done
 
+# No shell -- the mango session. `fuzzel --dmenu` is the same contract this
+# script already presents: choices on stdin, the pick on stdout, empty on cancel.
+# So the callers (theme-pick, the cliphist bind) need no idea which one ran.
 if ! pgrep -x qs >/dev/null 2>&1; then
-	echo "menu: the Quickshell shell is not running" >&2
-	exit 1
+	[ -n "$prompt" ] && exec fuzzel --dmenu --prompt "$prompt "
+	exec fuzzel --dmenu
 fi
 
 dir=$(mktemp -d) || exit 1
