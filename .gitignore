@@ -22,8 +22,16 @@ linux/.local/share/coat-webapps/coat-webapps.xpi
 # rule above. These tools have no include mechanism, so coat generates the
 # whole file and tracking them would mean a dirty tree after every theme change.
 # The templates that produce them live in ~/Projects/coat/templates/.
-linux/.config/fnott/fnott.ini
 linux/.config/wob/wob.ini
+
+# fnott.ini is NOT one of those any more. coat stopped generating the whole file
+# and became an edit list (fnott.tera): it patches the colour and font keys in
+# place and leaves every other line alone. The layer, anchor, geometry and
+# timeouts are therefore SOURCE -- ignored, they lived on one machine and never
+# reached a fresh install or the OpenBSD box. The cost is the one described
+# above: `coat set` rewrites the colour keys, so a theme change shows as a diff
+# here. That is the better half of the trade.
+!linux/.config/fnott/fnott.ini
 
 # py_compile droppings — the scripts in .local/bin are run directly, never imported.
 __pycache__/
