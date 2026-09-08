@@ -90,7 +90,7 @@ ShellRoot {
 
 			// PATH is set here, not left to greetd. greetd's login environment
 			// does not include ~/.local/bin, and almost every keybind in
-			// hyprland.lua runs a script from there -- osd, lock, menu-run,
+			// hyprland.lua runs a script from there -- osd, lock, theme-pick,
 			// screenshot. They fail silently, which looks exactly like "no
 			// keybinds work". A TTY login only worked because fish had already
 			// prepended it before exec'ing the compositor.

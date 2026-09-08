@@ -18,7 +18,7 @@ stow -D -t ~ linux    # uninstall
 | compositor | **mango** | dwl-based, dwm tag model; blur, shadows, rounded corners, animations and an overview, all native |
 | bar | **waybar** | native modules + `mmsg watch` streamers for tags and title |
 | notifications | **fnott** | also draws the volume/brightness OSD, via `~/.local/bin/osd` |
-| launcher | **fuzzel** | .desktop entries with icons; `menu` / `menu-run` wrap it |
+| launcher | **fuzzel** | mango binds it directly; Hyprland uses the shell's Spotlight |
 | lock / idle | **hyprlock** + **swayidle** | |
 | terminal | **kitty** | coat writes `coat-theme.conf`; `kitty @ set-colors` recolours live |
 | shell | **fish** | |
@@ -85,8 +85,9 @@ is tracked, so a scheme change never shows up as a diff.
 | `audio-ensure` | repair the audio stack, but only when it is genuinely dead |
 | `mango-tags`, `mango-title` | stream compositor state to waybar over `mmsg watch` |
 | `waybar-fan`, `waybar-uptime` | the two things waybar has no module for |
-| `menu`, `menu-run` | fuzzel wrappers — `menu` is dmenu mode for scripts, `menu-run` is the app launcher |
+| `menu` | dmenu mode for scripts — the shell's Picker, falling back to `fuzzel --dmenu` |
 | `osd` | perform a volume/brightness/lock-key change *and* draw it as a notification |
+| `status` | the whole bar as one notification, for the bar-less mango session |
 | `theme-pick`, `theme-random` | coat scheme pickers |
 | `screenshot`, `screenshot-edit` | region grab; `-edit` pipes to satty |
 | `prime-run` | run one app on the dGPU |

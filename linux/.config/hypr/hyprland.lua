@@ -17,7 +17,7 @@
 local c = require("coat-colors")
 
 local terminal = "kitty"
-local menu = "menu-run" -- the .desktop wrapper, so the launcher can be swapped
+local menu = "qs ipc call spotlight toggle" -- Spotlight; the shell always runs here
 local mod = "SUPER"
 
 ------------------------------------------------------------------ monitors
@@ -149,7 +149,7 @@ hl.env("XCURSOR_SIZE", "24")
 -- PATH must be set HERE, not left to whatever launched the compositor.
 --
 -- Almost every keybind below runs a script from ~/.local/bin -- osd, lock,
--- menu-run, screenshot, theme-pick -- and greetd starts Hyprland with a login
+-- screenshot, theme-pick -- and greetd starts Hyprland with a login
 -- environment that does not include it. The result is not an error anywhere: the
 -- binds fire, the exec fails silently, and it looks exactly like "no keybinds
 -- work". A TTY login happened to work only because fish had already prepended it
@@ -469,9 +469,10 @@ end
 ------------------------------------------------------------------ keybinds
 hl.bind(mod .. " + Q", hl.dsp.exec_cmd(terminal))
 hl.bind(mod .. " + D", hl.dsp.exec_cmd(menu))
--- Cmd+Space, near enough. mod+D above reaches the same launcher: `menu-run` is
--- Spotlight now, so the swap away from fuzzel needed no keybind change at all.
--- `menu`, the dmenu-style picker for scripts, is the shell's Picker component.
+-- Cmd+Space, near enough -- the same Spotlight mod+D reaches, which is why both
+-- lines say the same thing rather than going through a wrapper script.
+-- `menu`, the dmenu-style picker for scripts, stays a script: it has a FIFO
+-- handshake in it and three callers, so it is not a keybind's worth of shell.
 hl.bind(mod .. " + SPACE", hl.dsp.exec_cmd("qs ipc call spotlight toggle"))
 hl.bind(mod .. " + C", hl.dsp.window.close())
 hl.bind(mod .. " + SHIFT + C", hl.dsp.exec_cmd("hyprctl reload"))
