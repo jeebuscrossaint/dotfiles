@@ -27,7 +27,7 @@ audio_playing() {
 }
 
 do_lock() { sfx lock; lock >/dev/null 2>&1 & }
-do_dpms() { hyprctl dispatch dpms off >/dev/null 2>&1; }
+do_dpms() { wlopm --off '*' >/dev/null 2>&1; }
 
 # One file per invocation, not one per action: several guards are pending during
 # the same idle period -- dpms, lock, and the second dpms that re-blanks after

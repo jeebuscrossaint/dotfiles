@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # Picker over all coat schemes; apply the choice everywhere + notify.
 #
-# `menu`, not fuzzel directly: menu is the dmenu wrapper every caller here uses,
-# so the launcher underneath can be swapped without editing this.
+# fuzzel directly. This was the last caller of the `menu` wrapper, and that
+# wrapper was a branch between fuzzel and a shell that no longer exists.
 #
 # Entries are tagged `[base24]` because ~46 slugs exist in BOTH families and coat
 # lists them under the same name -- the picker showed two identical rows with no
@@ -22,7 +22,7 @@ pick=$(coat list --no-preview 2>/dev/null \
       /^[^ ]/ && !/^Found/ && !/^Author:/ { b24 = /\[Base24\]/ ? " [base24]" : "" }
       /Slug:/ { print $2 b24 }
     ' \
-  | menu -i -p theme)
+  | fuzzel --dmenu --prompt "theme ")
 [ -n "$pick" ] || exit 0
 
 slug=${pick% \[base24\]}

@@ -23,10 +23,10 @@ Remove one of these and something in this repo stops working.
 
 | Role | Packages |
 |---|---|
-| Compositor | `hyprland`, `xdg-desktop-portal-hyprland`, `polkit-gnome`, `elogind-runit` |
-| mango session | `mangowm` (AUR) — a second session, and a deliberately bare one: **no bar at all**. `fnott` is the only surface, `fuzzel` the launcher, `swayidle` + `wlopm` the idle/blank pair (mango has no `hyprctl`, so hypridle's config does not apply). `Super+S` runs `~/.local/bin/status`, which draws everything a bar would have shown as one notification. Effects are switched off in `config.conf`, not deleted — every curve and blur param is still there to flip back on. |
-| Shell | `quickshell` — bar, Control Centre, Spotlight, dmenu picker, notifications, OSD HUD, dock, Mission Control, desktop widgets, lock. `wttrbar` (AUR) feeds the weather. `waybar` is kept installed as a fallback but is not started. |
-| Idle & lock | `hypridle`, `hyprlock` (fallback locker and what hypridle calls; the shell has its own on mod+L) |
+| Compositor | `mangowm` (AUR), `xdg-desktop-portal-wlr`, `xdg-desktop-portal-gtk`, `polkit-gnome`, `elogind-runit` |
+| Session | **No bar.** `fnott` is the only on-screen surface, `fuzzel` the launcher, `swayidle` + `wlopm` the idle/blank pair. `Super+S` runs `~/.local/bin/status`, which draws everything a bar would have shown as one notification. Effects are switched off in `config.conf`, not deleted — every curve and blur param is still there to flip back on. |
+| Bar | `waybar` and `wttrbar` (AUR) stay installed and configured, but nothing starts them. Restoring the bar is a line in `config.conf`. |
+| Idle & lock | `hyprlock` (the locker, on Super+L and from `swayidle`), `swayidle`, `wlopm` |
 | Wallpaper | `awww` (wrapped by `~/.local/bin/awww`, so `awww img` retheme-follows) |
 | Terminal & shell | `kitty`, `fish`, `lsd`, `bat`, `less`, `tree` |
 | Editor | `neovim` |

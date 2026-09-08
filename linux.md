@@ -15,10 +15,10 @@ stow -D -t ~ linux    # uninstall
 
 | | | |
 |---|---|---|
-| compositor | **mango** | dwl-based, dwm tag model; blur, shadows, rounded corners, animations and an overview, all native |
-| bar | **waybar** | native modules + `mmsg watch` streamers for tags and title |
+| compositor | **mango** | dwl-based, dwm tag model. Effects switched off at their master keys, every knob left tuned underneath |
+| bar | *none* | `Super+S` runs `status`, which draws the whole readout as one notification |
 | notifications | **fnott** | also draws the volume/brightness OSD, via `~/.local/bin/osd` |
-| launcher | **fuzzel** | mango binds it directly; Hyprland uses the shell's Spotlight |
+| launcher | **fuzzel** | bound directly in `config.conf`, no wrapper |
 | lock / idle | **hyprlock** + **swayidle** | |
 | terminal | **kitty** | coat writes `coat-theme.conf`; `kitty @ set-colors` recolours live |
 | shell | **fish** | |
@@ -64,7 +64,7 @@ linux/
 │   ├── waybar/        bar config + stylesheet
 │   ├── fnott/         notifications and OSD
 │   ├── fuzzel/        launcher (colours patched in place by coat)
-│   ├── swayidle/      idle → lock → screen off
+│   ├── hypr/          hyprlock only — the locker and its coat-themed colours
 │   ├── kitty/ fish/  nvim/  bat/  btop/  zathura/  gtk-3.0/  gtk-4.0/  paru/
 │   └── ...
 └── .local/
@@ -83,9 +83,8 @@ is tracked, so a scheme change never shows up as a diff.
 |---|---|
 | `mango-run` | start the session from a TTY |
 | `audio-ensure` | repair the audio stack, but only when it is genuinely dead |
-| `mango-tags`, `mango-title` | stream compositor state to waybar over `mmsg watch` |
-| `waybar-fan`, `waybar-uptime` | the two things waybar has no module for |
-| `menu` | dmenu mode for scripts — the shell's Picker, falling back to `fuzzel --dmenu` |
+| `mango-tags`, `mango-title` | stream tags and title over `mmsg watch` — only used if you start waybar |
+| `waybar-fan`, `waybar-uptime` | fan RPM and uptime; `status` reads both |
 | `osd` | perform a volume/brightness/lock-key change *and* draw it as a notification |
 | `status` | the whole bar as one notification, for the bar-less mango session |
 | `theme-pick`, `theme-random` | coat scheme pickers |
@@ -105,7 +104,11 @@ survive being recoloured:
 **dunst** → fnott · **labwc**, **wayfire** → mango does it all natively ·
 **swayrbar**, **slstatus**, **barstat** → native waybar
 modules · **ashell** · **avizo**, **swayosd**, **wob** → the OSD is a
-notification now · **kanshi** → mango's `monitorrule`
+notification now · **kanshi** → mango's `monitorrule` ·
+**Hyprland** → back to mango, 2026-09-08 · **Quickshell** (bar, dock, Spotlight,
+Mission Control, notifications, lock, greeter) → deleted the same day: no bar at
+all, `fnott` for notifications, `fuzzel` for launching, `tuigreet` for login ·
+**waybar** → kept installed and configured, but nothing starts it
 
 The reasoning for each is in the config file that replaced it, and the module
 list at the top of `.config/coat/coat.yaml`.

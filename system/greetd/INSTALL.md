@@ -1,13 +1,19 @@
-# Quickshell greeter (greetd)
+# tuigreet greeter (greetd)
 
-The login window, laid out like the shell's lock screen. `greeter.qml` is
-deliberately self-contained: greetd runs it as the `greeter` user before anyone
-has logged in, and `$HOME` is mode 700, so none of the shell's `qs.*` modules or
-`coat.json` are readable from there.
+A text login on vt1. It replaced a Quickshell greeter on 2026-09-08, along with
+the rest of the Quickshell setup, and the replacement is mostly a deletion:
+tuigreet draws on the VT itself, so there is no cage, no Qt, no wlroots backend
+and no seat for the login screen to fight over.
 
-**The palette is therefore hardcoded and does NOT follow coat.** A scheme change
-has to be copied into `greeter.qml` by hand. Making it follow would need coat to
-write a world-readable palette to a root-owned path.
+That removes, in order: `greeter.qml` (341 lines), the `/run/greeter` runtime
+directory and the fake `XDG_RUNTIME_DIR`/`HOME`/cache/state pointing at it, the
+`cage -d -s -m last` invocation and its decoration workarounds, the wallpaper
+drop in `/var/lib/greeter` that `awww` used to feed, and the account name that
+had to be templated in at install time.
+
+Sessions come from `/usr/share/wayland-sessions`, so `mango.desktop` (shipped by
+the `mangowm` package) is what you pick at the prompt. `--remember-user-session`
+means you pick it once.
 
 ## Before you start
 
@@ -19,67 +25,35 @@ them, and do not do this over SSH-only access.
 
 `install.fish --greeter` does all of this, and `install.fish --greeter --greeter-enable`
 does the enable step too. It refuses to enable over SSH or with no `agetty-tty2..6`
-left, and it substitutes the current `$USER` into the installed copy of
-`greeter.qml` -- the account in the repo copy is this machine's, and the greeter
-cannot ask, since it runs before anyone has logged in.
-
-The rest of this file is what the flag does, and why each step is there.
+left.
 
 ```sh
-sudo pacman -S --needed cage
+sudo pacman -S --needed greetd greetd-tuigreet
 
-# The greeter itself, world-readable.
-sudo install -Dm644 greeter.qml /etc/greetd/greeter.qml
 sudo install -Dm644 config.toml /etc/greetd/config.toml
 
-# Drop directory for the wallpaper, owned by you so no sudo is needed later.
-# $HOME is mode 700 and traversal needs +x on every parent, so nothing under
-# ~/jbwallpapers is reachable from the greeter user however the file itself is
-# chmodded. ~/.local/bin/awww copies each wallpaper it sets into here, so the
-# login screen follows the desktop from then on.
-sudo install -d -o "$USER" -g "$USER" /var/lib/greeter
-
-# Seed it with whatever is on screen right now.
-awww img "$(awww query | sed 's/.*currently displaying: image: //')"
-
-# runit service.
-sudo install -Dm755 sv/greetd/run /etc/runit/sv/greetd/run
-
-# PAM service for the greeter. This one is NOT optional and does not exist by
-# default: without it the greeter gets no elogind session, so libseat asks to
-# take control of the LOGGED-IN user's session instead and is refused --
-# "Only owner of session may take control", then "No backend was able to open a
-# seat", and cage exits.
+# PAM service for the greeter. NOT optional and not shipped by default: without
+# it the greeter gets no elogind session, and the handoff into the real session
+# fails.
 sudo install -Dm644 pam.d-greetd-greeter /etc/pam.d/greetd-greeter
+
+# runit service. It exists to create tuigreet's --remember cache as root, before
+# greetd drops to the `greeter` user, which cannot create it itself.
+sudo install -Dm755 sv/greetd/run /etc/runit/sv/greetd/run
 ```
 
-## You cannot test this while logged in
+## Testing it
 
-Running `sudo greetd` from inside a running session does NOT work, and it is
-not a configuration problem. The logged-in session owns `seat0`, and elogind
-will not let a second session take control of a seat the active session owns:
-
-```
-libseat logind: Could not take control of session:
-                Only owner of session may take control
-No backend was able to open a seat
-```
-
-cage then cannot build a wlroots backend and exits, which greetd reports as
-"greeter exited without creating a session". The seat is behaving correctly --
-there is only one, and it is in use.
-
-So the greeter can only be exercised with no session holding the seat, which in
-practice means enabling the service and rebooting. That is safe here, and the
-next section explains why.
-
-Only the LOOK can be checked from inside a session, because a nested compositor
-uses the Wayland backend instead of DRM and never asks for a seat:
+Unlike the Quickshell greeter, this one can be looked at from inside a session
+without any seat trouble, because it is a terminal program and opens no DRM
+device:
 
 ```sh
-cage -- qs -p /etc/greetd/greeter.qml     # opens as a window; greetd is absent,
-                                          # so it renders but cannot log in
+tuigreet --cmd true      # renders in the terminal; greetd is absent, so no login
 ```
+
+The full path still needs vt1 free, which in practice means enabling the service
+and rebooting.
 
 ## Enable at boot
 
@@ -104,7 +78,7 @@ one out is a single `systemctl disable --now greetd`.
 
 `sv/greetd/run` has no systemd equivalent to install: greetd's unit is the
 package's. The one thing that script does besides `exec greetd` is create
-`/run/greeter` as root before privileges drop, so that job moves to
+`/var/cache/tuigreet` as root before privileges drop, so that job moves to
 `/etc/tmpfiles.d/greeter.conf`.
 
 The fallback console is different too. There are no `agetty-tty2..6` services
@@ -115,7 +89,6 @@ for here.
 Then reboot. **agetty-tty2 .. agetty-tty6 stay enabled**, and that is the whole
 safety net: if the greeter fails to come up, vt1 is blank but `Ctrl+Alt+F2` is
 still a working text login, from which the next section backs the change out.
-Do not disable those, and do not do this over SSH-only access.
 
 ## Back out
 
@@ -126,29 +99,21 @@ sudo ln -s /etc/runit/sv/agetty-tty1 /etc/runit/runsvdir/default/
 
 ## Input devices
 
-The `greeter` user needs `input` as well as `video`:
+The `greeter` user is added to `video` and `input`. tuigreet needs neither --
+it reads the VT -- but they are harmless and remove a variable if the seat ever
+misbehaves.
 
 ```sh
 sudo usermod -aG input greeter
 ```
 
-With the PAM service in place elogind brokers a seat and this may not be
-needed, but it is harmless and removes one variable.
-
-## Seats, if it still fails
-
-`seatd` is installed here and could host the seat instead of elogind, but it
-needs its own runit service and the `greeter` user in the `seat` group. The PAM
-route above is preferred: no extra daemon, and it leaves how the main session
-gets its seat completely untouched.
-
 ## When it fails and you cannot see why
 
-greetd swallows the greeter's stderr, so the session is wrapped to log to
-`/run/greeter/session.log`. Read that after a failed attempt; it is where cage
-and Quickshell actually say what went wrong.
+Under runit, `sudo sv check greetd` and the output of the service itself; the
+run script does `exec 2>&1` so runit captures it. There is no session log to
+read any more, because there is no wrapper shell redirecting one.
 
 ## What it launches
 
-On success it runs `Hyprland`. Change the `Greetd.launch([...])` call in
-`greeter.qml` if that ever stops being the session you want.
+Whatever you pick from the session list. `mango.desktop` is the only entry here
+now that Hyprland is gone.

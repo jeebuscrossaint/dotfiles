@@ -107,17 +107,19 @@ or die "$target is not writable"
 #
 # Derived from what the tracked configs and ~/.local/bin scripts actually
 # invoke — grep before adding a row, and keep the paths in step with the
-# probes in start-polkit and hyprland.lua.
+# probes in start-polkit and mango's config.conf.
 set -g dep_table \
     "installer|cmd:stow|stow|req|stow||stow|stow|" \
     "installer|cmd:git|git|core|git||git|git|" \
     "installer|cmd:fish|fish|req|fish||fish|fish|" \
-    "compositor|cmd:hyprland|hyprland|core|hyprland||hyprland||https://hyprland.org" \
-    "compositor|path:/usr/lib/xdg-desktop-portal-hyprland /usr/libexec/xdg-desktop-portal-hyprland|xdg-desktop-portal-hyprland|core|xdg-desktop-portal-hyprland||||" \
+    "compositor|cmd:mango|mango|core||mangowm|||https://github.com/DreamMaoMao/mango" \
+    "compositor|path:/usr/lib/xdg-desktop-portal-wlr /usr/libexec/xdg-desktop-portal-wlr|xdg-desktop-portal-wlr|core|xdg-desktop-portal-wlr|||xdg-desktop-portal-wlr|" \
     "compositor|path:/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 /usr/libexec/polkit-gnome-authentication-agent-1 /usr/local/libexec/polkit-gnome-authentication-agent-1|polkit agent|core|polkit-gnome||policykit-1-gnome|polkit-gnome|" \
-    "desktop|cmd:qs|quickshell|core|quickshell||||https://quickshell.org" \
+    "desktop|cmd:fnott|fnott|core|fnott|||fnott|" \
+    "desktop|cmd:fuzzel|fuzzel|core|fuzzel|||fuzzel|" \
     "desktop|cmd:awww|awww|core||awww|||" \
-    "desktop|cmd:hypridle|hypridle|core|hypridle||||" \
+    "desktop|cmd:swayidle|swayidle|core|swayidle|||swayidle|" \
+    "desktop|cmd:wlopm|wlopm|core|wlopm||||" \
     "desktop|cmd:hyprlock|hyprlock|core|hyprlock||||" \
     "terminal|cmd:kitty|kitty|core|kitty||kitty|kitty|" \
     "terminal|cmd:nvim|neovim|core|neovim||neovim|neovim|" \
@@ -157,7 +159,7 @@ set -g dep_table \
     "greeter|cmd:greetd|greetd|opt|greetd||greetd||see system/greetd/INSTALL.md" \
     "apps|cmd:magick|imagemagick|opt|imagemagick||imagemagick|ImageMagick|" \
     "apps|cmd:prime-run|nvidia-prime|opt|nvidia-prime||||" \
-    "greeter|cmd:cage|cage|opt|cage||cage||see system/greetd/INSTALL.md"
+    "greeter|cmd:tuigreet|tuigreet|opt|greetd-tuigreet||||see system/greetd/INSTALL.md"
 
 function pkg_manager
     test (uname -s) = OpenBSD; and echo openbsd; and return
@@ -488,7 +490,7 @@ end
 
 # stow only makes symlinks under $HOME. Anything rooted outside it has to be
 # installed by hand, and the greeter is entirely outside it.
-if not test -f /etc/greetd/greeter.qml; and not set -q _flag_greeter
+if not test -f /etc/greetd/config.toml; and not set -q _flag_greeter
     note "greeter not installed — run: install.fish --greeter"
 end
 
@@ -519,44 +521,30 @@ function greeter_files
     set -l src $repo/system/greetd
 
     command -q greetd; or die "greetd is not installed — pacman -S greetd"
-    command -q cage; or die "cage is not installed — pacman -S cage"
-    # Created by the greetd package, and the session runs as it.
-    id -u greeter >/dev/null 2>&1; or die "no greeter user — reinstall the greetd package"
+    command -q tuigreet; or die "tuigreet is not installed — pacman -S greetd-tuigreet"
     # Created by the greetd package, and the session runs as it.
     id -u greeter >/dev/null 2>&1; or die "no greeter user — reinstall the greetd package"
 
     step "Installing the greeter (sudo)..."
 
-    # The account is substituted at install time. The repo copy names this
-    # machine's user, which is wrong on any other machine, and the greeter has
-    # no way to ask -- it runs before anyone has logged in.
-    set -l tmp (mktemp)
-    sed "s/^\(\s*readonly property string account:\).*/\1 \"$USER\"/" $src/greeter.qml >$tmp
-    grep -q "account: \"$USER\"" $tmp; or begin
-        rm -f $tmp
-        die "could not substitute the account into greeter.qml"
-    end
-
-    sudo install -Dm644 $tmp /etc/greetd/greeter.qml; or begin; rm -f $tmp; die "install greeter.qml failed"; end
-    rm -f $tmp
+    # No greeter.qml to template any more. The Quickshell greeter hardcoded an
+    # account because it drew the username itself and could not ask before login;
+    # tuigreet has a username field, so there is nothing machine-specific to
+    # substitute and the config installs verbatim.
     sudo install -Dm644 $src/config.toml /etc/greetd/config.toml; or die "install config.toml failed"
-    # Without this there is no elogind session for the greeter, libseat is
-    # refused, and cage exits with "No backend was able to open a seat".
+    # greetd's own PAM service. Still required: without it the greeter gets no
+    # elogind session at all, which breaks the handoff into the real session.
     sudo install -Dm644 $src/pam.d-greetd-greeter /etc/pam.d/greetd-greeter; or die "install pam file failed"
-    # /run/greeter has to exist, owned by greeter, before greetd drops
-    # privileges -- the greeter user cannot create it, and without it cage and
-    # Quickshell both exit instantly. Under runit our own run script does that;
-    # under systemd the unit is the package's and not ours to edit, so tmpfiles
-    # does the same job at boot.
+
+    # tuigreet's --remember state. The greeter user cannot create this itself, so
+    # runit's run script does it before privileges drop and tmpfiles does the same
+    # job under systemd, where the unit is the package's and not ours to edit.
     switch (greeter_init)
         case runit
             sudo install -Dm755 $src/sv/greetd/run /etc/runit/sv/greetd/run
             or die "install runit service failed"
         case systemd
-            printf '%s\n' \
-                "d /run/greeter       0700 greeter greeter -" \
-                "d /run/greeter/cache 0700 greeter greeter -" \
-                "d /run/greeter/state 0700 greeter greeter -" \
+            printf '%s\n' "d /var/cache/tuigreet 0755 greeter greeter -" \
                 | sudo tee /etc/tmpfiles.d/greeter.conf >/dev/null
             or die "could not write /etc/tmpfiles.d/greeter.conf"
             sudo systemd-tmpfiles --create /etc/tmpfiles.d/greeter.conf
@@ -565,12 +553,8 @@ function greeter_files
             die "unrecognised init: no /run/systemd/system, no /etc/runit/runsvdir/default"
     end
 
-    # Wallpaper drop, owned by this user so awww can write it without sudo.
-    # $HOME is mode 700 and traversal needs +x on every parent, so nothing under
-    # it is reachable from the greeter however the file itself is chmodded.
-    sudo install -d -m 0755 -o $USER -g $USER /var/lib/greeter; or die "could not create /var/lib/greeter"
-
-    # video is usually already there; input is what cage needs to open devices.
+    # tuigreet draws on the VT and opens no DRM or input devices itself, but the
+    # groups are harmless and remove a variable if the seat ever misbehaves.
     sudo usermod -aG video,input greeter; or note "could not add greeter to video,input"
 
     # Seed the wallpaper from whatever is on screen. As the user, not root.
@@ -648,7 +632,7 @@ function greeter_enable
             dim "  sudo systemctl disable --now greetd"
     end
 
-    dim "and sudo cat /run/greeter/session.log says why it failed"
+    dim "and `sudo sv check greetd` / the journal say why it failed"
 end
 
 if set -q _flag_greeter; or set -q _flag_greeter_enable

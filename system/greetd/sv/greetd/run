@@ -1,15 +1,12 @@
 #!/bin/sh
 # runit service for greetd. Install to /etc/runit/sv/greetd/run, chmod +x.
 #
-# The runtime directory is created HERE, as root, before greetd drops to the
-# `greeter` user -- which cannot create it itself. elogind only makes
-# /run/user/<uid> for real login sessions, and the greeter is not one, so
-# without this cage and Quickshell both exit immediately and greetd reports
-# "greeter exited without creating a session".
+# tuigreet keeps its --remember state in /var/cache/tuigreet, and the greeter
+# user cannot create that directory itself. Everything else the old Quickshell
+# greeter needed here -- /run/greeter, a fake XDG_RUNTIME_DIR, a cache and a
+# state dir -- went with it: tuigreet draws on the VT and wants none of it.
 exec 2>&1
 
-install -d -m 0700 -o greeter -g greeter /run/greeter
-install -d -m 0700 -o greeter -g greeter /run/greeter/cache
-install -d -m 0700 -o greeter -g greeter /run/greeter/state
+install -d -m 0755 -o greeter -g greeter /var/cache/tuigreet
 
 exec greetd

@@ -1,4 +1,4 @@
-# greetd, hosting the Quickshell greeter.
+# greetd, hosting tuigreet.
 #
 # Install to /etc/greetd/config.toml. See INSTALL.md -- the ordering matters,
 # because a greeter that fails on vt1 with no agetty behind it is a machine you
@@ -10,36 +10,20 @@
 vt = 1
 
 [default_session]
-# XDG_RUNTIME_DIR is set by hand, and this is the whole reason the first attempt
-# failed with "greeter exited without creating a session". elogind only creates
-# /run/user/<uid> for a real login session, and greetd starts the greeter
-# outside one -- so /run/user/967 does not exist and both cage and Quickshell
-# refuse to start without a runtime dir.
+# tuigreet draws on the VT itself. That is the whole point of the switch away
+# from the Quickshell greeter: there is no cage, no Qt, no compositor and no
+# graphical stack under the login screen, so none of what the old config spent
+# forty lines on applies any more -- no XDG_RUNTIME_DIR to fake, no HOME to
+# redirect, no client-side-decoration argument with Qt.
 #
-# /run/greeter is created by the runit service before privileges are dropped
-# (see sv/greetd/run), because the greeter user cannot make it itself.
+#   --remember               keep the last username in the field
+#   --remember-user-session  and the session that user last chose
+#   --sessions               where the session desktop files live. mango installs
+#                            /usr/share/wayland-sessions/mango.desktop, which is
+#                            what makes it selectable here.
+#   --time                   a clock, since there is no bar on the far side either
 #
-# HOME and the XDG dirs point there too: greetd's `greeter` has / as its home,
-# so anything Quickshell wants to cache or write state to would land in an
-# unwritable place.
-#
-# cage is a one-window kiosk compositor; it exists to host exactly this.
-#
-#   -d  do not draw client side decorations. The greeter is an xdg-toplevel
-#       (cage has no layer-shell), and without this Qt decorated itself -- a
-#       white frame and a "quickshell" titlebar across a login screen.
-#   -s  allow VT switching, so Ctrl+Alt+F2 still reaches a text console from
-#       the login screen. That is the escape hatch; do not drop it.
-#   -m last  use the last connected output rather than extending across all.
-#
-# QT_WAYLAND_DISABLE_WINDOWDECORATION belongs with -d rather than instead of
-# it: -d asks cage to advertise server-side decorations, the env var tells Qt
-# not to draw its own regardless.
-#
-# `qs -p <file>` runs a single-file Quickshell config. The greeter has to live
-# somewhere world-readable, since $HOME here is 700.
-# stderr goes to a log because greetd swallows it: all you get on failure is
-# "greeter exited without creating a session", which says nothing about why.
-# /run/greeter is a tmpfs, so this is not a file that accumulates.
-command = "sh -c 'export XDG_RUNTIME_DIR=/run/greeter HOME=/run/greeter XDG_CACHE_HOME=/run/greeter/cache XDG_STATE_HOME=/run/greeter/state QT_WAYLAND_DISABLE_WINDOWDECORATION=1; exec cage -d -s -m last -- qs -p /etc/greetd/greeter.qml >/run/greeter/session.log 2>&1'"
+# Ctrl+Alt+F2 still reaches a text console from this screen; that is the escape
+# hatch and it comes from the kernel, not from anything configured here.
+command = "tuigreet --remember --remember-user-session --time --sessions /usr/share/wayland-sessions"
 user = "greeter"
