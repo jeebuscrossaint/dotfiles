@@ -16,10 +16,11 @@ stow -D -t ~ linux    # uninstall
 | | | |
 |---|---|---|
 | compositor | **mango** | dwl-based, dwm tag model. Effects switched off at their master keys, every knob left tuned underneath |
-| bar | *none* | `Super+S` runs `status`, which draws the whole readout as one notification |
+| bar | *none* | **conky** draws the readout on the desktop layer — visible on an empty tag, never covering a window |
 | notifications | **fnott** | also draws the volume/brightness OSD, via `~/.local/bin/osd` |
 | launcher | **fuzzel** | bound directly in `config.conf`, no wrapper |
-| lock / idle | **hyprlock** + **swayidle** | |
+| lock / idle | **swaylock** + **swayidle** | the only Wayland locker in both Arch and OpenBSD ports |
+| login | *none* | agetty on tty1; `mango-run` starts the session |
 | terminal | **kitty** | coat writes `coat-theme.conf`; `kitty @ set-colors` recolours live |
 | shell | **fish** | |
 | editor | **nvim** | lazy.nvim |
@@ -50,9 +51,10 @@ plugin.
 Start it from a TTY with `mango-run`. `Super+Shift+W` flips a tag to all-floating if a
 stacking desktop is wanted; `Super+O` is the overview.
 
-The effects block in `mango/config.conf` is on, and **that costs battery** — blur is a
-per-frame shader pass on a 2560x1600 240Hz panel. Turn down in this order: `blur=0`,
-then `shadows=0`, then `animations=0`.
+The effects block in `mango/config.conf` is OFF — `animations`, `blur`, `shadows` and
+`border_radius` are all 0, with every tuned value left in place under them. Blur was
+a per-frame shader pass on a 2560x1600 240Hz panel and cost real battery; turn them
+back on one master key at a time if you want them.
 
 ## Layout
 
@@ -64,7 +66,8 @@ linux/
 │   ├── waybar/        bar config + stylesheet
 │   ├── fnott/         notifications and OSD
 │   ├── fuzzel/        launcher (colours patched in place by coat)
-│   ├── hypr/          hyprlock only — the locker and its coat-themed colours
+│   ├── swaylock/      the locker (colours patched in place by coat)
+│   ├── conky/         the desktop readout that replaced the bar
 │   ├── kitty/ fish/  nvim/  bat/  btop/  zathura/  gtk-3.0/  gtk-4.0/  paru/
 │   └── ...
 └── .local/
@@ -86,7 +89,6 @@ is tracked, so a scheme change never shows up as a diff.
 | `mango-tags`, `mango-title` | stream tags and title over `mmsg watch` — only used if you start waybar |
 | `waybar-fan`, `waybar-uptime` | fan RPM and uptime; `status` reads both |
 | `osd` | perform a volume/brightness/lock-key change *and* draw it as a notification |
-| `status` | the whole bar as one notification, for the bar-less mango session |
 | `theme-pick`, `theme-random` | coat scheme pickers |
 | `screenshot`, `screenshot-edit` | region grab; `-edit` pipes to satty |
 | `prime-run` | run one app on the dGPU |
@@ -100,14 +102,16 @@ survive being recoloured:
 
 **sway/swaybar** → mango/waybar · **dwl** → mango (compile-time config) ·
 **foot** → **kitty** · **tofi** → wmenu → **fuzzel** (tofi is not in OpenBSD ports; wmenu has no
-.desktop support and no config file) · **gtklock** → swaylock → hyprlock ·
+.desktop support and no config file) · **gtklock** → hyprlock → **swaylock** (the only one in OpenBSD ports too) ·
 **dunst** → fnott · **labwc**, **wayfire** → mango does it all natively ·
 **swayrbar**, **slstatus**, **barstat** → native waybar
 modules · **ashell** · **avizo**, **swayosd**, **wob** → the OSD is a
 notification now · **kanshi** → mango's `monitorrule` ·
 **Hyprland** → back to mango, 2026-09-08 · **Quickshell** (bar, dock, Spotlight,
 Mission Control, notifications, lock, greeter) → deleted the same day: no bar at
-all, `fnott` for notifications, `fuzzel` for launching, `tuigreet` for login ·
+all, `fnott` for notifications, `fuzzel` for launching ·
+**greetd** + the QML greeter, then briefly **tuigreet** → no greeter at all; agetty
+on tty1 and `mango-run` · **wlopm**, **hypridle** → no blanking, swayidle only ·
 **waybar** → kept installed and configured, but nothing starts it
 
 The reasoning for each is in the config file that replaced it, and the module

@@ -27,10 +27,7 @@ enabled:
   - fnott
   - fuzzel
   - kitty
-  # Hyprland is gone, but this module is what writes ~/.config/hypr/coat-theme.conf,
-  # which hyprlock.conf sources. Drop it and the lock screen stops following the
-  # scheme. It also writes a coat-colors.lua nothing reads any more; harmless.
-  - hyprland
+  - swaylock
 
 scheme: gruber
 prefer_base24: true

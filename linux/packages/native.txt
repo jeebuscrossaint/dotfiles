@@ -31,6 +31,7 @@ cliphist
 cloc
 cmake
 cmatrix
+conky
 cronie-runit
 cryptsetup-runit
 cuda
@@ -55,18 +56,17 @@ genact
 github-cli
 glow
 gnome-keyring
-greetd-tuigreet
 grim
 grub
 gtklock
 guvcview
-hyprlock
 i2pd
 i2pd-runit
 imagemagick
 imv
 intel-media-driver
 intel-ucode
+jq
 kanshi
 kitty
 less
@@ -127,6 +127,7 @@ suitesparse
 swappy
 swaybg
 swayidle
+swaylock
 swig
 syslog-ng
 syslog-ng-runit
@@ -158,7 +159,6 @@ wf-recorder
 wget
 wl-clip-persist
 wl-clipboard
-wlopm
 wlr-randr
 wlroots0.19
 wob
