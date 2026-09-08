@@ -28,7 +28,7 @@ enabled:
   - kitty
   - hyprland
 
-scheme: square
+scheme: summerfruit-dark
 prefer_base24: true
 
 # Evens out whatever scheme is loaded. `coat docs normalize` lists the knobs.

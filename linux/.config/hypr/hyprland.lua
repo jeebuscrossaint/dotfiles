@@ -247,8 +247,8 @@ local shadow_inactive = (c.shadow:gsub("%x%x%)$", "38)"))
 hl.config({
 	general = {
 		border_size = 1,
-		gaps_in = 25,
-		gaps_out = 25,
+		gaps_in = 15,
+		gaps_out = 15,
 		layout = "dwindle",
 		resize_on_border = true,
 		col = {
@@ -287,7 +287,7 @@ hl.config({
 			xray = false,
 		},
 		shadow = {
-			enabled = true,
+			enabled = false,
 			-- Small range, HIGH render_power -- the opposite of the macOS 70/1 spec
 			-- that was here before. Falloff is exponential in render_power, so at 3
 			-- nearly all the darkness sits in the first few pixels and the tail is
