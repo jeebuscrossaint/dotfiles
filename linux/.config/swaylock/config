@@ -14,7 +14,7 @@ daemonize
 
 # No image, no blur, no fade: a flat wall of colour. Cheapest thing to draw, and
 # there is no wallpaper daemon involved in it.
-color=24273A
+color=1F2022
 
 indicator
 indicator-radius=90
@@ -29,27 +29,27 @@ show-failed-attempts
 font=SFMono Nerd Font Mono
 font-size=16
 
-ring-color=8AADF4
-ring-clear-color=EED49F
-ring-ver-color=CAD3F5
-ring-wrong-color=ED8796
+ring-color=4F97D7
+ring-clear-color=B1951D
+ring-ver-color=A3A3A3
+ring-wrong-color=F2241F
 
-inside-color=24273A00
-inside-clear-color=24273A00
-inside-ver-color=24273A00
-inside-wrong-color=24273A00
+inside-color=1F202200
+inside-clear-color=1F202200
+inside-ver-color=1F202200
+inside-wrong-color=1F202200
 
-key-hl-color=CAD3F5
-bs-hl-color=ED8796
+key-hl-color=A3A3A3
+bs-hl-color=F2241F
 
-text-color=CAD3F5
-text-clear-color=CAD3F5
-text-ver-color=CAD3F5
-text-wrong-color=ED8796
+text-color=A3A3A3
+text-clear-color=A3A3A3
+text-ver-color=A3A3A3
+text-wrong-color=F2241F
 
 separator-color=00000000
-text-caps-lock-color = EED49F
-ring-caps-lock-color = EED49F
-inside-caps-lock-color = 24273A00
-caps-lock-key-hl-color = EED49F
-caps-lock-bs-hl-color = ED8796
+text-caps-lock-color = B1951D
+ring-caps-lock-color = B1951D
+inside-caps-lock-color = 1F202200
+caps-lock-key-hl-color = B1951D
+caps-lock-bs-hl-color = F2241F

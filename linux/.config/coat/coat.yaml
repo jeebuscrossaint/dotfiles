@@ -30,8 +30,8 @@ enabled:
   - swaylock
   - conky
 
-scheme: catppuccin-macchiato
-prefer_base24: true
+scheme: spacemacs
+prefer_base24: false
 
 # Evens out whatever scheme is loaded. `coat docs normalize` lists the knobs.
 normalize:
