@@ -35,6 +35,7 @@ conky
 cronie-runit
 cryptsetup-runit
 cuda
+curl
 dhcpcd-runit
 djvulibre
 dmidecode
