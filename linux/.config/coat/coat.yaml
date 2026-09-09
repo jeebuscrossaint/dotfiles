@@ -30,7 +30,7 @@ enabled:
   - swaylock
   - conky
 
-scheme: summerfruit-dark
+scheme: grayscale-dark
 prefer_base24: false
 
 # Evens out whatever scheme is loaded. `coat docs normalize` lists the knobs.
@@ -70,6 +70,6 @@ overrides:
       sizes:
         # coat overrides are per module, and a conky setup is several panels at
         # different densities. The three slots map onto the three readouts:
-        desktop: 12   # main panel, top-right
+        desktop: 10   # main panel, top-right
         popups: 10    # weather, top of the left panel
         terminal: 9   # process tree, below it -- 66 lines, so it has to be small
