@@ -51,17 +51,17 @@ font:
   sansserif: "SFMono Nerd Font Mono"
   serif: "SFMono Nerd Font Mono"
   sizes:
-    terminal: 10
-    desktop: 10
-    popups: 10
+    terminal: 12
+    desktop: 12
+    popups: 12
 
 # Per-app overrides of the blocks above. Only the keys listed are replaced;
 # everything else falls through, so an override is a patch, not a second config.
 overrides:
-  # A UI drawn in a monospace font never reads right, and macOS uses SF Pro for
-  # chrome with SF Mono kept for code. That distinction cannot be expressed
-  # globally -- there is one `sansserif` key and the terminal has to stay on SF
-  # Mono -- which is exactly what this block is for.
-  quickshell:
+  # conky's readout is ~102 lines. The global desktop size is set for things
+  # that are a few lines long; at 12 this one runs off the bottom of the panel.
+  # It still follows coat -- change this number, not the config file.
+  conky:
     font:
-      sansserif: "SFProText Nerd Font"
+      sizes:
+        desktop: 8
