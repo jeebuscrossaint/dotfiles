@@ -7,6 +7,11 @@
 # Icons are Nerd Font glyphs, each checked against the font with fc-query before
 # use; a codepoint the font lacks renders as a tofu box with no warning.
 #
+# The two section heads in here take conky.conf's form -- the name in the accent
+# colour, then a dotted rule to column 55, and no leading icon, which is what
+# separates a head from a reading -- so the weather's subsections look like the
+# sections above them rather than like a second idea.
+#
 # Colour is by MEANING, not decoration: temperature by how hot, rain by how
 # likely, UV by how much it will hurt -- so the block reads at a glance without
 # parsing the numbers. Colour SLOTS rather than hex, so the palette lives in the
@@ -74,9 +79,7 @@ def wxicon: {"113":"","116":"","119":"","122":"","143":"","176":"
   "\(A)\(C) uv \($c.uvIndex|uvcol)\($c.uvIndex)\(C) · \($w[0].sunHour)h sun   \(A)\(C) \($h.chanceofrain|pcol)\($h.chanceofrain)% rain\(C)   \(A)\(C) \($c.visibilityMiles) mi",
   "\(A)\(C) thunder \($h.chanceofthunder|pcol)\($h.chanceofthunder)%\(C) · fog \($h.chanceoffog)% · precip \($c.precipInches)\"",
   "\(A)\(C) ${color5}\($as.sunrise|hm)\(C) → ${color4}\($as.sunset|hm)\(C)   \(A)\(C) \($as.moon_phase) \($as.moon_illumination)%",
-  "${color2}─────────────────────────────────────────────────────\(C)",
-  "\(A)\(C) today",
+  "${color1}today ${color2}┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈\(C)",
   ($w[0].hourly[] | "  \((.time|tonumber/100|floor|tostring|(" "*(2-length))+.)):00  \(.tempF|tcol)\(.tempF)°F\(C)  \(.chanceofrain|pcol)\(.chanceofrain)%\(C)  \(A)\(.|wxicon)\(C) \(.|desc)"),
-  "${color2}─────────────────────────────────────────────────────\(C)",
-  "\(A)\(C) forecast",
+  "${color1}forecast ${color2}┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈\(C)",
   ($w[] | "  \(.date[5:10])  \(.mintempF|tcol)\(.mintempF)\(C)-\(.maxtempF|tcol)\(.maxtempF)°F\(C)  uv \(.uvIndex|uvcol)\(.uvIndex)\(C)  \(.hourly[4].chanceofrain|pcol)\(.hourly[4].chanceofrain)%\(C)  \(A)\(.hourly[4]|wxicon)\(C) \(.hourly[4]|desc)")
