@@ -46,7 +46,7 @@ indicator-idle-visible
 # only ever showing because the default shows it.
 show-failed-attempts
 
-font=SFMono Nerd Font Mono
+font=JetBrainsMono Nerd Font Mono
 font-size=18
 
 ring-color=4C99D3
@@ -78,4 +78,4 @@ line-clear-color=1D1D1D
 line-ver-color=1D1D1D
 line-wrong-color=1D1D1D
 line-caps-lock-color=1D1D1D
-image=/home/amarnath/walls/architecture/a_stone_path_leading_to_a_building.jpg
+image=/home/amarnath/walls/monochrome/a_street_lights_at_night_01.jpg

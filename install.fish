@@ -106,6 +106,17 @@ or die "$target is not writable"
 # Derived from what the tracked configs and ~/.local/bin scripts actually
 # invoke — grep before adding a row, and keep the paths in step with the
 # probes in start-polkit and mango's config.conf.
+#
+# The conky rows are the whole desktop readout, so they are core: conky itself,
+# curl and jq for the weather it fetches from wttr.in, and pstree for the process
+# tree in the left panel. cava and gawk are opt because each degrades quietly
+# rather than breaking -- conky_cava returns an empty string when nothing is
+# writing ~/.cache/cava.state, and tree.awk without gawk's character-counting
+# RLENGTH colours every branch at the same depth instead of erroring.
+#
+# One font, not two: coat.yaml asks for JetBrainsMono Nerd Font Mono in all three
+# slots. It used to be SFMono plus SF Pro from nerd-fonts-apple, and a machine set
+# up from the old rows themed itself into tofu.
 set -g dep_table \
     "installer|cmd:stow|stow|req|stow||stow|stow|" \
     "installer|cmd:git|git|core|git||git|git|" \
@@ -118,6 +129,8 @@ set -g dep_table \
     "desktop|cmd:awww|awww|core||awww|||" \
     "desktop|cmd:swayidle|swayidle|core|swayidle|||swayidle|" \
     "desktop|cmd:swaylock|swaylock|core|swaylock|||swaylock|" \
+    "desktop|cmd:conky|conky|core|conky||conky-all|conky|" \
+    "desktop|cmd:cava|cava|opt|cava||cava||" \
     "terminal|cmd:kitty|kitty|core|kitty||kitty|kitty|" \
     "terminal|cmd:nvim|neovim|core|neovim||neovim|neovim|" \
     "terminal|cmd:lsd|lsd|opt|lsd||lsd|lsd|" \
@@ -139,11 +152,13 @@ set -g dep_table \
     "system|cmd:nmcli|networkmanager|core|networkmanager||network-manager|||" \
     "system|cmd:qalc|libqalculate|core|libqalculate||libqalculate-dev|libqalculate|" \
     "system|cmd:jq|jq|core|jq||jq|jq|" \
+    "system|cmd:curl|curl|core|curl||curl|curl|" \
+    "system|cmd:pstree|psmisc|core|psmisc||psmisc|psmisc|" \
+    "system|cmd:gawk|gawk|opt|gawk||gawk|gawk|" \
     "system|cmd:python3|python|core|python||python3|python|" \
     "theme|cmd:cargo|rust toolchain|core|rustup||rustup|rust|https://rustup.rs" \
     "theme|cmd:coat|coat|core|||||cargo install --git https://github.com/jeebuscrossaint/coat" \
-    "fonts|font:SFMono Nerd Font|SFMono Nerd Font|core||nerd-fonts-apple|||./install-nerdfonts.sh" \
-    "fonts|font:SFProText Nerd Font|SF Pro (shell UI font)|core||nerd-fonts-apple|||./install-nerdfonts.sh" \
+    "fonts|font:JetBrainsMono Nerd Font|JetBrainsMono Nerd Font|core|ttf-jetbrains-mono-nerd|||./install-nerdfonts.sh" \
     "fonts|path:/usr/share/icons/WhiteSur-dark /usr/share/icons/WhiteSur|WhiteSur icon theme|core||whitesur-icon-theme|||" \
     "fonts|font:Font Awesome|Font Awesome|core|otf-font-awesome||fonts-font-awesome|font-awesome|" \
     "fonts|font:Noto Color Emoji|Noto Color Emoji|core|noto-fonts-emoji||fonts-noto-color-emoji|noto-emoji|" \
