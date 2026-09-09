@@ -58,10 +58,13 @@ font:
 # Per-app overrides of the blocks above. Only the keys listed are replaced;
 # everything else falls through, so an override is a patch, not a second config.
 overrides:
-  # conky's readout is ~102 lines. The global desktop size is set for things
-  # that are a few lines long; at 12 this one runs off the bottom of the panel.
-  # It still follows coat -- change this number, not the config file.
+  # conky sits at 10 while everything else is 12: it is 65 lines of readout
+  # rather than a few lines of chrome, and it wants to be glanceable rather than
+  # read. ~1255px at 10, against a 1600px panel.
+  #
+  # Measure before changing it -- render the config with out_to_console and count
+  # the lines, then scale. A stale line count is what put this at 8 before.
   conky:
     font:
       sizes:
-        desktop: 8
+        desktop: 10
