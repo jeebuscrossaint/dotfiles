@@ -93,3 +93,25 @@ end
 function conky_pulse(a, b)
     return (tick % 2 == 0) and a or b
 end
+
+-- conky_cava(width) -> "▁▃▆█▅▂ ▁▄▇▃▁"
+--
+-- Reads the newest frame cava left in ~/.cache/cava.state. Returns empty when
+-- the file is absent, which is the normal state when the writer is not running --
+-- an audio visualiser is not worth an error message on the desktop.
+function conky_cava(width)
+    local w = tonumber(width) or 28
+    local f = io.open(os.getenv("HOME") .. "/.cache/cava.state", "r")
+    if not f then return "" end
+    local line = f:read("*l")
+    f:close()
+    if not line then return "" end
+
+    local out = {}
+    for v in line:gmatch("%d+") do
+        local i = tonumber(v) or 0
+        out[#out + 1] = (i < 1) and " " or ticks[math.min(i, 8)]
+        if #out >= w then break end
+    end
+    return table.concat(out)
+end
