@@ -30,8 +30,8 @@ enabled:
   - swaylock
   - conky
 
-scheme: grayscale-dark
-prefer_base24: false
+scheme: japanesque
+prefer_base24: true
 
 # Evens out whatever scheme is loaded. `coat docs normalize` lists the knobs.
 normalize:
@@ -72,4 +72,4 @@ overrides:
         # different densities. The three slots map onto the three readouts:
         desktop: 10   # main panel, top-right
         popups: 10    # weather, top of the left panel
-        terminal: 9   # process tree, below it -- 66 lines, so it has to be small
+        terminal: 10   # process tree, below it -- 66 lines, so it has to be small
