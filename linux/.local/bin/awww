@@ -14,6 +14,9 @@
 #   COAT_FOLLOW=0 awww img x.png    set the wallpaper, leave the theme alone
 #   COAT_FOLLOW=1 awww img x.png    retheme even from a hand-picked scheme
 #
+# The lock screen follows the wallpaper too, and that part is NOT conditional on
+# any of the above: swaylock draws whatever is behind it, scheme or no scheme.
+#
 # Everything that is not `img` is handed straight through, `restore` included:
 # that runs at login with the wallpaper already themed, and a retheme there would
 # restart waybar and fnott for no reason every time you log in.
@@ -46,6 +49,34 @@ fi
 "$real" "$@" || exit $?
 
 [ "$1" = img ] || exit 0
+
+# swaylock has no daemon, cannot be signalled, and cannot ask awww anything: it
+# reads its config fresh at every invocation and that is the only channel in. So
+# the path is written into the config here, at the one moment it is known to have
+# changed -- which also means Super+L, swayidle and idle-guard all keep calling
+# plain `swaylock` with no arguments.
+#
+# `query` rather than "$@": img takes --outputs, --transition-* and friends, and
+# the wallpaper is not reliably the last word on the line. The daemon's own answer
+# is, and its last colon-space field is the path.
+swaylock_config="${XDG_CONFIG_HOME:-$HOME/.config}/swaylock/config"
+wall=$("$real" query 2>/dev/null | grep -v HEADLESS | head -1)
+wall=${wall##*: }
+if [ -n "$wall" ] && [ -f "$wall" ] && [ -f "$swaylock_config" ]; then
+	tmp=$(mktemp) && {
+		# awk, not sed: a wallpaper path is arbitrary and would have to be
+		# escaped into a sed replacement. -v hands it over verbatim.
+		awk -v w="$wall" '
+			/^image=/ { print "image=" w; found = 1; next }
+			{ print }
+			END { if (!found) print "image=" w }
+		' "$swaylock_config" > "$tmp" &&
+			# Redirect, not `mv`: the config is a stow symlink into the
+			# dotfiles repo, and mv would replace the link with a file.
+			cat "$tmp" > "$swaylock_config"
+		rm -f "$tmp"
+	}
+fi
 
 [ "$COAT_FOLLOW" = 0 ] && exit 0
 command -v coat >/dev/null 2>&1 || exit 0
