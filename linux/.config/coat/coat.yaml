@@ -47,9 +47,9 @@ opacity:
 
 font:
   emoji: "Noto Color Emoji"
-  monospace: "SFMono Nerd Font Mono"
-  sansserif: "SFMono Nerd Font Mono"
-  serif: "SFMono Nerd Font Mono"
+  monospace: "JetBrainsMono Nerd Font Mono"
+  sansserif: "JetBrainsMono Nerd Font Mono"
+  serif: "JetBrainsMono Nerd Font Mono"
   sizes:
     terminal: 12
     desktop: 12
@@ -68,8 +68,9 @@ overrides:
   conky:
     font:
       sizes:
-        # coat overrides are per module, and a conky setup is several panels at
-        # different densities. The three slots map onto the three readouts:
-        desktop: 10   # main panel, top-right
-        popups: 10    # weather, top of the left panel
-        terminal: 10   # process tree, below it -- 66 lines, so it has to be small
+        # coat overrides are per module, and conky is two panels at two
+        # densities, so two of the three slots are spoken for:
+        desktop: 9   # main panel, top-right -- readings, then the weather
+        terminal: 9  # process tree, top-left -- 66 lines, so it has to be small
+        # popups is unused by conky: it was the weather's size while that block
+        # lived in the left panel, and the weather draws at desktop size now.
