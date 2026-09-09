@@ -89,9 +89,14 @@ function conky_spin()
 end
 
 -- Alternates between two colours per update, for a value that wants attention.
--- Returns a bare hex colour, so the caller wraps it: ${color ${lua pulse A B}}
+--
+-- Returns the whole ${color ...} directive, not a bare hex, and the caller must
+-- use ${lua_parse} rather than ${lua}. Wrapping it the other way round --
+-- ${color ${lua pulse A B}} -- does NOT work: conky does not evaluate a nested
+-- variable inside ${color}'s argument, so the colour parser is handed the
+-- literal text and logs "can't parse color '${lua pulse ...}'" every tick.
 function conky_pulse(a, b)
-    return (tick % 2 == 0) and a or b
+    return "${color " .. ((tick % 2 == 0) and a or b) .. "}"
 end
 
 -- conky_cava(width) -> "▁▃▆█▅▂ ▁▄▇▃▁"
