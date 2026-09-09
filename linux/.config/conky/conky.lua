@@ -56,3 +56,40 @@ function conky_spark(key, value, width, scale)
     end
     return table.concat(out)
 end
+
+-- Eighth-width blocks, so a bar can land between characters instead of snapping
+-- to whole cells. At width 12 that is 96 steps rather than 12.
+local eighths = { "\u{258F}", "\u{258E}", "\u{258D}", "\u{258C}",
+                  "\u{258B}", "\u{258A}", "\u{2589}", "\u{2588}" }
+
+-- conky_fbar(pct, width) -> "███████▍░░░░"
+function conky_fbar(pct, width)
+    local p, w = num(pct), tonumber(width) or 10
+    if p < 0 then p = 0 elseif p > 100 then p = 100 end
+    local units = p * w * 8 / 100
+    local whole = math.floor(units / 8)
+    local rem = math.floor(units % 8)
+    local out = FILL:rep(whole)
+    if whole < w and rem > 0 then
+        out = out .. eighths[rem]
+        whole = whole + 1
+    end
+    return out .. EMPTY:rep(w - whole)
+end
+
+-- A corner block walking round the compass, one step per update. Braille is the
+-- usual spinner and this font has NONE of it -- 0 of 256 codepoints -- so the
+-- quadrant blocks do the job instead. Checked with fc-query, not assumed.
+local frames = { "\u{2598}", "\u{259D}", "\u{2597}", "\u{2596}" }
+local tick = 0
+
+function conky_spin()
+    tick = tick + 1
+    return frames[(tick % #frames) + 1]
+end
+
+-- Alternates between two colours per update, for a value that wants attention.
+-- Returns a bare hex colour, so the caller wraps it: ${color ${lua pulse A B}}
+function conky_pulse(a, b)
+    return (tick % 2 == 0) and a or b
+end
