@@ -14,12 +14,22 @@ daemonize
 
 # No image, no blur, no fade: a flat wall of colour. Cheapest thing to draw, and
 # there is no wallpaper daemon involved in it.
-color=101010
+color=1D1D1D
 
+# The whole lock screen is this one dial, so it is drawn large: 110px radius on
+# a 1600px panel, with a band thick enough that a single keypress segment is a
+# visible arc rather than a tick. swaylock also strokes a 2px line-color circle
+# at BOTH edges of the band -- coat paints those in the background colour, which
+# cuts the ring away from the disc inside it and from the wall behind it.
 indicator
-indicator-radius=90
-indicator-thickness=6
+indicator-radius=110
+indicator-thickness=10
 indicator-caps-lock
+
+# Drawn from the moment the screen locks, not on the first keypress. There is
+# nothing else on this screen; without it the panel is an unbroken flat field
+# and the lock looks like a dead display rather than a locked one.
+indicator-idle-visible
 
 # Typing shows progress but never the length. Showing the count is a free hint to
 # anyone watching, and swaylock's default draws one segment per character.
@@ -27,29 +37,34 @@ disable-caps-lock-text=false
 show-failed-attempts
 
 font=SFMono Nerd Font Mono
-font-size=16
+font-size=18
 
-ring-color=686868
-ring-clear-color=A0A0A0
-ring-ver-color=B9B9B9
-ring-wrong-color=7C7C7C
+ring-color=4C99D3
+ring-clear-color=135879
+ring-ver-color=D0D2CE
+ring-wrong-color=CE3E60
 
-inside-color=10101000
-inside-clear-color=10101000
-inside-ver-color=10101000
-inside-wrong-color=10101000
+inside-color=343835e6
+inside-clear-color=13587933
+inside-ver-color=4C99D333
+inside-wrong-color=CE3E6033
 
-key-hl-color=B9B9B9
-bs-hl-color=7C7C7C
+key-hl-color=D0D2CE
+bs-hl-color=CE3E60
 
-text-color=B9B9B9
-text-clear-color=B9B9B9
-text-ver-color=B9B9B9
-text-wrong-color=7C7C7C
+text-color=D0D2CE
+text-clear-color=D0D2CE
+text-ver-color=D0D2CE
+text-wrong-color=CE3E60
 
 separator-color=00000000
-text-caps-lock-color = A0A0A0
-ring-caps-lock-color = A0A0A0
-inside-caps-lock-color = 10101000
-caps-lock-key-hl-color = A0A0A0
-caps-lock-bs-hl-color = 7C7C7C
+text-caps-lock-color = 135879
+ring-caps-lock-color = 135879
+inside-caps-lock-color = 13587933
+caps-lock-key-hl-color = 135879
+caps-lock-bs-hl-color = CE3E60
+line-color = 1D1D1D
+line-clear-color = 1D1D1D
+line-ver-color = 1D1D1D
+line-wrong-color = 1D1D1D
+line-caps-lock-color = 1D1D1D
