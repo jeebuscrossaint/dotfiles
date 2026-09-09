@@ -13,6 +13,10 @@
 # worst case, since the window is sized for a desktop widget rather than the
 # longest string the API happens to return.
 def desc: .weatherDesc[0].value | .[0:18];
+# weatherCode -> Nerd Font weather glyph. The whole e300-e3ff block is in this
+# font (228 of 256 codepoints), so the icon can actually track the condition
+# rather than being one static cloud.
+def wxicon: {"113":"","116":"","119":"","122":"","143":"","176":"","179":"","182":"","185":"","200":"","227":"","230":"","248":"","260":"","263":"","266":"","281":"","284":"","293":"","296":"","299":"","302":"","305":"","308":"","311":"","314":"","317":"","320":"","323":"","326":"","329":"","332":"","335":"","338":"","350":"","353":"","356":"","359":"","362":"","365":"","368":"","371":"","374":"","377":"","386":"","389":"","392":"","395":""}[.weatherCode] // "";
 def hm: ltrimstr("0") | sub(" (?<a>[AP])M$"; "\(.a)");
 
 .current_condition[0] as $c
@@ -21,7 +25,7 @@ def hm: ltrimstr("0") | sub(" (?<a>[AP])M$"; "\(.a)");
 | $w[0].astronomy[0] as $as
 | ($w[0].hourly | map(select((.time|tonumber/100|floor) <= (now|strflocaltime("%H")|tonumber))) | last // $w[0].hourly[0]) as $h
 | " \($a.areaName[0].value), \($a.region[0].value)    \($c.observation_time|hm)",
-  " \($c.temp_F)°F / \($c.temp_C)°C    feels \($c.FeelsLikeF)°F    \($c|desc)",
+  " \($c.temp_F)°F / \($c.temp_C)°C    feels \($c.FeelsLikeF)°F   \($c|wxicon) \($c|desc)",
   " \($c.humidity)% hum · dew \($h.DewPointF)°F · cloud \($c.cloudcover)%",
   " \($c.winddir16Point) \($c.windspeedMiles) mph · gust \($h.WindGustMiles)    \($c.pressure) mb",
   " uv \($c.uvIndex) · \($w[0].sunHour)h sun    \($h.chanceofrain)% rain    \($c.visibilityMiles) mi",
@@ -29,7 +33,7 @@ def hm: ltrimstr("0") | sub(" (?<a>[AP])M$"; "\(.a)");
   " \($as.sunrise|hm) → \($as.sunset|hm)    \($as.moon_phase) \($as.moon_illumination)%",
   "────────────────────────────────────────────",
   " today",
-  ($w[0].hourly[] | "  \((.time|tonumber/100|floor|tostring|(" "*(2-length))+.)):00  \(.tempF)°F  \(.chanceofrain)%  \(.|desc)"),
+  ($w[0].hourly[] | "  \((.time|tonumber/100|floor|tostring|(" "*(2-length))+.)):00  \(.tempF)°F  \(.chanceofrain)%  \(.|wxicon) \(.|desc)"),
   "────────────────────────────────────────────",
   " forecast",
-  ($w[] | "  \(.date[5:10])  \(.mintempF)-\(.maxtempF)°F  uv \(.uvIndex)  \(.hourly[4].chanceofrain)%  \(.hourly[4]|desc)")
+  ($w[] | "  \(.date[5:10])  \(.mintempF)-\(.maxtempF)°F  uv \(.uvIndex)  \(.hourly[4].chanceofrain)%  \(.hourly[4]|wxicon) \(.hourly[4]|desc)")
