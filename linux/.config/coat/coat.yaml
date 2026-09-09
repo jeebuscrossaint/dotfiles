@@ -30,8 +30,8 @@ enabled:
   - swaylock
   - conky
 
-scheme: grayscale-dark
-prefer_base24: false
+scheme: space-gray-eighties-dull
+prefer_base24: true
 
 # Evens out whatever scheme is loaded. `coat docs normalize` lists the knobs.
 normalize:
