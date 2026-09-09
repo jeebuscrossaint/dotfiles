@@ -12,7 +12,42 @@
 # parsing the numbers. Colour SLOTS rather than hex, so the palette lives in the
 # conky config and follows coat. That also means the caller must use execpi:
 # execi does not parse conky variables in its output and these would print raw.
-def desc: .weatherDesc[0].value | .[0:18];
+# wttr's descriptions run to 43 characters -- "Moderate or heavy snow in area
+# with thunder" -- and this panel is 55 columns wide including everything left of
+# them. Slicing a long one lands mid-word ("Moderate or heav"), so the long ones
+# are NAMED AGAIN here instead, at most 19 characters, which is what sets the
+# panel width. Anything not listed is already short enough and passes through; the
+# slice at the end is a backstop for a description wttr adds later, not the normal
+# path. Both spellings of the "nearby"/"possible" codes are listed because wttr
+# has used each, and the values carry stray leading and trailing spaces, so the
+# lookup is on a trimmed string.
+def short: {
+  "Patchy rain possible": "Patchy rain nearby",
+  "Patchy snow possible": "Patchy snow nearby",
+  "Patchy sleet possible": "Patchy sleet nearby",
+  "Patchy freezing drizzle nearby": "Icy drizzle nearby",
+  "Patchy freezing drizzle possible": "Icy drizzle nearby",
+  "Thundery outbreaks in nearby": "Thundery outbreaks",
+  "Thundery outbreaks possible": "Thundery outbreaks",
+  "Patchy light drizzle": "Patchy drizzle",
+  "Heavy freezing drizzle": "Heavy icy drizzle",
+  "Moderate rain at times": "Rain at times",
+  "Moderate or heavy freezing rain": "Heavy icy rain",
+  "Moderate or heavy sleet": "Heavy sleet",
+  "Patchy moderate snow": "Patchy snow",
+  "Moderate or heavy rain shower": "Heavy rain shower",
+  "Torrential rain shower": "Torrential rain",
+  "Moderate or heavy sleet showers": "Heavy sleet shower",
+  "Moderate or heavy snow showers": "Heavy snow showers",
+  "Light showers of ice pellets": "Light ice pellets",
+  "Moderate or heavy showers of ice pellets": "Heavy ice pellets",
+  "Patchy light rain in area with thunder": "Light rain, thunder",
+  "Moderate or heavy rain in area with thunder": "Heavy rain, thunder",
+  "Patchy light snow in area with thunder": "Light snow, thunder",
+  "Moderate or heavy snow in area with thunder": "Heavy snow, thunder"
+};
+def desc: (.weatherDesc[0].value | sub("^ +"; "") | sub(" +$"; "")) as $d
+          | (short[$d] // $d) | .[0:19];
 def n: tonumber? // 0;
 
 # 3 hot, 4 warm, 5 mild, 6 cool, 7 cold
@@ -39,9 +74,9 @@ def wxicon: {"113":"","116":"","119":"","122":"","143":"","176":"
   "\(A)\(C) uv \($c.uvIndex|uvcol)\($c.uvIndex)\(C) · \($w[0].sunHour)h sun   \(A)\(C) \($h.chanceofrain|pcol)\($h.chanceofrain)% rain\(C)   \(A)\(C) \($c.visibilityMiles) mi",
   "\(A)\(C) thunder \($h.chanceofthunder|pcol)\($h.chanceofthunder)%\(C) · fog \($h.chanceoffog)% · precip \($c.precipInches)\"",
   "\(A)\(C) ${color5}\($as.sunrise|hm)\(C) → ${color4}\($as.sunset|hm)\(C)   \(A)\(C) \($as.moon_phase) \($as.moon_illumination)%",
-  "${color2}──────────────────────────────────────────────────────────────────────────────────────────\(C)",
+  "${color2}─────────────────────────────────────────────────────\(C)",
   "\(A)\(C) today",
   ($w[0].hourly[] | "  \((.time|tonumber/100|floor|tostring|(" "*(2-length))+.)):00  \(.tempF|tcol)\(.tempF)°F\(C)  \(.chanceofrain|pcol)\(.chanceofrain)%\(C)  \(A)\(.|wxicon)\(C) \(.|desc)"),
-  "${color2}──────────────────────────────────────────────────────────────────────────────────────────\(C)",
+  "${color2}─────────────────────────────────────────────────────\(C)",
   "\(A)\(C) forecast",
   ($w[] | "  \(.date[5:10])  \(.mintempF|tcol)\(.mintempF)\(C)-\(.maxtempF|tcol)\(.maxtempF)°F\(C)  uv \(.uvIndex|uvcol)\(.uvIndex)\(C)  \(.hourly[4].chanceofrain|pcol)\(.hourly[4].chanceofrain)%\(C)  \(A)\(.hourly[4]|wxicon)\(C) \(.hourly[4]|desc)")
