@@ -68,4 +68,8 @@ overrides:
   conky:
     font:
       sizes:
-        desktop: 12
+        # coat overrides are per module, and a conky setup is several panels at
+        # different densities. The three slots map onto the three readouts:
+        desktop: 12   # main panel, top-right
+        popups: 10    # weather, top of the left panel
+        terminal: 9   # process tree, below it -- 66 lines, so it has to be small
