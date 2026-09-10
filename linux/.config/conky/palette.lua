@@ -68,13 +68,24 @@ function c.lift(hex, floor)
     return c.base05
 end
 
--- Even steps through a list of colours, lifted as they go.
-function c.ramp(stops, n, floor)
-    local out, legs = {}, #stops - 1
+-- n colours from `hex` down to `floor`, evenly spaced in CONTRAST against the
+-- background rather than in mix fraction. Those are not the same thing: half the
+-- way to the background is nowhere near half the way down the contrast, so an
+-- even mix bunches the visible difference into the first step or two and then
+-- flattens, and on a scheme with a narrow foreground the tail lands on the floor
+-- and comes out as one colour repeated. Spacing by contrast spends the range the
+-- scheme actually has, whatever that is.
+function c.fade(hex, floor, n)
+    local top, out = contrast(hex, c.base00), {}
+    if floor > top then floor = top end
     for i = 0, n - 1 do
-        local at = i / (n - 1) * legs
-        local leg = math.min(math.floor(at) + 1, legs)
-        out[i + 1] = c.lift(c.mix(stops[leg], stops[leg + 1], at - (leg - 1)), floor)
+        local want = top + (floor - top) * (n > 1 and i / (n - 1) or 0)
+        local step = hex
+        for k = 0, 100 do
+            step = c.mix(hex, c.base00, k / 100)
+            if contrast(step, c.base00) <= want then break end
+        end
+        out[i + 1] = step
     end
     return out
 end

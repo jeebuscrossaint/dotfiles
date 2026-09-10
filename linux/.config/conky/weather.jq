@@ -55,18 +55,16 @@ def desc: (.weatherDesc[0].value | sub("^ +"; "") | sub(" +$"; "")) as $d
           | (short[$d] // $d) | .[0:19];
 def n: tonumber? // 0;
 
-# Two colours and plain text, matching the panel: 3 is the alert and nothing but
-# an extreme reaches it, 4 is the secondary and marks the other end -- cold, wet.
-# Everything in between is text. Colouring every band meant a row changed colour
-# two or three times and a mild reading was as loud as an extreme one, so nothing
-# stood out. Which values deserve a colour is decided here; conky.conf only holds
-# the palette.
-def tcol: if n >= 90 then "${color3}" elif n >= 45 then "${color}"
-          else "${color4}" end;
-def pcol: if n >= 60 then "${color4}" else "${color}" end;
+# Weight, not hue, matching the panel: an ordinary reading is text, a quiet one
+# drops to the dim tier, and only an extreme reaches the alert. Colouring every
+# band meant a row changed colour two or three times and a mild reading was as
+# loud as a dangerous one, so nothing stood out. Which values deserve it is
+# decided here; conky.conf only holds the palette.
+def tcol: if n >= 90 then "${color3}" else "${color}" end;
+def pcol: if n >= 60 then "${color}" else "${color2}" end;
 def uvcol: if n >= 8 then "${color3}" else "${color}" end;
 def C: "${color}";
-def A: "${color1}";
+def A: "${color2}";
 def hm: ltrimstr("0") | sub(" (?<a>[AP])M$"; "\(.a)");
 def wxicon: {"113":"","116":"","119":"","122":"","143":"","176":"","179":"","182":"","185":"","200":"","227":"","230":"","248":"","260":"","263":"","266":"","281":"","284":"","293":"","296":"","299":"","302":"","305":"","308":"","311":"","314":"","317":"","320":"","323":"","326":"","329":"","332":"","335":"","338":"","350":"","353":"","356":"","359":"","362":"","365":"","368":"","371":"","374":"","377":"","386":"","389":"","392":"","395":""}[.weatherCode] // "";
 
