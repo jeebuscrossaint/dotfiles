@@ -55,13 +55,16 @@ def desc: (.weatherDesc[0].value | sub("^ +"; "") | sub(" +$"; "")) as $d
           | (short[$d] // $d) | .[0:19];
 def n: tonumber? // 0;
 
-# 3 hot, 4 warm, 5 mild, 6 cool, 7 cold
-def tcol: if n >= 90 then "${color3}" elif n >= 78 then "${color4}"
-          elif n >= 65 then "${color5}" elif n >= 45 then "${color6}"
-          else "${color7}" end;
-def pcol: if n >= 60 then "${color7}" elif n >= 30 then "${color6}" else "${color2}" end;
-def uvcol: if n >= 8 then "${color3}" elif n >= 6 then "${color4}"
-           elif n >= 3 then "${color5}" else "${color6}" end;
+# Two colours and plain text, matching the panel: 3 is the alert and nothing but
+# an extreme reaches it, 4 is the secondary and marks the other end -- cold, wet.
+# Everything in between is text. Colouring every band meant a row changed colour
+# two or three times and a mild reading was as loud as an extreme one, so nothing
+# stood out. Which values deserve a colour is decided here; conky.conf only holds
+# the palette.
+def tcol: if n >= 90 then "${color3}" elif n >= 45 then "${color}"
+          else "${color4}" end;
+def pcol: if n >= 60 then "${color4}" else "${color}" end;
+def uvcol: if n >= 8 then "${color3}" else "${color}" end;
 def C: "${color}";
 def A: "${color1}";
 def hm: ltrimstr("0") | sub(" (?<a>[AP])M$"; "\(.a)");
@@ -78,7 +81,7 @@ def wxicon: {"113":"","116":"","119":"","122":"","143":"","176":"
   "\(A)\(C) \($c.winddir16Point) \($c.windspeedMiles) mph · gust \($h.WindGustMiles)   \(A)\(C) \($c.pressure) mb",
   "\(A)\(C) uv \($c.uvIndex|uvcol)\($c.uvIndex)\(C) · \($w[0].sunHour)h sun   \(A)\(C) \($h.chanceofrain|pcol)\($h.chanceofrain)% rain\(C)   \(A)\(C) \($c.visibilityMiles) mi",
   "\(A)\(C) thunder \($h.chanceofthunder|pcol)\($h.chanceofthunder)%\(C) · fog \($h.chanceoffog)% · precip \($c.precipInches)\"",
-  "\(A)\(C) ${color5}\($as.sunrise|hm)\(C) → ${color4}\($as.sunset|hm)\(C)   \(A)\(C) \($as.moon_phase) \($as.moon_illumination)%",
+  "\(A)\(C) \($as.sunrise|hm)\(C) → \($as.sunset|hm)\(C)   \(A)\(C) \($as.moon_phase) \($as.moon_illumination)%",
   "${color1}today ${color2}┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈\(C)",
   ($w[0].hourly[] | "  \((.time|tonumber/100|floor|tostring|(" "*(2-length))+.)):00  \(.tempF|tcol)\(.tempF)°F\(C)  \(.chanceofrain|pcol)\(.chanceofrain)%\(C)  \(A)\(.|wxicon)\(C) \(.|desc)"),
   "${color1}forecast ${color2}┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈\(C)",
