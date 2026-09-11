@@ -1,0 +1,118 @@
+#!/bin/sh
+# dgpu — hard-toggle the RTX 4070 via ASUS firmware (asus-nb-wmi dgpu_disable).
+#
+# "off" unloads the NVIDIA modules and tells the EC to cut the dGPU entirely:
+# it vanishes from the PCI bus, drawing nothing. "on" brings it back live, no
+# reboot. Requires MUX in Hybrid mode (gpu_mux_mode=1) -- in Discrete mode the
+# panel is wired to the dGPU and this would black out the screen, so it refuses.
+#
+# Prerequisite: nothing may hold /dev/nvidia*. In practice that means Hyprland
+# must NOT list /dev/dri/card0 in AQ_DRM_DEVICES.
+
+set -e
+
+WMI=/sys/devices/platform/asus-nb-wmi
+DGPU=$WMI/dgpu_disable
+MUX=$WMI/gpu_mux_mode
+PCI=/sys/bus/pci/devices/0000:01:00.0
+MODS="nvidia_drm nvidia_modeset nvidia_uvm nvidia"
+
+die() { echo "dgpu: $*" >&2; exit 1; }
+
+need_root() { [ "$(id -u)" = 0 ] || die "must run as root (sudo $0 $1)"; }
+
+holders() {
+    # PIDs with an open fd on any /dev/nvidia* node
+    for p in /proc/[0-9]*; do
+        for fd in "$p"/fd/*; do
+            case "$(readlink "$fd" 2>/dev/null)" in
+                /dev/nvidia*) echo "$(cat "$p/comm" 2>/dev/null) [${p#/proc/}]"; break ;;
+            esac
+        done
+    done 2>/dev/null | sort -u
+}
+
+status() {
+    if [ ! -e "$PCI" ]; then
+        echo "dGPU: OFF (removed from PCI bus)"
+        return
+    fi
+    st=$(cat "$PCI/power/runtime_status" 2>/dev/null)
+    ct=$(cat "$PCI/power/control" 2>/dev/null)
+    sus=$(cat "$PCI/power/runtime_suspended_time" 2>/dev/null)
+    act=$(cat "$PCI/power/runtime_active_time" 2>/dev/null)
+    tot=$((sus + act))
+    pct=0
+    [ "$tot" -gt 0 ] && pct=$((sus * 100 / tot))
+    if lsmod | grep -q "^nvidia_drm "; then drm="loaded (blocks RTD3)"; else drm="unloaded (RTD3 ok)"; fi
+    echo "dGPU: ON  runtime=$st  control=$ct  asleep ${pct}% of the time"
+    echo "  nvidia_drm: $drm"
+    [ "$st" = active ] && {
+        echo "  held awake by:"
+        holders | sed 's/^/    /'
+    }
+    nvidia-smi --query-gpu=power.draw,pstate --format=csv,noheader 2>/dev/null \
+        | sed 's/^/  draw: /'
+}
+
+case "${1:-status}" in
+off)
+    need_root off
+    [ "$(cat "$MUX" 2>/dev/null)" = 1 ] || die "MUX is not in Hybrid mode; refusing"
+    [ "$(cat "$DGPU")" = 1 ] && { echo "already off"; exit 0; }
+
+    h=$(holders)
+    [ -n "$h" ] && {
+        echo "these processes hold the dGPU open:" >&2
+        echo "$h" | sed 's/^/  /' >&2
+        die "close them (or drop card0 from AQ_DRM_DEVICES) first"
+    }
+
+    for m in $MODS; do
+        lsmod | grep -q "^$m " && modprobe -r "$m"
+    done
+    echo 1 > "$DGPU"
+    sleep 1
+    echo "dGPU off."
+    ;;
+
+on)
+    need_root on
+    echo 0 > "$DGPU"
+    sleep 1
+    echo 1 > /sys/bus/pci/rescan
+    sleep 1
+    modprobe nvidia_drm modeset=1 2>/dev/null || modprobe nvidia_drm
+    echo "dGPU on."
+    status
+    ;;
+
+gfx)
+    # Load nvidia_drm for graphics offload (games, anything needing dmabuf
+    # export to the compositor). CUDA does NOT need this -- nvidia + nvidia_uvm
+    # are enough, and both stay loaded at boot.
+    need_root gfx
+    case "${2:-}" in
+    on)
+        modprobe nvidia_drm
+        echo "nvidia_drm loaded. The dGPU will now stay at D0 -- expect ~8W."
+        echo "Hyprland will grab card0 via udev hotplug even though"
+        echo "AQ_DRM_DEVICES excludes it (the filter only applies at startup)."
+        ;;
+    off)
+        if modprobe -r nvidia_drm nvidia_modeset 2>/dev/null; then
+            echo "nvidia_drm unloaded; RTD3 free to fire."
+        else
+            echo "cannot unload -- Hyprland still holds card0 from the hotplug." >&2
+            holders | sed 's/^/  /' >&2
+            die "restart Hyprland to drop it, or just reboot"
+        fi
+        ;;
+    *) die "usage: dgpu gfx {on|off}" ;;
+    esac
+    ;;
+
+status) status ;;
+
+*) die "usage: dgpu {on|off|gfx on|gfx off|status}" ;;
+esac

@@ -162,6 +162,7 @@ wl-clip-persist
 wl-clipboard
 wlr-randr
 wlroots0.19
+wlsunset
 wob
 wpa_supplicant-runit
 xcur2png
