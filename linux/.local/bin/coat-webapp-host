@@ -32,6 +32,7 @@ CONFIG = os.environ.get("XDG_CONFIG_HOME") or os.path.join(HOME, ".config")
 STATE = os.environ.get("XDG_STATE_HOME") or os.path.join(HOME, ".local/state")
 
 COAT_YAML = os.path.join(CONFIG, "coat/coat.yaml")
+COAT_STATE = os.path.join(STATE, "coat/state.yaml")
 SCHEMES_DIR = os.path.join(CONFIG, "coat/schemes")
 WATCH_DIR = os.path.join(STATE, "coat")
 WATCH_FILE = "manifest.json"
@@ -42,18 +43,16 @@ WATCH_FILE = "manifest.json"
 SLOTS = [f"base{n:02X}" for n in range(0x18)]
 
 _SCHEME_RE = re.compile(r"^\s*scheme\s*:\s*[\"']?([^\"'#\s]+)")
-_B24_RE = re.compile(r"^\s*prefer_base24\s*:\s*(true|yes|on)\s*$", re.I)
+_B24_RE = re.compile(r"^\s*(?:prefer_)?base24\s*:\s*(true|yes|on)\s*$", re.I)
 _PAIR_RE = re.compile(r"^\s*([A-Za-z0-9_]+)\s*:\s*[\"']?(#[0-9a-fA-F]{6})[\"']?")
 _META_RE = re.compile(r"^\s*(name|variant)\s*:\s*[\"']?([^\"'#\n]*?)[\"']?\s*$")
 
 
-def read_config():
-    """The scheme coat.yaml pins, plus the base24 preference. That key is the
-    source of truth -- `coat match` writes a generated scheme into
-    schemes/generated/ and repoints it."""
-    slug, prefer_base24 = None, False
+def _read_slug(path):
+    """`scheme:` and the base24 flag out of one file, or (None, False)."""
+    slug, base24 = None, False
     try:
-        with open(COAT_YAML, encoding="utf-8") as fh:
+        with open(path, encoding="utf-8") as fh:
             for line in fh:
                 if slug is None:
                     m = _SCHEME_RE.match(line)
@@ -61,10 +60,29 @@ def read_config():
                         slug = m.group(1)
                         continue
                 if _B24_RE.match(line):
-                    prefer_base24 = True
+                    base24 = True
     except OSError:
         pass
-    return slug, prefer_base24
+    return slug, base24
+
+
+def read_config():
+    """The scheme in use, from coat's STATE file, falling back to coat.yaml.
+
+    Both, and in that order, because they answer different questions. coat.yaml
+    is checked into a dotfiles repo and holds the seed a fresh checkout comes up
+    as; the scheme actually on screen changes on a keypress and lives in
+    ~/.local/state/coat/state.yaml, which is what coat writes and never the
+    config. Reading only the config left every themed website on whatever scheme
+    the repo was committed with -- the one case where being out of date is
+    invisible, because nothing else on the desktop reads that file either.
+
+    The fallback is not dead code: it is a machine that has never picked a
+    scheme, where the config's seed is the only answer there is."""
+    slug, base24 = _read_slug(COAT_STATE)
+    if slug:
+        return slug, base24
+    return _read_slug(COAT_YAML)
 
 
 def find_scheme_file(slug, prefer_base24):
