@@ -1,0 +1,55 @@
+#!/bin/sh
+# fans — the only fan control this chassis actually has.
+#
+# asus-wmi on this model exposes pwm{1,2,3}_enable and nothing else: no
+# pwm*_auto_point* curve interface, no pwm* duty file. So asusctl fan-curve
+# stores curves and silently cannot apply them, and "manual" mode is
+# unavailable. That leaves two states:
+#
+#   max   pwm_enable=0  "no control" = full speed.  3300/3200/6500 rpm.
+#                       GPU holds ~81C at 74W. Needed for full performance:
+#                       at the EC curve the 4070 reaches its 87C max operating
+#                       temp, SW Thermal Slowdown goes Active, and it clamps to
+#                       ~40W. Measured 110fps -> 65fps in Bodycam.
+#   auto  pwm_enable=2  EC's built-in curve. 2500/2400/5400 at idle, but it
+#                       barely ramps under load, hence the above.
+#
+# Turbo/Performance is already the most aggressive EC curve, so there is no
+# third option to find.
+
+set -e
+H=/sys/class/hwmon/hwmon4
+[ "$(cat $H/name 2>/dev/null)" = asus ] || {
+    H=$(for h in /sys/class/hwmon/hwmon*; do
+            [ "$(cat "$h/name" 2>/dev/null)" = asus ] && echo "$h"; done | head -1)
+    [ -n "$H" ] || { echo "fans: no asus hwmon found" >&2; exit 1; }
+}
+
+need_root() { [ "$(id -u)" = 0 ] || { echo "fans: run as root (sudo fans $1)" >&2; exit 1; }; }
+
+set_mode() {
+    for n in 1 2 3; do
+        [ -f "$H/pwm${n}_enable" ] && echo "$1" > "$H/pwm${n}_enable"
+    done
+}
+
+status() {
+    printf "mode:"
+    for n in 1 2 3; do printf " pwm%s=%s" "$n" "$(cat $H/pwm${n}_enable 2>/dev/null)"; done
+    echo "   (0=full speed, 2=EC curve)"
+    printf "rpm: "
+    for n in 1 2 3; do
+        printf "%s=%s " "$(cat $H/fan${n}_label 2>/dev/null || echo fan$n)" \
+                        "$(cat $H/fan${n}_input 2>/dev/null)"
+    done
+    echo
+    nvidia-smi --query-gpu=temperature.gpu,power.draw --format=csv,noheader 2>/dev/null \
+        | sed 's/^/gpu: /' || true
+}
+
+case "${1:-status}" in
+max)    need_root max;  set_mode 0; echo "fans: full speed."; ;;
+auto)   need_root auto; set_mode 2; echo "fans: EC curve (expect thermal throttling under load)."; ;;
+status) status ;;
+*)      echo "usage: fans {max|auto|status}" >&2; exit 1 ;;
+esac

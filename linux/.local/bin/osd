@@ -14,6 +14,7 @@
 #   osd brightness up|down          screen backlight
 #   osd kbd up|down|show            keyboard backlight
 #   osd capslock|numlock
+#   osd nightlight [start]          toggle; `start` is the login one, silent
 #   osd touchpad                    toggle, through the compositor
 #   osd playpause|next|prev
 #
@@ -44,8 +45,15 @@ KBD_LED=asus::kbd_backlight
 # is missing or ~/.config/sfx-mute exists. Volume gets one because you are already
 # thinking about audio; brightness deliberately does not, since a click on every
 # step of a held key is maddening.
-NIGHT_TEMP=4000
-NIGHT_FLAG="${XDG_RUNTIME_DIR:-/tmp}/osd-nightlight"
+# Night light. wlsunset does the sunrise/sunset arithmetic itself from a
+# latitude and longitude, so there is no timer and no cron here -- it sleeps
+# until the next transition and fades over it. Orlando; change the two numbers
+# if the machine moves. 6500K is neutral daylight, so the day half of the cycle
+# is a no-op and only the night half shifts.
+NIGHT_TEMP=3500
+NIGHT_DAY_TEMP=6500
+NIGHT_LAT=28.5
+NIGHT_LON=-81.4
 
 # Whether the touchpad is currently off. Neither compositor can be asked (see
 # the touchpad section), so the state is tracked here.
@@ -280,23 +288,30 @@ kbd)
 	;;
 
 # ----------------------------------------------------------------- nightlight
+# `osd nightlight` toggles, `osd nightlight start` only starts -- that is the one
+# mango runs at login, and it draws nothing, because a popup on every boot is not
+# news.
+#
+# Running or not IS the state: wlsunset has no query and no toggle signal, so the
+# toggle kills it and starts it again. It restores the gamma on the way out, so
+# "off" is genuinely off rather than a daytime temperature left behind.
+#
+# Was hyprsunset, which went with Hyprland -- it drives Hyprland's own IPC and
+# does nothing under mango. wlsunset speaks wlr-gamma-control, which mango has
+# (wlr_gamma_control_manager_v1_create in the binary).
 nightlight | night)
-	# Blue-light shift. hyprsunset owns the gamma; this owns the STATE, because
-	# hyprsunset has no query -- you can ask whether the process exists and
-	# nothing more -- so "is it on" is a flag file, exactly like touchpad below.
-	#
-	# Kill and respawn rather than talk to it: hyprsunset's IPC has moved between
-	# versions, but a process either exists or it does not.
-	if pgrep -x hyprsunset >/dev/null 2>&1; then
-		pkill -x hyprsunset
-		rm -f "$NIGHT_FLAG"
+	if pgrep -x wlsunset >/dev/null 2>&1; then
+		[ "${2:-}" = start ] && exit 0
+		pkill -x wlsunset
 		show "󰖨  Night light off"
-	elif command -v hyprsunset >/dev/null 2>&1; then
-		setsid hyprsunset -t "$NIGHT_TEMP" >/dev/null 2>&1 &
-		touch "$NIGHT_FLAG"
-		show "󰖔  Night light ${NIGHT_TEMP}K"
+	elif command -v wlsunset >/dev/null 2>&1; then
+		setsid wlsunset -l "$NIGHT_LAT" -L "$NIGHT_LON" \
+			-t "$NIGHT_TEMP" -T "$NIGHT_DAY_TEMP" >/dev/null 2>&1 &
+		[ "${2:-}" = start ] && exit 0
+		show "󰖔  Night light ${NIGHT_TEMP}K after sunset"
 	else
-		show "󰖨  hyprsunset not installed"
+		[ "${2:-}" = start ] && exit 0
+		show "󰖨  wlsunset not installed"
 	fi
 	;;
 

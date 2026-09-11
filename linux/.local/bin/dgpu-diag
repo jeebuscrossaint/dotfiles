@@ -1,0 +1,40 @@
+#!/bin/sh
+# dgpu-diag — find what still holds the dGPU at D0 when no process does.
+# Unloads the NVIDIA sub-modules one at a time, checking after each whether the
+# card finally runtime-suspends. Stops at the first one that frees it and LEAVES
+# IT UNLOADED -- that is the state you want. 'dgpu on' or a reboot restores it.
+# nvidia-modprobe is setuid, so CUDA reloads nvidia_uvm on demand regardless.
+
+set -e
+[ "$(id -u)" = 0 ] || { echo "run as root: sudo $0" >&2; exit 1; }
+
+PCI=/sys/bus/pci/devices/0000:01:00.0
+
+check() {
+    sleep 4
+    st=$(cat $PCI/power/runtime_status)
+    sus=$(cat $PCI/power/runtime_suspended_time)
+    printf '  -> runtime_status=%s  suspended=%sms\n' "$st" "$sus"
+    [ "$st" = suspended ] && { echo; echo ">>> CULPRIT: $1"; return 0; }
+    return 1
+}
+
+echo "baseline:"
+check "none" && exit 0
+
+if lsmod | grep -q '^nvidia_uvm '; then
+    echo "unloading nvidia_uvm (CUDA memory manager, refcount $(lsmod | awk '/^nvidia_uvm /{print $3}')):"
+    modprobe -r nvidia_uvm
+    check "nvidia_uvm was pinning it" && exit 0
+fi
+
+if lsmod | grep -q '^nvidia_drm '; then
+    echo "unloading nvidia_drm (registers card0 + connector polling):"
+    modprobe -r nvidia_drm nvidia_modeset 2>/dev/null || {
+        echo "  !! busy -- something still has a DRM handle"; lsmod | grep '^nvidia'; exit 1; }
+    check "nvidia_drm/nvidia_modeset was pinning it" && exit 0
+fi
+
+echo
+echo "still active with only the base nvidia module loaded."
+echo "that points at the module itself, not DRM/UVM -- use 'dgpu off' instead."

@@ -87,7 +87,8 @@ is tracked, so a scheme change never shows up as a diff.
 | `mango-run` | start the session from a TTY |
 | `audio-ensure` | repair the audio stack, but only when it is genuinely dead |
 | `mango-tags`, `mango-title` | stream tags and title over `mmsg watch` — only used if you start waybar |
-| `waybar-fan`, `waybar-uptime` | fan RPM and uptime; `status` reads both |
+| `waybar-fan`, `waybar-uptime` | fan RPM and uptime for waybar custom modules |
+| `dgpu`, `dgpu-diag`, `fans` | hand tools: dGPU power state, and the ASUS fan curve |
 | `osd` | perform a volume/brightness/lock-key change *and* draw it as a notification |
 | `theme-pick`, `theme-random` | coat scheme pickers |
 | `screenshot`, `screenshot-edit` | region grab; `-edit` pipes to satty |
