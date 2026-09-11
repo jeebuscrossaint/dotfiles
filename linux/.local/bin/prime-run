@@ -1,10 +1,15 @@
 #!/bin/sh
 # Run one process on the RTX 4070.
 #
-# In Hybrid MUX the compositor pins the EGL/Vulkan/GLX loaders to Mesa+Intel so
-# libglvnd never instantiates the NVIDIA device and RTD3 can park the card
-# (see hyprland.lua). Those pins are inherited by every child, so anything that
-# actually wants the dGPU has to flip them back here.
+# In Hybrid MUX nothing should instantiate the NVIDIA device unless it is asked
+# to, so RTD3 can park the card -- anything that actually wants the dGPU flips
+# the loaders over here.
+#
+# Hyprland used to PIN the loaders to Mesa+Intel session-wide (hyprland.lua) and
+# this script existed to undo that per-process. Those pins went with Hyprland and
+# mango sets none, so the defaults are doing the work now: check
+# /sys/bus/pci/devices/0000:01:00.0/power_state is still D3cold on an idle
+# desktop before assuming that is good enough.
 # In Discrete MUX the compositor sets no such pins and NVIDIA is already
 # primary; re-asserting them is harmless.
 if [ -d /sys/module/nvidia_drm ]; then

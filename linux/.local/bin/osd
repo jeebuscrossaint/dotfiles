@@ -29,7 +29,7 @@ SOURCE=@DEFAULT_AUDIO_SOURCE@
 # intel_backlight in Hybrid and nvidia_0 in Discrete, with the other name absent
 # entirely rather than present-but-dead. Hardcoding intel_backlight left the
 # brightness keys silently doing nothing for a whole MUX mode. Resolved at
-# runtime below, the same way hyprland.lua resolves the scanout card.
+# runtime below, by looking for the device rather than naming it.
 
 VOL_STEP=5
 VOL_MAX=1.5 # wpctl ceiling (150%)

@@ -9,11 +9,11 @@
 # be given the wallpaper on the command line instead of having it written into
 # its config. See do_lock.
 #
-# The problem this solves: hypridle fires on INPUT idleness alone, so watching a
+# The problem this solves: swayidle fires on INPUT idleness alone, so watching a
 # video with the keyboard untouched locks the screen at the timeout. There is no
 # toggle to remember here -- it works out for itself whether something is playing.
 #
-# hypridle fires each listener ONCE per idle period, so the guard cannot simply
+# swayidle fires each timeout ONCE per idle period, so the guard cannot simply
 # decline and expect to be asked again. It waits instead, re-checking until the
 # audio stops, and the on-resume hook kills it if input returns first.
 
