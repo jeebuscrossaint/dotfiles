@@ -2,7 +2,12 @@
 # idle-guard — lock only when nothing is actually happening.
 #
 #   idle-guard lock    lock, but wait out any audio that is still playing
+#   idle-guard now     lock immediately -- Super+L, and before-sleep
 #   idle-guard cancel  abort every pending guard (the user came back)
+#
+# Everything that locks goes through here, which is the only reason swaylock can
+# be given the wallpaper on the command line instead of having it written into
+# its config. See do_lock.
 #
 # The problem this solves: hypridle fires on INPUT idleness alone, so watching a
 # video with the keyboard untouched locks the screen at the timeout. There is no
@@ -25,7 +30,31 @@ audio_playing() {
 	return 1
 }
 
-do_lock() { sfx lock; swaylock >/dev/null 2>&1 & }
+# The wallpaper is resolved at LOCK time, not stored. swaylock's config used to
+# carry an image= line that the awww wrapper rewrote on every `awww img` -- a
+# config file edited by a program, living on a stow symlink, so every wallpaper
+# change showed up as a one-line diff in the repo. swaylock has no variables and
+# no command substitution (its parser takes `key=value` and little else), but it
+# does take -i, and the daemon knows the answer already. Asking at the moment of
+# use means there is no copy to keep in sync and nothing to rewrite.
+#
+# `query` rather than a remembered path: img takes --outputs and --transition-*,
+# so the wallpaper is not reliably the last word of any command line. The
+# daemon's own answer is, and its last colon-space field is the path.
+#
+# No awww, no wallpaper, or a path that has since been deleted: lock with no -i
+# and swaylock paints its color= instead. That is also what the OpenBSD box does,
+# where there is no awww at all.
+do_lock() {
+	sfx lock
+	wall=$(awww query 2>/dev/null | grep -v HEADLESS | head -1)
+	wall=${wall##*: }
+	if [ -n "$wall" ] && [ -f "$wall" ]; then
+		swaylock -i "$wall" >/dev/null 2>&1 &
+	else
+		swaylock >/dev/null 2>&1 &
+	fi
+}
 
 # One file per invocation, not one per action. There is only one action left now
 # that blanking is gone, but a held-down resume can still overlap two guards,
@@ -38,6 +67,12 @@ cancel)
 		kill "$(cat "$f")" 2>/dev/null
 		rm -f "$f"
 	done
+	exit 0
+	;;
+now)
+	# No guard and no state file: the user asked for it, or the machine is going
+	# to sleep and there is nothing left to wait for.
+	do_lock
 	exit 0
 	;;
 lock) action="$1" ;;

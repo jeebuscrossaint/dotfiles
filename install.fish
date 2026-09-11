@@ -491,9 +491,9 @@ contains -- $target/.local/bin $PATH
 or note "~/.local/bin is not on PATH — the scripts in it will not be found"
 
 # A stale copy of a cargo-installed binary in ~/.local/bin wins over ~/.cargo/bin
-# under the compositor's PATH, which puts ~/.local/bin first so that menu, lock,
-# awww and prime-run can shadow their system namesakes. That is how an August
-# build of coat kept re-theming everything except the shell for a whole day.
+# under the compositor's PATH, which puts ~/.local/bin first so that prime-run
+# can shadow its system namesake. That is how an August build of coat kept
+# re-theming everything except the shell for a whole day.
 if test -f $target/.local/bin/coat
     note "stale $target/.local/bin/coat shadows ~/.cargo/bin/coat under the compositor — delete it"
 end

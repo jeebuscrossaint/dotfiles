@@ -12,18 +12,18 @@
 # swayidle's timeout and the Super+L bind both rely on this.
 daemonize
 
-# The lock shows the desktop wallpaper. The image= line lives at the bottom of
-# this file and is NOT hand-edited: the awww wrapper rewrites it on every
-# `awww img`, so the lock and the desktop can never disagree. swaylock reads this
-# file fresh at every invocation, so the next lock already has it. ~/.config/
-# swaylock is a folded stow symlink, which means the live file is the repo file
-# -- expect a one-line diff here every time the wallpaper changes.
+# NO image= here, deliberately. The lock shows the desktop wallpaper, but it is
+# passed as -i by idle-guard, which asks the wallpaper daemon at the moment of
+# locking. This file used to carry an image= line that a wrapper around awww
+# rewrote on every wallpaper change -- a program editing a config file that is a
+# stow symlink into the repo, so every wallpaper change was a one-line diff.
+# swaylock has no variables to do it in-file; it does take -i.
 #
-# color= is the fallback, not dead config: it is what swaylock paints when the
-# image is missing, and on the OpenBSD box, where there is no awww to name one.
-# coat keeps it on-scheme.
+# color= is the fallback, not dead config: it is what swaylock paints when there
+# is no wallpaper to name -- a missing daemon, a deleted file, or the OpenBSD
+# box, which has no awww at all. coat keeps it on-scheme.
 scaling=fill
-color=1D1D1D
+color=24180C
 
 # The whole lock screen is this one dial, so it is drawn large: 110px radius on
 # a 1600px panel, with a band thick enough that a single keypress segment is a
@@ -49,33 +49,32 @@ show-failed-attempts
 font=JetBrainsMono Nerd Font Mono
 font-size=18
 
-ring-color=4C99D3
-ring-clear-color=135879
-ring-ver-color=D0D2CE
-ring-wrong-color=CE3E60
+ring-color=DB9975
+ring-clear-color=BAAB6C
+ring-ver-color=CBBEB4
+ring-wrong-color=D99A7F
 
-inside-color=343835e6
-inside-clear-color=13587933
-inside-ver-color=4C99D333
-inside-wrong-color=CE3E6033
+inside-color=2F2419e6
+inside-clear-color=BAAB6C33
+inside-ver-color=DB997533
+inside-wrong-color=D99A7F33
 
-key-hl-color=D0D2CE
-bs-hl-color=CE3E60
+key-hl-color=CBBEB4
+bs-hl-color=D99A7F
 
-text-color=D0D2CE
-text-clear-color=D0D2CE
-text-ver-color=D0D2CE
-text-wrong-color=CE3E60
+text-color=CBBEB4
+text-clear-color=CBBEB4
+text-ver-color=CBBEB4
+text-wrong-color=D99A7F
 
 separator-color=00000000
-text-caps-lock-color=135879
-ring-caps-lock-color=135879
-inside-caps-lock-color=13587933
-caps-lock-key-hl-color=135879
-caps-lock-bs-hl-color=CE3E60
-line-color=1D1D1D
-line-clear-color=1D1D1D
-line-ver-color=1D1D1D
-line-wrong-color=1D1D1D
-line-caps-lock-color=1D1D1D
-image=/home/amarnath/walls/monochrome/a_street_lights_at_night_01.jpg
+text-caps-lock-color=BAAB6C
+ring-caps-lock-color=BAAB6C
+inside-caps-lock-color=BAAB6C33
+caps-lock-key-hl-color=BAAB6C
+caps-lock-bs-hl-color=D99A7F
+line-color=24180C
+line-clear-color=24180C
+line-ver-color=24180C
+line-wrong-color=24180C
+line-caps-lock-color=24180C
