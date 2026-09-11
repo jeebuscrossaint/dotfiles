@@ -30,8 +30,8 @@ enabled:
   - swaylock
   - conky
 
-scheme: japanesque
-prefer_base24: true
+scheme: wall
+prefer_base24: false
 
 # Evens out whatever scheme is loaded. `coat docs normalize` lists the knobs.
 normalize:
@@ -70,7 +70,7 @@ overrides:
       sizes:
         # coat overrides are per module, and conky is two panels at two
         # densities, so two of the three slots are spoken for:
-        desktop: 9   # main panel, top-right -- readings, then the weather
-        terminal: 9  # process tree, top-left -- 66 lines, so it has to be small
+        desktop: 11   # main panel, top-right -- readings, then the weather
+        terminal: 11  # process tree, top-left -- 66 lines, so it has to be small
         # popups is unused by conky: it was the weather's size while that block
         # lived in the left panel, and the weather draws at desktop size now.

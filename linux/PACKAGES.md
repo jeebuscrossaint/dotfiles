@@ -27,7 +27,7 @@ Remove one of these and something in this repo stops working.
 | Session | **No bar.** `conky` draws the readout (tags, cpu, temps, mem, disk, fan, battery, volume, net, weather, uptime) on the desktop layer, so it costs no screen space and never covers a window. `fnott` is the only other surface, `fuzzel` the launcher, `swayidle` the idle timer. Effects are switched off in `config.conf`, not deleted. |
 | Bar | `waybar` and `wttrbar` (AUR) stay installed and configured, but nothing starts them. Restoring the bar is a line in `config.conf`. |
 | Idle & lock | `swaylock` (Super+L and from `swayidle`), `swayidle`. No blanking: that needs a wlr-output-power client and none is wanted. |
-| Wallpaper | `awww` (wrapped by `~/.local/bin/awww`, so `awww img` retheme-follows) |
+| Wallpaper | `awww` (unwrapped; `Super+Alt+T` runs `coat match` when you want the scheme to follow it) |
 | Terminal & shell | `kitty`, `fish`, `lsd`, `bat`, `less`, `tree` |
 | Editor | `neovim` |
 | Files & monitoring | `yazi`, `btop`, `fastfetch`, `pfetch-rs` |
