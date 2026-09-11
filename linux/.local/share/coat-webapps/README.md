@@ -18,7 +18,7 @@ the matchMedia shim is adapted from it, the rest is written against coat.
                      coat-runtime.js ──▶ site pack ──▶ CSS custom properties
 
 The host reads the scheme coat.yaml pins, resolving it the same way coat does
-(`prefer_base24` picks base24 → base16 → generated). It is push-only: it emits
+(the `base24` flag in coat’s state file picks base24 → base16 → generated). It is push-only: it emits
 on connect and on every apply, and never parses anything the browser sends.
 
 `manifest.json` is the trigger because coat has no hook system and rewrites that
