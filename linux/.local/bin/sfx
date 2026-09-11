@@ -8,7 +8,7 @@
 # be swapped by pointing SFX_THEME somewhere else.
 #
 # Always non-blocking and always exits 0: a desktop sound must never be the thing
-# that fails a keybind or wedges a handler that swayidle/hypridle is waiting on.
+# that fails a keybind or wedges a handler that swayidle is waiting on.
 #
 # Silence it by touching ~/.config/sfx-mute (a file, so it survives a reload and
 # both compositors see the same flag -- same pattern as osd's touchpad state).
