@@ -6,12 +6,12 @@
 #
 # Entries are tagged `[base24]` because ~46 slugs exist in BOTH families and coat
 # lists them under the same name -- the picker showed two identical rows with no
-# way to tell them apart. coat has no per-invocation flag for this: `coat set`
-# takes a slug and nothing else, and the family is decided by prefer_base24 in
-# coat.yaml. So the tag is not decoration, it is what the script writes back to
-# that key before applying.
+# way to tell them apart. The tag is not decoration: it becomes the --base16 or
+# --base24 flag on the `coat set` below, which is how the pick reaches the family
+# you actually clicked. This script used to sed prefer_base24 into coat.yaml
+# first instead -- editing a config file in a dotfiles repo, mid-keypress, to
+# pass one argument.
 set -u
-conf="$HOME/.config/coat/coat.yaml"
 
 # Pair each scheme's name line (which carries the [Base24] marker) with the
 # `Slug:` line that follows it. Parsing only Slug: lines is what dropped the
@@ -27,17 +27,10 @@ pick=$(coat list --no-preview 2>/dev/null \
 
 slug=${pick% \[base24\]}
 case "$pick" in
-*"[base24]") want=true ;;
-*) want=false ;;
+*"[base24]") fam=base24 ;;
+*) fam=base16 ;;
 esac
 
-# prefer_base24 has to be right BEFORE coat set runs, or coat resolves the slug
-# to the other family and the pick silently does nothing.
-if grep -q '^prefer_base24:' "$conf"; then
-	sed -i "s/^prefer_base24:.*/prefer_base24: $want/" "$conf"
-fi
-
-coat set "$slug" >/dev/null 2>&1
-fam=$([ "$want" = true ] && echo base24 || echo base16)
+coat set "$slug" "--$fam" >/dev/null 2>&1
 command -v notify-send >/dev/null &&
 	notify-send -t 2000 "󰏘  Theme" "switched to $slug ($fam)"
