@@ -2,6 +2,8 @@
 # idle-guard — lock only when nothing is actually happening.
 #
 #   idle-guard lock    lock, but wait out any audio that is still playing
+#   idle-guard blank   power the outputs off, waiting out audio the same way
+#   idle-guard wake    power them back on
 #   idle-guard now     lock immediately -- Super+L, and before-sleep
 #   idle-guard cancel  abort every pending guard (the user came back)
 #
@@ -56,10 +58,21 @@ do_lock() {
 	fi
 }
 
-# One file per invocation, not one per action. There is only one action left now
-# that blanking is gone, but a held-down resume can still overlap two guards,
-# and a shared pid file meant `cancel` killed the newest and left the other one
-# waiting to lock the screen under you.
+# wlopm, not `wlr-randr --output X --off`: this is a power mode change on an
+# output that stays where it is. Disabling the output instead makes wlroots tear
+# it down and rehome every window on it, which on a one-screen machine is nowhere.
+#
+# wlopm 1.0.0 takes one output name per flag and understands no wildcard, so the
+# listing it prints with no arguments is the list to act on.
+set_power() {
+	wlopm | while read -r out _; do
+		wlopm "--$1" "$out"
+	done
+}
+
+# One file per invocation, not one per action. A held-down resume can overlap two
+# guards, and a shared pid file meant `cancel` killed the newest and left the
+# other one waiting to lock the screen under you.
 case "$1" in
 cancel)
 	for f in "$RUN"/idle-guard.*.pid; do
@@ -75,7 +88,13 @@ now)
 	do_lock
 	exit 0
 	;;
-lock) action="$1" ;;
+wake)
+	# Never guarded. Coming back has to be immediate, and there is nothing to
+	# wait out -- audio playing is a reason to stay awake, not to stay dark.
+	set_power on
+	exit 0
+	;;
+lock | blank) action="$1" ;;
 *) exit 0 ;;
 esac
 
@@ -87,4 +106,7 @@ while audio_playing; do
 	sleep 30
 done
 
-do_lock
+case "$action" in
+lock) do_lock ;;
+blank) set_power off ;;
+esac
