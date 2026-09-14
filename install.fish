@@ -167,6 +167,8 @@ set -g dep_table \
     "system|cmd:gawk|gawk|opt|gawk||" \
     "system|cmd:python3|python|core|python||" \
     "system|cmd:nmcli|networkmanager|core|networkmanager||" \
+    "system|cmd:sshd|openssh|opt|openssh||" \
+    "system|cmd:smartctl|smartmontools|opt|smartmontools||" \
     "system|cmd:tailscale|tailscale|opt|tailscale||" \
     "theme|cmd:cargo|rust toolchain|core|rustup||https://rustup.rs" \
     "theme|cmd:coat|coat|core|||cargo install --git https://github.com/jeebuscrossaint/coat" \
@@ -309,6 +311,23 @@ function ensure_asus
     enable_service supergfxd
 end
 
+# The session starts from a tty1 login, so tty1 logs in by itself. config.fish
+# does the rest -- see the `uwsm check may-start` block at the top of it.
+function ensure_autologin
+    command -q systemctl; or return 0
+    set -l dir /etc/systemd/system/getty@tty1.service.d
+    test -f $dir/autologin.conf; and return 0
+
+    step "tty1 does not log in by itself"
+    dim "agetty --autologin $USER on tty1; config.fish execs mango-run from there"
+    confirm "set that up?"; or return 0
+    sudo mkdir -p $dir
+    printf '[Service]\nExecStart=\nExecStart=-/usr/bin/agetty --autologin %s --noclear %%I $TERM\n' $USER \
+        | sudo tee $dir/autologin.conf >/dev/null
+    and sudo systemctl daemon-reload
+    or note "could not write $dir/autologin.conf"
+end
+
 # Installed does not mean running. This is the runit service list from the old
 # machine translated to units, minus the ones systemd already covers itself:
 # dbus, logind, udevd are built in, journald replaces syslog-ng, and autovt@
@@ -332,14 +351,15 @@ function ensure_services
     enable_service --user pipewire-pulse.socket
     enable_service --user wireplumber.service
 
-    # Installed, deliberately left off: tuned is power management, and the rest
-    # are daemons worth starting by hand the day they are wanted.
+    command -q smartctl; and enable_service smartd
+    command -q sshd; and enable_service sshd
+
+    # tuned fights asusd for the ACPI platform profile, and nothing here speaks
+    # the power-profiles-daemon D-Bus API it exists to provide.
     set -l optional
-    command -q tuned; and set -a optional tuned.service
+    command -q tuned; and set -a optional "tuned (asusd owns the power profile)"
     command -q docker; and set -a optional docker.service
     command -q ollama; and set -a optional ollama.service
-    command -q smartctl; and set -a optional smartd.service
-    command -q sshd; and set -a optional sshd.service
     test (count $optional) -gt 0
     and dim "installed but not enabled, on purpose: $optional"
 end
@@ -532,6 +552,7 @@ if not set -q _flag_skip_checks; and not set -q _flag_uninstall
     ensure_rust
     ensure_coat
     ensure_services
+    ensure_autologin
 end
 
 command -q stow
