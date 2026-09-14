@@ -25,7 +25,6 @@ Remove one of these and something in this repo stops working.
 |---|---|
 | Compositor | `mangowm` (AUR), `xdg-desktop-portal-wlr`, `xdg-desktop-portal-gtk`, `polkit-gnome`, `elogind-runit` |
 | Session | **No bar.** `conky` draws the readout (tags, cpu, temps, mem, disk, fan, battery, volume, net, weather, uptime) on the desktop layer, so it costs no screen space and never covers a window. `fnott` is the only other surface, `fuzzel` the launcher, `swayidle` the idle timer. Effects are switched off in `config.conf`, not deleted. |
-| Bar | `waybar` and `wttrbar` (AUR) stay installed and configured, but nothing starts them. Restoring the bar is a line in `config.conf`. |
 | Idle & lock | `swaylock` (Super+L and from `swayidle`), `swayidle`. No blanking: that needs a wlr-output-power client and none is wanted. |
 | Wallpaper | `awww` (unwrapped; `Super+Alt+T` runs `coat match` when you want the scheme to follow it) |
 | Terminal & shell | `kitty`, `fish`, `lsd`, `bat`, `less`, `tree` |
@@ -60,7 +59,7 @@ mistaken for live dependencies.
 `mpd-runit`, `river`, `waylock`, `wlr-randr`, `autotiling-rs`,
 `rose-pine-cursor` (AUR), `rose-pine-hyprcursor` (AUR),
 `quickshell`, `hyprland`, `hypridle`, `hyprlock`, `xdg-desktop-portal-hyprland`,
-`cage`, `greetd`, `greetd-tuigreet`
+`cage`, `greetd`, `greetd-tuigreet`, `waybar`, `wttrbar` (AUR)
 
 `xdg-desktop-portal-wlr` moved OFF this list: mango's portal config prefers the
 `wlr` backend for ScreenCast and Screenshot, so it is a live dependency now.

@@ -23,7 +23,6 @@ enabled:
   - msteams
 
   - mango
-  - waybar
   - fnott
   - fuzzel
   - kitty

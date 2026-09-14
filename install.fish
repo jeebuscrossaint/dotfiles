@@ -96,7 +96,7 @@ or die "$target is not writable"
 
 # --- dependencies -------------------------------------------------------------
 #
-#   group | probe | label | tier | pacman | aur | apt | openbsd | hint
+#   group | probe | label | tier | pacman | aur | openbsd | hint
 #
 # probe  cmd:BINARY · font:FAMILY · path:P1 P2 (any one existing is enough)
 # tier   req  the installer itself cannot run
@@ -122,57 +122,55 @@ or die "$target is not writable"
 # up from the old rows themed itself into tofu.
 set -g dep_table \
     "installer|cmd:stow|stow|req|stow||stow|stow|" \
-    "installer|cmd:git|git|core|git||git|git|" \
-    "installer|cmd:fish|fish|req|fish||fish|fish|" \
-    "compositor|cmd:mango|mango|core||mangowm|||https://github.com/DreamMaoMao/mango" \
-    "compositor|path:/usr/lib/xdg-desktop-portal-wlr /usr/libexec/xdg-desktop-portal-wlr|xdg-desktop-portal-wlr|core|xdg-desktop-portal-wlr|||xdg-desktop-portal-wlr|" \
-    "compositor|path:/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 /usr/libexec/polkit-gnome-authentication-agent-1 /usr/local/libexec/polkit-gnome-authentication-agent-1|polkit agent|core|polkit-gnome||policykit-1-gnome|polkit-gnome|" \
-    "desktop|cmd:fnott|fnott|core|fnott|||fnott|" \
-    "desktop|cmd:fuzzel|fuzzel|core|fuzzel|||fuzzel|" \
-    "desktop|cmd:awww|awww|core||awww|||" \
-    "desktop|cmd:swayidle|swayidle|core|swayidle|||swayidle|" \
-    "desktop|cmd:swaylock|swaylock|core|swaylock|||swaylock|" \
-    "desktop|cmd:conky|conky|core|conky||conky-all|conky|" \
-    "desktop|cmd:cava|cava|opt|cava||cava||" \
-    "terminal|cmd:kitty|kitty|core|kitty||kitty|kitty|" \
-    "terminal|cmd:nvim|neovim|core|neovim||neovim|neovim|" \
-    "terminal|cmd:lsd|lsd|opt|lsd||lsd|lsd|" \
-    "terminal|cmd:bat|bat|opt|bat||bat|bat|" \
-    "terminal|cmd:fastfetch|fastfetch|opt|fastfetch||fastfetch|fastfetch|" \
-    "clipboard|cmd:wl-copy|wl-clipboard|core|wl-clipboard||wl-clipboard|wl-clipboard|" \
-    "clipboard|cmd:cliphist|cliphist|core|cliphist||||" \
-    "clipboard|cmd:wl-clip-persist|wl-clip-persist|opt||wl-clip-persist|||" \
-    "clipboard|cmd:grim|grim|core|grim||grim|grim|" \
-    "clipboard|cmd:slurp|slurp|core|slurp||slurp|slurp|" \
-    "clipboard|cmd:satty|satty|opt|satty||||" \
-    "clipboard|cmd:swappy|swappy|opt|swappy||swappy|swappy|" \
-    "system|cmd:wpctl|wireplumber|core|wireplumber||wireplumber|wireplumber|" \
-    "system|cmd:notify-send|libnotify|core|libnotify||libnotify-bin|libnotify|" \
-    "system|cmd:brightnessctl|brightnessctl|core|brightnessctl||brightnessctl|brightnessctl|" \
-    "system|cmd:playerctl|playerctl|opt|playerctl||playerctl|playerctl|" \
-    "system|cmd:pavucontrol|pavucontrol|opt|pavucontrol||pavucontrol|pavucontrol|" \
-    "system|cmd:jq|jq|core|jq||jq|jq|" \
-    "system|cmd:curl|curl|core|curl||curl|curl|" \
-    "system|cmd:pstree|psmisc|core|psmisc||psmisc|psmisc|" \
-    "system|cmd:gawk|gawk|opt|gawk||gawk|gawk|" \
-    "system|cmd:python3|python|core|python||python3|python|" \
-    "theme|cmd:cargo|rust toolchain|core|rustup||rustup|rust|https://rustup.rs" \
-    "theme|cmd:coat|coat|core|||||cargo install --git https://github.com/jeebuscrossaint/coat" \
+    "installer|cmd:git|git|core|git||git|" \
+    "installer|cmd:fish|fish|req|fish||fish|" \
+    "compositor|cmd:mango|mango|core||mangowm||https://github.com/DreamMaoMao/mango" \
+    "compositor|path:/usr/lib/xdg-desktop-portal-wlr /usr/libexec/xdg-desktop-portal-wlr|xdg-desktop-portal-wlr|core|xdg-desktop-portal-wlr||xdg-desktop-portal-wlr|" \
+    "compositor|path:/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 /usr/libexec/polkit-gnome-authentication-agent-1 /usr/local/libexec/polkit-gnome-authentication-agent-1|polkit agent|core|polkit-gnome||polkit-gnome|" \
+    "desktop|cmd:fnott|fnott|core|fnott||fnott|" \
+    "desktop|cmd:fuzzel|fuzzel|core|fuzzel||fuzzel|" \
+    "desktop|cmd:awww|awww|core||awww||" \
+    "desktop|cmd:swayidle|swayidle|core|swayidle||swayidle|" \
+    "desktop|cmd:swaylock|swaylock|core|swaylock||swaylock|" \
+    "desktop|cmd:conky|conky|core|conky||conky|" \
+    "desktop|cmd:cava|cava|opt|cava|||" \
+    "terminal|cmd:kitty|kitty|core|kitty||kitty|" \
+    "terminal|cmd:nvim|neovim|core|neovim||neovim|" \
+    "terminal|cmd:lsd|lsd|opt|lsd||lsd|" \
+    "terminal|cmd:bat|bat|opt|bat||bat|" \
+    "terminal|cmd:fastfetch|fastfetch|opt|fastfetch||fastfetch|" \
+    "clipboard|cmd:wl-copy|wl-clipboard|core|wl-clipboard||wl-clipboard|" \
+    "clipboard|cmd:cliphist|cliphist|core|cliphist|||" \
+    "clipboard|cmd:wl-clip-persist|wl-clip-persist|opt||wl-clip-persist||" \
+    "clipboard|cmd:grim|grim|core|grim||grim|" \
+    "clipboard|cmd:slurp|slurp|core|slurp||slurp|" \
+    "clipboard|cmd:satty|satty|opt|satty|||" \
+    "clipboard|cmd:swappy|swappy|opt|swappy||swappy|" \
+    "system|cmd:wpctl|wireplumber|core|wireplumber||wireplumber|" \
+    "system|cmd:notify-send|libnotify|core|libnotify||libnotify|" \
+    "system|cmd:brightnessctl|brightnessctl|core|brightnessctl||brightnessctl|" \
+    "system|cmd:playerctl|playerctl|opt|playerctl||playerctl|" \
+    "system|cmd:pavucontrol|pavucontrol|opt|pavucontrol||pavucontrol|" \
+    "system|cmd:jq|jq|core|jq||jq|" \
+    "system|cmd:curl|curl|core|curl||curl|" \
+    "system|cmd:pstree|psmisc|core|psmisc||psmisc|" \
+    "system|cmd:gawk|gawk|opt|gawk||gawk|" \
+    "system|cmd:python3|python|core|python||python|" \
+    "theme|cmd:cargo|rust toolchain|core|rustup||rust|https://rustup.rs" \
+    "theme|cmd:coat|coat|core||||cargo install --git https://github.com/jeebuscrossaint/coat" \
     "fonts|font:JetBrainsMono Nerd Font|JetBrainsMono Nerd Font|core|ttf-jetbrains-mono-nerd|||./install-nerdfonts.sh" \
-    "fonts|path:/usr/share/icons/WhiteSur-dark /usr/share/icons/WhiteSur|WhiteSur icon theme|core||whitesur-icon-theme|||" \
-    "fonts|font:Font Awesome|Font Awesome|core|otf-font-awesome||fonts-font-awesome|font-awesome|" \
-    "fonts|font:Noto Color Emoji|Noto Color Emoji|core|noto-fonts-emoji||fonts-noto-color-emoji|noto-emoji|" \
-    "apps|cmd:btop|btop|opt|btop||btop|btop|" \
-    "apps|cmd:mpv|mpv|opt|mpv||mpv|mpv|" \
-    "apps|cmd:zathura|zathura|opt|zathura||zathura|zathura|" \
-    "apps|cmd:wttrbar|wttrbar|opt||wttrbar|||" \
-    "apps|cmd:fd|fd|opt|fd||fd-find|fd|" \
-    "apps|cmd:magick|imagemagick|opt|imagemagick||imagemagick|ImageMagick|"
+    "fonts|path:/usr/share/icons/WhiteSur-dark /usr/share/icons/WhiteSur|WhiteSur icon theme|core||whitesur-icon-theme||" \
+    "fonts|font:Font Awesome|Font Awesome|core|otf-font-awesome||font-awesome|" \
+    "fonts|font:Noto Color Emoji|Noto Color Emoji|core|noto-fonts-emoji||noto-emoji|" \
+    "apps|cmd:btop|btop|opt|btop||btop|" \
+    "apps|cmd:mpv|mpv|opt|mpv||mpv|" \
+    "apps|cmd:zathura|zathura|opt|zathura||zathura|" \
+    "apps|cmd:fd|fd|opt|fd||fd|" \
+    "apps|cmd:magick|imagemagick|opt|imagemagick||ImageMagick|"
 
 function pkg_manager
     test (uname -s) = OpenBSD; and echo openbsd; and return
     command -q pacman; and echo pacman; and return
-    command -q apt-get; and echo apt; and return
     echo unknown
 end
 
@@ -180,6 +178,25 @@ function aur_helper
     for h in paru yay
         command -q $h; and echo $h; and return
     end
+end
+
+# paru-bin, not paru: the source package builds itself with cargo, which is the
+# thing we are usually here to install in the first place.
+function bootstrap_aur_helper
+    test (pkg_manager) = pacman; or return 1
+    command -q git; and command -q makepkg
+    or begin
+        note "no AUR helper, and base-devel is missing: sudo pacman -S --needed base-devel git"
+        return 1
+    end
+    set -l dir (mktemp -d)
+    step "Bootstrapping paru..."
+    git clone -q --depth 1 https://aur.archlinux.org/paru-bin.git $dir/paru-bin
+    and fish -c "cd $dir/paru-bin; and makepkg -si --noconfirm"
+    set -l rc $status
+    rm -rf $dir
+    test $rc -eq 0; or begin; note "paru bootstrap failed — install it by hand"; return 1; end
+    command -q paru
 end
 
 function dep_present -a probe
@@ -198,6 +215,63 @@ function dep_present -a probe
     end
 end
 
+# rustup installs SHIMS, not a compiler: `cargo` exists and every build fails
+# with "no override and no default toolchain set" until this runs.
+function ensure_rust
+    command -q rustup; or return 0
+    set -l tc (rustup toolchain list 2>/dev/null | string match -v 'no installed*')
+    test (count $tc) -gt 0; and return 0
+    step "Installing the stable Rust toolchain..."
+    rustup default stable; or note "rustup default stable failed — cargo will not build anything"
+end
+
+# coat is this repo's theming tool and is in no repository. Prefer the checkout
+# if it is there: that is the one whose changes are being tested.
+function ensure_coat
+    command -q coat; and return 0
+    command -q cargo; or return 1
+    step "Installing coat..."
+    if test -d $HOME/Projects/coat
+        cargo install --path $HOME/Projects/coat
+    else
+        cargo install --git https://github.com/jeebuscrossaint/coat
+    end
+    or note "coat build failed"
+end
+
+# The proprietary stack, only if there is actually a 10de device on the bus.
+# Nothing here touches modeset or runtime PM: /etc/modprobe.d/nvidia-rtd3.conf
+# keeps nvidia_drm off the boot path so the card can reach D3cold, and a default
+# `nvidia_drm modeset=1` drop-in would silently undo it. misc/ holds those.
+function ensure_nvidia
+    test (pkg_manager) = pacman; or return 0
+    set -l found
+    for v in /sys/bus/pci/devices/*/vendor
+        test (cat $v 2>/dev/null) = 0x10de; and set found 1; and break
+    end
+    test -n "$found"; or return 0
+    pacman -Qq nvidia-utils &>/dev/null; and return 0
+
+    set -l want nvidia-open-dkms nvidia-utils libva-nvidia-driver egl-wayland
+    pacman-conf --repo-list 2>/dev/null | string match -q multilib
+    and set -a want lib32-nvidia-utils
+
+    step "NVIDIA card found, no driver installed"
+    printf '   %ssudo pacman -S --needed %s%s\n' "$c_ok" "$want" "$c_off"
+    dim "nvidia-open is for Turing and newer; on anything older swap in nvidia-dkms"
+    set -l go
+    if set -q _flag_install_deps
+        set go yes
+    else if isatty stdin; and not set -q _flag_yes
+        read -P "  install it now? [y/N] " -l answer
+        string match -qi 'y*' -- (string trim -- $answer); and set go yes
+    end
+    echo
+    test -n "$go"; or return 0
+    fish -c "sudo pacman -S --needed $want"; or note "that failed — carry on by hand"
+    dim "power rules are not automatic: see misc/99-pci-runtime-pm.rules and misc/gpu-mux.start"
+end
+
 # Reports what is missing; returns 1 if anything req/core is.
 function check_deps
     set -g font_families
@@ -207,8 +281,7 @@ function check_deps
     set -l aur (aur_helper)
     set -l col 5
     switch $pm
-        case apt; set col 7
-        case openbsd; set col 8
+        case openbsd; set col 7
         case unknown; set col 0
     end
 
@@ -280,7 +353,6 @@ function check_deps
     if test (count $want_pm) -gt 0
         switch $pm
             case pacman; set -g dep_cmds $dep_cmds "sudo pacman -S --needed $want_pm"
-            case apt; set -g dep_cmds $dep_cmds "sudo apt install $want_pm"
             case openbsd; set -g dep_cmds $dep_cmds "doas pkg_add $want_pm"
         end
     end
@@ -288,8 +360,8 @@ function check_deps
         if test -n "$aur"
             set -g dep_cmds $dep_cmds "$aur -S --needed $want_aur"
         else
-            printf '   %s# no AUR helper yet:%s git clone https://aur.archlinux.org/paru-bin.git && cd paru-bin && makepkg -si\n' "$c_warn" "$c_off"
-            printf '   %s# then:%s paru -S --needed %s\n' "$c_warn" "$c_off" "$want_aur"
+            set -g want_paru $want_aur
+            printf '   %s# no AUR helper yet — paru will be bootstrapped first, then:%s paru -S --needed %s\n' "$c_warn" "$c_off" "$want_aur"
         end
     end
     for c in $dep_cmds
@@ -317,6 +389,10 @@ function check_deps
         end
         if test -n "$go"
             set -g deps_installed 1
+            if set -q want_paru; and bootstrap_aur_helper
+                set -g dep_cmds $dep_cmds "paru -S --needed $want_paru"
+                set -e want_paru
+            end
             for c in $dep_cmds
                 step $c
                 fish -c "$c"; or note "that failed — carry on by hand"
@@ -345,10 +421,13 @@ if not set -q _flag_skip_checks; and not set -q _flag_uninstall
     check_deps
     or note "linking anyway — the configs for the missing pieces are harmless on their own"
     echo
+    ensure_nvidia
+    ensure_rust
+    ensure_coat
 end
 
 command -q stow
-or die "GNU Stow is missing.  pacman -S stow  ·  apt install stow  ·  pkg_add stow"
+or die "GNU Stow is missing.  pacman -S stow  ·  pkg_add stow"
 
 # --- uninstall ----------------------------------------------------------------
 
