@@ -4,6 +4,16 @@
 
 set -g fish_greeting
 
+# Logging in on tty1 is logging into mango. `uwsm check may-start` is the guard:
+# it fails when this is not a real TTY or a graphical session already exists, so
+# tty2-6 stay plain shells, a nested shell inside the session does not recurse,
+# and a compositor that dies drops you back to this prompt instead of a loop.
+if status is-login; and test (tty) = /dev/tty1
+    if command -q uwsm; and uwsm check may-start >/dev/null 2>&1
+        exec mango-run
+    end
+end
+
 # Coat theme — only re-apply when theme file has changed (interactive only)
 if status is-interactive
     if test -f ~/.config/fish/themes/coat.theme
