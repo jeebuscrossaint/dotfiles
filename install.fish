@@ -184,6 +184,7 @@ set -g dep_table \
     "apps|cmd:blueman-manager|blueman|opt|blueman||" \
     "apps|cmd:bluetoothctl|bluez-utils|opt|bluez-utils||" \
     "apps|cmd:openlogi|openlogi|opt||openlogi-bin|" \
+    "apps|cmd:tradingview|tradingview|opt||tradingview|" \
     "apps|cmd:yt-dlp|yt-dlp|opt|yt-dlp||" \
     "apps|path:/usr/lib/zathura/libpdf-poppler.so|zathura pdf backend|opt|zathura-pdf-poppler||" \
     "apps|cmd:firefox-developer-edition|firefox developer edition|core|firefox-developer-edition||" \
@@ -198,7 +199,12 @@ set -g dep_table \
     "dev|cmd:claude|claude code|opt||claude-code|" \
     "dev|cmd:claude-desktop|claude desktop|opt||claude-desktop-bin|" \
     "dev|cmd:code|vscode|opt||visual-studio-code-bin|" \
-    "dev|cmd:gh|github cli|opt|github-cli||"
+    "dev|cmd:gh|github cli|opt|github-cli||" \
+    "dev|cmd:clion-eap|clion eap|opt||clion-eap|" \
+    "dev|path:/usr/lib/jvm/zulu-8|zulu 8 jdk|opt||zulu-8-bin|" \
+    "toys|cmd:cbonsai|cbonsai|opt||cbonsai|" \
+    "toys|cmd:pipes-rs|pipes-rs|opt||pipes-rs|" \
+    "toys|cmd:cmatrix|cmatrix|opt|cmatrix||"
 
 function aur_helper
     for h in paru yay
