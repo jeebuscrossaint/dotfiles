@@ -125,7 +125,7 @@ set -g dep_table \
     "installer|cmd:git|git|core|git||git|" \
     "installer|cmd:fish|fish|req|fish||fish|" \
     "compositor|cmd:mango|mango|core||mangowm||https://github.com/DreamMaoMao/mango" \
-    "compositor|cmd:dbus-run-session|dbus|core|dbus||dbus|" \
+    "compositor|cmd:uwsm|uwsm|core|uwsm|||" \
     "compositor|path:/usr/lib/xdg-desktop-portal-wlr /usr/libexec/xdg-desktop-portal-wlr|xdg-desktop-portal-wlr|core|xdg-desktop-portal-wlr||xdg-desktop-portal-wlr|" \
     "compositor|path:/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 /usr/libexec/polkit-gnome-authentication-agent-1 /usr/local/libexec/polkit-gnome-authentication-agent-1|polkit agent|core|polkit-gnome||polkit-gnome|" \
     "compositor|path:/usr/lib/xdg-desktop-portal-gtk /usr/libexec/xdg-desktop-portal-gtk|xdg-desktop-portal-gtk|core|xdg-desktop-portal-gtk||xdg-desktop-portal-gtk|" \
@@ -151,7 +151,6 @@ set -g dep_table \
     "clipboard|cmd:satty|satty|opt|satty|||" \
     "clipboard|cmd:swappy|swappy|opt|swappy||swappy|" \
     "system|cmd:wpctl|wireplumber|core|wireplumber||wireplumber|" \
-    "system|cmd:pw-play|pipewire|core|pipewire||pipewire|" \
     "system|cmd:notify-send|libnotify|core|libnotify||libnotify|" \
     "system|cmd:brightnessctl|brightnessctl|core|brightnessctl||brightnessctl|" \
     "system|cmd:playerctl|playerctl|opt|playerctl||playerctl|" \
@@ -166,7 +165,6 @@ set -g dep_table \
     "theme|cmd:coat|coat|core||||cargo install --git https://github.com/jeebuscrossaint/coat" \
     "theme|path:/usr/share/icons/WhiteSur-dark /usr/share/icons/WhiteSur|WhiteSur icon theme|core||whitesur-icon-theme||" \
     "theme|path:/usr/share/themes/adw-gtk3-dark|adw-gtk3|core|adw-gtk-theme|||" \
-    "theme|path:/usr/share/icons/BreezeX-RosePine-Linux|rose-pine cursor|core||rose-pine-cursor||" \
     "fonts|font:JetBrainsMono Nerd Font|JetBrainsMono Nerd Font|core|ttf-jetbrains-mono-nerd|||./install-nerdfonts.sh" \
     "fonts|font:Font Awesome|Font Awesome|core|otf-font-awesome||font-awesome|" \
     "fonts|font:Noto Color Emoji|Noto Color Emoji|core|noto-fonts-emoji||noto-emoji|" \
@@ -175,7 +173,7 @@ set -g dep_table \
     "apps|cmd:zathura|zathura|opt|zathura||zathura|" \
     "apps|path:/usr/lib/zathura/libpdf-poppler.so|zathura pdf backend|opt|zathura-pdf-poppler||zathura-pdf-poppler|" \
     "apps|cmd:firefox-developer-edition|firefox developer edition|core|firefox-developer-edition||firefox|" \
-    "apps|cmd:nvibrant|nvibrant|opt||||https://github.com/Tremeschin/nVibrant" \
+    "apps|cmd:nvibrant|nvibrant|opt||nvibrant-bin||" \
     "apps|cmd:fd|fd|opt|fd||fd|" \
     "apps|cmd:magick|imagemagick|opt|imagemagick||ImageMagick|"
 

@@ -32,15 +32,28 @@ if ! mango -c "$HOME/.config/mango/config.conf" -p >/dev/null 2>&1; then
 	exit 1
 fi
 
-# ONE D-Bus session bus for the whole session. Artix has no systemd to create
-# $XDG_RUNTIME_DIR/bus, so without this every client autolaunched its OWN bus --
-# fnott listening on one, notify-send talking to another, notifications
-# "randomly" dead with no error anywhere. This is also what makes the
-# dbus-update-activation-environment line in config.conf mean anything.
+# The session bus. On systemd it already exists -- systemd --user created
+# $XDG_RUNTIME_DIR/bus before this script ran -- and dbus-run-session would
+# start a SECOND one, which is the same split-brain in reverse: portals and
+# systemd user services on the real bus, the compositor's children on ours.
+#
+# So: uwsm if it is here, which puts mango under systemd as a proper
+# graphical-session.target and exports the environment to both systemd and
+# D-Bus. Plain exec if it is not. dbus-run-session is the no-systemd path only
+# (Artix, OpenBSD), where nothing creates the bus and every client otherwise
+# autolaunches its own -- fnott listening on one, notify-send talking to
+# another, notifications "randomly" dead with no error anywhere.
+if [ -S "${XDG_RUNTIME_DIR:-/run/user/$(id -u)}/bus" ]; then
+	if command -v uwsm >/dev/null 2>&1 && uwsm check may-start >/dev/null 2>&1; then
+		exec uwsm start -- mango.desktop
+	fi
+	exec mango "$@"
+fi
+
 if command -v dbus-run-session >/dev/null 2>&1; then
 	exec dbus-run-session -- mango "$@"
 fi
 
-echo "mango-run: dbus-run-session not found; starting without a session bus." >&2
+echo "mango-run: no session bus and no dbus-run-session." >&2
 echo "mango-run: expect notifications and portals to misbehave." >&2
 exec mango "$@"
