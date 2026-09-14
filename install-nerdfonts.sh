@@ -1,6 +1,6 @@
 #!/bin/sh
 # install-nerdfonts.sh — download and install all Nerd Fonts
-# Works on Linux and OpenBSD (requires curl, xz, tar, fc-cache)
+# Requires curl, xz, tar, fc-cache
 
 
 FONTS_DIR="${HOME}/.local/share/fonts/NerdFonts"

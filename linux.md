@@ -1,6 +1,6 @@
 # Linux
 
-**Requirements:** GNU Stow, [coat](https://github.com/jeebuscrossaint/coat)
+**Requirements:** Arch Linux, GNU Stow, [coat](https://github.com/jeebuscrossaint/coat)
 
 ```sh
 ./install.sh          # stow -t ~ linux, then `coat apply`
@@ -19,7 +19,7 @@ stow -D -t ~ linux    # uninstall
 | bar | *none* | **conky** draws the readout on the desktop layer — visible on an empty tag, never covering a window |
 | notifications | **fnott** | also draws the volume/brightness OSD, via `~/.local/bin/osd` |
 | launcher | **fuzzel** | bound directly in `config.conf`, no wrapper |
-| lock / idle | **swaylock** + **swayidle** | the only Wayland locker in both Arch and OpenBSD ports |
+| lock / idle | **swaylock** + **swayidle** | coat patches its colours in place |
 | login | *none* | agetty on tty1; `mango-run` starts the session |
 | terminal | **kitty** | coat writes `coat-theme.conf`; `kitty @ set-colors` recolours live |
 | shell | **fish** | |
@@ -39,7 +39,6 @@ everything they were brought in for:
 | rounded corners | **yes** | yes | no (needs a git plugin) |
 | animations | **yes** | no | yes |
 | overview / exposé | **yes** (`toggleoverview`) | no | yes |
-| in OpenBSD ports | **yes** | yes | yes |
 | coat-themed | **yes** | yes | yes |
 | titlebars | no | yes (traffic lights) | yes (buttons stuck right) |
 
@@ -85,11 +84,9 @@ is tracked, so a scheme change never shows up as a diff.
 |---|---|
 | `mango-run` | start the session from a TTY |
 | `audio-ensure` | repair the audio stack, but only when it is genuinely dead |
-| `dgpu`, `dgpu-diag`, `fans` | hand tools: dGPU power state, and the ASUS fan curve |
 | `osd` | perform a volume/brightness/lock-key change *and* draw it as a notification |
 | `theme-pick`, `theme-random` | coat scheme pickers |
 | `screenshot`, `screenshot-edit` | region grab; `-edit` pipes to satty |
-| `prime-run` | run one app on the dGPU |
 | `start-polkit`, `refresh-paru-completions` | session odds and ends |
 
 ## Retired
@@ -99,8 +96,8 @@ because it could not be recoloured live, or needed a supervisor process to
 survive being recoloured:
 
 **sway/swaybar** → mango, and conky for the readout · **dwl** → mango (compile-time config) ·
-**foot** → **kitty** · **tofi** → wmenu → **fuzzel** (tofi is not in OpenBSD ports; wmenu has no
-.desktop support and no config file) · **gtklock** → hyprlock → **swaylock** (the only one in OpenBSD ports too) ·
+**foot** → **kitty** · **tofi** → wmenu → **fuzzel** (wmenu has no .desktop support
+and no config file) · **gtklock** → hyprlock → **swaylock** ·
 **dunst** → fnott · **labwc**, **wayfire** → mango does it all natively ·
 **swayrbar**, **slstatus**, **barstat**, **waybar** → conky ·
 **ashell** · **avizo**, **swayosd**, **wob** → the OSD is a

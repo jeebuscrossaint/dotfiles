@@ -32,17 +32,16 @@ if ! mango -c "$HOME/.config/mango/config.conf" -p >/dev/null 2>&1; then
 	exit 1
 fi
 
-# The session bus. On systemd it already exists -- systemd --user created
-# $XDG_RUNTIME_DIR/bus before this script ran -- and dbus-run-session would
-# start a SECOND one, which is the same split-brain in reverse: portals and
-# systemd user services on the real bus, the compositor's children on ours.
+# The session bus is already running: systemd --user created
+# $XDG_RUNTIME_DIR/bus before this script did anything. Starting a second one
+# with dbus-run-session splits the session in half -- portals and user services
+# on the real bus, the compositor's children on ours -- so hand off to uwsm,
+# which puts mango under a proper graphical-session.target and exports the
+# environment to systemd and D-Bus both.
 #
-# So: uwsm if it is here, which puts mango under systemd as a proper
-# graphical-session.target and exports the environment to both systemd and
-# D-Bus. Plain exec if it is not. dbus-run-session is the no-systemd path only
-# (Artix, OpenBSD), where nothing creates the bus and every client otherwise
-# autolaunches its own -- fnott listening on one, notify-send talking to
-# another, notifications "randomly" dead with no error anywhere.
+# The last two branches are for a box with no session bus at all, where every
+# client otherwise autolaunches its own: fnott listening on one, notify-send
+# talking to another, notifications "randomly" dead with no error anywhere.
 if [ -S "${XDG_RUNTIME_DIR:-/run/user/$(id -u)}/bus" ]; then
 	if command -v uwsm >/dev/null 2>&1 && uwsm check may-start >/dev/null 2>&1; then
 		exec uwsm start -- mango.desktop
