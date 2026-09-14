@@ -63,7 +63,6 @@ linux/
 ├── .config/
 │   ├── coat/          scheme + module list; drives everything else
 │   ├── mango/         the compositor: binds, layouts, effects, monitors, autostart
-│   ├── waybar/        bar config + stylesheet
 │   ├── fnott/         notifications and OSD
 │   ├── fuzzel/        launcher (colours patched in place by coat)
 │   ├── swaylock/      the locker (colours patched in place by coat)
@@ -86,8 +85,6 @@ is tracked, so a scheme change never shows up as a diff.
 |---|---|
 | `mango-run` | start the session from a TTY |
 | `audio-ensure` | repair the audio stack, but only when it is genuinely dead |
-| `mango-tags`, `mango-title` | stream tags and title over `mmsg watch` — only used if you start waybar |
-| `waybar-fan`, `waybar-uptime` | fan RPM and uptime for waybar custom modules |
 | `dgpu`, `dgpu-diag`, `fans` | hand tools: dGPU power state, and the ASUS fan curve |
 | `osd` | perform a volume/brightness/lock-key change *and* draw it as a notification |
 | `theme-pick`, `theme-random` | coat scheme pickers |
@@ -101,19 +98,18 @@ Kept here so nothing gets reintroduced by reflex. Every one of these was replace
 because it could not be recoloured live, or needed a supervisor process to
 survive being recoloured:
 
-**sway/swaybar** → mango/waybar · **dwl** → mango (compile-time config) ·
+**sway/swaybar** → mango, and conky for the readout · **dwl** → mango (compile-time config) ·
 **foot** → **kitty** · **tofi** → wmenu → **fuzzel** (tofi is not in OpenBSD ports; wmenu has no
 .desktop support and no config file) · **gtklock** → hyprlock → **swaylock** (the only one in OpenBSD ports too) ·
 **dunst** → fnott · **labwc**, **wayfire** → mango does it all natively ·
-**swayrbar**, **slstatus**, **barstat** → native waybar
-modules · **ashell** · **avizo**, **swayosd**, **wob** → the OSD is a
+**swayrbar**, **slstatus**, **barstat**, **waybar** → conky ·
+**ashell** · **avizo**, **swayosd**, **wob** → the OSD is a
 notification now · **kanshi** → mango's `monitorrule` ·
 **Hyprland** → back to mango, 2026-09-08 · **Quickshell** (bar, dock, Spotlight,
 Mission Control, notifications, lock, greeter) → deleted the same day: no bar at
 all, `fnott` for notifications, `fuzzel` for launching ·
 **greetd** + the QML greeter, then briefly **tuigreet** → no greeter at all; agetty
 on tty1 and `mango-run` · **wlopm**, **hypridle** → no blanking, swayidle only ·
-**waybar** → kept installed and configured, but nothing starts it
 
 The reasoning for each is in the config file that replaced it, and the module
 list at the top of `.config/coat/coat.yaml`.
