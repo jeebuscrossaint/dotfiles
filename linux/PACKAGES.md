@@ -57,17 +57,15 @@ mistaken for live dependencies.
 
 `gtklock`, `dunst`, `wob`, `foot`, `wayfire`, `swaybg`, `tofi`, `kanshi`, `imv`, `mpd`,
 `mpd-runit`, `river`, `waylock`, `wlr-randr`, `autotiling-rs`,
-`rose-pine-hyprcursor` (AUR),
+`rose-pine-cursor` (AUR), `rose-pine-hyprcursor` (AUR),
 `quickshell`, `hyprland`, `hypridle`, `hyprlock`, `xdg-desktop-portal-hyprland`,
 `cage`, `greetd`, `greetd-tuigreet`, `waybar`, `wttrbar` (AUR)
 
 `xdg-desktop-portal-wlr` moved OFF this list: mango's portal config prefers the
 `wlr` backend for ScreenCast and Screenshot, so it is a live dependency now.
 
-`rose-pine-cursor` is NOT retired: `gtk-3.0/settings.ini` and `gtk-4.0/settings.ini`
-both set `gtk-cursor-theme-name=BreezeX-RosePine-Linux`, which that package ships.
-The macOS theme tracked in `linux/.local/share/icons/macOS` is on disk but nothing
-points at it — mango's `cursor_theme` is commented out.
+The cursor theme is the macOS one tracked in `linux/.local/share/icons/macOS`,
+not a package: both GTK settings files name it, so there is nothing to install.
 
 ## Everything else
 
