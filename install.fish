@@ -103,9 +103,15 @@ or die "$target is not writable"
 #        core something tracked here calls it and breaks without it
 #        opt  one feature degrades
 #
-# Derived from what the tracked configs and ~/.local/bin scripts actually
-# invoke — grep before adding a row, and keep the paths in step with the
-# probes in start-polkit and mango's config.conf.
+# Rows above `chat` are derived from what the tracked configs and ~/.local/bin
+# scripts actually invoke — grep before adding one, and keep the paths in step
+# with the probes in start-polkit and mango's config.conf.
+#
+# The chat, dev and apps groups are the other kind of row: nothing in this repo
+# calls them, they are just what this person installs on every machine. All
+# `opt`, so a server or a VM can decline the lot and still get a working
+# session. AUR names are the exact ones in use, forks included -- slack's
+# wayland fork, and the -bin builds of the Electron apps.
 # No cmd: row for anything this repo ships in ~/.local/bin — the stow run puts
 # the script on PATH, so the probe passes on a machine missing the real package
 # (that is what the nvidia-prime row did).
@@ -171,11 +177,28 @@ set -g dep_table \
     "apps|cmd:btop|btop|opt|btop||" \
     "apps|cmd:mpv|mpv|opt|mpv||" \
     "apps|cmd:zathura|zathura|opt|zathura||" \
+    "apps|cmd:chromium|chromium|opt|chromium||" \
+    "apps|cmd:prismlauncher|prismlauncher|opt|prismlauncher||" \
+    "apps|cmd:yazi|yazi|opt|yazi||" \
+    "apps|cmd:imv|imv|opt|imv||" \
+    "apps|cmd:blueman-manager|blueman|opt|blueman||" \
+    "apps|cmd:bluetoothctl|bluez-utils|opt|bluez-utils||" \
+    "apps|cmd:openlogi|openlogi|opt||openlogi-bin|" \
+    "apps|cmd:yt-dlp|yt-dlp|opt|yt-dlp||" \
     "apps|path:/usr/lib/zathura/libpdf-poppler.so|zathura pdf backend|opt|zathura-pdf-poppler||" \
     "apps|cmd:firefox-developer-edition|firefox developer edition|core|firefox-developer-edition||" \
     "apps|cmd:nvibrant|nvibrant|opt||nvibrant-bin|" \
     "apps|cmd:fd|fd|opt|fd||" \
-    "apps|cmd:magick|imagemagick|opt|imagemagick||"
+    "apps|cmd:magick|imagemagick|opt|imagemagick||" \
+    "chat|cmd:slack|slack|opt||slack-desktop-wayland-jetm|" \
+    "chat|cmd:vesktop|vesktop|opt||vesktop-bin|" \
+    "chat|path:/opt/teams-for-linux|teams for linux|opt||teams-for-linux-bin|" \
+    "chat|path:/opt/outlook-for-linux|outlook for linux|opt||outlook-for-linux-bin|" \
+    "chat|cmd:zoom|zoom|opt||zoom|" \
+    "dev|cmd:claude|claude code|opt||claude-code|" \
+    "dev|cmd:claude-desktop|claude desktop|opt||claude-desktop-bin|" \
+    "dev|cmd:code|vscode|opt||visual-studio-code-bin|" \
+    "dev|cmd:gh|github cli|opt|github-cli||"
 
 function aur_helper
     for h in paru yay
@@ -270,11 +293,13 @@ function ensure_asus
     enable_service supergfxd
 end
 
-# The daemon is useless until someone authenticates, so say the next step out loud.
-function ensure_tailscale
-    command -q tailscale; or return 0
-    enable_service tailscaled
-    tailscale status &>/dev/null; or dim "tailscale is not logged in yet — sudo tailscale up"
+# Installed does not mean running: both of these ship a disabled unit.
+function ensure_services
+    if command -q tailscale
+        enable_service tailscaled
+        tailscale status &>/dev/null; or dim "tailscale is not logged in yet — sudo tailscale up"
+    end
+    command -q bluetoothctl; and enable_service bluetooth
 end
 
 # rustup installs SHIMS, not a compiler: `cargo` exists and every build fails
@@ -464,7 +489,7 @@ if not set -q _flag_skip_checks; and not set -q _flag_uninstall
     ensure_asus
     ensure_rust
     ensure_coat
-    ensure_tailscale
+    ensure_services
 end
 
 command -q stow
