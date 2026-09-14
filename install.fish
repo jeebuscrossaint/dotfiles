@@ -121,24 +121,28 @@ or die "$target is not writable"
 # slots. It used to be SFMono plus SF Pro from nerd-fonts-apple, and a machine set
 # up from the old rows themed itself into tofu.
 set -g dep_table \
-    "installer|cmd:stow|stow|req|stow||stow|stow|" \
+    "installer|cmd:stow|stow|req|stow||stow|" \
     "installer|cmd:git|git|core|git||git|" \
     "installer|cmd:fish|fish|req|fish||fish|" \
     "compositor|cmd:mango|mango|core||mangowm||https://github.com/DreamMaoMao/mango" \
+    "compositor|cmd:dbus-run-session|dbus|core|dbus||dbus|" \
     "compositor|path:/usr/lib/xdg-desktop-portal-wlr /usr/libexec/xdg-desktop-portal-wlr|xdg-desktop-portal-wlr|core|xdg-desktop-portal-wlr||xdg-desktop-portal-wlr|" \
     "compositor|path:/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 /usr/libexec/polkit-gnome-authentication-agent-1 /usr/local/libexec/polkit-gnome-authentication-agent-1|polkit agent|core|polkit-gnome||polkit-gnome|" \
+    "compositor|path:/usr/lib/xdg-desktop-portal-gtk /usr/libexec/xdg-desktop-portal-gtk|xdg-desktop-portal-gtk|core|xdg-desktop-portal-gtk||xdg-desktop-portal-gtk|" \
     "desktop|cmd:fnott|fnott|core|fnott||fnott|" \
     "desktop|cmd:fuzzel|fuzzel|core|fuzzel||fuzzel|" \
     "desktop|cmd:awww|awww|core||awww||" \
     "desktop|cmd:swayidle|swayidle|core|swayidle||swayidle|" \
     "desktop|cmd:swaylock|swaylock|core|swaylock||swaylock|" \
     "desktop|cmd:conky|conky|core|conky||conky|" \
+    "desktop|cmd:wlsunset|wlsunset|core|wlsunset||wlsunset|" \
     "desktop|cmd:cava|cava|opt|cava|||" \
     "terminal|cmd:kitty|kitty|core|kitty||kitty|" \
     "terminal|cmd:nvim|neovim|core|neovim||neovim|" \
     "terminal|cmd:lsd|lsd|opt|lsd||lsd|" \
     "terminal|cmd:bat|bat|opt|bat||bat|" \
     "terminal|cmd:fastfetch|fastfetch|opt|fastfetch||fastfetch|" \
+    "terminal|cmd:rg|ripgrep|opt|ripgrep||ripgrep|" \
     "clipboard|cmd:wl-copy|wl-clipboard|core|wl-clipboard||wl-clipboard|" \
     "clipboard|cmd:cliphist|cliphist|core|cliphist|||" \
     "clipboard|cmd:wl-clip-persist|wl-clip-persist|opt||wl-clip-persist||" \
@@ -147,6 +151,7 @@ set -g dep_table \
     "clipboard|cmd:satty|satty|opt|satty|||" \
     "clipboard|cmd:swappy|swappy|opt|swappy||swappy|" \
     "system|cmd:wpctl|wireplumber|core|wireplumber||wireplumber|" \
+    "system|cmd:pw-play|pipewire|core|pipewire||pipewire|" \
     "system|cmd:notify-send|libnotify|core|libnotify||libnotify|" \
     "system|cmd:brightnessctl|brightnessctl|core|brightnessctl||brightnessctl|" \
     "system|cmd:playerctl|playerctl|opt|playerctl||playerctl|" \
@@ -156,15 +161,21 @@ set -g dep_table \
     "system|cmd:pstree|psmisc|core|psmisc||psmisc|" \
     "system|cmd:gawk|gawk|opt|gawk||gawk|" \
     "system|cmd:python3|python|core|python||python|" \
+    "system|cmd:tailscale|tailscale|opt|tailscale||tailscale|" \
     "theme|cmd:cargo|rust toolchain|core|rustup||rust|https://rustup.rs" \
     "theme|cmd:coat|coat|core||||cargo install --git https://github.com/jeebuscrossaint/coat" \
+    "theme|path:/usr/share/icons/WhiteSur-dark /usr/share/icons/WhiteSur|WhiteSur icon theme|core||whitesur-icon-theme||" \
+    "theme|path:/usr/share/themes/adw-gtk3-dark|adw-gtk3|core|adw-gtk-theme|||" \
+    "theme|path:/usr/share/icons/BreezeX-RosePine-Linux|rose-pine cursor|core||rose-pine-cursor||" \
     "fonts|font:JetBrainsMono Nerd Font|JetBrainsMono Nerd Font|core|ttf-jetbrains-mono-nerd|||./install-nerdfonts.sh" \
-    "fonts|path:/usr/share/icons/WhiteSur-dark /usr/share/icons/WhiteSur|WhiteSur icon theme|core||whitesur-icon-theme||" \
     "fonts|font:Font Awesome|Font Awesome|core|otf-font-awesome||font-awesome|" \
     "fonts|font:Noto Color Emoji|Noto Color Emoji|core|noto-fonts-emoji||noto-emoji|" \
     "apps|cmd:btop|btop|opt|btop||btop|" \
     "apps|cmd:mpv|mpv|opt|mpv||mpv|" \
     "apps|cmd:zathura|zathura|opt|zathura||zathura|" \
+    "apps|path:/usr/lib/zathura/libpdf-poppler.so|zathura pdf backend|opt|zathura-pdf-poppler||zathura-pdf-poppler|" \
+    "apps|cmd:firefox-developer-edition|firefox developer edition|core|firefox-developer-edition||firefox|" \
+    "apps|cmd:nvibrant|nvibrant|opt||||https://github.com/Tremeschin/nVibrant" \
     "apps|cmd:fd|fd|opt|fd||fd|" \
     "apps|cmd:magick|imagemagick|opt|imagemagick||ImageMagick|"
 
@@ -180,22 +191,32 @@ function aur_helper
     end
 end
 
-# paru-bin, not paru: the source package builds itself with cargo, which is the
-# thing we are usually here to install in the first place.
+# paru is a cargo build, so the toolchain has to land before the clone does --
+# that ordering is the whole function: rustup, a default toolchain, then makepkg.
 function bootstrap_aur_helper
     test (pkg_manager) = pacman; or return 1
     command -q git; and command -q makepkg
     or begin
-        note "no AUR helper, and base-devel is missing: sudo pacman -S --needed base-devel git"
-        return 1
+        step "Installing base-devel and git first..."
+        fish -c "sudo pacman -S --needed --noconfirm base-devel git"
+        or begin; note "could not install base-devel — paru cannot be built"; return 1; end
     end
+
+    if not command -q cargo
+        step "Installing rustup first — paru builds with cargo..."
+        fish -c "sudo pacman -S --needed --noconfirm rustup"
+        or begin; note "could not install rustup — paru cannot be built"; return 1; end
+    end
+    ensure_rust
+    command -q cargo; or begin; note "no working cargo — paru cannot be built"; return 1; end
+
     set -l dir (mktemp -d)
-    step "Bootstrapping paru..."
-    git clone -q --depth 1 https://aur.archlinux.org/paru-bin.git $dir/paru-bin
-    and fish -c "cd $dir/paru-bin; and makepkg -si --noconfirm"
+    step "Building paru..."
+    git clone -q --depth 1 https://aur.archlinux.org/paru.git $dir/paru
+    and fish -c "cd $dir/paru; and makepkg -si --noconfirm"
     set -l rc $status
     rm -rf $dir
-    test $rc -eq 0; or begin; note "paru bootstrap failed — install it by hand"; return 1; end
+    test $rc -eq 0; or begin; note "paru build failed — install it by hand"; return 1; end
     command -q paru
 end
 
@@ -213,6 +234,61 @@ function dep_present -a probe
             end
             return 1
     end
+end
+
+# y/n, with --yes and --install-deps answering for it.
+function confirm -a prompt
+    set -q _flag_install_deps; and return 0
+    set -q _flag_yes; and return 0
+    isatty stdin; or return 1
+    read -P "  $prompt [y/N] " -l answer
+    echo
+    string match -qi 'y*' -- (string trim -- $answer)
+end
+
+# Arch is systemd; on a runit box the unit names do not exist, so say so and
+# leave it to the person reading.
+function enable_service -a unit
+    command -q systemctl
+    or begin; note "no systemctl — enable $unit the way this init does"; return 0; end
+    systemctl is-enabled -q $unit 2>/dev/null; and return 0
+    step "systemctl enable --now $unit"
+    sudo systemctl enable --now $unit; or note "$unit did not start"
+end
+
+# asusd is the fan curves, keyboard LEDs and battery charge limit; supergfxd is
+# the GPU mode switch. AUR-only, and pointless on anything that is not an ASUS.
+function ensure_asus
+    test (pkg_manager) = pacman; or return 0
+    string match -qi '*asus*' -- (cat /sys/class/dmi/id/board_vendor 2>/dev/null)
+    or return 0
+
+    set -l want
+    command -q asusctl; or set -a want asusctl
+    command -q supergfxctl; or set -a want supergfxctl
+    command -q rog-control-center; or set -a want rog-control-center
+    test (count $want) -gt 0
+    or begin; enable_service asusd; enable_service supergfxd; return 0; end
+
+    step "ASUS board — the control stack is missing"
+    printf '   %sparu -S --needed %s%s\n' "$c_ok" "$want" "$c_off"
+    confirm "install it now?"; or return 0
+
+    set -l helper (aur_helper)
+    if test -z "$helper"
+        bootstrap_aur_helper; or return 1
+        set helper (aur_helper)
+    end
+    fish -c "$helper -S --needed $want"; or begin; note "that failed — carry on by hand"; return 1; end
+    enable_service asusd
+    enable_service supergfxd
+end
+
+# The daemon is useless until someone authenticates, so say the next step out loud.
+function ensure_tailscale
+    command -q tailscale; or return 0
+    enable_service tailscaled
+    tailscale status &>/dev/null; or dim "tailscale is not logged in yet — sudo tailscale up"
 end
 
 # rustup installs SHIMS, not a compiler: `cargo` exists and every build fails
@@ -240,9 +316,9 @@ function ensure_coat
 end
 
 # The proprietary stack, only if there is actually a 10de device on the bus.
-# Nothing here touches modeset or runtime PM: /etc/modprobe.d/nvidia-rtd3.conf
-# keeps nvidia_drm off the boot path so the card can reach D3cold, and a default
-# `nvidia_drm modeset=1` drop-in would silently undo it. misc/ holds those.
+# Packages only -- no modprobe drop-in, no udev rule, no MUX service. The tuned
+# power setup in misc/ is this machine's, not a default; install it by hand if
+# and when it is wanted.
 function ensure_nvidia
     test (pkg_manager) = pacman; or return 0
     set -l found
@@ -259,17 +335,8 @@ function ensure_nvidia
     step "NVIDIA card found, no driver installed"
     printf '   %ssudo pacman -S --needed %s%s\n' "$c_ok" "$want" "$c_off"
     dim "nvidia-open is for Turing and newer; on anything older swap in nvidia-dkms"
-    set -l go
-    if set -q _flag_install_deps
-        set go yes
-    else if isatty stdin; and not set -q _flag_yes
-        read -P "  install it now? [y/N] " -l answer
-        string match -qi 'y*' -- (string trim -- $answer); and set go yes
-    end
-    echo
-    test -n "$go"; or return 0
+    confirm "install it now?"; or return 0
     fish -c "sudo pacman -S --needed $want"; or note "that failed — carry on by hand"
-    dim "power rules are not automatic: see misc/99-pci-runtime-pm.rules and misc/gpu-mux.start"
 end
 
 # Reports what is missing; returns 1 if anything req/core is.
@@ -326,8 +393,8 @@ function check_deps
             set -a want_pm $pkg
         else if test -n "$apkg"
             set -a want_aur $apkg
-        else if test -n "$f[9]"
-            contains -- "$label|$f[9]" $hints; or set -a hints "$label|$f[9]"
+        else if test -n "$f[8]"
+            contains -- "$label|$f[8]" $hints; or set -a hints "$label|$f[8]"
         else
             set -a orphans $label
         end
@@ -422,8 +489,10 @@ if not set -q _flag_skip_checks; and not set -q _flag_uninstall
     or note "linking anyway — the configs for the missing pieces are harmless on their own"
     echo
     ensure_nvidia
+    ensure_asus
     ensure_rust
     ensure_coat
+    ensure_tailscale
 end
 
 command -q stow
