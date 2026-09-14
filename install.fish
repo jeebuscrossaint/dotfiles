@@ -106,6 +106,9 @@ or die "$target is not writable"
 # Derived from what the tracked configs and ~/.local/bin scripts actually
 # invoke — grep before adding a row, and keep the paths in step with the
 # probes in start-polkit and mango's config.conf.
+# No cmd: row for anything this repo ships in ~/.local/bin — the stow run puts
+# the script on PATH, so the probe passes on a machine missing the real package
+# (that is what the nvidia-prime row did).
 #
 # The conky rows are the whole desktop readout, so they are core: conky itself,
 # curl and jq for the weather it fetches from wttr.in, and pstree for the process
@@ -148,9 +151,6 @@ set -g dep_table \
     "system|cmd:brightnessctl|brightnessctl|core|brightnessctl||brightnessctl|brightnessctl|" \
     "system|cmd:playerctl|playerctl|opt|playerctl||playerctl|playerctl|" \
     "system|cmd:pavucontrol|pavucontrol|opt|pavucontrol||pavucontrol|pavucontrol|" \
-    "system|cmd:socat|socat|core|socat||socat|socat|" \
-    "system|cmd:nmcli|networkmanager|core|networkmanager||network-manager|||" \
-    "system|cmd:qalc|libqalculate|core|libqalculate||libqalculate-dev|libqalculate|" \
     "system|cmd:jq|jq|core|jq||jq|jq|" \
     "system|cmd:curl|curl|core|curl||curl|curl|" \
     "system|cmd:pstree|psmisc|core|psmisc||psmisc|psmisc|" \
@@ -166,10 +166,8 @@ set -g dep_table \
     "apps|cmd:mpv|mpv|opt|mpv||mpv|mpv|" \
     "apps|cmd:zathura|zathura|opt|zathura||zathura|zathura|" \
     "apps|cmd:wttrbar|wttrbar|opt||wttrbar|||" \
-    "apps|cmd:pdftoppm|poppler|opt|poppler||poppler-utils|poppler|" \
     "apps|cmd:fd|fd|opt|fd||fd-find|fd|" \
-    "apps|cmd:magick|imagemagick|opt|imagemagick||imagemagick|ImageMagick|" \
-    "apps|cmd:prime-run|nvidia-prime|opt|nvidia-prime||||"
+    "apps|cmd:magick|imagemagick|opt|imagemagick||imagemagick|ImageMagick|"
 
 function pkg_manager
     test (uname -s) = OpenBSD; and echo openbsd; and return
