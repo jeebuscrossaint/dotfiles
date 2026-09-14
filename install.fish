@@ -169,6 +169,8 @@ set -g dep_table \
     "system|cmd:nmcli|networkmanager|core|networkmanager||" \
     "system|cmd:sshd|openssh|opt|openssh||" \
     "system|cmd:smartctl|smartmontools|opt|smartmontools||" \
+    "system|cmd:paccache|pacman-contrib|opt|pacman-contrib||" \
+    "system|path:/usr/lib/systemd/system-generators/zram-generator|zram-generator|opt|zram-generator||" \
     "system|cmd:tailscale|tailscale|opt|tailscale||" \
     "theme|cmd:cargo|rust toolchain|core|rustup||https://rustup.rs" \
     "theme|cmd:coat|coat|core|||cargo install --git https://github.com/jeebuscrossaint/coat" \
@@ -309,6 +311,59 @@ function ensure_asus
     fish -c "$helper -S --needed $want"; or begin; note "that failed — carry on by hand"; return 1; end
     enable_service asusd
     enable_service supergfxd
+end
+
+# Things runit had no answer for, so they were never set up here before.
+function ensure_systemd_extras
+    command -q systemctl; or return 0
+
+    # Kills the cgroup under memory pressure instead of whichever process the
+    # kernel picks. uwsm puts every app in its own scope, so the runaway tab
+    # goes and the compositor holding the session stays.
+    enable_service systemd-oomd.service
+    command -q paccache; and enable_service paccache.timer
+
+    # /var/log/journal is the entire switch: without the directory the journal
+    # lives in tmpfs and last boot's crash is gone by the time it is wanted.
+    if not test -d /var/log/journal
+        step "journals do not survive a reboot"
+        if confirm "keep them (mkdir /var/log/journal)?"
+            sudo mkdir -p /var/log/journal
+            and sudo systemd-tmpfiles --create --prefix /var/log/journal
+            or note "could not create /var/log/journal"
+        end
+    end
+
+    # Compressed swap in RAM: the zram-generator replacement for zramen.
+    if test -f /usr/lib/systemd/system-generators/zram-generator
+        and not test -f /etc/systemd/zram-generator.conf
+        step "zram-generator is installed but not configured"
+        if confirm "set up zram swap, half of RAM, zstd?"
+            printf '[zram0]\nzram-size = ram / 2\ncompression-algorithm = zstd\n' \
+                | sudo tee /etc/systemd/zram-generator.conf >/dev/null
+            and sudo systemctl daemon-reload
+            and sudo systemctl start systemd-zram-setup@zram0.service
+            or note "zram setup did not complete"
+        end
+    end
+end
+
+# MagicDNS is the reason to bother: tailscale wants a resolver it can put a
+# split-DNS route into, and resolved is the one systemd ships.
+function ensure_resolved
+    command -q systemctl; or return 0
+    command -q tailscale; or return 0
+    systemctl is-enabled -q systemd-resolved 2>/dev/null; and return 0
+
+    step "systemd-resolved is off, and tailscale is installed"
+    dim "MagicDNS needs it; everything else gets a DNS cache out of it"
+    confirm "enable it and point NetworkManager at it?"; or return 0
+    sudo systemctl enable --now systemd-resolved
+    and sudo ln -sf /run/systemd/resolve/stub-resolv.conf /etc/resolv.conf
+    and printf '[main]\ndns=systemd-resolved\n' \
+        | sudo tee /etc/NetworkManager/conf.d/dns.conf >/dev/null
+    and sudo systemctl restart NetworkManager
+    or note "resolved setup did not finish — check /etc/resolv.conf by hand"
 end
 
 # The session starts from a tty1 login, so tty1 logs in by itself. config.fish
@@ -552,6 +607,8 @@ if not set -q _flag_skip_checks; and not set -q _flag_uninstall
     ensure_rust
     ensure_coat
     ensure_services
+    ensure_systemd_extras
+    ensure_resolved
     ensure_autologin
 end
 
