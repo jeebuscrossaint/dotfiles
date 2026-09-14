@@ -166,6 +166,7 @@ set -g dep_table \
     "system|cmd:pstree|psmisc|core|psmisc||" \
     "system|cmd:gawk|gawk|opt|gawk||" \
     "system|cmd:python3|python|core|python||" \
+    "system|cmd:nmcli|networkmanager|core|networkmanager||" \
     "system|cmd:tailscale|tailscale|opt|tailscale||" \
     "theme|cmd:cargo|rust toolchain|core|rustup||https://rustup.rs" \
     "theme|cmd:coat|coat|core|||cargo install --git https://github.com/jeebuscrossaint/coat" \
@@ -266,10 +267,19 @@ function confirm -a prompt
     string match -qi 'y*' -- (string trim -- $answer)
 end
 
-function enable_service -a unit
-    systemctl is-enabled -q $unit 2>/dev/null; and return 0
-    step "systemctl enable --now $unit"
-    sudo systemctl enable --now $unit; or note "$unit did not start"
+function enable_service
+    command -q systemctl; or return 0
+    set -l scope
+    set -l unit $argv[1]
+    test "$argv[1]" = --user; and set scope --user; and set unit $argv[2]
+
+    systemctl $scope is-enabled -q $unit 2>/dev/null; and return 0
+    step "systemctl $scope enable --now $unit"
+    if test -n "$scope"
+        systemctl --user enable --now $unit; or note "$unit did not start"
+    else
+        sudo systemctl enable --now $unit; or note "$unit did not start"
+    end
 end
 
 # asusd is the fan curves, keyboard LEDs and battery charge limit; supergfxd is
@@ -299,13 +309,39 @@ function ensure_asus
     enable_service supergfxd
 end
 
-# Installed does not mean running: both of these ship a disabled unit.
+# Installed does not mean running. This is the runit service list from the old
+# machine translated to units, minus the ones systemd already covers itself:
+# dbus, logind, udevd are built in, journald replaces syslog-ng, and autovt@
+# spawns the extra ttys on demand instead of six always-on agetty services.
 function ensure_services
+    command -q systemctl; or return 0
+
+    enable_service NetworkManager
+    enable_service systemd-timesyncd
+    enable_service fstrim.timer
+    command -q bluetoothctl; and enable_service bluetooth
+    command -q thermald; and enable_service thermald
     if command -q tailscale
         enable_service tailscaled
         tailscale status &>/dev/null; or dim "tailscale is not logged in yet — sudo tailscale up"
     end
-    command -q bluetoothctl; and enable_service bluetooth
+
+    # Audio is per-user and socket-activated: the sockets are what start it on
+    # the first client, which is the thing the old launcher kept getting wrong.
+    enable_service --user pipewire.socket
+    enable_service --user pipewire-pulse.socket
+    enable_service --user wireplumber.service
+
+    # Installed, deliberately left off: tuned is power management, and the rest
+    # are daemons worth starting by hand the day they are wanted.
+    set -l optional
+    command -q tuned; and set -a optional tuned.service
+    command -q docker; and set -a optional docker.service
+    command -q ollama; and set -a optional ollama.service
+    command -q smartctl; and set -a optional smartd.service
+    command -q sshd; and set -a optional sshd.service
+    test (count $optional) -gt 0
+    and dim "installed but not enabled, on purpose: $optional"
 end
 
 # rustup installs SHIMS, not a compiler: `cargo` exists and every build fails
