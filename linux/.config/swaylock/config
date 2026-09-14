@@ -23,7 +23,7 @@ daemonize
 # is no wallpaper to name -- a missing daemon, a deleted file, or the OpenBSD
 # box, which has no awww at all. coat keeps it on-scheme.
 scaling=fill
-color=211A28
+color=1C1C1C
 
 # The whole lock screen is this one dial, so it is drawn large: 110px radius on
 # a 1600px panel, with a band thick enough that a single keypress segment is a
@@ -49,32 +49,32 @@ show-failed-attempts
 font=JetBrainsMono Nerd Font Mono
 font-size=18
 
-ring-color=87ADE0
-ring-clear-color=CA97C4
-ring-ver-color=C4BECB
-ring-wrong-color=CE96BE
+ring-color=5FAFD7
+ring-clear-color=D7AF5F
+ring-ver-color=D0D0D0
+ring-wrong-color=AF005F
 
-inside-color=2C2533e6
-inside-clear-color=CA97C433
-inside-ver-color=87ADE033
-inside-wrong-color=CE96BE33
+inside-color=303030e6
+inside-clear-color=D7AF5F33
+inside-ver-color=5FAFD733
+inside-wrong-color=AF005F33
 
-key-hl-color=C4BECB
-bs-hl-color=CE96BE
+key-hl-color=D0D0D0
+bs-hl-color=AF005F
 
-text-color=C4BECB
-text-clear-color=C4BECB
-text-ver-color=C4BECB
-text-wrong-color=CE96BE
+text-color=D0D0D0
+text-clear-color=D0D0D0
+text-ver-color=D0D0D0
+text-wrong-color=AF005F
 
 separator-color=00000000
-text-caps-lock-color=CA97C4
-ring-caps-lock-color=CA97C4
-inside-caps-lock-color=CA97C433
-caps-lock-key-hl-color=CA97C4
-caps-lock-bs-hl-color=CE96BE
-line-color=211A28
-line-clear-color=211A28
-line-ver-color=211A28
-line-wrong-color=211A28
-line-caps-lock-color=211A28
+text-caps-lock-color=D7AF5F
+ring-caps-lock-color=D7AF5F
+inside-caps-lock-color=D7AF5F33
+caps-lock-key-hl-color=D7AF5F
+caps-lock-bs-hl-color=AF005F
+line-color=1C1C1C
+line-clear-color=1C1C1C
+line-ver-color=1C1C1C
+line-wrong-color=1C1C1C
+line-caps-lock-color=1C1C1C
