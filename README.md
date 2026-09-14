@@ -30,7 +30,7 @@ set canvas url for assignment notifications (`canvas-notify`):
 echo "YOUR_URL" > ~/.config/canvas/ical-url
 ```
 
-install nerd fonts on openbsd (or anywhere without packages):
+install nerd fonts anywhere without packages:
 ```sh
 ./install-nerdfonts.sh
 ```

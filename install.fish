@@ -96,7 +96,7 @@ or die "$target is not writable"
 
 # --- dependencies -------------------------------------------------------------
 #
-#   group | probe | label | tier | pacman | aur | openbsd | hint
+#   group | probe | label | tier | pacman | aur | hint
 #
 # probe  cmd:BINARY · font:FAMILY · path:P1 P2 (any one existing is enough)
 # tier   req  the installer itself cannot run
@@ -121,67 +121,61 @@ or die "$target is not writable"
 # slots. It used to be SFMono plus SF Pro from nerd-fonts-apple, and a machine set
 # up from the old rows themed itself into tofu.
 set -g dep_table \
-    "installer|cmd:stow|stow|req|stow||stow|" \
-    "installer|cmd:git|git|core|git||git|" \
-    "installer|cmd:fish|fish|req|fish||fish|" \
-    "compositor|cmd:mango|mango|core||mangowm||https://github.com/DreamMaoMao/mango" \
-    "compositor|cmd:uwsm|uwsm|core|uwsm|||" \
-    "compositor|path:/usr/lib/xdg-desktop-portal-wlr /usr/libexec/xdg-desktop-portal-wlr|xdg-desktop-portal-wlr|core|xdg-desktop-portal-wlr||xdg-desktop-portal-wlr|" \
-    "compositor|path:/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 /usr/libexec/polkit-gnome-authentication-agent-1 /usr/local/libexec/polkit-gnome-authentication-agent-1|polkit agent|core|polkit-gnome||polkit-gnome|" \
-    "compositor|path:/usr/lib/xdg-desktop-portal-gtk /usr/libexec/xdg-desktop-portal-gtk|xdg-desktop-portal-gtk|core|xdg-desktop-portal-gtk||xdg-desktop-portal-gtk|" \
-    "desktop|cmd:fnott|fnott|core|fnott||fnott|" \
-    "desktop|cmd:fuzzel|fuzzel|core|fuzzel||fuzzel|" \
-    "desktop|cmd:awww|awww|core||awww||" \
-    "desktop|cmd:swayidle|swayidle|core|swayidle||swayidle|" \
-    "desktop|cmd:swaylock|swaylock|core|swaylock||swaylock|" \
-    "desktop|cmd:conky|conky|core|conky||conky|" \
-    "desktop|cmd:wlsunset|wlsunset|core|wlsunset||wlsunset|" \
-    "desktop|cmd:cava|cava|opt|cava|||" \
-    "terminal|cmd:kitty|kitty|core|kitty||kitty|" \
-    "terminal|cmd:nvim|neovim|core|neovim||neovim|" \
-    "terminal|cmd:lsd|lsd|opt|lsd||lsd|" \
-    "terminal|cmd:bat|bat|opt|bat||bat|" \
-    "terminal|cmd:fastfetch|fastfetch|opt|fastfetch||fastfetch|" \
-    "terminal|cmd:rg|ripgrep|opt|ripgrep||ripgrep|" \
-    "clipboard|cmd:wl-copy|wl-clipboard|core|wl-clipboard||wl-clipboard|" \
-    "clipboard|cmd:cliphist|cliphist|core|cliphist|||" \
-    "clipboard|cmd:wl-clip-persist|wl-clip-persist|opt||wl-clip-persist||" \
-    "clipboard|cmd:grim|grim|core|grim||grim|" \
-    "clipboard|cmd:slurp|slurp|core|slurp||slurp|" \
-    "clipboard|cmd:satty|satty|opt|satty|||" \
-    "clipboard|cmd:swappy|swappy|opt|swappy||swappy|" \
-    "system|cmd:wpctl|wireplumber|core|wireplumber||wireplumber|" \
-    "system|cmd:notify-send|libnotify|core|libnotify||libnotify|" \
-    "system|cmd:brightnessctl|brightnessctl|core|brightnessctl||brightnessctl|" \
-    "system|cmd:playerctl|playerctl|opt|playerctl||playerctl|" \
-    "system|cmd:pavucontrol|pavucontrol|opt|pavucontrol||pavucontrol|" \
-    "system|cmd:jq|jq|core|jq||jq|" \
-    "system|cmd:curl|curl|core|curl||curl|" \
-    "system|cmd:pstree|psmisc|core|psmisc||psmisc|" \
-    "system|cmd:gawk|gawk|opt|gawk||gawk|" \
-    "system|cmd:python3|python|core|python||python|" \
-    "system|cmd:tailscale|tailscale|opt|tailscale||tailscale|" \
-    "theme|cmd:cargo|rust toolchain|core|rustup||rust|https://rustup.rs" \
-    "theme|cmd:coat|coat|core||||cargo install --git https://github.com/jeebuscrossaint/coat" \
-    "theme|path:/usr/share/icons/WhiteSur-dark /usr/share/icons/WhiteSur|WhiteSur icon theme|core||whitesur-icon-theme||" \
-    "theme|path:/usr/share/themes/adw-gtk3-dark|adw-gtk3|core|adw-gtk-theme|||" \
-    "fonts|font:JetBrainsMono Nerd Font|JetBrainsMono Nerd Font|core|ttf-jetbrains-mono-nerd|||./install-nerdfonts.sh" \
-    "fonts|font:Font Awesome|Font Awesome|core|otf-font-awesome||font-awesome|" \
-    "fonts|font:Noto Color Emoji|Noto Color Emoji|core|noto-fonts-emoji||noto-emoji|" \
-    "apps|cmd:btop|btop|opt|btop||btop|" \
-    "apps|cmd:mpv|mpv|opt|mpv||mpv|" \
-    "apps|cmd:zathura|zathura|opt|zathura||zathura|" \
-    "apps|path:/usr/lib/zathura/libpdf-poppler.so|zathura pdf backend|opt|zathura-pdf-poppler||zathura-pdf-poppler|" \
-    "apps|cmd:firefox-developer-edition|firefox developer edition|core|firefox-developer-edition||firefox|" \
-    "apps|cmd:nvibrant|nvibrant|opt||nvibrant-bin||" \
-    "apps|cmd:fd|fd|opt|fd||fd|" \
-    "apps|cmd:magick|imagemagick|opt|imagemagick||ImageMagick|"
-
-function pkg_manager
-    test (uname -s) = OpenBSD; and echo openbsd; and return
-    command -q pacman; and echo pacman; and return
-    echo unknown
-end
+    "installer|cmd:stow|stow|req|stow||" \
+    "installer|cmd:git|git|core|git||" \
+    "installer|cmd:fish|fish|req|fish||" \
+    "compositor|cmd:mango|mango|core||mangowm|https://github.com/DreamMaoMao/mango" \
+    "compositor|cmd:uwsm|uwsm|core|uwsm||" \
+    "compositor|path:/usr/lib/xdg-desktop-portal-wlr /usr/libexec/xdg-desktop-portal-wlr|xdg-desktop-portal-wlr|core|xdg-desktop-portal-wlr||" \
+    "compositor|path:/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 /usr/libexec/polkit-gnome-authentication-agent-1 /usr/local/libexec/polkit-gnome-authentication-agent-1|polkit agent|core|polkit-gnome||" \
+    "compositor|path:/usr/lib/xdg-desktop-portal-gtk /usr/libexec/xdg-desktop-portal-gtk|xdg-desktop-portal-gtk|core|xdg-desktop-portal-gtk||" \
+    "desktop|cmd:fnott|fnott|core|fnott||" \
+    "desktop|cmd:fuzzel|fuzzel|core|fuzzel||" \
+    "desktop|cmd:awww|awww|core||awww|" \
+    "desktop|cmd:swayidle|swayidle|core|swayidle||" \
+    "desktop|cmd:swaylock|swaylock|core|swaylock||" \
+    "desktop|cmd:conky|conky|core|conky||" \
+    "desktop|cmd:wlsunset|wlsunset|core|wlsunset||" \
+    "desktop|cmd:cava|cava|opt|cava||" \
+    "terminal|cmd:kitty|kitty|core|kitty||" \
+    "terminal|cmd:nvim|neovim|core|neovim||" \
+    "terminal|cmd:lsd|lsd|opt|lsd||" \
+    "terminal|cmd:bat|bat|opt|bat||" \
+    "terminal|cmd:fastfetch|fastfetch|opt|fastfetch||" \
+    "terminal|cmd:rg|ripgrep|opt|ripgrep||" \
+    "clipboard|cmd:wl-copy|wl-clipboard|core|wl-clipboard||" \
+    "clipboard|cmd:cliphist|cliphist|core|cliphist||" \
+    "clipboard|cmd:wl-clip-persist|wl-clip-persist|opt||wl-clip-persist|" \
+    "clipboard|cmd:grim|grim|core|grim||" \
+    "clipboard|cmd:slurp|slurp|core|slurp||" \
+    "clipboard|cmd:satty|satty|opt|satty||" \
+    "clipboard|cmd:swappy|swappy|opt|swappy||" \
+    "system|cmd:wpctl|wireplumber|core|wireplumber||" \
+    "system|cmd:notify-send|libnotify|core|libnotify||" \
+    "system|cmd:brightnessctl|brightnessctl|core|brightnessctl||" \
+    "system|cmd:playerctl|playerctl|opt|playerctl||" \
+    "system|cmd:pavucontrol|pavucontrol|opt|pavucontrol||" \
+    "system|cmd:jq|jq|core|jq||" \
+    "system|cmd:curl|curl|core|curl||" \
+    "system|cmd:pstree|psmisc|core|psmisc||" \
+    "system|cmd:gawk|gawk|opt|gawk||" \
+    "system|cmd:python3|python|core|python||" \
+    "system|cmd:tailscale|tailscale|opt|tailscale||" \
+    "theme|cmd:cargo|rust toolchain|core|rustup||https://rustup.rs" \
+    "theme|cmd:coat|coat|core|||cargo install --git https://github.com/jeebuscrossaint/coat" \
+    "theme|path:/usr/share/icons/WhiteSur-dark /usr/share/icons/WhiteSur|WhiteSur icon theme|core||whitesur-icon-theme|" \
+    "theme|path:/usr/share/themes/adw-gtk3-dark|adw-gtk3|core|adw-gtk-theme||" \
+    "fonts|font:JetBrainsMono Nerd Font|JetBrainsMono Nerd Font|core|ttf-jetbrains-mono-nerd||./install-nerdfonts.sh" \
+    "fonts|font:Font Awesome|Font Awesome|core|otf-font-awesome||" \
+    "fonts|font:Noto Color Emoji|Noto Color Emoji|core|noto-fonts-emoji||" \
+    "apps|cmd:btop|btop|opt|btop||" \
+    "apps|cmd:mpv|mpv|opt|mpv||" \
+    "apps|cmd:zathura|zathura|opt|zathura||" \
+    "apps|path:/usr/lib/zathura/libpdf-poppler.so|zathura pdf backend|opt|zathura-pdf-poppler||" \
+    "apps|cmd:firefox-developer-edition|firefox developer edition|core|firefox-developer-edition||" \
+    "apps|cmd:nvibrant|nvibrant|opt||nvibrant-bin|" \
+    "apps|cmd:fd|fd|opt|fd||" \
+    "apps|cmd:magick|imagemagick|opt|imagemagick||"
 
 function aur_helper
     for h in paru yay
@@ -192,7 +186,6 @@ end
 # paru is a cargo build, so the toolchain has to land before the clone does --
 # that ordering is the whole function: rustup, a default toolchain, then makepkg.
 function bootstrap_aur_helper
-    test (pkg_manager) = pacman; or return 1
     command -q git; and command -q makepkg
     or begin
         step "Installing base-devel and git first..."
@@ -244,11 +237,7 @@ function confirm -a prompt
     string match -qi 'y*' -- (string trim -- $answer)
 end
 
-# Arch is systemd; on a runit box the unit names do not exist, so say so and
-# leave it to the person reading.
 function enable_service -a unit
-    command -q systemctl
-    or begin; note "no systemctl — enable $unit the way this init does"; return 0; end
     systemctl is-enabled -q $unit 2>/dev/null; and return 0
     step "systemctl enable --now $unit"
     sudo systemctl enable --now $unit; or note "$unit did not start"
@@ -257,7 +246,6 @@ end
 # asusd is the fan curves, keyboard LEDs and battery charge limit; supergfxd is
 # the GPU mode switch. AUR-only, and pointless on anything that is not an ASUS.
 function ensure_asus
-    test (pkg_manager) = pacman; or return 0
     string match -qi '*asus*' -- (cat /sys/class/dmi/id/board_vendor 2>/dev/null)
     or return 0
 
@@ -318,7 +306,6 @@ end
 # power setup in misc/ is this machine's, not a default; install it by hand if
 # and when it is wanted.
 function ensure_nvidia
-    test (pkg_manager) = pacman; or return 0
     set -l found
     for v in /sys/bus/pci/devices/*/vendor
         test (cat $v 2>/dev/null) = 0x10de; and set found 1; and break
@@ -342,13 +329,7 @@ function check_deps
     set -g font_families
     command -q fc-list; and set -g font_families (fc-list : family 2>/dev/null | string split ,)
 
-    set -l pm (pkg_manager)
     set -l aur (aur_helper)
-    set -l col 5
-    switch $pm
-        case openbsd; set col 7
-        case unknown; set col 0
-    end
 
     set -l groups
     set -l rendered
@@ -382,17 +363,15 @@ function check_deps
             case '*'; set -a miss_opt $label; set rendered[$i] "$rendered[$i]$sep $c_warn✗$label$c_off"
         end
 
-        set -l pkg ''
-        test $col -gt 0; and set pkg $f[$col]
-        set -l apkg ''
-        test $pm = pacman; and set apkg $f[6]
+        set -l pkg $f[5]
+        set -l apkg $f[6]
 
         if test -n "$pkg"
             set -a want_pm $pkg
         else if test -n "$apkg"
             set -a want_aur $apkg
-        else if test -n "$f[8]"
-            contains -- "$label|$f[8]" $hints; or set -a hints "$label|$f[8]"
+        else if test -n "$f[7]"
+            contains -- "$label|$f[7]" $hints; or set -a hints "$label|$f[7]"
         else
             set -a orphans $label
         end
@@ -415,12 +394,8 @@ function check_deps
 
     # The paste-me block, and the same thing as runnable commands.
     set -g dep_cmds
-    if test (count $want_pm) -gt 0
-        switch $pm
-            case pacman; set -g dep_cmds $dep_cmds "sudo pacman -S --needed $want_pm"
-            case openbsd; set -g dep_cmds $dep_cmds "doas pkg_add $want_pm"
-        end
-    end
+    test (count $want_pm) -gt 0
+    and set -g dep_cmds $dep_cmds "sudo pacman -S --needed $want_pm"
     if test (count $want_aur) -gt 0
         if test -n "$aur"
             set -g dep_cmds $dep_cmds "$aur -S --needed $want_aur"
@@ -439,7 +414,6 @@ function check_deps
     if test (count $orphans) -gt 0
         printf '   %s# no package known here for:%s %s\n' "$c_dim" "$c_off" "$orphans"
     end
-    test $pm = pacman; or printf '   %s# package names outside Arch are best-effort — check them%s\n' "$c_dim" "$c_off"
     echo
 
     # Offer to actually run it.  Once only, however badly it goes.
@@ -494,7 +468,7 @@ if not set -q _flag_skip_checks; and not set -q _flag_uninstall
 end
 
 command -q stow
-or die "GNU Stow is missing.  pacman -S stow  ·  pkg_add stow"
+or die "GNU Stow is missing:  sudo pacman -S stow"
 
 # --- uninstall ----------------------------------------------------------------
 
@@ -634,10 +608,9 @@ end
 contains -- $target/.local/bin $PATH
 or note "~/.local/bin is not on PATH — the scripts in it will not be found"
 
-# A stale copy of a cargo-installed binary in ~/.local/bin wins over ~/.cargo/bin
-# under the compositor's PATH, which puts ~/.local/bin first so that prime-run
-# can shadow its system namesake. That is how an August build of coat kept
-# re-theming everything except the shell for a whole day.
+# The compositor puts ~/.local/bin ahead of ~/.cargo/bin, so a stale copy there
+# wins. That is how an August build of coat kept re-theming everything except
+# the shell for a whole day.
 if test -f $target/.local/bin/coat
     note "stale $target/.local/bin/coat shadows ~/.cargo/bin/coat under the compositor — delete it"
 end
