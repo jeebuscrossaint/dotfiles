@@ -5,6 +5,7 @@ https://cdn.modrinth.com/data/6zatK8W5/versions/HdS6AFjo/DamageTint-1.8.9-forge-
 https://cdn.modrinth.com/data/8pJYUDNi/versions/TaaTviAI/Chatting-1.8.9-forge-2.0.6.jar
 https://cdn.modrinth.com/data/AibBIVmj/versions/TcuRDj1R/Aoneconfigbootstrap-1.8.9-forge-1.0.3.jar
 https://cdn.modrinth.com/data/D1WjV2AJ/versions/ONiaSvcd/TabStats-1.3.0.jar
+https://cdn.modrinth.com/data/EEPqpfzu/versions/YweU5lGO/AutoTip-1.0.0%2B1.8.9-forge.jar
 https://cdn.modrinth.com/data/fLNnSWgM/versions/UIoBGYDU/ColorSaturation-1.8.9-forge-1.0.0.jar
 https://cdn.modrinth.com/data/G2Hmyf0G/versions/70oHEIpB/Keystrokes-1.8.9-forge-1.0.0.jar
 https://cdn.modrinth.com/data/HK3p7LMj/versions/hf9HKJuH/PolyNametag-1.8.9-forge-1.0.10.jar
@@ -23,3 +24,4 @@ https://cdn.modrinth.com/data/sFNcMCZm/versions/9icB9nLa/%5B1.8.9%5D Lunar Block
 https://cdn.modrinth.com/data/xT45UG5o/versions/w6XrPOU5/PolyBlur-1.8.9-forge-1.0.2.jar
 https://cdn.modrinth.com/data/YknNc5nN/versions/iNjGeSxM/PolyPatcher-1.8.9-forge-1.10.4.jar
 https://cdn.modrinth.com/data/zV5r3pPn/versions/1.2.0-forge-1.8.9/3dSkinLayers-forge-mc1.8.9-1.2.0.jar
+https://optifine.net/downloadx?f=OptiFine_1.8.9_HD_U_L5.jar&x=d8a868429cff5733499d653d7bee7838
