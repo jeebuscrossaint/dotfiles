@@ -1,0 +1,6 @@
+# Guard: sync.fish only copies source, but a stray jar or pack landing here
+# would be a 40M+ mistake that is annoying to undo once pushed.
+*.jar
+*.jar.disabled
+*.zip
+*.log

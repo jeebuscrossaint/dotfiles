@@ -1,0 +1,22 @@
+filename = 'PolyWeather-1.8.9-forge-1.0.0.jar'
+name = 'PolyWeather'
+side = 'client'
+x-prismlauncher-loaders = [ 'forge' ]
+x-prismlauncher-mc-versions = [ '1.8.9' ]
+x-prismlauncher-release-type = 'release'
+x-prismlauncher-version-number = 'v1.0.0'
+
+[download]
+hash = '3840cac501fc2c1d5ed896934024b9c99c5f5a27edcbb5f596c08c093916416165eeb6b338c3c518b5901bb32554bdad0e5afc0242a77d7fe67022b4e4ce01dc'
+hash-format = 'sha512'
+mode = 'url'
+url = 'https://cdn.modrinth.com/data/r8Cr8YRg/versions/1YxktDLt/PolyWeather-1.8.9-forge-1.0.0.jar'
+
+[update.modrinth]
+mod-id = 'r8Cr8YRg'
+version = '1YxktDLt'
+
+[[x-prismlauncher-dependencies]]
+addonId = 'AibBIVmj'
+type = 'EMBEDDED'
+version = 'sg4Zvp2L'

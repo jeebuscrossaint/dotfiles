@@ -1,0 +1,21 @@
+filename = 'PolyCrosshair-1.8.9-forge-1.0.3.jar'
+name = 'PolyCrosshair'
+side = 'client'
+x-prismlauncher-loaders = [ 'forge' ]
+x-prismlauncher-mc-versions = [ '1.8.9' ]
+x-prismlauncher-release-type = 'release'
+x-prismlauncher-version-number = 'v1.0.3'
+
+[download]
+hash = 'ad86a595d9c02306928c09e11848e0a4d89ba468bde836925ca19d30c261c5c2fab47c067ee2003617e26b26ccf3be3bf1411a698b57d1417c6ff4233b37c9ca'
+hash-format = 'sha512'
+mode = 'url'
+url = 'https://cdn.modrinth.com/data/obfJASPU/versions/RzbXCuUy/PolyCrosshair-1.8.9-forge-1.0.3.jar'
+
+[update.modrinth]
+mod-id = 'obfJASPU'
+version = 'RzbXCuUy'
+
+[[x-prismlauncher-dependencies]]
+addonId = 'AibBIVmj'
+type = 'EMBEDDED'

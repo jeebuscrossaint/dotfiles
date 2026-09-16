@@ -1,0 +1,50 @@
+
+[general]
+
+	[general.hidden]
+		last_launched_version = "2.4.0"
+
+	[general.options]
+		show_config_on_menu = true
+
+	[general.toggle_sprint]
+		state = true
+		seperate_keybind_for_toggle_sprint = false
+		enabled = true
+
+	[general.toggle_sneak]
+		seperate_keybind_for_toggle_sneak = false
+		state = false
+		enabled = false
+
+[display]
+	display_background = false
+	show_in_guis = false
+	enabled = false
+
+	[display.color]
+		use_chroma_color = false
+		display_color = "255,255,255,255"
+
+	[display.options]
+		scale = 108.5
+		text_shadow = true
+		text_alignment = 0
+
+	[display.position]
+		x = 0.2
+		y = 97.4
+
+	[display.text]
+		sneak_toggle_text = "[Sneaking (toggled)]"
+		descending_held_text = "[Descending (key held)]"
+		descending_text = "[Descending (vanilla)]"
+		riding_text = "[Riding]"
+		sneaking_text = "[Sneaking (vanilla)]"
+		sprint_toggle_text = "[Sprinting (toggled)]"
+		sprint_held_text = "[Sprinting (key held)]"
+		descending_toggled_text = "[Descending (toggled)]"
+		sneak_held_text = "[Sneaking (key held)]"
+		flying_text = "[Flying]"
+		sprinting_text = "[Sprinting (vanilla)]"
+
