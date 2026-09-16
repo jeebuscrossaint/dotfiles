@@ -1,0 +1,18 @@
+filename = 'ArmorHUD-1.1-1.8.9.jar'
+name = 'ArmorHUD'
+side = 'client'
+x-prismlauncher-dependencies = []
+x-prismlauncher-loaders = [ 'forge' ]
+x-prismlauncher-mc-versions = [ '1.8.9' ]
+x-prismlauncher-release-type = 'release'
+x-prismlauncher-version-number = '1.1-1.8.9'
+
+[download]
+hash = '1efedb54bd0441d499fab54988bbc6f98e591e8b6f5ab95337a283d9778601f7defed8b152407275cfcaa7e516ab4ee016bf1783fab26f52df33ab8d6ed5fb0a'
+hash-format = 'sha512'
+mode = 'url'
+url = 'https://cdn.modrinth.com/data/6yx5ezKh/versions/1.1-1.8.9/ArmorHUD-1.1-1.8.9.jar'
+
+[update.modrinth]
+mod-id = '6yx5ezKh'
+version = '1pFfXTp6'
