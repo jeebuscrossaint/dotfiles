@@ -763,12 +763,50 @@ if set -q _flag_minecraft
     else
         step "Installing the 1.8.9 mods..."
         mkdir -p $mods
+
+        # These two files are what make the folder an instance -- Prism finds
+        # instances by scanning for instance.cfg, so without them the jars sit
+        # in a directory no launcher ever reads. Written only when absent, so an
+        # instance made in Prism keeps its own settings.
+        set -l inst (path dirname (path dirname $mods))
+        if not test -f $inst/mmc-pack.json
+            echo '{"components":[{"cachedName":"LWJGL 2","dependencyOnly":true,"uid":"org.lwjgl","version":"2.9.4-nightly-20150209"},{"cachedName":"Minecraft","important":true,"uid":"net.minecraft","version":"1.8.9"},{"cachedName":"Forge","uid":"net.minecraftforge","version":"11.15.1.2318"}],"formatVersion":1}' >$inst/mmc-pack.json
+        end
+        if not test -f $inst/instance.cfg
+            # No WrapperCommand on purpose: the display is on the Intel iGPU, so
+            # prime-run copies every frame back over PCIe and lands around 2fps.
+            printf '%s\n' '[General]' 'ConfigVersion=1.3' 'InstanceType=OneSix' 'name=1.8.9' \
+                'OverrideMemory=true' 'MinMemAlloc=3072' 'MaxMemAlloc=3072' >$inst/instance.cfg
+            dim "created the instance — Forge 11.15.1.2318, 3G heap"
+        end
         # --content-disposition is load-bearing: the OptiFine URL is a
         # downloadx?f=... query, and without it wget names the jar after the
         # query string and Forge skips it.
         if wget -q -P $mods --content-disposition -i $repo/minecraft/mods.txt
             cp -r $repo/minecraft/.index $mods/
+
+            # OptiFine is not in mods.txt: optifine.net hands out a downloadx
+            # token that rotates, and a stale one answers 200 with a 19-byte
+            # "Request not found." body -- wget would cheerfully save that as
+            # the jar. Scrape a fresh token, then check for the zip magic.
+            set -l of $mods/OptiFine_1.8.9_HD_U_L5.jar
+            # A bare curl gets refused, and the link is single-quoted.
+            set -l ua "Mozilla/5.0"
+            set -l href (curl -sf -A $ua "https://optifine.net/adloadx?f=OptiFine_1.8.9_HD_U_L5.jar" \
+                | string match -rg "(downloadx\\?f=OptiFine_1\\.8\\.9_HD_U_L5[^'\"]*)" | head -1)
+            if test -n "$href"
+                curl -sfL -A $ua -o $of "https://optifine.net/$href"
+            end
+            if test -f $of; and test (head -c2 $of) = PK
+                dim "OptiFine L5 fetched"
+            else
+                rm -f $of
+                note "OptiFine failed — grab it from optifine.net and drop it in $mods"
+            end
+
             ok (count $mods/*.jar)" mods installed"
+            # 1.8.9 will not start on a modern JRE.
+            command -q java; or note "no java found — 1.8.9 needs Java 8 (zulu-8-bin)"
         else
             note "some mods failed — see minecraft/README.md for the OptiFine token"
         end

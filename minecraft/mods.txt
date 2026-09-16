@@ -24,4 +24,3 @@ https://cdn.modrinth.com/data/sFNcMCZm/versions/9icB9nLa/%5B1.8.9%5D Lunar Block
 https://cdn.modrinth.com/data/xT45UG5o/versions/w6XrPOU5/PolyBlur-1.8.9-forge-1.0.2.jar
 https://cdn.modrinth.com/data/YknNc5nN/versions/iNjGeSxM/PolyPatcher-1.8.9-forge-1.10.4.jar
 https://cdn.modrinth.com/data/zV5r3pPn/versions/1.2.0-forge-1.8.9/3dSkinLayers-forge-mc1.8.9-1.2.0.jar
-https://optifine.net/downloadx?f=OptiFine_1.8.9_HD_U_L5.jar&x=d8a868429cff5733499d653d7bee7838
