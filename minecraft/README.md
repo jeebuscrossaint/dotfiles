@@ -4,6 +4,10 @@ Forge 11.15.1.2318, Java 8. Polyfrost/OneConfig stack plus OptiFine.
 
 ## Install
 
+    ./install.fish --minecraft
+
+Or by hand:
+
     set mods ~/.local/share/PrismLauncher/instances/1.8.9/minecraft/mods
     mkdir -p $mods
     wget -P $mods --content-disposition -i ~/dotfiles/minecraft/mods.txt
