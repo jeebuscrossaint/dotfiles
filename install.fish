@@ -9,7 +9,7 @@
 set -g repo (path dirname (path resolve (status filename)))
 set -g pkg linux
 
-argparse -X 0 h/help n/dry-run v/verbose b/backup a/adopt y/yes no-coat uninstall c/check skip-checks install-deps t/target= -- $argv
+argparse -X 0 h/help n/dry-run v/verbose b/backup a/adopt y/yes no-coat minecraft uninstall c/check skip-checks install-deps t/target= -- $argv
 or exit 2
 
 if set -q _flag_help
@@ -25,6 +25,7 @@ if set -q _flag_help
   -v, --verbose    list every link, not a summary
   -t, --target DIR link into DIR instead of the home directory
       --no-coat    skip the coat theme step
+      --minecraft  also build the 1.8.9 PvP instance (~40M of mod downloads)
       --uninstall  remove the links this script created
   -h, --help       this"
     exit 0
@@ -689,6 +690,9 @@ if set -q _flag_dry_run
     if set -q _flag_verbose
         for l in (link_paths $plan); dim "~/$l"; end
     end
+    if set -q _flag_minecraft
+        dim "would fetch "(count < $repo/minecraft/mods.txt)" mods into ~/.local/share/PrismLauncher/instances/1.8.9"
+    end
     exit 0
 end
 
@@ -738,6 +742,38 @@ if test (count $left) -gt 0
 end
 ok "every target resolves into the repo"
 echo
+
+# --- minecraft ----------------------------------------------------------------
+
+# Opt-in: ~40M of jars off the network, which nobody wants as a side effect of
+# linking their dotfiles. Mods only — make the instance in Prism yourself.
+if set -q _flag_minecraft
+    set -l mods $target/.local/share/PrismLauncher/instances/1.8.9/minecraft/mods
+
+    # If ~/.local did not exist, stow folded it into a symlink at this repo, and
+    # writing "into $HOME" here would drop 40M of jars inside the working tree.
+    set -l real (path resolve $mods)
+
+    if string match -q "$repo/*" $real
+        note "~/.local is a stow fold into the repo — mkdir ~/.local/share first, then rerun"
+    else if not command -q wget
+        note "wget not found — skipping mods"
+    else if count $mods/*.jar >/dev/null
+        dim "mods already installed, skipping"
+    else
+        step "Installing the 1.8.9 mods..."
+        mkdir -p $mods
+        # --content-disposition is load-bearing: the OptiFine URL is a
+        # downloadx?f=... query, and without it wget names the jar after the
+        # query string and Forge skips it.
+        if wget -q -P $mods --content-disposition -i $repo/minecraft/mods.txt
+            cp -r $repo/minecraft/.index $mods/
+            ok (count $mods/*.jar)" mods installed"
+        else
+            note "some mods failed — see minecraft/README.md for the OptiFine token"
+        end
+    end
+end
 
 # --- theme --------------------------------------------------------------------
 
