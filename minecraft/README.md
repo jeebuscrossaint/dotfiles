@@ -1,32 +1,41 @@
 # Minecraft mods — 1.8.9 PvP
 
-Forge 11.15.1.2318, Java 8. 31 jars: 28 enabled, 3 disabled.
+Forge 11.15.1.2318, Java 8. Polyfrost/OneConfig stack plus OptiFine.
 
 ## Install
 
     set mods ~/.local/share/PrismLauncher/instances/1.8.9/minecraft/mods
     mkdir -p $mods
-    wget -P $mods -i ~/dotfiles/minecraft/mods.txt
+    wget -P $mods --content-disposition -i ~/dotfiles/minecraft/mods.txt
     cp -r ~/dotfiles/minecraft/.index $mods/
 
-`mods.txt` is 25 direct Modrinth URLs — the enabled mods that Prism knows how to
-fetch. `.index/` is Prism's own metadata, one `.pw.toml` per mod with the
-version, sha512 and URL; copying it in makes Prism list them as managed mods and
-offer updates instead of showing 25 anonymous jars.
+All 27 mods, no manual steps. Verified: every jar this pulls is byte-identical
+to the installed one.
 
-## The three not in the list
+`--content-disposition` is not optional. The OptiFine URL is a `downloadx?f=...`
+query, so without it wget names the file after the query string instead of the
+jar and Forge ignores it.
 
-No Modrinth entry, so no URL to fetch. Grab these by hand:
+`.index/` is Prism's own metadata, one `.pw.toml` per mod with the version,
+sha512 and URL. Copying it in makes Prism list them as managed mods with update
+buttons rather than 27 anonymous jars.
 
-| Jar | Where |
-|---|---|
-| `OptiFine_1.8.9_HD_U_L5.jar` | optifine.net → 1.8.9 → HD U L5 |
-| `AutoTip-1.0.0+1.8.9-forge.jar` | Autotip, GitHub releases |
-| `MurderMysteryPlus-0.17.0.jar` | Hypixel forums / the mod's own release page |
+## Notes on two of the URLs
 
-## The three disabled
+**OptiFine** has no stable download page link — optifine.net puts an ad
+interstitial in front, and the real file sits behind a `downloadx` URL with an
+`x=` token. The token in `mods.txt` is checked and serves the correct L5 jar. If
+it ever 404s, load `https://optifine.net/adloadx?f=OptiFine_1.8.9_HD_U_L5.jar`
+and pull the fresh `downloadx` href out of the page.
 
-In `.index/` (so Prism sees them) but deliberately left out of `mods.txt`:
-Better Chat 1.5, OverflowParticles 1.0.2, VanillaHUD 2.2.12 — the OneConfig HUD
-replaced that last one. If you ever want them back, the URLs are in their
-`.pw.toml`; rename to `.jar.disabled` to keep them off.
+**AutoTip** is the Modrinth release of `1.0.0+1.8.9-forge`, which is the same
+build that was installed by hand. Nothing special about it now.
+
+## Left out
+
+Three jars sit in `.index/` but stay out of `mods.txt` because they're disabled
+on disk as `.jar.disabled`: Better Chat 1.5, OverflowParticles 1.0.2, VanillaHUD
+2.2.12 — the OneConfig HUD replaced that last one. Their URLs are in their
+`.pw.toml` if you want them back.
+
+MurderMysteryPlus 0.17.0 is installed but not tracked.
