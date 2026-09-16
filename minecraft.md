@@ -1,13 +1,14 @@
 # Minecraft
 
 One instance: **1.8.9 PvP**, Forge 11.15.1.2318 on Java 8, in PrismLauncher.
-Config, mod metadata and settings are tracked in [`minecraft/`](minecraft/) —
-see [`minecraft/README.md`](minecraft/README.md) for what's tracked, how to sync
-it, and how to rebuild the mods folder on a fresh box.
+Only the mods are tracked — [`minecraft/mods.txt`](minecraft/mods.txt) plus
+Prism's `.index` metadata. [`minecraft/README.md`](minecraft/README.md) has the
+one-liner to reinstall them. Settings, saves and resource packs are not in the
+repo.
 
 ## Modlist
 
-Mostly Polyfrost/OneConfig, plus OptiFine. 34 jars, 31 enabled.
+Mostly Polyfrost/OneConfig, plus OptiFine. 31 jars, 28 enabled.
 
 | Mod | Version |
 |---|---|
