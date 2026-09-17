@@ -142,6 +142,7 @@ texlive-latexextra
 texlive-latexrecommended
 thermald
 thermald-runit
+tor
 tor-browser-bin
 torbrowser-launcher
 tp_smapi
