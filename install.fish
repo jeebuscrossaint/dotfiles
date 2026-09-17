@@ -136,7 +136,7 @@ set -g dep_table \
     "compositor|path:/usr/lib/xdg-desktop-portal-wlr /usr/libexec/xdg-desktop-portal-wlr|xdg-desktop-portal-wlr|core|xdg-desktop-portal-wlr||" \
     "compositor|path:/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 /usr/libexec/polkit-gnome-authentication-agent-1 /usr/local/libexec/polkit-gnome-authentication-agent-1|polkit agent|core|polkit-gnome||" \
     "compositor|path:/usr/lib/xdg-desktop-portal-gtk /usr/libexec/xdg-desktop-portal-gtk|xdg-desktop-portal-gtk|core|xdg-desktop-portal-gtk||" \
-    "desktop|cmd:fnott|fnott|core|fnott||" \
+    "desktop|cmd:dunst|dunst|core|dunst||" \
     "desktop|cmd:fuzzel|fuzzel|core|fuzzel||" \
     "desktop|cmd:awww|awww|core||awww|" \
     "desktop|cmd:swayidle|swayidle|core|swayidle||" \
@@ -501,9 +501,9 @@ function check_deps
         end
 
         switch $tier
-            case req; set -a miss_req $label; set rendered[$i] "$rendered[$i]$sep $c_err✗$label$c_off"
-            case core; set -a miss_core $label; set rendered[$i] "$rendered[$i]$sep $c_err✗$label$c_off"
-            case '*'; set -a miss_opt $label; set rendered[$i] "$rendered[$i]$sep $c_warn✗$label$c_off"
+            case req; set -a miss_req $label; set rendered[$i] "$rendered[$i]$sep $c_err✗ $label$c_off"
+            case core; set -a miss_core $label; set rendered[$i] "$rendered[$i]$sep $c_err✗ $label$c_off"
+            case '*'; set -a miss_opt $label; set rendered[$i] "$rendered[$i]$sep $c_warn✗ $label$c_off"
         end
 
         set -l pkg $f[5]
