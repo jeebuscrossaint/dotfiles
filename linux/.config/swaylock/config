@@ -1,61 +1,39 @@
 # ~/.config/swaylock/config — the screen lock.
 #
 # swaylock because it is the only Wayland locker in BOTH Arch and OpenBSD ports
-# (hyprlock, waylock and gtklock are all Linux-only), and this setup has to run
-# on the OpenBSD box too. It speaks ext-session-lock, which mango implements.
+# (hyprlock, waylock and gtklock are all Linux-only). It speaks ext-session-lock,
+# which mango implements.
 #
-# coat does NOT touch this file. swaylock reads exactly one config and has no
-# include mechanism, so coat used to patch the colour keys in here -- and because
-# this file is a stow symlink, every `coat set` came back as a diff in the repo.
-# It was the last module in coat still doing that.
-#
-# The way out is the command line, not an include: every key here is also a long
-# flag, and swaylock parses argv AFTER the config file so flags win (main.c does
-# load_config, then parse_options). coat writes coat-theme.conf beside this file
-# and idle-guard feeds it in as flags. So this file is geometry and behaviour,
-# and the scheme lives next to it.
-#
-# ~/.config/swaylock is a REAL directory for that reason -- only this file is a
-# symlink into the repo. Folded, coat's fragment would be written inside it.
+# Geometry and behaviour only. The scheme is in coat-theme.conf beside this file
+# and arrives as command-line flags — see do_lock in idle-guard, which explains
+# why. ~/.config/swaylock must stay a real directory for that, with only this
+# file symlinked.
 
 # Fork after the lock surface is up, so the caller returns instead of blocking.
 # swayidle's timeout and the Super+L bind both rely on this.
 daemonize
 
-# NO image= here, deliberately. The lock shows the desktop wallpaper, but it is
-# passed as -i by idle-guard, which asks the wallpaper daemon at the moment of
-# locking. This file used to carry an image= line that a wrapper around awww
-# rewrote on every wallpaper change -- a program editing a config file that is a
-# stow symlink into the repo, so every wallpaper change was a one-line diff.
-# swaylock has no variables to do it in-file; it does take -i.
-#
-# NO colours and no font below, deliberately -- they are all in coat-theme.conf.
-# `color=` is among them and is not dead config: it is what swaylock paints when
-# there is no wallpaper to name -- a missing daemon, a deleted file, or the
-# OpenBSD box, which has no awww at all. font-size stays here; coat sets the
-# family, not the size.
+# No image= — idle-guard passes the wallpaper as -i, resolved at lock time. Do
+# not put one back: the line that used to be here was rewritten on every
+# wallpaper change, which made every wallpaper change a diff in the repo.
 scaling=fill
 
-# The whole lock screen is this one dial, so it is drawn large: 110px radius on
-# a 1600px panel, with a band thick enough that a single keypress segment is a
-# visible arc rather than a tick. swaylock also strokes a 2px line-color circle
-# at BOTH edges of the band -- coat paints those in the background colour, which
-# cuts the ring away from the disc inside it and from the wall behind it.
+# The whole lock screen is this one dial, so it is drawn large: 110px radius,
+# with a band thick enough that a single keypress segment is a visible arc rather
+# than a tick. swaylock strokes a 2px line-color circle at BOTH edges of the
+# band, and coat paints those in the background colour to cut the ring away from
+# the disc and the wall behind it.
 indicator-radius=110
 indicator-thickness=10
 indicator-caps-lock
 
-# Drawn from the moment the screen locks, not on the first keypress. There is
-# nothing else on this screen; without it the panel is an unbroken flat field
-# and the lock looks like a dead display rather than a locked one.
+# From the moment the screen locks, not the first keypress: there is nothing else
+# on this screen, and without it a locked panel looks like a dead one.
 indicator-idle-visible
 
-# The caps-lock text is on by default and there is deliberately no
-# disable-caps-lock-text line: that option takes no argument, so the
-# `disable-caps-lock-text=false` that used to sit here was rejected outright by
-# the parser. It read as "keep the text" and did nothing at all -- the text was
-# only ever showing because the default shows it.
 show-failed-attempts
-
 font-size=18
 
+# Not a setting, a warning: do not add disable-caps-lock-text=false. The option
+# takes no argument, so the parser rejects it outright — it reads as "keep the
+# text" and does nothing at all.

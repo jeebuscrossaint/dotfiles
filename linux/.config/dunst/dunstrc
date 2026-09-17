@@ -1,26 +1,16 @@
 # ~/.config/dunst/dunstrc — the notification daemon for the mango session.
 #
-# dunst, not fnott, for ONE reason: coat can theme it without owning this file.
-# dunst reads drop-ins from dunstrc.d/ after this file, last one winning, so coat
-# writes dunstrc.d/50-coat.conf with nothing but colours and the font and never
-# touches a line below. fnott has no include mechanism at all -- coat patched its
-# colour keys in place, which meant every `coat set` came back as a diff in this
-# repo. Put your own overrides in a later-sorting drop-in (99-mine.conf).
+# dunst because it is the only notification daemon in BOTH Arch and OpenBSD
+# (x11/dunst, layer-shell there too), and because coat can theme it without
+# owning this file: drop-ins in dunstrc.d/ are applied after it, last one
+# winning. mako has a real `include` and would otherwise fit better, but OpenBSD
+# has no mako port.
 #
-# ~/.config/dunst is a REAL directory, not the stow symlink stow would otherwise
-# fold. If it were a symlink to this repo, coat's drop-in would be written INSIDE
-# the tree and we would be back where we started. dunstrc is the only symlink in
-# there.
+# NO COLOURS AND NO FONT HERE — they are in dunstrc.d/50-coat.conf and would lose
+# to it anyway. Your own overrides go in a later-sorting drop-in (99-mine.conf).
 #
-# dunst is also the only notification daemon in BOTH Arch (world/dunst) and
-# OpenBSD (x11/dunst) -- same 1.13.2 on each, and the OpenBSD port links
-# wayland-client/wayland-cursor, so it is layer-shell there too, not XWayland.
-# mako has a real `include` directive and would otherwise be the better fit, but
-# OpenBSD has no mako port.
-#
-# NO COLOURS AND NO FONT HERE. They live in dunstrc.d/50-coat.conf, which coat
-# rewrites on every `coat set`. Setting either here does nothing: the drop-in
-# sorts after this file and wins.
+# ~/.config/dunst must stay a REAL directory with only this file symlinked, or
+# stow folds it and coat writes the drop-in inside the repo.
 
 [global]
     ### Geometry ###
@@ -34,10 +24,8 @@
     # falls back to separator_height.
     gap_size = 8
 
-    # A pair, not a single number: (min, max). The old fnott min-width existed
-    # because `status` printed an aligned eleven-line monospace block and a
-    # narrow popup wrapped the columns into nonsense. status is gone, but the
-    # floor still stops a two-word popup from being a sliver.
+    # A pair, not a single number: (min, max). The floor stops a two-word popup
+    # from being a sliver.
     width = (380, 560)
     height = (0, 600)
 
@@ -50,9 +38,9 @@
 
     ### Display ###
 
-    # overlay, not top: the volume and brightness OSD has to be readable over a
-    # fullscreen window, which a top-layer surface is not. This is dunst's
-    # default -- it is spelled out because it is a decision, not an accident.
+    # overlay, not top: the OSD has to be readable over a fullscreen window, which
+    # a top-layer surface is not. Also dunst's default; stated because it is a
+    # decision, not an accident.
     layer = overlay
 
     # pickcolor sends a pango <span background="#rrggbb"> to show the colour it
@@ -76,8 +64,7 @@
     browser = /usr/bin/xdg-open
 
 # osd replaces its own popup rather than stacking, so a held volume key does not
-# need a long life here. fnott's max-timeout has no dunst equivalent; a caller
-# asking for longer with -t simply gets it.
+# need a long life here. A caller asking for longer with -t gets it.
 [urgency_low]
     timeout = 5
 
