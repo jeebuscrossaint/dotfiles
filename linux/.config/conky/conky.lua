@@ -215,3 +215,89 @@ function conky_vol()
         return tostring(math.floor(v * 100 + 0.5))
     end)
 end
+
+-- Battery, mains and governor, read straight from sysfs.
+--
+-- These were ${execi} shell-outs, and every one of them only opened a file: two
+-- awks over current_now/voltage_now, a cat|sed over ACAD/online, an awk over
+-- charge_full, a cat over cycle_count, a cat over scaling_governor. At their
+-- intervals that is a shell plus a child roughly every second and a half,
+-- forever, to read numbers Lua reads with no process at all. Same move that took
+-- the panel from 11.2% of a core to 2.9% when the mmsg pipelines went -- see
+-- conky_tags -- and the same cache, so the read rate matches the old interval
+-- rather than the tick rate.
+--
+-- The paths are passed in rather than found here: conky.conf resolves BAT0/BAT1
+-- and AC/ACAD at load, and this file is loaded once for both panels. The cache
+-- key carries the path for the same reason -- a fixed key would serve one
+-- battery's reading for another's, which is exactly what a second battery is.
+
+local function read_num(path)
+    local f = io.open(path, "r")
+    if not f then return nil end
+    local v = tonumber(f:read("*l") or "")
+    f:close()
+    return v
+end
+
+-- conky_watts(dir) -> "12.4 W". power_now where the firmware reports energy,
+-- current_now x voltage_now where it reports charge; both are µ-units, hence 1e6
+-- and 1e12. Empty when neither is present rather than "0.0 W", which would be a
+-- reading.
+function conky_watts(dir)
+    return cached("watts:" .. dir, 5, function()
+        local p = read_num(dir .. "/power_now")
+        if p then return string.format("%.1f W", p / 1e6) end
+        local c, v = read_num(dir .. "/current_now"), read_num(dir .. "/voltage_now")
+        if c and v then return string.format("%.1f W", c * v / 1e12) end
+        return ""
+    end)
+end
+
+function conky_volts(dir)
+    return cached("volts:" .. dir, 10, function()
+        local v = read_num(dir .. "/voltage_now")
+        return v and string.format("%.2f V", v / 1e6) or ""
+    end)
+end
+
+-- conky_health(dir) -> "94%". charge_* on a battery that reports charge,
+-- energy_* on one that reports energy.
+function conky_health(dir)
+    return cached("health:" .. dir, 600, function()
+        for _, unit in ipairs({ "charge", "energy" }) do
+            local full = read_num(dir .. "/" .. unit .. "_full")
+            local design = read_num(dir .. "/" .. unit .. "_full_design")
+            if full and design and design > 0 then
+                return string.format("%.0f%%", 100 * full / design)
+            end
+        end
+        return ""
+    end)
+end
+
+function conky_cycles(dir)
+    return cached("cycles:" .. dir, 600, function()
+        local n = read_num(dir .. "/cycle_count")
+        return n and tostring(math.floor(n)) or ""
+    end)
+end
+
+-- conky_mains(path) -> "AC" or "batt", from power_supply/*/online.
+function conky_mains(path)
+    return cached("mains:" .. path, 5, function()
+        local n = read_num(path)
+        if n == nil then return "" end
+        return n == 1 and "AC" or "batt"
+    end)
+end
+
+function conky_governor()
+    return cached("governor", 60, function()
+        local f = io.open("/sys/devices/system/cpu/cpu0/cpufreq/scaling_governor", "r")
+        if not f then return "" end
+        local v = f:read("*l") or ""
+        f:close()
+        return v
+    end)
+end

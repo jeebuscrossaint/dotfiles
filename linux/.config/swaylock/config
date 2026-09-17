@@ -4,9 +4,19 @@
 # (hyprlock, waylock and gtklock are all Linux-only), and this setup has to run
 # on the OpenBSD box too. It speaks ext-session-lock, which mango implements.
 #
-# coat patches the colour keys into this file in place (swaylock.tera) and leaves
-# every other line alone, so the geometry and behaviour below survive a
-# `coat set`. Colours here are placeholders for a first run.
+# coat does NOT touch this file. swaylock reads exactly one config and has no
+# include mechanism, so coat used to patch the colour keys in here -- and because
+# this file is a stow symlink, every `coat set` came back as a diff in the repo.
+# It was the last module in coat still doing that.
+#
+# The way out is the command line, not an include: every key here is also a long
+# flag, and swaylock parses argv AFTER the config file so flags win (main.c does
+# load_config, then parse_options). coat writes coat-theme.conf beside this file
+# and idle-guard feeds it in as flags. So this file is geometry and behaviour,
+# and the scheme lives next to it.
+#
+# ~/.config/swaylock is a REAL directory for that reason -- only this file is a
+# symlink into the repo. Folded, coat's fragment would be written inside it.
 
 # Fork after the lock surface is up, so the caller returns instead of blocking.
 # swayidle's timeout and the Super+L bind both rely on this.
@@ -19,11 +29,12 @@ daemonize
 # stow symlink into the repo, so every wallpaper change was a one-line diff.
 # swaylock has no variables to do it in-file; it does take -i.
 #
-# color= is the fallback, not dead config: it is what swaylock paints when there
-# is no wallpaper to name -- a missing daemon, a deleted file, or the OpenBSD
-# box, which has no awww at all. coat keeps it on-scheme.
+# NO colours and no font below, deliberately -- they are all in coat-theme.conf.
+# `color=` is among them and is not dead config: it is what swaylock paints when
+# there is no wallpaper to name -- a missing daemon, a deleted file, or the
+# OpenBSD box, which has no awww at all. font-size stays here; coat sets the
+# family, not the size.
 scaling=fill
-color=1C1C1C
 
 # The whole lock screen is this one dial, so it is drawn large: 110px radius on
 # a 1600px panel, with a band thick enough that a single keypress segment is a
@@ -46,35 +57,5 @@ indicator-idle-visible
 # only ever showing because the default shows it.
 show-failed-attempts
 
-font=JetBrainsMono Nerd Font Mono
 font-size=18
 
-ring-color=5FAFD7
-ring-clear-color=D7AF5F
-ring-ver-color=D0D0D0
-ring-wrong-color=AF005F
-
-inside-color=303030e6
-inside-clear-color=D7AF5F33
-inside-ver-color=5FAFD733
-inside-wrong-color=AF005F33
-
-key-hl-color=D0D0D0
-bs-hl-color=AF005F
-
-text-color=D0D0D0
-text-clear-color=D0D0D0
-text-ver-color=D0D0D0
-text-wrong-color=AF005F
-
-separator-color=00000000
-text-caps-lock-color=D7AF5F
-ring-caps-lock-color=D7AF5F
-inside-caps-lock-color=D7AF5F33
-caps-lock-key-hl-color=D7AF5F
-caps-lock-bs-hl-color=AF005F
-line-color=1C1C1C
-line-clear-color=1C1C1C
-line-ver-color=1C1C1C
-line-wrong-color=1C1C1C
-line-caps-lock-color=1C1C1C

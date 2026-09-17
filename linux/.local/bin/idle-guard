@@ -20,6 +20,8 @@
 # audio stops, and the on-resume hook kills it if input returns first.
 
 RUN="${XDG_RUNTIME_DIR:-/tmp}"
+# coat writes the scheme here; do_lock turns it into swaylock flags.
+COAT_THEME="${XDG_CONFIG_HOME:-$HOME/.config}/swaylock/coat-theme.conf"
 
 audio_playing() {
 	# ALSA's own view, which covers anything routed through pipewire without
@@ -49,12 +51,36 @@ audio_playing() {
 # where there is no awww at all.
 do_lock() {
 	sfx lock
+
+	# coat's colours, as flags. swaylock reads exactly one config file and has no
+	# include mechanism, so the scheme cannot be pulled into ~/.config/swaylock/
+	# config -- coat used to patch the keys into it in place, and since that file
+	# is a stow symlink, every `coat set` landed as a diff in the dotfiles repo.
+	#
+	# The command line is the include. swaylock parses argv AFTER its config
+	# (main.c: load_config, then parse_options), specifically so flags win, and
+	# every config key is also a long flag. So coat writes coat-theme.conf and
+	# this turns it into arguments.
+	#
+	# IFS is a newline for the split and nothing else: a value can contain spaces
+	# -- `font=JetBrainsMono Nerd Font Mono` is ONE flag -- and default word
+	# splitting would hand swaylock four arguments and an error.
+	#
+	# No file is not an error. A box that has never run `coat set` locks with
+	# swaylock's own defaults, which is the right outcome and also what happens
+	# the first time the OpenBSD machine locks.
+	_ifs=$IFS
+	IFS='
+'
+	set -- $([ -f "$COAT_THEME" ] && grep -vE '^[[:space:]]*(#|$)' "$COAT_THEME" | sed 's/^/--/')
+	IFS=$_ifs
+
 	wall=$(awww query 2>/dev/null | grep -v HEADLESS | head -1)
 	wall=${wall##*: }
 	if [ -n "$wall" ] && [ -f "$wall" ]; then
-		swaylock -i "$wall" >/dev/null 2>&1 &
+		swaylock "$@" -i "$wall" >/dev/null 2>&1 &
 	else
-		swaylock >/dev/null 2>&1 &
+		swaylock "$@" >/dev/null 2>&1 &
 	fi
 }
 
