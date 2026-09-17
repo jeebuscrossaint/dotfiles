@@ -90,4 +90,53 @@ function c.fade(hex, floor, n)
     return out
 end
 
+-- The screen, and the two constants that turn a font size into pixels.
+--
+-- Both panels were written for this machine's 2560x1600 and neither fit a 14"
+-- 1920x1080: the readout ran off the bottom and so did the tree. Sizes are
+-- derived from the screen now rather than written in, which is why this lives
+-- here -- it is the one thing both configs already share.
+--
+-- /sys/class/graphics/fb0/virtual_size is a single known path giving "W,H" for
+-- the active mode, so neither panel has to glob /sys/class/drm or shell out.
+--
+-- 0.825 px per point is the font's advance WIDTH, measured off the rendered
+-- panel (9.9px at size 12, 7.4px at size 9). 1.75 px per point is the LINE
+-- height, and it comes from conky reporting a window it could not allocate:
+-- "502x1175 window" at size 11, 61 lines, 55 columns. That is 1175/61/11 =
+-- 1.751 and 502/55/11 = 0.830 -- two numbers from one measurement, and the width
+-- one lands on the 0.825 that was measured separately, which is what makes the
+-- height one trustworthy.
+c.px_per_col  = 0.825
+c.px_per_line = 1.75
+
+c.screen_w, c.screen_h = 1920, 1080
+do
+    local f = io.open("/sys/class/graphics/fb0/virtual_size", "r")
+    if f then
+        local v = f:read("*l") or ""
+        f:close()
+        local w, h = v:match("^(%d+),(%d+)")
+        if w then c.screen_w, c.screen_h = tonumber(w), tonumber(h) end
+    end
+end
+
+-- The largest font size at which `lines` rows of `cols` columns still fit, never
+-- above `want` (coat's size, so a big screen is unaffected) and never below
+-- `floor` (below which it is not a readout, it is a texture).
+--
+-- `frac` is how much of the screen WIDTH this panel may take. The two panels are
+-- anchored to opposite corners and must not meet in the middle.
+--
+-- margin is counted twice: the gap the panel is anchored with, and the same again
+-- at the bottom so the block does not end flush against the edge.
+function c.fit_size(lines, cols, want, frac, floor, margin)
+    frac  = frac or 0.5
+    floor = floor or 7
+    margin = margin or 24
+    local by_h = (c.screen_h - margin * 2) / (lines * c.px_per_line)
+    local by_w = (c.screen_w * frac) / (cols * c.px_per_col)
+    return math.max(floor, math.floor(math.min(by_h, by_w, want)))
+end
+
 return c
