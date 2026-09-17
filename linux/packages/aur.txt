@@ -18,7 +18,7 @@ tradingview
 ttf-mac-fonts
 ttf-ms-fonts
 vencord-hook
-vencord-installer
+vencord-installer-bin
 visual-studio-code-bin
 whitesur-icon-theme
 wttrbar

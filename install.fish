@@ -201,7 +201,7 @@ set -g dep_table \
     "apps|cmd:i2pd|i2pd|opt|i2pd||" \
     "chat|cmd:slack|slack|opt||slack-desktop-wayland-jetm|" \
     "chat|cmd:discord|discord|opt|discord||" \
-    "chat|path:/etc/pacman.d/hooks/vencord-hook.hook|vencord|opt||vencord-hook|" \
+    "chat|path:/etc/pacman.d/hooks/vencord-hook.hook|vencord|opt||vencord-installer-bin vencord-hook|" \
     "chat|path:/opt/teams-for-linux|teams for linux|opt||teams-for-linux-bin|" \
     "chat|path:/opt/outlook-for-linux|outlook for linux|opt||outlook-for-linux-bin|" \
     "chat|cmd:zoom|zoom|opt||zoom|" \
