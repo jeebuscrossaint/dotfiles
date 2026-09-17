@@ -37,6 +37,7 @@ cryptsetup-runit
 cuda
 curl
 dhcpcd-runit
+discord
 djvulibre
 dmidecode
 docker
@@ -142,6 +143,7 @@ texlive-latexrecommended
 thermald
 thermald-runit
 tor-browser-bin
+torbrowser-launcher
 tp_smapi
 tree
 ttf-linux-libertine
