@@ -203,7 +203,7 @@ set -g dep_table \
     "chat|path:/opt/outlook-for-linux|outlook for linux|opt||outlook-for-linux-bin|" \
     "chat|cmd:zoom|zoom|opt||zoom|" \
     "dev|cmd:claude|claude code|opt||claude-code|" \
-    "dev|cmd:claude-desktop|claude desktop|opt||claude-desktop-bin|" \
+    "dev|cmd:claude-desktop|claude desktop|opt||claude-desktop|" \
     "dev|cmd:code|vscode|opt||visual-studio-code-bin|" \
     "dev|cmd:gh|github cli|opt|github-cli||" \
     "dev|cmd:clion-eap|clion eap|opt||clion-eap|" \
