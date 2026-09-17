@@ -17,9 +17,9 @@ stow -D -t ~ linux    # uninstall
 |---|---|---|
 | compositor | **mango** | dwl-based, dwm tag model. Effects switched off at their master keys, every knob left tuned underneath |
 | bar | *none* | **conky** draws the readout on the desktop layer — visible on an empty tag, never covering a window |
-| notifications | **fnott** | also draws the volume/brightness OSD, via `~/.local/bin/osd` |
+| notifications | **dunst** | also draws the volume/brightness OSD, via `~/.local/bin/osd` |
 | launcher | **fuzzel** | bound directly in `config.conf`, no wrapper |
-| lock / idle | **swaylock** + **swayidle** | coat patches its colours in place |
+| lock / idle | **swaylock** + **swayidle** | coat's colours arrive as flags, from `idle-guard` |
 | login | *none* | agetty on tty1; `mango-run` starts the session |
 | terminal | **kitty** | coat writes `coat-theme.conf`; `kitty @ set-colors` recolours live |
 | shell | **fish** | |
@@ -62,9 +62,9 @@ linux/
 ├── .config/
 │   ├── coat/          scheme + module list; drives everything else
 │   ├── mango/         the compositor: binds, layouts, effects, monitors, autostart
-│   ├── fnott/         notifications and OSD
-│   ├── fuzzel/        launcher (colours patched in place by coat)
-│   ├── swaylock/      the locker (colours patched in place by coat)
+│   ├── dunst/         notifications and OSD
+│   ├── fuzzel/        launcher (coat theme pulled in with include=)
+│   ├── swaylock/      the locker (coat theme passed as flags by idle-guard)
 │   ├── conky/         the desktop readout that replaced the bar
 │   ├── kitty/ fish/  nvim/  bat/  btop/  zathura/  gtk-3.0/  gtk-4.0/  paru/
 │   └── ...
@@ -74,9 +74,12 @@ linux/
 ```
 
 Files coat *generates* (`coat-colors.conf`, `coat-colors.css`, `coat-theme.ini`,
-`fnott.ini` and the colour keys it patches into `fuzzel.ini`)
-are gitignored or patched in place. Only hand-written config
-is tracked, so a scheme change never shows up as a diff.
+`dunstrc.d/50-coat.conf`, `swaylock/coat-theme.conf`) sit beside the hand-written
+config and are pulled in by an `include`, a drop-in directory, or the command
+line. **No coat module edits a tracked file**, and the config directories it
+writes into are real directories rather than folded stow symlinks, so a scheme
+change never shows up as a diff. Verified by running `coat apply` with a clean
+tree.
 
 ## `.local/bin`
 
@@ -98,13 +101,14 @@ survive being recoloured:
 **sway/swaybar** → mango, and conky for the readout · **dwl** → mango (compile-time config) ·
 **foot** → **kitty** · **tofi** → wmenu → **fuzzel** (wmenu has no .desktop support
 and no config file) · **gtklock** → hyprlock → **swaylock** ·
-**dunst** → fnott · **labwc**, **wayfire** → mango does it all natively ·
+**dunst** → fnott → **dunst** again, for the drop-in directory coat themes it
+with · **labwc**, **wayfire** → mango does it all natively ·
 **swayrbar**, **slstatus**, **barstat**, **waybar** → conky ·
 **ashell** · **avizo**, **swayosd**, **wob** → the OSD is a
 notification now · **kanshi** → mango's `monitorrule` ·
 **Hyprland** → back to mango, 2026-09-08 · **Quickshell** (bar, dock, Spotlight,
 Mission Control, notifications, lock, greeter) → deleted the same day: no bar at
-all, `fnott` for notifications, `fuzzel` for launching ·
+all, `dunst` for notifications, `fuzzel` for launching ·
 **greetd** + the QML greeter, then briefly **tuigreet** → no greeter at all; agetty
 on tty1 and `mango-run` · **wlopm**, **hypridle** → no blanking, swayidle only ·
 

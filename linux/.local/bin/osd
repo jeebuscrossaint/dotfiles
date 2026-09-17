@@ -76,11 +76,11 @@ usage() {
 # This used to be a fixed id (4242) on the reading that any nonzero value works.
 # It does not: the spec says replaces_id must be an id the SERVER handed out, and
 # a daemon that takes that literally treats 4242 as unknown and creates a new
-# popup every time. fnott was lenient about it; the Quickshell shell that
-# replaced it was not, and a held volume key stacked one banner per repeat.
+# popup every time. Some daemons are lenient about it and some are not, and the
+# strict ones stacked one banner per keypress.
 #
 # So the id is captured from the server with -p and remembered for the next call.
-# Spec-correct, and it works under fnott, mako and dunst as well. A stale id --
+# Spec-correct, and portable across daemons. A stale id --
 # after the popup has expired, or across a daemon restart -- is simply unknown
 # again and yields a fresh popup, which is the right outcome.
 OSD_ID_FILE="${XDG_RUNTIME_DIR:-/tmp}/osd-notification-id"

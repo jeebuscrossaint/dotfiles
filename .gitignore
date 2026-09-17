@@ -24,16 +24,10 @@ linux/.local/share/coat-webapps/coat-webapps.xpi
 # The templates that produce them live in ~/Projects/coat/templates/.
 linux/.config/wob/wob.ini
 
-# There is NO rule here for the notification daemon, and that is the point.
-# fnott had no include mechanism, so coat patched its colour keys into
-# fnott.ini in place and every `coat set` came back as a diff in this repo --
-# the trade the paragraph above describes. dunst replaced it precisely to end
-# that: coat writes ~/.config/dunst/dunstrc.d/50-coat.conf, and because
-# ~/.config/dunst is a real directory rather than a folded stow symlink, that
-# file is never inside this tree to begin with. Nothing to ignore.
-#
-# fnott.ini stays tracked -- retired, not deleted, and coat no longer touches it.
-!linux/.config/fnott/fnott.ini
+# There is NO rule for the notification daemon or the lock screen, and that is
+# the point. coat writes dunstrc.d/50-coat.conf and swaylock/coat-theme.conf, and
+# because both config directories are real directories rather than folded stow
+# symlinks, neither file is inside this tree to begin with. Nothing to ignore.
 
 # py_compile droppings — the scripts in .local/bin are run directly, never imported.
 __pycache__/
