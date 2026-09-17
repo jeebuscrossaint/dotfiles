@@ -29,15 +29,15 @@ Remove one of these and something in this repo stops working.
 | Wallpaper | `awww` (unwrapped; `Super+Alt+T` runs `coat match` when you want the scheme to follow it) |
 | Terminal & shell | `kitty`, `fish`, `lsd`, `bat`, `less`, `tree` |
 | Editor | `neovim` |
-| Files & monitoring | `yazi`, `btop`, `fastfetch`, `pfetch-rs`, `gdu` |
+| Files & monitoring | `yazi`, `btop`, `fastfetch`, `pfetch-rs` |
 | Clipboard & screenshot | `wl-clipboard`, `cliphist`, `wl-clip-persist`, `grim`, `slurp`, `satty`, `swappy` |
 | Media & input | `mpv`, `imagemagick`, `brightnessctl`, `pavucontrol`, `libnotify`, `playerctl` |
 | GPU | `intel-media-driver`, `nvidia-prime`, `libva-nvidia-driver`, `vulkan-intel`, `cuda` |
 | Fonts & icons | `nerd-fonts-apple` (AUR), `ttf-mac-fonts` (AUR), `whitesur-icon-theme` (AUR), `otf-font-awesome` |
-| Documents | `zathura`, `zathura-pdf-poppler`, `typst`, `texlive-basic`, `texlive-latex*`, `pandoc-cli` |
+| Documents | `zathura`, `zathura-pdf-poppler`, `typst`, `texlive-basic`, `texlive-latex*`, `pandoc-bin` (AUR) |
 | Dev | `rustup`, `clang`, `llvm`, `cmake`, `xmake`, `npm`, `python-pip`, `uv`, `github-cli`, `claude-code` (AUR) |
 | Apps | `firefox`, `discord` + `vencord-hook` (AUR), `visual-studio-code-bin` (AUR), `prismlauncher`, `blueman`, `zoom` (AUR), `torbrowser-launcher`, `i2pd` |
-| CLI by hand | `glow`, `cloc`, `rclone`, `powertop`, `strace` — reached for directly, not called by anything here |
+| CLI by hand | `gdu`, `glow` — reached for directly, not called by anything here |
 | Plumbing | `stow`, `socat`, `wget`, `bc`, `sudo`, `flatpak` |
 
 Not a package: **coat** is the theming tool, built from `~/Projects/coat` with

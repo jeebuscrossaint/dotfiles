@@ -112,11 +112,15 @@ or die "$target is not writable"
 # repo calls them, they are just what this person installs on every machine. All
 # `opt`, so a server or a VM can decline the lot and still get a working session.
 #
-# `cli` is the terminal tooling that is reached for by hand rather than by a
-# script -- gdu for what ate the disk, glow for a README, rclone, pandoc, cloc,
-# and powertop/strace when something is misbehaving. They sit down here rather
-# than in `terminal` because nothing in this repo invokes them, which is the line
-# the two halves of this table are split on. AUR names are the exact ones in use, forks included -- slack's
+# `cli` is the terminal tooling reached for by hand rather than by a script: gdu
+# for what ate the disk, glow for a README. It sits down here rather than in
+# `terminal` because nothing in this repo invokes it, which is the line the two
+# halves of this table are split on.
+#
+# Kept SHORT on purpose. The first version of this group also carried rclone,
+# pandoc, cloc, powertop and strace, picked by diffing installed packages against
+# the table rather than by asking what actually gets used. Being installed is not
+# the same as being wanted on the next machine. AUR names are the exact ones in use, forks included -- slack's
 # wayland fork, and the -bin builds of the Electron apps.
 # No cmd: row for anything this repo ships in ~/.local/bin — the stow run puts
 # the script on PATH, so the probe passes on a machine missing the real package
@@ -206,11 +210,6 @@ set -g dep_table \
     "apps|cmd:i2pd|i2pd|opt|i2pd||" \
     "cli|cmd:gdu|gdu|opt|gdu||" \
     "cli|cmd:glow|glow|opt|glow||" \
-    "cli|cmd:rclone|rclone|opt|rclone||" \
-    "cli|cmd:pandoc|pandoc|opt|pandoc-cli||" \
-    "cli|cmd:cloc|cloc|opt|cloc||" \
-    "cli|cmd:powertop|powertop|opt|powertop||" \
-    "cli|cmd:strace|strace|opt|strace||" \
     "chat|cmd:slack|slack|opt||slack-desktop-wayland-jetm|" \
     "chat|cmd:discord|discord|opt|discord||" \
     "chat|path:/etc/pacman.d/hooks/vencord-hook.hook|vencord|opt||vencord-installer-bin vencord-hook|" \
