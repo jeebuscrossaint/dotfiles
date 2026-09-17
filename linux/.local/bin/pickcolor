@@ -75,7 +75,7 @@ def main():
     print(hexcode)
 
     subprocess.run(("wl-copy", hexcode), check=False)
-    # A span with a background is the only way to show the colour itself: fnott
+    # A span with a background is the only way to show the colour itself: dunst
     # renders pango markup in the body, and no notification daemon here has a
     # swatch of its own.
     subprocess.run(

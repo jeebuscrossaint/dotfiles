@@ -15,7 +15,6 @@
 [global]
     ### Geometry ###
 
-    # Was fnott's anchor + edge-margin-{vertical,horizontal}.
     origin = top-right
     offset = (12, 12)
 
