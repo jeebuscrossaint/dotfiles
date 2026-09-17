@@ -55,7 +55,7 @@ and the session starts with `mango-run`.
 Retired by this repo but still on disk. Safe to remove; listed so they are not
 mistaken for live dependencies.
 
-`gtklock`, `fnott`, `wob`, `foot`, `wayfire`, `swaybg`, `tofi`, `kanshi`, `imv`, `mpd`,
+`gtklock`, `wob`, `foot`, `wayfire`, `swaybg`, `tofi`, `kanshi`, `imv`, `mpd`,
 `mpd-runit`, `river`, `waylock`, `wlr-randr`, `autotiling-rs`,
 `rose-pine-cursor` (AUR), `rose-pine-hyprcursor` (AUR),
 `quickshell`, `hyprland`, `hypridle`, `hyprlock`, `xdg-desktop-portal-hyprland`,
