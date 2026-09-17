@@ -1,9 +1,13 @@
 # Turns the notification bus into a log conky can tail.
 #
-# Caught off the bus as they are sent, not read back from the daemon. dunst does
-# keep history (`dunstctl history`), but it is a JSON ring buffer capped at
-# history_length and it is not a stream -- conky wants a file it can tail. mango
-# starts the dbus-monitor that feeds this.
+# PARKED: nothing starts this. There is no dbus-monitor in mango's config and no
+# panel tails its output -- it is kept because wiring the notification feed back
+# up is one line in conky-left.conf plus one exec-once. An earlier version of this
+# comment claimed mango already started it, which was never true.
+#
+# Caught off the bus as they are sent rather than read back from the daemon: dunst
+# does keep history (`dunstctl history`), but it is a JSON ring buffer capped at
+# history_length, and conky wants a file it can tail.
 #
 # A Notify call carries its strings in a fixed order: app_name, app_icon,
 # summary, body. So n==1 is the app, n==3 the summary and n==4 the body, and the
