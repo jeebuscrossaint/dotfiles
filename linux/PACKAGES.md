@@ -24,7 +24,7 @@ Remove one of these and something in this repo stops working.
 | Role | Packages |
 |---|---|
 | Compositor | `mangowm` (AUR), `xdg-desktop-portal-wlr`, `xdg-desktop-portal-gtk`, `polkit-gnome`, `elogind-runit` |
-| Session | **No bar.** `conky` draws the readout (tags, cpu, temps, mem, disk, fan, battery, volume, net, weather, uptime) on the desktop layer, so it costs no screen space and never covers a window. `fnott` is the only other surface, `fuzzel` the launcher, `swayidle` the idle timer. Effects are switched off in `config.conf`, not deleted. |
+| Session | **No bar.** `conky` draws the readout (tags, cpu, temps, mem, disk, fan, battery, volume, net, weather, uptime) on the desktop layer, so it costs no screen space and never covers a window. `dunst` is the only other surface, `fuzzel` the launcher, `swayidle` the idle timer. Effects are switched off in `config.conf`, not deleted. |
 | Idle & lock | `swaylock` (Super+L and from `swayidle`), `swayidle`. No blanking: that needs a wlr-output-power client and none is wanted. |
 | Wallpaper | `awww` (unwrapped; `Super+Alt+T` runs `coat match` when you want the scheme to follow it) |
 | Terminal & shell | `kitty`, `fish`, `lsd`, `bat`, `less`, `tree` |
@@ -55,7 +55,7 @@ and the session starts with `mango-run`.
 Retired by this repo but still on disk. Safe to remove; listed so they are not
 mistaken for live dependencies.
 
-`gtklock`, `dunst`, `wob`, `foot`, `wayfire`, `swaybg`, `tofi`, `kanshi`, `imv`, `mpd`,
+`gtklock`, `fnott`, `wob`, `foot`, `wayfire`, `swaybg`, `tofi`, `kanshi`, `imv`, `mpd`,
 `mpd-runit`, `river`, `waylock`, `wlr-randr`, `autotiling-rs`,
 `rose-pine-cursor` (AUR), `rose-pine-hyprcursor` (AUR),
 `quickshell`, `hyprland`, `hypridle`, `hyprlock`, `xdg-desktop-portal-hyprland`,

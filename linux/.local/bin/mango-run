@@ -40,7 +40,7 @@ fi
 # environment to systemd and D-Bus both.
 #
 # The last two branches are for a box with no session bus at all, where every
-# client otherwise autolaunches its own: fnott listening on one, notify-send
+# client otherwise autolaunches its own: dunst listening on one, notify-send
 # talking to another, notifications "randomly" dead with no error anywhere.
 if [ -S "${XDG_RUNTIME_DIR:-/run/user/$(id -u)}/bus" ]; then
 	if command -v uwsm >/dev/null 2>&1 && uwsm check may-start >/dev/null 2>&1; then

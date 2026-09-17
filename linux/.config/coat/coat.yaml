@@ -23,7 +23,7 @@ enabled:
   - msteams
 
   - mango
-  - fnott
+  - dunst
   - fuzzel
   - kitty
   - swaylock
