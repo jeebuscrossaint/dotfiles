@@ -198,6 +198,7 @@ set -g dep_table \
     "apps|cmd:fd|fd|opt|fd||" \
     "apps|cmd:magick|imagemagick|opt|imagemagick||" \
     "apps|cmd:torbrowser-launcher|tor browser|opt|torbrowser-launcher||" \
+    "apps|cmd:tor|tor|opt|tor||" \
     "apps|cmd:i2pd|i2pd|opt|i2pd||" \
     "chat|cmd:slack|slack|opt||slack-desktop-wayland-jetm|" \
     "chat|cmd:discord|discord|opt|discord||" \
@@ -527,10 +528,26 @@ function ensure_services
     command -q smartctl; and enable_service smartd
     command -q sshd; and enable_service sshd
 
-    # tuned fights asusd for the ACPI platform profile, and nothing here speaks
-    # the power-profiles-daemon D-Bus API it exists to provide.
+    # Tor and I2P, both wanted running rather than merely installed. tor is the
+    # system daemon -- a SOCKS5 proxy on 127.0.0.1:9050 -- and is NOT what Tor
+    # Browser uses: the browser ships and starts its own, so torbrowser-launcher
+    # works with or without this. Enabling it is for everything else that can be
+    # pointed at a SOCKS port.
+    #
+    # i2pd is the C++ I2P router (the `i2p` package is the Java one and is
+    # AUR-only); its web console is on 127.0.0.1:7070. Both bind loopback by
+    # default and neither is reachable from the network as shipped.
+    command -q tor; and enable_service tor
+    command -q i2pd; and enable_service i2pd
+
+    # tuned is held back on the ASUS box ONLY, where asusd owns the ACPI platform
+    # profile. Everywhere else ensure_power_profile installs and enables it,
+    # because nothing else owns the profile there -- so claiming it is off "on
+    # purpose" on a ThinkPad would be reporting the opposite of what just happened.
     set -l optional
-    command -q tuned; and set -a optional "tuned (asusd owns the power profile)"
+    if command -q tuned; and string match -qi '*asus*' -- (cat /sys/class/dmi/id/board_vendor 2>/dev/null)
+        set -a optional "tuned (asusd owns the power profile)"
+    end
     command -q docker; and set -a optional docker.service
     command -q ollama; and set -a optional ollama.service
     test (count $optional) -gt 0
