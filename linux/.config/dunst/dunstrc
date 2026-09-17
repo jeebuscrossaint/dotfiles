@@ -1,0 +1,90 @@
+# ~/.config/dunst/dunstrc — the notification daemon for the mango session.
+#
+# dunst, not fnott, for ONE reason: coat can theme it without owning this file.
+# dunst reads drop-ins from dunstrc.d/ after this file, last one winning, so coat
+# writes dunstrc.d/50-coat.conf with nothing but colours and the font and never
+# touches a line below. fnott has no include mechanism at all -- coat patched its
+# colour keys in place, which meant every `coat set` came back as a diff in this
+# repo. Put your own overrides in a later-sorting drop-in (99-mine.conf).
+#
+# ~/.config/dunst is a REAL directory, not the stow symlink stow would otherwise
+# fold. If it were a symlink to this repo, coat's drop-in would be written INSIDE
+# the tree and we would be back where we started. dunstrc is the only symlink in
+# there.
+#
+# dunst is also the only notification daemon in BOTH Arch (world/dunst) and
+# OpenBSD (x11/dunst) -- same 1.13.2 on each, and the OpenBSD port links
+# wayland-client/wayland-cursor, so it is layer-shell there too, not XWayland.
+# mako has a real `include` directive and would otherwise be the better fit, but
+# OpenBSD has no mako port.
+#
+# NO COLOURS AND NO FONT HERE. They live in dunstrc.d/50-coat.conf, which coat
+# rewrites on every `coat set`. Setting either here does nothing: the drop-in
+# sorts after this file and wins.
+
+[global]
+    ### Geometry ###
+
+    # Was fnott's anchor + edge-margin-{vertical,horizontal}.
+    origin = top-right
+    offset = (12, 12)
+
+    # Between notifications, not around them. dunst only honours this on a
+    # compositor that can do it, which mango can; where it cannot, it silently
+    # falls back to separator_height.
+    gap_size = 8
+
+    # A pair, not a single number: (min, max). The old fnott min-width existed
+    # because `status` printed an aligned eleven-line monospace block and a
+    # narrow popup wrapped the columns into nonsense. status is gone, but the
+    # floor still stops a two-word popup from being a sliver.
+    width = (380, 560)
+    height = (0, 600)
+
+    padding = 10
+    horizontal_padding = 14
+
+    frame_width = 1
+    # Square, like everything else in this session.
+    corner_radius = 0
+
+    ### Display ###
+
+    # overlay, not top: the volume and brightness OSD has to be readable over a
+    # fullscreen window, which a top-layer surface is not. This is dunst's
+    # default -- it is spelled out because it is a decision, not an accident.
+    layer = overlay
+
+    # pickcolor sends a pango <span background="#rrggbb"> to show the colour it
+    # picked, which is the only way to put the colour itself on screen. `strip`
+    # or `no` here turns that into either plain text or visible markup.
+    markup = full
+    format = "<b>%s</b>\n%b"
+
+    # osd draws volume, brightness and the keyboard backlight by passing
+    # -h int:value:N, and this is what turns that into a level meter.
+    progress_bar = true
+
+    max_icon_size = 48
+
+    ### Misc ###
+
+    # fuzzel, not dmenu: dmenu is X11 and is not installed. This is what
+    # `dunstctl context` opens, so the packaged /usr/bin/dmenu default is a
+    # feature that fails silently the first time you reach for it.
+    dmenu = /usr/bin/fuzzel --dmenu --prompt "dunst: "
+    browser = /usr/bin/xdg-open
+
+# osd replaces its own popup rather than stacking, so a held volume key does not
+# need a long life here. fnott's max-timeout has no dunst equivalent; a caller
+# asking for longer with -t simply gets it.
+[urgency_low]
+    timeout = 5
+
+[urgency_normal]
+    timeout = 5
+
+# Never self-dismisses. battery-watch and audio-ensure both send critical, and
+# both are things you want still on screen when you come back to the machine.
+[urgency_critical]
+    timeout = 0

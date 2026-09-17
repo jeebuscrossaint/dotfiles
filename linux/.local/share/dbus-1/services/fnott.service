@@ -11,8 +11,14 @@
 # of starting a second notification daemon; the shell registers the name itself
 # at startup, so the only window this covers is the gap while it restarts.
 #
-# Delete this once `pacman -Rns fnott` has actually happened -- at that point the
-# system file is gone and this is just confusing.
+# Still earning its place after the move to dunst, for the same reason: fnott is
+# retired but still INSTALLED, so its service file is still on disk and a
+# notify-send in the gap before dunst has the bus would start fnott instead.
+# mango starts dunst with exec-once, so nothing needs activation.
+#
+# Delete this once `pacman -Rns fnott` has actually happened. At that point the
+# system file is gone, this is the only thing masking the name, and it would stop
+# dunst being activated if it ever died -- which is a downgrade, not a safeguard.
 [D-BUS Service]
 Name=org.freedesktop.Notifications
 Exec=/bin/false

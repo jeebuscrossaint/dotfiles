@@ -49,7 +49,6 @@ firefox
 fish
 fkill
 flatpak
-fnott
 fuzzel
 gamescope
 gdu
