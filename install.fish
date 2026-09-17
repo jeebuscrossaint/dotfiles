@@ -197,8 +197,11 @@ set -g dep_table \
     "apps|cmd:nvibrant|nvibrant|opt||nvibrant-bin|" \
     "apps|cmd:fd|fd|opt|fd||" \
     "apps|cmd:magick|imagemagick|opt|imagemagick||" \
+    "apps|cmd:torbrowser-launcher|tor browser|opt|torbrowser-launcher||" \
+    "apps|cmd:i2pd|i2pd|opt|i2pd||" \
     "chat|cmd:slack|slack|opt||slack-desktop-wayland-jetm|" \
-    "chat|cmd:vesktop|vesktop|opt||vesktop-bin|" \
+    "chat|cmd:discord|discord|opt|discord||" \
+    "chat|path:/etc/pacman.d/hooks/vencord-hook.hook|vencord|opt||vencord-hook|" \
     "chat|path:/opt/teams-for-linux|teams for linux|opt||teams-for-linux-bin|" \
     "chat|path:/opt/outlook-for-linux|outlook for linux|opt||outlook-for-linux-bin|" \
     "chat|cmd:zoom|zoom|opt||zoom|" \
@@ -289,6 +292,120 @@ end
 
 # asusd is the fan curves, keyboard LEDs and battery charge limit; supergfxd is
 # the GPU mode switch. AUR-only, and pointless on anything that is not an ASUS.
+# One pacman.conf key, set idempotently. An empty `value` means a bare flag line
+# like ILoveCandy, which has no `=` and is not in the shipped file at all -- so
+# the sed cannot just uncomment it, there is nothing there to uncomment.
+function pacman_conf_set -a key value
+    set -l line $key
+    test -n "$value"; and set line "$key = $value"
+    grep -qxF -- "$line" /etc/pacman.conf; and return 0
+
+    if grep -qE "^[#[:space:]]*$key\\b" /etc/pacman.conf
+        sudo sed -i -E "s|^[#[:space:]]*$key\\b.*|$line|" /etc/pacman.conf
+    else
+        sudo sed -i "0,/^\\[options\\]/s|^\\[options\\]|[options]\\n$line|" /etc/pacman.conf
+    end
+end
+
+# ParallelDownloads is the one that earns its place: the shipped default is 5 and
+# this table is 85 rows, most of them from a repo. Color and ILoveCandy are the
+# progress bar, and they are the only thing in this file that is purely for the
+# look of it.
+function ensure_pacman_conf
+    test -f /etc/pacman.conf; or return 0
+    command -q pacman; or return 0
+
+    set -l missing
+    grep -qxF 'ParallelDownloads = 25' /etc/pacman.conf; or set -a missing ParallelDownloads
+    grep -qxF ILoveCandy /etc/pacman.conf; or set -a missing ILoveCandy
+    grep -qxF Color /etc/pacman.conf; or set -a missing Color
+    test (count $missing) -gt 0; or return 0
+
+    step "pacman.conf: $missing"
+    confirm "set them?"; or return 0
+    pacman_conf_set ParallelDownloads 25
+    pacman_conf_set Color
+    pacman_conf_set ILoveCandy
+end
+
+# chaotic-aur: prebuilt binaries for AUR packages, so paru is left building only
+# the handful nobody else ships -- mangowm, awww, and the -eap/-bin oddities.
+#
+# It is a THIRD-PARTY repo: their build machines, their key, trusted by root on
+# this box from here on. That is a real trade and it is stated rather than
+# buried. It is the same one Omarchy makes by running its own repo; the
+# difference is not having to run one.
+#
+# Not a replacement for paru. pacman resolves from the repo automatically once
+# the stanza is in, and paru handles whatever no repo carries.
+function ensure_chaotic_aur
+    command -q pacman; or return 0
+    test -f /etc/pacman.conf; or return 0
+    grep -q '^\[chaotic-aur\]' /etc/pacman.conf; and return 0
+
+    step "chaotic-aur is not configured"
+    dim "prebuilt AUR binaries — a third-party repo, signed into this machine's root trust"
+    confirm "bootstrap it?"; or return 0
+
+    set -l key 3056513887B78AEB
+    sudo pacman-key --recv-key $key --keyserver keyserver.ubuntu.com
+    and sudo pacman-key --lsign-key $key
+    and sudo pacman -U --needed --noconfirm \
+        'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst' \
+        'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-mirrorlist.pkg.tar.zst'
+    or begin
+        note "chaotic-aur bootstrap failed — paru will build from source instead"
+        return 1
+    end
+
+    printf '\n[chaotic-aur]\nInclude = /etc/pacman.d/chaotic-mirrorlist\n' | sudo tee -a /etc/pacman.conf >/dev/null
+    sudo pacman -Sy
+end
+
+# thermald and tuned are both hardware-conditional, for different reasons.
+#
+# thermald is Intel's thermal daemon (DPTF/RAPL). It is not a profile manager and
+# does not contend with asusd, so it goes on any Intel box including the ASUS one.
+#
+# tuned IS the profile manager, and it is installed only where nothing else owns
+# the platform profile. On the ASUS box asusd owns it and running both means two
+# daemons writing one firmware knob. Anywhere else -- the ThinkPad -- nothing owns
+# it at all and the profile sits wherever the firmware left it, which is the case
+# tuned exists for. Mirrors ensure_asus deliberately.
+function ensure_power_profile
+    command -q systemctl; or return 0
+
+    if grep -q GenuineIntel /proc/cpuinfo 2>/dev/null
+        if not command -q thermald
+            step "Intel CPU, no thermal daemon"
+            printf '   %ssudo pacman -S --needed thermald%s\n' "$c_ok" "$c_off"
+            confirm "install it?"
+            and begin
+                sudo pacman -S --needed --noconfirm thermald; or note "thermald did not install"
+            end
+        end
+        command -q thermald; and enable_service thermald
+    end
+
+    if string match -qi '*asus*' -- (cat /sys/class/dmi/id/board_vendor 2>/dev/null)
+        dim "ASUS board — asusd owns the platform profile, so tuned stays off here"
+        return 0
+    end
+
+    if command -q tuned-adm
+        enable_service tuned
+        return 0
+    end
+
+    step "nothing owns the platform profile on this machine"
+    dim "asusd covers this on the ASUS box; there is no equivalent here"
+    printf '   %ssudo pacman -S --needed tuned tuned-ppd%s\n' "$c_ok" "$c_off"
+    confirm "install them?"; or return 0
+    sudo pacman -S --needed --noconfirm tuned tuned-ppd
+    or begin; note "that failed — carry on by hand"; return 1; end
+    enable_service tuned
+end
+
 function ensure_asus
     string match -qi '*asus*' -- (cat /sys/class/dmi/id/board_vendor 2>/dev/null)
     or return 0
@@ -600,11 +717,16 @@ if set -q _flag_check
 end
 
 if not set -q _flag_skip_checks; and not set -q _flag_uninstall
+    # Both BEFORE check_deps: the repo has to exist before the installer offers
+    # to install anything, or every chaotic-carried package is a paru source build.
+    ensure_pacman_conf
+    ensure_chaotic_aur
     check_deps
     or note "linking anyway — the configs for the missing pieces are harmless on their own"
     echo
     ensure_nvidia
     ensure_asus
+    ensure_power_profile
     ensure_rust
     ensure_coat
     ensure_services

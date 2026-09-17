@@ -1,6 +1,6 @@
 cbonsai
 claude-code
-claude-desktop-bin
+claude-desktop
 clion-eap
 clion-eap-cmake
 clion-eap-gdb
@@ -17,7 +17,8 @@ scenefx0.5
 tradingview
 ttf-mac-fonts
 ttf-ms-fonts
-vesktop-bin
+vencord-hook
+vencord-installer
 visual-studio-code-bin
 whitesur-icon-theme
 wttrbar

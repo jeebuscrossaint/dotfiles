@@ -36,7 +36,7 @@ Remove one of these and something in this repo stops working.
 | Fonts & icons | `nerd-fonts-apple` (AUR), `ttf-mac-fonts` (AUR), `whitesur-icon-theme` (AUR), `otf-font-awesome` |
 | Documents | `zathura`, `zathura-pdf-poppler`, `typst`, `texlive-basic`, `texlive-latex*`, `pandoc-bin` (AUR) |
 | Dev | `rustup`, `clang`, `llvm`, `cmake`, `xmake`, `npm`, `python-pip`, `uv`, `github-cli`, `claude-code` (AUR) |
-| Apps | `firefox`, `vesktop-bin` (AUR), `visual-studio-code-bin` (AUR), `prismlauncher`, `blueman`, `zoom` (AUR) |
+| Apps | `firefox`, `discord` + `vencord-hook` (AUR), `visual-studio-code-bin` (AUR), `prismlauncher`, `blueman`, `zoom` (AUR), `torbrowser-launcher`, `i2pd` |
 | Plumbing | `stow`, `socat`, `wget`, `bc`, `sudo`, `flatpak` |
 
 Not a package: **coat** is the theming tool, built from `~/Projects/coat` with
