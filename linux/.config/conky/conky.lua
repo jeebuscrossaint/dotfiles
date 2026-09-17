@@ -120,3 +120,98 @@ function conky_cava(width)
     end
     return table.concat(out)
 end
+
+-- mmsg readouts, in Lua instead of ${execi ... | jq}.
+--
+-- The tag list and the focused appid were two ${execi 2} pipelines, and each one
+-- was sh -> mmsg -> jq. jq is a ~20ms process start to pull three fields out of
+-- one line, paid twice every two seconds, forever: measured with `strace -f -e
+-- trace=execve`, those two lines were 1.0 jq/s and 1.7 sh/s, and stripping every
+-- ${execi} from the panel took it from 11.2% of a core to 2.9%. Parsing here
+-- drops the jq and one shell per call; io.popen still goes through sh, so mmsg
+-- itself is the floor.
+--
+-- Cached on wall-clock seconds rather than run per tick, because update_interval
+-- is 0.5 and this only needs to be as fresh as the old execi 2 was.
+local cache = {}
+
+local function cached(key, seconds, fn)
+    local c = cache[key]
+    local now = os.time()
+    if c and (now - c.at) < seconds then return c.val end
+    local ok, val = pcall(fn)
+    if not ok then val = (c and c.val) or "" end
+    cache[key] = { at = now, val = val }
+    return val
+end
+
+local function slurp(cmd)
+    local p = io.popen(cmd .. " 2>/dev/null", "r")
+    if not p then return nil end
+    local s = p:read("*a")
+    p:close()
+    return s
+end
+
+-- conky_tags() -> "[1] 2 3" — active in brackets, urgent with a bang, and tags
+-- with no clients omitted. Matches what the jq program emitted.
+--
+-- The object pattern is field-ORDER dependent, which is safe here only because
+-- mango emits these keys in a fixed order from a struct. `"tags":%[(.-)%]` takes
+-- the FIRST monitor's array and nothing else -- the jq was .all_tags[0].tags[],
+-- and a tag object contains no bracket, so the non-greedy match ends in the right
+-- place.
+function conky_tags()
+    return cached("tags", 2, function()
+        local s = slurp("mmsg get all-tags")
+        if not s then return "" end
+        local body = s:match('"tags":%[(.-)%]')
+        if not body then return "" end
+        local out = {}
+        for idx, act, urg, _, cnt in body:gmatch(
+            '"index":(%d+),"is_active":(%a+),"is_urgent":(%a+),"layout":"(%a*)","client_count":(%d+)') do
+            if act == "true" or tonumber(cnt) > 0 then
+                if urg == "true" then out[#out + 1] = "!" .. idx
+                elseif act == "true" then out[#out + 1] = "[" .. idx .. "]"
+                else out[#out + 1] = idx end
+            end
+        end
+        return table.concat(out, " ")
+    end)
+end
+
+-- conky_appid() -> the focused window's appid, "-" when nothing is focused.
+function conky_appid()
+    return cached("appid", 2, function()
+        local s = slurp("mmsg get focusing-client")
+        return (s and s:match('"appid":"(.-)"')) or "-"
+    end)
+end
+
+-- conky_vol() -> the default sink's volume as an integer percent.
+--
+-- NOT ${pa_sink_volume}, which conky does have (this build lists PulseAudio),
+-- because conky opens that connection ONCE at parse time and there is no retry:
+-- the panel is started by mango's exec-once supervisor, which wins the race
+-- against pipewire-pulse on a cold boot, and a conky that loses it renders the
+-- variable as the literal text "${pa_sink_volume}" for the rest of the session
+-- -- then libpulse takes the process down from under it:
+--   pulseaudio.cc:251 cannot connect to pulseaudio server
+--   Assertion 'pd' failed at pulsecore/pdispatch.c:306 ... Aborting.
+-- which is a crash inside the client library, so no amount of config avoids it.
+-- Asking wpctl per read has no connection to lose and recovers on its own the
+-- moment the server is up. It is also the same tool ~/.local/bin/osd uses to SET
+-- the volume, so the two agree by construction.
+--
+-- Muted reads as 0 rather than as the level behind the mute, because the bar
+-- beside it is a picture of how loud this machine is and a muted machine is not.
+function conky_vol()
+    return cached("vol", 2, function()
+        local s = slurp("wpctl get-volume @DEFAULT_AUDIO_SINK@")
+        if not s then return "0" end
+        if s:find("MUTED", 1, true) then return "0" end
+        local v = tonumber(s:match("Volume:%s*([%d.]+)"))
+        if not v then return "0" end
+        return tostring(math.floor(v * 100 + 0.5))
+    end)
+end
