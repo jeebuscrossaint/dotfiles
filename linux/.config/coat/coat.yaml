@@ -23,6 +23,9 @@ enabled:
   - msteams
 
   - mango
+  # Browser extension wiring: native-messaging manifests (absolute paths, so they
+  # cannot be tracked) and the xpi. See ~/.local/share/coat-webapps/README.md.
+  - webapps
   - dunst
   - fuzzel
   - kitty

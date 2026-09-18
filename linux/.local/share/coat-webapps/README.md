@@ -58,8 +58,9 @@ Needs Developer Edition: release Firefox refuses unsigned add-ons outright, and
 `xpinstall.signatures.required` is only honoured on Developer/Nightly/ESR.
 
     about:config → xpinstall.signatures.required = false
-    ./build-xpi.py
     about:addons → gear → Install Add-on From File → coat-webapps.xpi
+
+(`coat apply webapps` has already built the xpi; `./build-xpi.py` does it alone.)
 
 `about:debugging`'s "Load Temporary Add-on" also works but is gone on restart,
 which is why the xpi exists at all.
@@ -75,28 +76,29 @@ carry both sets of keys and have each browser warn about the other's,
 `extension/manifest.json` is the Chromium one and `build-xpi.py` transforms it
 on the way into the archive.
 
-### Before stowing on a fresh machine
+### On a fresh machine
 
-    mkdir -p ~/.mozilla/native-messaging-hosts
+    coat apply webapps
 
-stow FOLDS a directory that does not exist in the target: rather than linking
-the one file inside it, it symlinks the whole `~/.mozilla` to the repo. Firefox
-then builds its entire profile — history, cookies, cache, sessionstore — inside
-the git tree on first launch. Pre-creating the directory makes stow link just
-the leaf.
+That is the whole setup. coat's `webapps` module writes the native-messaging
+manifests and builds the xpi; then install the xpi in Firefox once (below).
 
-### Where Firefox looks for the native-messaging manifest
+None of this is stowed, and that is deliberate. A native-messaging manifest
+carries an ABSOLUTE path to the host program, so a tracked copy is correct on
+exactly one machine — on any other, Firefox silently fails to spawn the host and
+the extension installs, enables, and themes nothing. They are generated against
+the running `$HOME` instead.
 
-Firefox 155 on this machine uses XDG paths: its root is `~/.config/mozilla/`,
-not `~/.mozilla/` — profiles live in `~/.config/mozilla/firefox/`. So the
-manifest has to be at
+It also removes a trap that used to live here: stow FOLDS a directory that does
+not exist in the target, so a stowed `~/.mozilla/native-messaging-hosts` meant
+symlinking the whole of `~/.mozilla` into the repo, and Firefox building its
+profile — history, cookies, cache — inside the git tree on first launch. Nothing
+is symlinked there now, so there is nothing to fold.
 
-    ~/.config/mozilla/native-messaging-hosts/com.coat.webapp_theme.json
-
-The traditional `~/.mozilla/native-messaging-hosts/` path is stowed as well,
-since a build without the XDG migration still reads that one and an unused
-manifest is inert. If the host is not spawning, check which of the two that
-Firefox actually reads before assuming the extension is at fault.
+Both manifest locations are written, because Firefox 155 uses XDG paths
+(`~/.config/mozilla/`) while older builds read `~/.mozilla/`, and an unused
+manifest is inert. Chromium's `NativeMessagingHosts` is written too, keyed by
+extension origin rather than id.
 
 ## Firefox's own chrome
 
