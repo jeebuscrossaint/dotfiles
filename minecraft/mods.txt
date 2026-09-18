@@ -13,14 +13,14 @@ https://cdn.modrinth.com/data/i9xRThb3/versions/95qrJcnP/PolySprint-1.8.9-forge-
 https://cdn.modrinth.com/data/kYuIpRLv/versions/1.2.0-forge-1.8/waveycapes-forge-mc1.8.9-1.2.0.jar
 https://cdn.modrinth.com/data/m3kNp1iP/versions/n5yBVXbc/PolyTime-1.8.9-forge-1.0.2.jar
 https://cdn.modrinth.com/data/Mptc0jo6/versions/tr8Mtf06/PolyHitbox-1.8.9-forge-1.0.3.jar
-https://cdn.modrinth.com/data/nF6YaBfO/versions/xcRqlbrZ/Hytils Reborn-1.8.9-forge-1.7.5.jar
+https://cdn.modrinth.com/data/nF6YaBfO/versions/xcRqlbrZ/Hytils%20Reborn-1.8.9-forge-1.7.5.jar
 https://cdn.modrinth.com/data/nZ3E8WQz/versions/qDhse9AS/CrashPatch-1.8.9-forge-2.0.2.jar
 https://cdn.modrinth.com/data/obfJASPU/versions/RzbXCuUy/PolyCrosshair-1.8.9-forge-1.0.3.jar
-https://cdn.modrinth.com/data/pQFm0mAJ/versions/9cIl6FAv/TNT Countdown-1.4.1-alpha.jar
+https://cdn.modrinth.com/data/pQFm0mAJ/versions/9cIl6FAv/TNT%20Countdown-1.4.1-alpha.jar
 https://cdn.modrinth.com/data/r8Cr8YRg/versions/1YxktDLt/PolyWeather-1.8.9-forge-1.0.0.jar
 https://cdn.modrinth.com/data/sAFPANmp/versions/cq1UuFm5/BehindYouV3-1.8.9-forge-3.2.2.jar
 https://cdn.modrinth.com/data/SevsTfWN/versions/i2vyXyRv/GlintColorizer-1.8.9-forge-2.0.1.jar
-https://cdn.modrinth.com/data/sFNcMCZm/versions/9icB9nLa/%5B1.8.9%5D Lunar Block Overlay-2.1.jar
+https://cdn.modrinth.com/data/sFNcMCZm/versions/9icB9nLa/%5B1.8.9%5D%20Lunar%20Block%20Overlay-2.1.jar
 https://cdn.modrinth.com/data/xT45UG5o/versions/w6XrPOU5/PolyBlur-1.8.9-forge-1.0.2.jar
 https://cdn.modrinth.com/data/YknNc5nN/versions/iNjGeSxM/PolyPatcher-1.8.9-forge-1.10.4.jar
 https://cdn.modrinth.com/data/zV5r3pPn/versions/1.2.0-forge-1.8.9/3dSkinLayers-forge-mc1.8.9-1.2.0.jar

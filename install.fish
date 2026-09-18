@@ -928,10 +928,24 @@ if set -q _flag_minecraft
                 'OverrideMemory=true' 'MinMemAlloc=3072' 'MaxMemAlloc=3072' >$inst/instance.cfg
             dim "created the instance — Forge 11.15.1.2318, 3G heap"
         end
+        # One URL at a time, NOT `wget -i`. With -i a single dead link makes wget
+        # exit non-zero, and everything below -- the .index copy, OptiFine, the
+        # count -- was skipped for 25 mods that downloaded perfectly well. Three
+        # of these URLs had literal spaces in the filename and failed exactly
+        # that way, so the whole flag looked broken.
+        #
         # --content-disposition is load-bearing: the OptiFine URL is a
         # downloadx?f=... query, and without it wget names the jar after the
         # query string and Forge skips it.
-        if wget -q -P $mods --content-disposition -i $repo/minecraft/mods.txt
+        set -l failed
+        for url in (string trim < $repo/minecraft/mods.txt | string match -v -r '^\s*(#|$)')
+            wget -q -P $mods --content-disposition $url
+            or set -a failed (string split / $url)[-1]
+        end
+        if test (count $failed) -gt 0
+            note (count $failed)" mod(s) failed: $failed"
+        end
+        begin
             cp -r $repo/minecraft/.index $mods/
 
             # OptiFine is not in mods.txt: optifine.net hands out a downloadx
@@ -956,8 +970,6 @@ if set -q _flag_minecraft
             ok (count $mods/*.jar)" mods installed"
             # 1.8.9 will not start on a modern JRE.
             command -q java; or note "no java found — 1.8.9 needs Java 8 (zulu-8-bin)"
-        else
-            note "some mods failed — see minecraft/README.md for the OptiFine token"
         end
     end
 end
