@@ -99,26 +99,36 @@ function conky_pulse(a, b)
     return "${color " .. ((tick % 2 == 0) and a or b) .. "}"
 end
 
--- conky_cava(width) -> "▁▃▆█▅▂ ▁▄▇▃▁"
+-- conky_gw() -> "10.42.88.1", the gateway actually in use.
 --
--- Reads the newest frame cava left in ~/.cache/cava.state. Returns empty when
--- the file is absent, which is the normal state when the writer is not running --
--- an audio visualiser is not worth an error message on the desktop.
-function conky_cava(width)
-    local w = tonumber(width) or 28
-    local f = io.open(os.getenv("HOME") .. "/.cache/cava.state", "r")
-    if not f then return "" end
-    local line = f:read("*l")
-    f:close()
-    if not line then return "" end
-
-    local out = {}
-    for v in line:gmatch("%d+") do
-        local i = tonumber(v) or 0
-        out[#out + 1] = (i < 1) and " " or ticks[math.min(i, 8)]
-        if #out >= w then break end
+-- ${gw_ip} and ${gw_iface} both answer the literal string "multiple" whenever
+-- more than one default route exists, which is the normal state on this laptop:
+-- plugging in a cable does not drop wifi, it leaves it associated at a worse
+-- metric, so there are two. Conky reports neither rather than the winner. The
+-- kernel picks the LOWEST metric, so that is what is read here.
+--
+-- /proc/net/route is hex and little-endian: 0100A8C0 is 192.168.0.1, low byte
+-- first. Destination 00000000 is the default route, and metric is field 7.
+function conky_gw()
+    local f = io.open("/proc/net/route", "r"); if not f then return "" end
+    local best, best_metric
+    for l in f:lines() do
+        local iface, dest, gw, _, _, _, metric = l:match(
+            "^(%S+)%s+(%S+)%s+(%S+)%s+(%S+)%s+(%S+)%s+(%S+)%s+(%S+)")
+        if dest == "00000000" and gw and gw ~= "00000000" then
+            local m = tonumber(metric) or 0
+            if not best_metric or m < best_metric then
+                best_metric, best = m, gw
+            end
+        end
     end
-    return table.concat(out)
+    f:close()
+    if not best then return "" end
+    local b = {}
+    for i = 0, 3 do
+        b[#b + 1] = tonumber(best:sub(i * 2 + 1, i * 2 + 2), 16)
+    end
+    return ("%d.%d.%d.%d"):format(b[4], b[3], b[2], b[1])
 end
 
 -- mmsg readouts, in Lua instead of ${execi ... | jq}.
