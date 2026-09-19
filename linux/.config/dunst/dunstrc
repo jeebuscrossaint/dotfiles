@@ -32,8 +32,9 @@
     horizontal_padding = 14
 
     frame_width = 1
-    # Square, like everything else in this session.
-    corner_radius = 0
+    # Matches mango's border_radius -- blur_layer=1 frosts this now, so a square
+    # corner is a square corner cut out of the blur.
+    corner_radius = 12
 
     ### Display ###
 
