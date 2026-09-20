@@ -53,16 +53,17 @@ fi
 # a single API being down cannot half-draw the panel:
 #
 #   forecast   Open-Meteo. No key, exact coordinates, `interval: 900`.
-#   air        Open-Meteo air-quality, for the AQI alone.
+#   air        Open-Meteo air-quality.
 #   alerts     NWS. US only, free, no key, but it requires a User-Agent that
 #              identifies you -- the API returns 403 to a generic one.
 #
-# Only the fields the panel draws are requested. It briefly asked for everything
-# these APIs serve -- soil, radiation, CAPE, lifted index, boundary layer, a
-# 15-minute nowcast -- and the panel became unreadable; `git log` has the list if
-# any of it is ever wanted back. Two fields are not available here at all, so do
-# not go looking: pollen (CAMS) and lightning_potential (ICON-D2) are Europe-only
-# and return null in North America.
+# Scope is TODAY, deliberately: forecast_days=1. Nothing past tonight is
+# requested, which is what buys the panel room to carry every reading Open-Meteo
+# has for right now instead of spending its height on days.
+#
+# Two fields are not available here at all, so do not go looking: pollen (CAMS)
+# and lightning_potential (ICON-D2) are Europe-only and return null in North
+# America. CAPE and lifted index are the instability readings that do exist.
 T=$(mktemp -d) || exit 0
 trap 'rm -rf "$T"' EXIT
 
@@ -70,14 +71,20 @@ F="latitude=$LAT&longitude=$LON&timezone=auto"
 U="temperature_unit=fahrenheit&wind_speed_unit=mph&precipitation_unit=inch"
 
 CUR="temperature_2m,apparent_temperature,relative_humidity_2m,dew_point_2m"
-CUR="$CUR,weather_code,pressure_msl,visibility,uv_index"
-CUR="$CUR,wind_speed_10m,wind_direction_10m,wind_gusts_10m"
-DAY="weather_code,temperature_2m_max,temperature_2m_min,uv_index_max"
-DAY="$DAY,precipitation_probability_max,sunrise,sunset"
+CUR="$CUR,weather_code,precipitation,pressure_msl,surface_pressure,visibility"
+CUR="$CUR,cloud_cover,cloud_cover_low,cloud_cover_mid,cloud_cover_high"
+CUR="$CUR,uv_index,shortwave_radiation,direct_radiation,diffuse_radiation"
+CUR="$CUR,cape,lifted_index,convective_inhibition,freezing_level_height"
+CUR="$CUR,boundary_layer_height,vapour_pressure_deficit,et0_fao_evapotranspiration"
+CUR="$CUR,soil_temperature_0cm,soil_temperature_6cm,soil_moisture_0_to_1cm"
+CUR="$CUR,wind_speed_10m,wind_direction_10m,wind_gusts_10m,wind_speed_80m,wind_speed_180m"
 
-curl -sm 15 --fail "https://api.open-meteo.com/v1/forecast?$F&$U&current=$CUR&hourly=temperature_2m,precipitation_probability,weather_code&daily=$DAY&forecast_days=3" -o "$T/wx.json"
+DAY="temperature_2m_max,temperature_2m_min,precipitation_probability_max"
+DAY="$DAY,precipitation_sum,precipitation_hours,uv_index_max,sunrise,sunset,daylight_duration"
 
-curl -sm 15 --fail "https://air-quality-api.open-meteo.com/v1/air-quality?$F&current=us_aqi" -o "$T/aq.json"
+curl -sm 15 --fail "https://api.open-meteo.com/v1/forecast?$F&$U&current=$CUR&hourly=temperature_2m,precipitation_probability,weather_code&daily=$DAY&forecast_days=1" -o "$T/wx.json"
+
+curl -sm 15 --fail "https://air-quality-api.open-meteo.com/v1/air-quality?$F&current=us_aqi,pm2_5,pm10,ozone" -o "$T/aq.json"
 
 curl -sm 15 --fail -H "User-Agent: conky-weather (am397421@ucf.edu)" "https://api.weather.gov/alerts/active?point=$LAT,$LON" -o "$T/al.json"
 
@@ -87,8 +94,7 @@ curl -sm 15 --fail -H "User-Agent: conky-weather (am397421@ucf.edu)" "https://ap
 
 # The location lookup is carried through so the panel can say "Orlando, FL"
 # instead of a pair of coordinates. Absent when weather.coords overrides it.
-[ -r "$LOC" ] || echo '{}' >"$T/loc.json"
-[ -r "$LOC" ] && cp "$LOC" "$T/loc.json"
+[ -r "$LOC" ] && cp "$LOC" "$T/loc.json" || echo '{}' >"$T/loc.json"
 
 jq -n \
 	--slurpfile wx "$T/wx.json" \
