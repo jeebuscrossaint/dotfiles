@@ -1,0 +1,68 @@
+#!/bin/sh
+# Locate, then fetch the weather. Called by conky's weather block every 5 min.
+#
+# A script rather than an exec line because conky silently truncates an exec
+# command past roughly 200 characters and this is two chained requests; it lives
+# next to weather.jq rather than in ~/.local/bin because it is part of this
+# panel's config, not a command anyone would run.
+#
+# ── Location ────────────────────────────────────────────────────────────────
+# IP geolocation, because nothing better is available on this machine:
+#
+#   GPS      -- no radio. Checked: no /dev/gnss*, no WWAN modem.
+#   WiFi     -- BeaconDB returns 404 for the access points here; they are not in
+#               the crowdsourced database. GeoClue uses the same database, so
+#               configuring GeoClue would not change the answer.
+#   IP       -- what is left. Kilometre-scale at best, and on a university or
+#               corporate network it reports where the NETWORK is registered
+#               rather than where you are.
+#
+# So treat the coordinates as approximate. The panel's first line shows the grid
+# point Open-Meteo actually answered for -- if it looks wrong, put your real
+# numbers in ~/.config/conky/weather.coords as "lat lon" on one line and this
+# stops asking the network entirely.
+#
+# Location is cached for an hour: an IP does not move on a 5-minute timer, and
+# ipapi.co's free tier is 1000 requests a day, which a 5-minute refresh would eat.
+CACHE="${XDG_CACHE_HOME:-$HOME/.cache}"
+LOC="$CACHE/conky-loc.json"
+WX="$CACHE/conky-wx.json"
+OVERRIDE="$HOME/.config/conky/weather.coords"
+
+if [ -r "$OVERRIDE" ]; then
+	read -r LAT LON <"$OVERRIDE"
+else
+	# -mmin +60 prints the file only when it is older than an hour, so a missing
+	# file and a stale one take the same branch.
+	if [ ! -s "$LOC" ] || [ -n "$(find "$LOC" -mmin +60 2>/dev/null)" ]; then
+		curl -sm 15 --fail https://ipapi.co/json/ -o "$LOC.new" &&
+			mv -f "$LOC.new" "$LOC"
+		rm -f "$LOC.new"
+	fi
+	LAT=$(jq -r '.latitude // empty' "$LOC" 2>/dev/null)
+	LON=$(jq -r '.longitude // empty' "$LOC" 2>/dev/null)
+fi
+
+# No coordinates means no request. Leaving the previous cache alone is the right
+# failure: the panel keeps showing the last good reading with its own timestamp,
+# rather than going blank or silently reporting somewhere else.
+[ -n "$LAT" ] && [ -n "$LON" ] || exit 0
+
+# ── Weather ─────────────────────────────────────────────────────────────────
+# Open-Meteo: no key, exact coordinates, and `interval: 900` -- it genuinely
+# refreshes every 15 minutes. wttr.in was replaced because its observations ran
+# 1-2 HOURS stale no matter how often it was polled.
+URL="https://api.open-meteo.com/v1/forecast?latitude=$LAT&longitude=$LON"
+URL="$URL&current=temperature_2m,relative_humidity_2m,apparent_temperature,dew_point_2m"
+URL="$URL,precipitation,weather_code,cloud_cover,pressure_msl,visibility,uv_index,cape"
+URL="$URL,wind_speed_10m,wind_direction_10m,wind_gusts_10m"
+URL="$URL&hourly=temperature_2m,precipitation_probability,weather_code"
+URL="$URL&daily=weather_code,temperature_2m_max,temperature_2m_min,uv_index_max"
+URL="$URL,precipitation_probability_max,sunrise,sunset,sunshine_duration"
+URL="$URL&forecast_days=3&temperature_unit=fahrenheit&wind_speed_unit=mph"
+URL="$URL&precipitation_unit=inch&timezone=auto"
+
+# Written to a temp file and moved into place so conky never reads a half-written
+# cache -- the render runs on the same 5-minute tick as this fetch.
+curl -sm 15 --fail "$URL" -o "$WX.new" && mv -f "$WX.new" "$WX"
+rm -f "$WX.new"
