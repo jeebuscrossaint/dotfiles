@@ -84,6 +84,7 @@ lsb-release
 lsd
 lvm2-runit
 mdadm-runit
+micro
 mpd
 mpd-runit
 mpv

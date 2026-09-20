@@ -127,7 +127,7 @@ or die "$target is not writable"
 # (that is what the nvidia-prime row did).
 #
 # The conky rows are the whole desktop readout, so they are core: conky itself,
-# curl and jq for the weather it fetches from wttr.in, and pstree for the process
+# curl and jq for the weather it fetches from Open-Meteo, and pstree for the process
 # tree in the left panel. cava and gawk are opt because each degrades quietly
 # rather than breaking -- conky_cava returns an empty string when nothing is
 # writing ~/.cache/cava.state, and tree.awk without gawk's character-counting
@@ -151,9 +151,11 @@ set -g dep_table \
     "desktop|cmd:swaylock|swaylock|core|swaylock||" \
     "desktop|cmd:conky|conky|core|conky||" \
     "desktop|cmd:wlsunset|wlsunset|core|wlsunset||" \
+    "desktop|cmd:swaybg|swaybg|opt|swaybg||" \
     "desktop|cmd:cava|cava|opt|cava||" \
     "terminal|cmd:kitty|kitty|core|kitty||" \
-    "terminal|cmd:nvim|neovim|core|neovim||" \
+    "terminal|cmd:micro|micro|core|micro||" \
+    "terminal|cmd:nvim|neovim|opt|neovim||" \
     "terminal|cmd:lsd|lsd|opt|lsd||" \
     "terminal|cmd:bat|bat|opt|bat||" \
     "terminal|cmd:fastfetch|fastfetch|opt|fastfetch||" \

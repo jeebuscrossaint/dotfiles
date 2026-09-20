@@ -27,7 +27,7 @@ Remove one of these and something in this repo stops working.
 | Session | **No bar.** `conky` draws the readout (tags, cpu, temps, mem, disk, fan, battery, volume, net, weather, uptime) on the desktop layer, so it costs no screen space and never covers a window. `dunst` is the only other surface, `fuzzel` the launcher, `swayidle` the idle timer. Effects are switched off in `config.conf`, not deleted. |
 | Idle & lock | `swaylock` (Super+L and from `swayidle`), `swayidle`. No blanking: that needs a wlr-output-power client and none is wanted. |
 | Terminal & shell | `kitty`, `fish`, `lsd`, `bat`, `less`, `tree` |
-| Editor | `neovim` |
+| Editor | `micro` (`$EDITOR`), `neovim` |
 | Files & monitoring | `yazi`, `btop`, `fastfetch`, `pfetch-rs` |
 | Clipboard & screenshot | `wl-clipboard`, `cliphist`, `wl-clip-persist`, `grim`, `slurp`, `satty`, `swappy` |
 | Media & input | `mpv`, `imagemagick`, `brightnessctl`, `pavucontrol`, `libnotify`, `playerctl` |
@@ -55,7 +55,7 @@ and the session starts with `mango-run`.
 Retired by this repo but still on disk. Safe to remove; listed so they are not
 mistaken for live dependencies.
 
-`gtklock`, `wob`, `foot`, `wayfire`, `swaybg`, `tofi`, `kanshi`, `imv`, `mpd`,
+`gtklock`, `wob`, `foot`, `wayfire`, `tofi`, `kanshi`, `imv`, `mpd`,
 `mpd-runit`, `river`, `waylock`, `wlr-randr`, `autotiling-rs`,
 `rose-pine-cursor` (AUR), `rose-pine-hyprcursor` (AUR),
 `quickshell`, `hyprland`, `hypridle`, `hyprlock`, `xdg-desktop-portal-hyprland`,
