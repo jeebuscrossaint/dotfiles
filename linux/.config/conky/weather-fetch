@@ -49,20 +49,57 @@ fi
 [ -n "$LAT" ] && [ -n "$LON" ] || exit 0
 
 # ── Weather ─────────────────────────────────────────────────────────────────
-# Open-Meteo: no key, exact coordinates, and `interval: 900` -- it genuinely
-# refreshes every 15 minutes. wttr.in was replaced because its observations ran
-# 1-2 HOURS stale no matter how often it was polled.
-URL="https://api.open-meteo.com/v1/forecast?latitude=$LAT&longitude=$LON"
-URL="$URL&current=temperature_2m,relative_humidity_2m,apparent_temperature,dew_point_2m"
-URL="$URL,precipitation,weather_code,cloud_cover,pressure_msl,visibility,uv_index,cape"
-URL="$URL,wind_speed_10m,wind_direction_10m,wind_gusts_10m"
-URL="$URL&hourly=temperature_2m,precipitation_probability,weather_code"
-URL="$URL&daily=weather_code,temperature_2m_max,temperature_2m_min,uv_index_max"
-URL="$URL,precipitation_probability_max,sunrise,sunset,sunshine_duration"
-URL="$URL&forecast_days=3&temperature_unit=fahrenheit&wind_speed_unit=mph"
-URL="$URL&precipitation_unit=inch&timezone=auto"
+# Three sources, merged into ONE cache file so the renderer reads one document
+# and a single API being down cannot half-draw the panel:
+#
+#   forecast   Open-Meteo. No key, exact coordinates, `interval: 900`.
+#   air        Open-Meteo air-quality. Note POLLEN IS NOT REQUESTED -- its CAMS
+#              pollen fields are Europe-only and return null here, so asking for
+#              them would put six empty readings on the panel.
+#   alerts     NWS. US only, free, no key, but it does require a User-Agent that
+#              identifies you -- the API returns 403 to a generic one.
+#
+# lightning_potential is likewise not requested: Open-Meteo only carries it from
+# ICON-D2, which is Europe. CAPE and lifted index are the instability readings
+# that exist here.
+T=$(mktemp -d) || exit 0
+trap 'rm -rf "$T"' EXIT
 
-# Written to a temp file and moved into place so conky never reads a half-written
-# cache -- the render runs on the same 5-minute tick as this fetch.
-curl -sm 15 --fail "$URL" -o "$WX.new" && mv -f "$WX.new" "$WX"
-rm -f "$WX.new"
+F="latitude=$LAT&longitude=$LON&timezone=auto"
+U="temperature_unit=fahrenheit&wind_speed_unit=mph&precipitation_unit=inch"
+
+CUR="temperature_2m,relative_humidity_2m,apparent_temperature,dew_point_2m"
+CUR="$CUR,precipitation,weather_code,cloud_cover,cloud_cover_low,cloud_cover_mid"
+CUR="$CUR,cloud_cover_high,pressure_msl,surface_pressure,visibility,uv_index,cape"
+CUR="$CUR,lifted_index,convective_inhibition,freezing_level_height"
+CUR="$CUR,boundary_layer_height,vapour_pressure_deficit,shortwave_radiation"
+CUR="$CUR,direct_radiation,diffuse_radiation,et0_fao_evapotranspiration"
+CUR="$CUR,soil_temperature_0cm,soil_temperature_6cm,soil_moisture_0_to_1cm"
+CUR="$CUR,wind_speed_10m,wind_direction_10m,wind_gusts_10m,wind_speed_80m,wind_speed_180m"
+
+DAY="weather_code,temperature_2m_max,temperature_2m_min,apparent_temperature_max"
+DAY="$DAY,apparent_temperature_min,uv_index_max,precipitation_probability_max"
+DAY="$DAY,precipitation_sum,precipitation_hours,wind_speed_10m_max,wind_gusts_10m_max"
+DAY="$DAY,wind_direction_10m_dominant,sunrise,sunset,daylight_duration,sunshine_duration"
+
+curl -sm 15 --fail "https://api.open-meteo.com/v1/forecast?$F&$U&current=$CUR&hourly=temperature_2m,precipitation_probability,weather_code&minutely_15=precipitation,cape,visibility&daily=$DAY&forecast_days=3&forecast_minutely_15=8" -o "$T/wx.json"
+
+curl -sm 15 --fail "https://air-quality-api.open-meteo.com/v1/air-quality?$F&current=us_aqi,pm2_5,pm10,ozone,nitrogen_dioxide,sulphur_dioxide,carbon_monoxide,dust,aerosol_optical_depth" -o "$T/aq.json"
+
+curl -sm 15 --fail -H "User-Agent: conky-weather (am397421@ucf.edu)" "https://api.weather.gov/alerts/active?point=$LAT,$LON" -o "$T/al.json"
+
+# The forecast is the only one that is load-bearing -- air and alerts degrade to
+# empty objects, and weather.jq draws those blocks as "n/a" rather than vanishing
+# and changing the panel height.
+[ -s "$T/wx.json" ] || exit 0
+
+jq -n \
+	--slurpfile wx "$T/wx.json" \
+	--slurpfile aq "$T/aq.json" \
+	--slurpfile al "$T/al.json" \
+	'{wx: ($wx[0] // {}), aq: ($aq[0] // {}), alerts: ($al[0] // {})}' \
+	>"$T/merged.json" 2>/dev/null || exit 0
+
+# Moved into place so conky never reads a half-written cache -- the render runs
+# on the same 5-minute tick as this fetch.
+mv -f "$T/merged.json" "$WX"

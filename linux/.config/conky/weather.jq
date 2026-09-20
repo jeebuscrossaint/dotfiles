@@ -20,8 +20,13 @@
 # whether the panel is reporting on the right patch of sky.
 #
 # Two readings changed because Open-Meteo does not carry wttr's equivalents:
-# thunder% -> CAPE, the actual instability number a storm comes out of, and fog%
-# -> dew point spread, which is what fog forms out of when it closes on zero.
+# thunder% -> CAPE + lifted index, the instability a storm actually comes out of,
+# and fog% -> dew point spread, which is what fog forms out of as it closes.
+#
+# Input is the MERGED document weather-fetch writes: .wx forecast, .aq air
+# quality, .alerts NWS. Two fields are deliberately absent because Open-Meteo
+# serves them from Europe-only models and they return null here -- POLLEN (CAMS)
+# and LIGHTNING_POTENTIAL (ICON-D2). Neither is a fetch bug; do not re-add them.
 #
 # Icons are Nerd Font glyphs. The table below is the SAME eight glyphs the
 # wttr.in version used, remapped from wttr's codes onto WMO codes, so they are
@@ -73,7 +78,11 @@ def C: "${color}";
 def A: "${color2}";
 
 def f2c: ((n - 32) * 5 / 9) | round;
-def mi: (n / 1609.344 * 10 | round) / 10;
+# Open-Meteo switches ALL lengths to imperial when precipitation_unit=inch, so
+# visibility, freezing_level_height and boundary_layer_height arrive in FEET --
+# check current_units before converting, not the docs. (elevation stays metres:
+# it is response metadata, not a unit-switched reading.)
+def mi: (n / 5280 * 10 | round) / 10;
 def hrs: (n / 360 | round) / 10;
 # "2026-09-19T23:00" -> "11:00P". Same compact form the wttr version produced.
 def hm: .[11:16] as $t | ($t[0:2] | tonumber) as $H
@@ -101,21 +110,54 @@ def moonname: moonp
     else "waning crescent" end;
 def moonillum: ((1 - (6.283185307179586 * moonp | cos)) / 2 * 100) | round;
 
-.current as $c
-| .daily as $d
-| .hourly as $h
+def hm_dur: (n / 3600 | floor) as $h | ((n % 3600) / 60 | floor) | "\($h)h\(.)m";
+def d1: (n * 10 | round) / 10;
+def d2: (n * 100 | round) / 100;
+# AQI bands are the EPA's: 50 is the good/moderate line, 100 is where it starts
+# being called unhealthy for sensitive groups.
+def aqicol: if n >= 100 then "${color3}" elif n >= 50 then "${color}" else "${color2}" end;
+# A lifted index below -4 is the number a forecaster reads as strongly unstable;
+# above 0 the air will not lift on its own at all.
+def licol: if n <= -4 then "${color3}" elif n <= 0 then "${color}" else "${color2}" end;
+
+.wx as $w
+| $w.current as $c
+| $w.daily as $d
+| $w.hourly as $h
+| $w.minutely_15 as $m
+| (.aq.current // {}) as $q
+| (.alerts.features // []) as $al
 | ($c.temperature_2m - $c.dew_point_2m | round) as $spread
-| "\(A)\(C) \(.latitude), \(.longitude) · \(.elevation)m   \(A)\(C) \($c.time|hm)",
+| "\(A)\(C) \($w.latitude), \($w.longitude) · \($w.elevation|round)m   \(A)\(C) \($c.time|hm)",
   "\(A)\(C) \($c.temperature_2m|tcol)\($c.temperature_2m|round)°F\(C) / \($c.temperature_2m|f2c)°C   \(A)\(C) feels \($c.apparent_temperature|tcol)\($c.apparent_temperature|round)°F\(C)   \(A)\($c.weather_code|wxicon)\(C) \($c.weather_code|desc)",
-  "\(A)\(C) \($c.relative_humidity_2m)% hum · dew \($c.dew_point_2m|round)°F · cloud \($c.cloud_cover)%",
-  "\(A)\(C) \($c.wind_direction_10m|dir16) \($c.wind_speed_10m|round) mph · gust \($c.wind_gusts_10m|round)   \(A)\(C) \($c.pressure_msl|round) mb",
-  "\(A)\(C) uv \($c.uv_index|uvcol)\($c.uv_index|round)\(C) · \($d.sunshine_duration[0]|hrs)h sun   \(A)\(C) \($d.precipitation_probability_max[0]|pcol)\($d.precipitation_probability_max[0])% rain\(C)   \(A)\(C) \($c.visibility|mi) mi",
-  "\(A)\(C) cape \($c.cape|capecol)\($c.cape|round)\(C) · spread \($spread)°F · precip \($c.precipitation | (. * 100 | round) / 100)\"",
-  "\(A)\(C) \($d.sunrise[0]|hm)\(C) → \($d.sunset[0]|hm)\(C)   \(A)\(C) \(moonname) \(moonillum)%",
+  "\(A)\(C) \($c.relative_humidity_2m)% hum · dew \($c.dew_point_2m|round)°F · spread \($spread)° · vpd \($c.vapour_pressure_deficit|d2)",
+  "\(A)\(C) \($c.cloud_cover)% cloud \(A)·\(C) lo \($c.cloud_cover_low) · mid \($c.cloud_cover_mid) · hi \($c.cloud_cover_high)",
+  "\(A)\(C) \($c.wind_direction_10m|dir16) \($c.wind_speed_10m|round) mph · gust \($c.wind_gusts_10m|round) · 80m \($c.wind_speed_80m|round) · 180m \($c.wind_speed_180m|round)",
+  "\(A)\(C) \($c.pressure_msl|round) mb msl · \($c.surface_pressure|round) sfc   \(A)\(C) \($c.visibility|mi) mi",
+  "\(A)\(C) uv \($c.uv_index|uvcol)\($c.uv_index|round)\(C) · \($d.sunshine_duration[0]|hrs)h sun · rad \($c.shortwave_radiation|round) \(A)(\(C)\($c.direct_radiation|round) dir · \($c.diffuse_radiation|round) dif\(A))\(C)",
+  "\(A)\(C) cape \($c.cape|capecol)\($c.cape|round)\(C) · li \($c.lifted_index|licol)\($c.lifted_index|d1)\(C) · cin \($c.convective_inhibition|round) J/kg",
+  "\(A)\(C) frz \($c.freezing_level_height|round) ft · pbl \($c.boundary_layer_height|round) ft · et0 \($c.et0_fao_evapotranspiration|d2)\"",
+  "\(A)\(C) soil \($c.soil_temperature_0cm|round)°F/0cm · \($c.soil_temperature_6cm|round)°F/6cm · wet \($c.soil_moisture_0_to_1cm|d2)",
+  "\(A)\(C) precip \($c.precipitation|d2)\" now · \($d.precipitation_sum[0]|d2)\" today over \($d.precipitation_hours[0]|round)h",
+  "\(A)\(C) \($d.temperature_2m_min[0]|round)-\($d.temperature_2m_max[0]|tcol)\($d.temperature_2m_max[0]|round)°F\(C) · feels to \($d.apparent_temperature_max[0]|tcol)\($d.apparent_temperature_max[0]|round)°\(C) · wind \($d.wind_direction_10m_dominant[0]|dir16) \($d.wind_speed_10m_max[0]|round)g\($d.wind_gusts_10m_max[0]|round)",
+  "\(A)\(C) \($d.sunrise[0]|hm)\(C) → \($d.sunset[0]|hm) · \($d.daylight_duration[0]|hm_dur)   \(A)\(C) \(moonname) \(moonillum)%",
+  "${color1}air ${color2}┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈\(C)",
+  (if ($q.us_aqi // null) == null then "\(A)\(C) \(A)unavailable\(C)"
+   else "\(A)\(C) aqi \($q.us_aqi|aqicol)\($q.us_aqi)\(C) · pm2.5 \($q.pm2_5|d1) · pm10 \($q.pm10|d1) µg/m³" end),
+  (if ($q.us_aqi // null) == null then "\(A)\(C) \(A)air-quality api did not answer\(C)"
+   else "\(A)\(C) o3 \($q.ozone|round) · no2 \($q.nitrogen_dioxide|d1) · so2 \($q.sulphur_dioxide|d1) · aod \($q.aerosol_optical_depth|d2)" end),
+  "${color1}alerts ${color2}┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈\(C)",
+  # Capped at two. The panel height is pinned in conky.conf, and an unbounded
+  # list would push the bottom of the block off a 1600px screen exactly when the
+  # weather is the thing you most want to read.
+  (if ($al | length) == 0 then "\(A)\(C) \(A)none active\(C)"
+   else ($al[0:2][] | "\(A)\(C) ${color3}\(.properties.event // "alert" | .[0:44])\(C)") end),
+  "${color1}nowcast ${color2}┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈\(C)",
+  # 15-minute resolution, which is the finest Open-Meteo publishes and the whole
+  # reason a 5-minute poll is worth anything.
+  (range(0; 4) | . as $i
+   | "  \($m.time[$i][11:16])  \($m.precipitation[$i]|d2)\"  cape \($m.cape[$i]|capecol)\($m.cape[$i]|round)\(C)  \($m.visibility[$i]|mi) mi"),
   "${color1}today ${color2}┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈\(C)",
-  # Eight rows, every third hour of today, because the panel's HEIGHT is pinned
-  # (see conky.conf) and wttr's 3-hourly block was eight rows. Open-Meteo is
-  # hourly, so it is sampled rather than taken whole.
   (range(0; 8) | (. * 3) as $i
    | "  \(($h.time[$i][11:13] | tonumber | tostring | (" " * (2 - length)) + .)):00  \($h.temperature_2m[$i]|tcol)\($h.temperature_2m[$i]|round)°F\(C)  \($h.precipitation_probability[$i]|pcol)\($h.precipitation_probability[$i])%\(C)  \(A)\($h.weather_code[$i]|wxicon)\(C) \($h.weather_code[$i]|desc)"),
   "${color1}forecast ${color2}┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈\(C)",
