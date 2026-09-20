@@ -15,8 +15,11 @@
 [global]
     ### Geometry ###
 
-    origin = top-right
-    offset = (12, 12)
+    # top-center, so a popup lands where you are already looking rather than in
+    # the corner the conky panel occupies. The x offset is 0 because origin does
+    # the centring -- a non-zero x here would push it back off-centre.
+    origin = top-center
+    offset = (0, 12)
 
     # Between notifications, not around them. dunst only honours this on a
     # compositor that can do it, which mango can; where it cannot, it silently
