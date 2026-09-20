@@ -29,7 +29,6 @@ set -x EDITOR nvim
 set -x TERMINAL kitty
 set -x LANG en_US.UTF-8
 set -x LC_ALL en_US.UTF-8
-set -x SWAY_UNSUPPORTED_GPU true
 
 # XDG data dirs — /usr/local/share for OpenBSD, flatpak on Linux. Written as one
 # literal rather than a `string join` substitution: a command substitution forks
