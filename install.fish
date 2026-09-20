@@ -211,9 +211,7 @@ set -g dep_table \
     "apps|cmd:qalculate-gtk|qalculate|opt|qalculate-gtk||" \
     "apps|cmd:gamescope|gamescope|opt|gamescope||" \
     "apps|cmd:wf-recorder|wf-recorder|opt|wf-recorder||" \
-    "apps|cmd:wlr-randr|wlr-randr|opt|wlr-randr||" \
     "apps|cmd:ollama|ollama|opt|ollama||" \
-    "apps|cmd:mpd|mpd|opt|mpd||" \
     "apps|cmd:magick|imagemagick|opt|imagemagick||" \
     "apps|cmd:torbrowser-launcher|tor browser|opt|torbrowser-launcher||" \
     "apps|cmd:tor|tor|opt|tor||" \

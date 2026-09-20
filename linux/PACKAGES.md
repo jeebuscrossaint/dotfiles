@@ -50,17 +50,6 @@ Nothing. `./install.fish --check` is the live version of this section.
 There is no greeter package: as of 2026-09-08 login is a plain agetty on tty1
 and the session starts with `mango-run`.
 
-## Installed, no longer used
-
-Retired by this repo but still on disk. Safe to remove; listed so they are not
-mistaken for live dependencies.
-
-`gtklock`, `wob`, `foot`, `wayfire`, `tofi`, `kanshi`, `imv`, `mpd`,
-`mpd-runit`, `river`, `waylock`, `wlr-randr`, `autotiling-rs`,
-`rose-pine-cursor` (AUR), `rose-pine-hyprcursor` (AUR),
-`quickshell`, `hyprland`, `hypridle`, `hyprlock`, `xdg-desktop-portal-hyprland`,
-`cage`, `greetd`, `greetd-tuigreet`, `wttrbar` (AUR)
-
 `xdg-desktop-portal-wlr` moved OFF this list: mango's portal config prefers the
 `wlr` backend for ScreenCast and Screenshot, so it is a live dependency now.
 
