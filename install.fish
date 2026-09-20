@@ -140,6 +140,7 @@ set -g dep_table \
     "installer|cmd:stow|stow|req|stow||" \
     "installer|cmd:git|git|core|git||" \
     "installer|cmd:fish|fish|req|fish||" \
+    "installer|cmd:wget|wget|opt|wget||" \
     "compositor|cmd:mango|mango|core||mangowm|https://github.com/DreamMaoMao/mango" \
     "compositor|cmd:uwsm|uwsm|core|uwsm||" \
     "compositor|path:/usr/lib/xdg-desktop-portal-wlr /usr/libexec/xdg-desktop-portal-wlr|xdg-desktop-portal-wlr|core|xdg-desktop-portal-wlr||" \
@@ -152,10 +153,11 @@ set -g dep_table \
     "desktop|cmd:conky|conky|core|conky||" \
     "desktop|cmd:wlsunset|wlsunset|core|wlsunset||" \
     "desktop|cmd:swaybg|swaybg|opt|swaybg||" \
+    "desktop|cmd:wlopm|wlopm|core|wlopm||" \
     "desktop|cmd:cava|cava|opt|cava||" \
     "terminal|cmd:kitty|kitty|core|kitty||" \
     "terminal|cmd:micro|micro|core|micro||" \
-    "terminal|cmd:nvim|neovim|opt|neovim||" \
+    "terminal|cmd:less|less|core|less||" \
     "terminal|cmd:lsd|lsd|opt|lsd||" \
     "terminal|cmd:bat|bat|opt|bat||" \
     "terminal|cmd:fastfetch|fastfetch|opt|fastfetch||" \
@@ -205,22 +207,49 @@ set -g dep_table \
     "apps|cmd:firefox-developer-edition|firefox developer edition|core|firefox-developer-edition||" \
     "apps|cmd:nvibrant|nvibrant|opt||nvibrant-bin|" \
     "apps|cmd:fd|fd|opt|fd||" \
+    "apps|cmd:imv|imv|opt|imv||" \
+    "apps|cmd:qalculate-gtk|qalculate|opt|qalculate-gtk||" \
+    "apps|cmd:gamescope|gamescope|opt|gamescope||" \
+    "apps|cmd:wf-recorder|wf-recorder|opt|wf-recorder||" \
+    "apps|cmd:wlr-randr|wlr-randr|opt|wlr-randr||" \
+    "apps|cmd:ollama|ollama|opt|ollama||" \
+    "apps|cmd:mpd|mpd|opt|mpd||" \
     "apps|cmd:magick|imagemagick|opt|imagemagick||" \
     "apps|cmd:torbrowser-launcher|tor browser|opt|torbrowser-launcher||" \
     "apps|cmd:tor|tor|opt|tor||" \
     "apps|cmd:i2pd|i2pd|opt|i2pd||" \
     "cli|cmd:gdu|gdu|opt|gdu||" \
     "cli|cmd:glow|glow|opt|glow||" \
+    "cli|cmd:tree|tree|opt|tree||" \
+    "cli|cmd:unzip|unzip|opt|unzip||" \
+    "cli|cmd:rclone|rclone|opt|rclone||" \
+    "cli|cmd:tldr|tealdeer|opt|tealdeer||" \
+    "cli|cmd:fkill|fkill|opt|fkill||" \
+    "cli|cmd:cloc|cloc|opt|cloc||" \
+    "cli|cmd:strace|strace|opt|strace||" \
+    "cli|cmd:powertop|powertop|opt|powertop||" \
+    "cli|cmd:socat|socat|opt|socat||" \
     "chat|cmd:slack|slack|opt||slack-desktop-wayland-jetm|" \
     "chat|cmd:discord|discord|opt|discord||" \
+    "chat|cmd:vesktop|vesktop|opt||vesktop-bin|" \
     "chat|path:/etc/pacman.d/hooks/vencord-hook.hook|vencord|opt||vencord-installer-bin vencord-hook|" \
     "chat|path:/opt/teams-for-linux|teams for linux|opt||teams-for-linux-bin|" \
     "chat|path:/opt/outlook-for-linux|outlook for linux|opt||outlook-for-linux-bin|" \
     "chat|cmd:zoom|zoom|opt||zoom|" \
     "dev|cmd:claude|claude code|opt||claude-code|" \
-    "dev|cmd:claude-desktop|claude desktop|opt||claude-desktop|" \
+    "dev|cmd:claude-desktop|claude desktop|opt||claude-desktop-bin|" \
     "dev|cmd:code|vscode|opt||visual-studio-code-bin|" \
     "dev|cmd:gh|github cli|opt|github-cli||" \
+    "dev|cmd:clang|clang|opt|clang||" \
+    "dev|cmd:llvm-config|llvm|opt|llvm||" \
+    "dev|cmd:nvcc|cuda|opt|cuda||" \
+    "dev|cmd:uv|uv|opt|uv||" \
+    "dev|cmd:xmake|xmake|opt|xmake||" \
+    "dev|cmd:docker|docker|opt|docker||" \
+    "dev|cmd:podman|podman|opt|podman||" \
+    "dev|cmd:qemu-system-x86_64|qemu|opt|qemu-system-x86||" \
+    "dev|cmd:typst|typst|opt|typst||" \
+    "dev|cmd:pandoc|pandoc|opt|pandoc-bin||" \
     "dev|cmd:clion-eap|clion eap|opt||clion-eap|" \
     "dev|path:/usr/lib/jvm/zulu-8|zulu 8 jdk|opt||zulu-8-bin|" \
     "toys|cmd:cbonsai|cbonsai|opt||cbonsai|" \

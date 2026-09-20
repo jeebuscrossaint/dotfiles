@@ -89,7 +89,6 @@ mpd
 mpd-runit
 mpv
 nano
-neovim
 networkmanager-runit
 npm
 nsight-compute

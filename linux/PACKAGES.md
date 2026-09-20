@@ -27,7 +27,7 @@ Remove one of these and something in this repo stops working.
 | Session | **No bar.** `conky` draws the readout (tags, cpu, temps, mem, disk, fan, battery, volume, net, weather, uptime) on the desktop layer, so it costs no screen space and never covers a window. `dunst` is the only other surface, `fuzzel` the launcher, `swayidle` the idle timer. Effects are switched off in `config.conf`, not deleted. |
 | Idle & lock | `swaylock` (Super+L and from `swayidle`), `swayidle`. No blanking: that needs a wlr-output-power client and none is wanted. |
 | Terminal & shell | `kitty`, `fish`, `lsd`, `bat`, `less`, `tree` |
-| Editor | `micro` (`$EDITOR`), `neovim` |
+| Editor | `micro` |
 | Files & monitoring | `yazi`, `btop`, `fastfetch`, `pfetch-rs` |
 | Clipboard & screenshot | `wl-clipboard`, `cliphist`, `wl-clip-persist`, `grim`, `slurp`, `satty`, `swappy` |
 | Media & input | `mpv`, `imagemagick`, `brightnessctl`, `pavucontrol`, `libnotify`, `playerctl` |
