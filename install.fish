@@ -147,7 +147,6 @@ set -g dep_table \
     "compositor|path:/usr/lib/xdg-desktop-portal-gtk /usr/libexec/xdg-desktop-portal-gtk|xdg-desktop-portal-gtk|core|xdg-desktop-portal-gtk||" \
     "desktop|cmd:dunst|dunst|core|dunst||" \
     "desktop|cmd:fuzzel|fuzzel|core|fuzzel||" \
-    "desktop|cmd:awww|awww|core||awww|" \
     "desktop|cmd:swayidle|swayidle|core|swayidle||" \
     "desktop|cmd:swaylock|swaylock|core|swaylock||" \
     "desktop|cmd:conky|conky|core|conky||" \
@@ -340,7 +339,7 @@ function ensure_pacman_conf
 end
 
 # chaotic-aur: prebuilt binaries for AUR packages, so paru is left building only
-# the handful nobody else ships -- mangowm, awww, and the -eap/-bin oddities.
+# the handful nobody else ships -- mangowm and the -eap/-bin oddities.
 #
 # It is a THIRD-PARTY repo: their build machines, their key, trusted by root on
 # this box from here on. That is a real trade and it is stated rather than

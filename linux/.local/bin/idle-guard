@@ -34,21 +34,7 @@ audio_playing() {
 	return 1
 }
 
-# The wallpaper is resolved at LOCK time, not stored. swaylock's config used to
-# carry an image= line that the awww wrapper rewrote on every `awww img` -- a
-# config file edited by a program, living on a stow symlink, so every wallpaper
-# change showed up as a one-line diff in the repo. swaylock has no variables and
-# no command substitution (its parser takes `key=value` and little else), but it
-# does take -i, and the daemon knows the answer already. Asking at the moment of
-# use means there is no copy to keep in sync and nothing to rewrite.
-#
-# `query` rather than a remembered path: img takes --outputs and --transition-*,
-# so the wallpaper is not reliably the last word of any command line. The
-# daemon's own answer is, and its last colon-space field is the path.
-#
-# No awww, no wallpaper, or a path that has since been deleted: lock with no -i
-# and swaylock paints its color= instead. That is also what the OpenBSD box does,
-# where there is no awww at all.
+# No -i: there is no wallpaper on this machine, so swaylock paints its color=.
 do_lock() {
 	sfx lock
 
@@ -75,13 +61,7 @@ do_lock() {
 	set -- $([ -f "$COAT_THEME" ] && grep -vE '^[[:space:]]*(#|$)' "$COAT_THEME" | sed 's/^/--/')
 	IFS=$_ifs
 
-	wall=$(awww query 2>/dev/null | grep -v HEADLESS | head -1)
-	wall=${wall##*: }
-	if [ -n "$wall" ] && [ -f "$wall" ]; then
-		swaylock "$@" -i "$wall" >/dev/null 2>&1 &
-	else
-		swaylock "$@" >/dev/null 2>&1 &
-	fi
+	swaylock "$@" >/dev/null 2>&1 &
 }
 
 # wlopm, not `wlr-randr --output X --off`: this is a power mode change on an

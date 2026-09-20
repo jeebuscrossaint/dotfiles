@@ -10,7 +10,6 @@ artools-iso
 artools-pkg
 audit-runit
 autotiling-rs
-awww
 base
 base-devel
 basu

@@ -26,7 +26,6 @@ Remove one of these and something in this repo stops working.
 | Compositor | `mangowm` (AUR), `xdg-desktop-portal-wlr`, `xdg-desktop-portal-gtk`, `polkit-gnome`, `elogind-runit` |
 | Session | **No bar.** `conky` draws the readout (tags, cpu, temps, mem, disk, fan, battery, volume, net, weather, uptime) on the desktop layer, so it costs no screen space and never covers a window. `dunst` is the only other surface, `fuzzel` the launcher, `swayidle` the idle timer. Effects are switched off in `config.conf`, not deleted. |
 | Idle & lock | `swaylock` (Super+L and from `swayidle`), `swayidle`. No blanking: that needs a wlr-output-power client and none is wanted. |
-| Wallpaper | `awww` (unwrapped; `Super+Alt+T` runs `coat match` when you want the scheme to follow it) |
 | Terminal & shell | `kitty`, `fish`, `lsd`, `bat`, `less`, `tree` |
 | Editor | `neovim` |
 | Files & monitoring | `yazi`, `btop`, `fastfetch`, `pfetch-rs` |
