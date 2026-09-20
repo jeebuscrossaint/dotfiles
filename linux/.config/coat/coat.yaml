@@ -4,6 +4,7 @@ enabled:
   - fish
   - kitty
   - neovim
+  - micro
   - bat
   - btop
   - zathura

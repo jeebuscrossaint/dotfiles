@@ -1,0 +1,89 @@
+{
+  // micro — the editor, replacing Neovim on 2026-09-19.
+  //
+  // This file is JSON5 (micro parses it with micro-editor/json5), which is the
+  // only reason these comments survive. One caveat that follows from it: micro
+  // REWRITES this file whenever you run `> set <option> <value>` in the editor,
+  // and the rewrite is plain JSON -- every comment here is gone. Change options
+  // by editing this file, not with `> set`, or use `> setlocal` which is not
+  // persisted.
+
+  // Colours come from coat: ~/.config/micro/colorschemes/coat.micro, regenerated
+  // by `coat apply micro`. Never edit that file. `truecolor` is 'auto' by
+  // default, which trusts $COLORTERM -- kitty sets it, but pinning 'on' means a
+  // terminal that under-reports does not silently drop the scheme to 256 colours.
+  "colorscheme": "coat",
+  "truecolor": "on",
+
+  // Indentation. Spaces everywhere except the two languages whose toolchains
+  // actively fight it, which are handled in the ft: blocks at the bottom.
+  "tabsize": 4,
+  "tabstospaces": true,
+  "autoindent": true,
+  "keepautoindent": true,
+
+  // Whitespace hygiene, on by default because a diff full of trailing-space
+  // noise is the thing most likely to get a first patch bounced.
+  "rmtrailingws": true,
+  "eofnewline": true,
+  "hltrailingws": true,
+  "hltaberrors": true,
+
+  // 100 rather than 80: it is the column Google's C++ style and clang-format's
+  // common profiles land on, and 80 wastes a 2560px panel.
+  "colorcolumn": 100,
+
+  "ruler": true,
+  "scrollbar": true,
+  "cursorline": true,
+  "statusline": true,
+  "diffgutter": true,
+  "matchbrace": true,
+
+  // Long lines wrap at word boundaries instead of running off the edge.
+  // softwrap alone breaks mid-word; wordwrap is what makes it readable.
+  "softwrap": true,
+  "wordwrap": true,
+
+  "hlsearch": true,
+  "incsearch": true,
+  "ignorecase": true,
+
+  // Reopen a file where you left it, and keep undo history across sessions.
+  // Both write into ~/.local/share/micro, not into the file.
+  "savecursor": true,
+  "saveundo": true,
+  "savehistory": true,
+
+  // `micro main.cpp:42:8` jumps to the position instead of opening a file with
+  // that literal name -- this is what makes compiler and grep output clickable.
+  "parsecursor": true,
+  // `micro src/new/thing.cpp` creates the missing directories rather than
+  // failing on save.
+  "mkparents": true,
+
+  // wl-clipboard, via micro's external clipboard path. useprimary also puts
+  // selections on the PRIMARY selection for middle-click paste.
+  "clipboard": "external",
+  "useprimary": true,
+  "mouse": true,
+
+  // Per-filetype. Go's gofmt and make's recipe syntax both REQUIRE hard tabs --
+  // tabstospaces would produce files their own tools reject.
+  "ft:go": {
+    "tabstospaces": false
+  },
+  "ft:makefile": {
+    "tabstospaces": false
+  },
+  "ft:json": {
+    "tabsize": 2
+  },
+  "ft:yaml": {
+    "tabsize": 2
+  },
+  "ft:markdown": {
+    "colorcolumn": 0,
+    "hltrailingws": false
+  }
+}

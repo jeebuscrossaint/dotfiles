@@ -23,7 +23,7 @@ end
 # Environment variables
 ########################################
 
-set -x EDITOR nvim
+set -x EDITOR micro
 # Honoured by xdg-terminal-exec, i3-sensible-terminal and various launchers, so
 # "open a terminal" lands on kitty for anything that reads $TERMINAL.
 set -x TERMINAL kitty

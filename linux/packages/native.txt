@@ -155,7 +155,6 @@ unzip
 uv
 virtiofsd
 vulkan-intel
-waybar
 wayfire
 waylock
 wf-recorder
