@@ -33,6 +33,33 @@ indicator-idle-visible
 
 show-failed-attempts
 font-size=18
+color=000000
+ring-color=5993D2
+ring-clear-color=C7B74C
+ring-ver-color=C0BFBF
+ring-wrong-color=C57046
+inside-color=282727e6
+inside-clear-color=C7B74C33
+inside-ver-color=5993D233
+inside-wrong-color=C5704633
+key-hl-color=C0BFBF
+bs-hl-color=C57046
+line-color=000000
+line-clear-color=000000
+line-ver-color=000000
+line-wrong-color=000000
+line-caps-lock-color=000000
+separator-color=00000000
+text-color=C0BFBF
+text-clear-color=C0BFBF
+text-ver-color=C0BFBF
+text-wrong-color=C57046
+text-caps-lock-color=C7B74C
+ring-caps-lock-color=C7B74C
+inside-caps-lock-color=C7B74C33
+caps-lock-key-hl-color=C7B74C
+caps-lock-bs-hl-color=C57046
+font=JetBrainsMono Nerd Font Mono
 
 # Not a setting, a warning: do not add disable-caps-lock-text=false. The option
 # takes no argument, so the parser rejects it outright — it reads as "keep the

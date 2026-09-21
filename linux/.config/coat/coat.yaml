@@ -13,7 +13,6 @@ enabled:
   - vscode
 
   - yazi
-  - cava
   - fastfetch
   - lsd
   - imv

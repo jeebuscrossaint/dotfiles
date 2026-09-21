@@ -35,6 +35,16 @@ set -g target $HOME
 set -q _flag_target; and set -g target (path resolve $_flag_target)
 set -q _flag_yes; and set -g _flag_backup 1
 
+# argparse puts _flag_* in THIS scope, and a fish function cannot read its
+# caller's locals -- so any flag a function tests has to be promoted to a global
+# or the test silently never fires. confirm() and check_deps() both read
+# _flag_install_deps and _flag_yes, which meant --yes and --install-deps fell
+# through to prompting instead of answering. Booleans only; --target is already
+# resolved into $target above.
+for f in dry_run verbose backup adopt yes no_coat minecraft uninstall check skip_checks install_deps
+    set -q _flag_$f; and set -g _flag_$f 1
+end
+
 # Colour, unless piped or NO_COLOR.
 set -g c_step ''; set -g c_ok ''; set -g c_warn ''; set -g c_err ''; set -g c_dim ''; set -g c_off ''
 if not set -q NO_COLOR; and isatty stdout
@@ -97,12 +107,15 @@ or die "$target is not writable"
 
 # --- dependencies -------------------------------------------------------------
 #
-#   group | probe | label | tier | pacman | aur | hint
+#   group | probe | label | tier | pacman | aur | hint | gate
 #
 # probe  cmd:BINARY · font:FAMILY · path:P1 P2 (any one existing is enough)
 # tier   req  the installer itself cannot run
 #        core something tracked here calls it and breaks without it
 #        opt  one feature degrades
+# gate   hardware this row needs, empty for every machine. Dropped before the
+#        count, so --install-deps cannot offer them. `nvidia` (PCI 0x10de) only;
+#        it exists because a cuda row offered 5.2 GiB to a box with no card.
 #
 # Rows above `chat` are derived from what the tracked configs and ~/.local/bin
 # scripts actually invoke — grep before adding one, and keep the paths in step
@@ -117,25 +130,28 @@ or die "$target is not writable"
 # `terminal` because nothing in this repo invokes it, which is the line the two
 # halves of this table are split on.
 #
-# Kept SHORT on purpose. The first version of this group also carried rclone,
-# pandoc, cloc, powertop and strace, picked by diffing installed packages against
-# the table rather than by asking what actually gets used. Being installed is not
-# the same as being wanted on the next machine. AUR names are the exact ones in use, forks included -- slack's
-# wayland fork, and the -bin builds of the Electron apps.
+# Do NOT curate this list by diffing it against installed packages: --install-deps
+# installs every row, so the machine matches the table by construction and the
+# diff only ever confirms itself. Ask instead whether the binary has been RUN
+# since it was installed (`stat -c %X` against its pacman install date), and
+# discount anything installed recently, launched indirectly, or kept on another
+# disk -- typst lives on the Windows partition and reads as unused here.
+#
+# AUR names are the exact ones in use, forks included -- slack's wayland fork,
+# and the -bin builds of the Electron apps.
 # No cmd: row for anything this repo ships in ~/.local/bin — the stow run puts
 # the script on PATH, so the probe passes on a machine missing the real package
 # (that is what the nvidia-prime row did).
 #
 # The conky rows are the whole desktop readout, so they are core: conky itself,
 # curl and jq for the weather it fetches from Open-Meteo, and pstree for the process
-# tree in the left panel. cava and gawk are opt because each degrades quietly
-# rather than breaking -- conky_cava returns an empty string when nothing is
-# writing ~/.cache/cava.state, and tree.awk without gawk's character-counting
-# RLENGTH colours every branch at the same depth instead of erroring.
+# tree in the left panel. gawk is opt because it degrades quietly rather than
+# breaking -- tree.awk without gawk's character-counting RLENGTH colours every
+# branch at the same depth instead of erroring.
 #
-# One font, not two: coat.yaml asks for JetBrainsMono Nerd Font Mono in all three
-# slots. It used to be SFMono plus SF Pro from nerd-fonts-apple, and a machine set
-# up from the old rows themed itself into tofu.
+# No font row: coat.yaml asks for JetBrainsMono Nerd Font Mono in all three slots
+# and install-nerdfonts.sh is still here, but installing it is now by hand. A
+# machine themed from a missing font renders tofu, so run that script first.
 set -g dep_table \
     "installer|cmd:stow|stow|req|stow||" \
     "installer|cmd:git|git|core|git||" \
@@ -154,7 +170,6 @@ set -g dep_table \
     "desktop|cmd:wlsunset|wlsunset|core|wlsunset||" \
     "desktop|cmd:swaybg|swaybg|opt|swaybg||" \
     "desktop|cmd:wlopm|wlopm|core|wlopm||" \
-    "desktop|cmd:cava|cava|opt|cava||" \
     "terminal|cmd:kitty|kitty|core|kitty||" \
     "terminal|cmd:micro|micro|core|micro||" \
     "terminal|cmd:less|less|core|less||" \
@@ -168,11 +183,10 @@ set -g dep_table \
     "clipboard|cmd:grim|grim|core|grim||" \
     "clipboard|cmd:slurp|slurp|core|slurp||" \
     "clipboard|cmd:satty|satty|opt|satty||" \
-    "clipboard|cmd:swappy|swappy|opt|swappy||" \
     "system|cmd:wpctl|wireplumber|core|wireplumber||" \
     "system|cmd:notify-send|libnotify|core|libnotify||" \
     "system|cmd:brightnessctl|brightnessctl|core|brightnessctl||" \
-    "system|cmd:playerctl|playerctl|opt|playerctl||" \
+    "system|cmd:playerctl|playerctl|core|playerctl||" \
     "system|cmd:pavucontrol|pavucontrol|opt|pavucontrol||" \
     "system|cmd:jq|jq|core|jq||" \
     "system|cmd:curl|curl|core|curl||" \
@@ -189,7 +203,6 @@ set -g dep_table \
     "theme|cmd:coat|coat|core|||cargo install --git https://github.com/jeebuscrossaint/coat" \
     "theme|path:/usr/share/icons/WhiteSur-dark /usr/share/icons/WhiteSur|WhiteSur icon theme|core||whitesur-icon-theme|" \
     "theme|path:/usr/share/themes/adw-gtk3-dark|adw-gtk3|core|adw-gtk-theme||" \
-    "fonts|font:JetBrainsMono Nerd Font|JetBrainsMono Nerd Font|core|ttf-jetbrains-mono-nerd||./install-nerdfonts.sh" \
     "fonts|font:Font Awesome|Font Awesome|core|otf-font-awesome||" \
     "fonts|font:Noto Color Emoji|Noto Color Emoji|core|noto-fonts-emoji||" \
     "apps|cmd:btop|btop|opt|btop||" \
@@ -205,13 +218,10 @@ set -g dep_table \
     "apps|cmd:yt-dlp|yt-dlp|opt|yt-dlp||" \
     "apps|path:/usr/lib/zathura/libpdf-poppler.so|zathura pdf backend|opt|zathura-pdf-poppler||" \
     "apps|cmd:firefox-developer-edition|firefox developer edition|core|firefox-developer-edition||" \
-    "apps|cmd:nvibrant|nvibrant|opt||nvibrant-bin|" \
-    "apps|cmd:fd|fd|opt|fd||" \
+    "apps|cmd:nvibrant|nvibrant|opt||nvibrant-bin||nvidia" \
     "apps|cmd:imv|imv|opt|imv||" \
     "apps|cmd:qalculate-gtk|qalculate|opt|qalculate-gtk||" \
-    "apps|cmd:gamescope|gamescope|opt|gamescope||" \
     "apps|cmd:wf-recorder|wf-recorder|opt|wf-recorder||" \
-    "apps|cmd:ollama|ollama|opt|ollama||" \
     "apps|cmd:magick|imagemagick|opt|imagemagick||" \
     "apps|cmd:torbrowser-launcher|tor browser|opt|torbrowser-launcher||" \
     "apps|cmd:tor|tor|opt|tor||" \
@@ -220,35 +230,24 @@ set -g dep_table \
     "cli|cmd:glow|glow|opt|glow||" \
     "cli|cmd:tree|tree|opt|tree||" \
     "cli|cmd:unzip|unzip|opt|unzip||" \
-    "cli|cmd:rclone|rclone|opt|rclone||" \
-    "cli|cmd:tldr|tealdeer|opt|tealdeer||" \
-    "cli|cmd:fkill|fkill|opt|fkill||" \
-    "cli|cmd:cloc|cloc|opt|cloc||" \
-    "cli|cmd:strace|strace|opt|strace||" \
-    "cli|cmd:powertop|powertop|opt|powertop||" \
-    "cli|cmd:socat|socat|opt|socat||" \
     "chat|cmd:slack|slack|opt||slack-desktop-wayland-jetm|" \
     "chat|cmd:discord|discord|opt|discord||" \
-    "chat|cmd:vesktop|vesktop|opt||vesktop-bin|" \
     "chat|path:/etc/pacman.d/hooks/vencord-hook.hook|vencord|opt||vencord-installer-bin vencord-hook|" \
     "chat|path:/opt/teams-for-linux|teams for linux|opt||teams-for-linux-bin|" \
     "chat|path:/opt/outlook-for-linux|outlook for linux|opt||outlook-for-linux-bin|" \
     "chat|cmd:zoom|zoom|opt||zoom|" \
     "dev|cmd:claude|claude code|opt||claude-code|" \
-    "dev|cmd:claude-desktop|claude desktop|opt||claude-desktop-bin|" \
+    "dev|cmd:claude-desktop|claude desktop|opt||claude-desktop|" \
     "dev|cmd:code|vscode|opt||visual-studio-code-bin|" \
     "dev|cmd:gh|github cli|opt|github-cli||" \
     "dev|cmd:clang|clang|opt|clang||" \
     "dev|cmd:llvm-config|llvm|opt|llvm||" \
-    "dev|cmd:nvcc|cuda|opt|cuda||" \
     "dev|cmd:uv|uv|opt|uv||" \
-    "dev|cmd:xmake|xmake|opt|xmake||" \
-    "dev|cmd:docker|docker|opt|docker||" \
-    "dev|cmd:podman|podman|opt|podman||" \
     "dev|cmd:qemu-system-x86_64|qemu|opt|qemu-system-x86||" \
     "dev|cmd:typst|typst|opt|typst||" \
     "dev|cmd:pandoc|pandoc|opt|pandoc-bin||" \
-    "dev|cmd:clion-eap|clion eap|opt||clion-eap|" \
+    "dev|cmd:nvcc|cuda|opt|cuda|||nvidia" \
+    "dev|cmd:clion-eap|clion eap|opt||clion-eap clion-eap-lldb clion-eap-jre clion-eap-gdb clion-eap-cmake|" \
     "dev|path:/usr/lib/jvm/zulu-8|zulu 8 jdk|opt||zulu-8-bin|" \
     "toys|cmd:cbonsai|cbonsai|opt||cbonsai|" \
     "toys|cmd:pipes-rs|pipes-rs|opt||pipes-rs|" \
@@ -302,6 +301,80 @@ function dep_present -a probe
             end
             return 1
     end
+end
+
+function pci_vendor_present -a vendor
+    for v in /sys/bus/pci/devices/*/vendor
+        test (cat $v 2>/dev/null) = $vendor; and return 0
+    end
+    return 1
+end
+
+# Whether this machine has NVIDIA hardware. The PCI bus answers first; the prompt
+# is only for what the bus cannot see -- an eGPU that is unplugged right now, or a
+# card going in after this run. --check and the non-interactive flags take the bus
+# answer and never ask. Everything NVIDIA hangs off this: the gated cuda row and
+# ensure_nvidia both read it, so one answer drives both.
+set -g has_nvidia 0
+function ask_nvidia
+    if pci_vendor_present 0x10de
+        set -g has_nvidia 1
+        return 0
+    end
+    set -q _flag_check; and return 0
+    set -q _flag_yes; and return 0
+    set -q _flag_install_deps; and return 0
+    isatty stdin; or return 0
+    read -P "  no NVIDIA card on the PCI bus — is there one anyway? [y/N] " -l a
+    string match -qi 'y*' -- (string trim -- $a); and set -g has_nvidia 1
+    echo
+end
+
+# Gate for a dep_table row: empty passes, answers cached (the bus cannot change
+# mid-run). An unknown name passes too -- a typo should surface as a package
+# still offered, not one that silently vanished.
+set -g gate_seen
+set -g gate_rc
+function host_has -a gate
+    test -z "$gate"; and return 0
+    set -l i (contains -i -- $gate $gate_seen)
+    and return $gate_rc[$i]
+
+    set -l rc 1
+    switch $gate
+        case nvidia
+            test "$has_nvidia" = 1; and set rc 0
+        case '*'
+            note "unknown hardware gate '$gate' in the dependency table — keeping the row"
+            set rc 0
+    end
+    set -a gate_seen $gate
+    set -a gate_rc $rc
+    return $rc
+end
+
+# Fonts come from install-nerdfonts.sh, not a package. It installs EVERY family
+# in the latest nerd-fonts release, and that is the point: coat can theme to any
+# installed font, so the whole set is what makes that choice free later. The
+# probe is JetBrainsMono only because coat.yaml asks for it in all three slots
+# and a machine without it themes into tofu -- it is the sentinel for "the script
+# has run here", not the only font wanted. It still asks before starting, because
+# it is a long download over the network, not because the set is too large.
+function ensure_fonts
+    command -q fc-list; or return 0
+    fc-list : family 2>/dev/null | string match -qi '*JetBrainsMono Nerd Font*'
+    and return 0
+
+    test -x $repo/install-nerdfonts.sh
+    or begin
+        note "install-nerdfonts.sh is missing — JetBrainsMono Nerd Font stays uninstalled"
+        return 1
+    end
+
+    step "JetBrainsMono Nerd Font is missing — coat themes into tofu without it"
+    dim "installs every nerd-fonts family — coat can then theme to any of them"
+    confirm "run install-nerdfonts.sh now?"; or return 0
+    $repo/install-nerdfonts.sh; or note "the font script failed — run it by hand"
 end
 
 # y/n, with --yes and --install-deps answering for it.
@@ -621,11 +694,7 @@ end
 # power setup in misc/ is this machine's, not a default; install it by hand if
 # and when it is wanted.
 function ensure_nvidia
-    set -l found
-    for v in /sys/bus/pci/devices/*/vendor
-        test (cat $v 2>/dev/null) = 0x10de; and set found 1; and break
-    end
-    test -n "$found"; or return 0
+    host_has nvidia; or return 0
     pacman -Qq nvidia-utils &>/dev/null; and return 0
 
     set -l want nvidia-open-dkms nvidia-utils libva-nvidia-driver egl-wayland
@@ -650,11 +719,19 @@ function check_deps
     set -l rendered
     set -l miss_req; set -l miss_core; set -l miss_opt
     set -l want_pm; set -l want_aur; set -l hints; set -l orphans
+    set -l skipped
     set -l total 0
 
     for rec in $dep_table
         set -l f (string split '|' -- $rec)
         set -l group $f[1]; set -l label $f[3]; set -l tier $f[4]
+
+        # Before the count, so the total reflects what this machine was asked.
+        if not host_has "$f[8]"
+            set -a skipped $label
+            continue
+        end
+
         set total (math $total + 1)
 
         set -l i (contains -i -- $group $groups)
@@ -696,6 +773,9 @@ function check_deps
     for i in (seq (count $groups))
         printf '   %s%-11s%s%s\n' "$c_step" $groups[$i] "$c_off" "$rendered[$i]"
     end
+    test (count $skipped) -gt 0
+    and printf '   %s%-11s%s %s%s — hardware not present%s\n' \
+        "$c_step" skipped "$c_off" "$c_dim" (string join ' · ' $skipped) "$c_off"
     echo
 
     set -l gone (math (count $miss_req) + (count $miss_core) + (count $miss_opt))
@@ -767,6 +847,7 @@ command -q stow; and dim (stow --version | string collect)
 echo
 
 if set -q _flag_check
+    ask_nvidia
     check_deps
     exit $status
 end
@@ -776,6 +857,7 @@ if not set -q _flag_skip_checks; and not set -q _flag_uninstall
     # to install anything, or every chaotic-carried package is a paru source build.
     ensure_pacman_conf
     ensure_chaotic_aur
+    ask_nvidia
     check_deps
     or note "linking anyway — the configs for the missing pieces are harmless on their own"
     echo
@@ -783,6 +865,7 @@ if not set -q _flag_skip_checks; and not set -q _flag_uninstall
     ensure_asus
     ensure_power_profile
     ensure_rust
+    ensure_fonts
     ensure_coat
     ensure_services
     ensure_systemd_extras
@@ -1022,9 +1105,5 @@ or note "~/.local/bin is not on PATH — the scripts in it will not be found"
 if test -f $target/.local/bin/coat
     note "stale $target/.local/bin/coat shadows ~/.cargo/bin/coat under the compositor — delete it"
 end
-
-# The todo widget reads this and shows an empty card without it.
-test -f $target/todo.md
-or note "no ~/todo.md — the desktop todo widget will be empty until you make one"
 
 printf '\n%sdone%s — open a new shell to pick it up.\n\n' "$c_ok" "$c_off"

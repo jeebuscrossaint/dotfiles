@@ -31,3 +31,11 @@ linux/.config/wob/wob.ini
 # py_compile droppings — the scripts in .local/bin are run directly, never imported.
 __pycache__/
 *.pyc
+
+# Browser profiles. ~/.config/chromium is stow-adjacent and lands in this tree,
+# and it holds Cookies, Login Data and Web Data -- live session credentials.
+# This remote is public; none of it is config worth tracking.
+linux/.config/chromium/
+
+# micro's open-buffer state, not configuration.
+linux/.config/micro/buffers/
