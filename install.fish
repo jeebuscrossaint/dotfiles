@@ -107,12 +107,10 @@ or die "$target is not writable"
 
 # --- dependencies -------------------------------------------------------------
 #
-#   group | probe | label | tier | pacman | aur | hint | gate
+#   group | probe | label | pacman | aur | hint | gate
 #
 # probe  cmd:BINARY · font:FAMILY · path:P1 P2 (any one existing is enough)
-# tier   req  the installer itself cannot run
-#        core something tracked here calls it and breaks without it
-#        opt  one feature degrades
+# Every row is required: anything still missing after the install offer is fatal.
 # gate   hardware this row needs, empty for every machine. Dropped before the
 #        count, so --install-deps cannot offer them. `nvidia` (PCI 0x10de) only;
 #        it exists because a cuda row offered 5.2 GiB to a box with no card.
@@ -122,8 +120,7 @@ or die "$target is not writable"
 # with the probes in start-polkit and mango's config.conf.
 #
 # The cli, chat, dev and apps groups are the other kind of row: nothing in this
-# repo calls them, they are just what this person installs on every machine. All
-# `opt`, so a server or a VM can decline the lot and still get a working session.
+# repo calls them, they are just what this person installs on every machine.
 #
 # `cli` is the terminal tooling reached for by hand rather than by a script: gdu
 # for what ate the disk, glow for a README. It sits down here rather than in
@@ -143,121 +140,114 @@ or die "$target is not writable"
 # the script on PATH, so the probe passes on a machine missing the real package
 # (that is what the nvidia-prime row did).
 #
-# The conky rows are the whole desktop readout, so they are core: conky itself,
-# curl and jq for the weather it fetches from Open-Meteo, and pstree for the process
-# tree in the left panel. gawk is opt because it degrades quietly rather than
-# breaking -- tree.awk without gawk's character-counting RLENGTH colours every
-# branch at the same depth instead of erroring.
-#
-# coat.yaml asks for Ioskeley Mono in all three slots, so that row is core. The
-# Nerd Fonts set still comes from install-nerdfonts.sh (see ensure_fonts).
+# The Nerd Fonts set comes from install-nerdfonts.sh (see ensure_fonts), not a row.
 set -g dep_table \
-    "installer|cmd:stow|stow|req|stow||" \
-    "installer|cmd:git|git|core|git||" \
-    "installer|cmd:fish|fish|req|fish||" \
-    "installer|cmd:wget|wget|opt|wget||" \
-    "compositor|cmd:mango|mango|core||mangowm|https://github.com/DreamMaoMao/mango" \
-    "compositor|cmd:uwsm|uwsm|core|uwsm||" \
-    "compositor|path:/usr/lib/xdg-desktop-portal-wlr /usr/libexec/xdg-desktop-portal-wlr|xdg-desktop-portal-wlr|core|xdg-desktop-portal-wlr||" \
-    "compositor|path:/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 /usr/libexec/polkit-gnome-authentication-agent-1 /usr/local/libexec/polkit-gnome-authentication-agent-1|polkit agent|core|polkit-gnome||" \
-    "compositor|path:/usr/lib/xdg-desktop-portal-gtk /usr/libexec/xdg-desktop-portal-gtk|xdg-desktop-portal-gtk|core|xdg-desktop-portal-gtk||" \
-    "desktop|cmd:dunst|dunst|core|dunst||" \
-    "desktop|cmd:fuzzel|fuzzel|core|fuzzel||" \
-    "desktop|cmd:swayidle|swayidle|core|swayidle||" \
-    "desktop|cmd:swaylock|swaylock|core|swaylock||" \
-    "desktop|cmd:conky|conky|core|conky||" \
-    "desktop|cmd:wlsunset|wlsunset|core|wlsunset||" \
-    "desktop|cmd:swaybg|swaybg|opt|swaybg||" \
-    "desktop|cmd:wlopm|wlopm|core|wlopm||" \
-    "terminal|cmd:kitty|kitty|core|kitty||" \
-    "terminal|cmd:micro|micro|core|micro||" \
-    "terminal|cmd:less|less|core|less||" \
-    "terminal|cmd:lsd|lsd|opt|lsd||" \
-    "terminal|cmd:bat|bat|opt|bat||" \
-    "terminal|cmd:fastfetch|fastfetch|opt|fastfetch||" \
-    "terminal|cmd:rg|ripgrep|opt|ripgrep||" \
-    "clipboard|cmd:wl-copy|wl-clipboard|core|wl-clipboard||" \
-    "clipboard|cmd:cliphist|cliphist|core|cliphist||" \
-    "clipboard|cmd:wl-clip-persist|wl-clip-persist|opt||wl-clip-persist|" \
-    "clipboard|cmd:grim|grim|core|grim||" \
-    "clipboard|cmd:slurp|slurp|core|slurp||" \
-    "clipboard|cmd:satty|satty|opt|satty||" \
-    "system|cmd:wpctl|wireplumber|core|wireplumber||" \
-    "system|cmd:notify-send|libnotify|core|libnotify||" \
-    "system|cmd:brightnessctl|brightnessctl|core|brightnessctl||" \
-    "system|cmd:playerctl|playerctl|core|playerctl||" \
-    "system|cmd:pavucontrol|pavucontrol|opt|pavucontrol||" \
-    "system|cmd:jq|jq|core|jq||" \
-    "system|cmd:curl|curl|core|curl||" \
-    "system|cmd:pstree|psmisc|core|psmisc||" \
-    "system|cmd:gawk|gawk|opt|gawk||" \
-    "system|cmd:python3|python|core|python||" \
-    "system|cmd:nmcli|networkmanager|core|networkmanager||" \
-    "system|cmd:sshd|openssh|opt|openssh||" \
-    "system|cmd:smartctl|smartmontools|opt|smartmontools||" \
-    "system|cmd:paccache|pacman-contrib|opt|pacman-contrib||" \
-    "system|path:/usr/lib/systemd/system-generators/zram-generator|zram-generator|opt|zram-generator||" \
-    "system|cmd:tailscale|tailscale|opt|tailscale||" \
-    "theme|cmd:cargo|rust toolchain|core|rustup||https://rustup.rs" \
-    "theme|cmd:coat|coat|core|||cargo install --git https://github.com/jeebuscrossaint/coat" \
-    "theme|path:/usr/share/icons/WhiteSur-dark /usr/share/icons/WhiteSur|WhiteSur icon theme|core||whitesur-icon-theme|" \
-    "theme|path:/usr/share/themes/adw-gtk3-dark|adw-gtk3|core|adw-gtk-theme||" \
-    "fonts|font:Font Awesome|Font Awesome|core|otf-font-awesome||" \
-    "fonts|font:Noto Color Emoji|Noto Color Emoji|core|noto-fonts-emoji||" \
-    "fonts|font:Times New Roman|microsoft core fonts|opt||ttf-ms-fonts|" \
-    "fonts|font:Ioskeley Mono|Ioskeley Mono|core||ttf-ioskeley-mono-unhinted|" \
-    "fonts|font:Maple Mono|Maple Mono|opt||maple-mono-nf-cn|" \
-    "fonts|font:Intel One Mono|Intel One Mono|opt||otf-intel-one-mono|" \
-    "fonts|font:Cozette|Cozette|opt||cozette-otb|" \
-    "fonts|font:NeoSpleen|NeoSpleen|opt||ttf-neospleen-nerd-font|" \
-    "fonts|font:unscii|unscii|opt||otf-unscii-16-full|" \
-    "apps|cmd:btop|btop|opt|btop||" \
-    "apps|cmd:mpv|mpv|opt|mpv||" \
-    "apps|cmd:zathura|zathura|opt|zathura||" \
-    "apps|cmd:chromium|chromium|opt|chromium||" \
-    "apps|cmd:prismlauncher|prismlauncher|opt|prismlauncher||" \
-    "apps|cmd:yazi|yazi|opt|yazi||" \
-    "apps|cmd:blueman-manager|blueman|opt|blueman||" \
-    "apps|cmd:bluetoothctl|bluez-utils|opt|bluez-utils||" \
-    "apps|cmd:openlogi|openlogi|opt||openlogi-bin|" \
-    "apps|cmd:tradingview|tradingview|opt||tradingview|" \
-    "apps|cmd:yt-dlp|yt-dlp|opt|yt-dlp||" \
-    "apps|path:/usr/lib/zathura/libpdf-poppler.so|zathura pdf backend|opt|zathura-pdf-poppler||" \
-    "apps|cmd:firefox-developer-edition|firefox developer edition|core|firefox-developer-edition||" \
-    "apps|cmd:nvibrant|nvibrant|opt||nvibrant-bin||nvidia" \
-    "apps|cmd:imv|imv|opt|imv||" \
-    "apps|cmd:qalculate-gtk|qalculate|opt|qalculate-gtk||" \
-    "apps|cmd:wf-recorder|wf-recorder|opt|wf-recorder||" \
-    "apps|cmd:magick|imagemagick|opt|imagemagick||" \
-    "apps|cmd:torbrowser-launcher|tor browser|opt|torbrowser-launcher||" \
-    "apps|cmd:tor|tor|opt|tor||" \
-    "apps|cmd:i2pd|i2pd|opt|i2pd||" \
-    "cli|cmd:gdu|gdu|opt|gdu||" \
-    "cli|cmd:glow|glow|opt|glow||" \
-    "cli|cmd:tree|tree|opt|tree||" \
-    "cli|cmd:unzip|unzip|opt|unzip||" \
-    "chat|cmd:slack|slack|opt||slack-desktop-wayland-jetm|" \
-    "chat|cmd:discord|discord|opt|discord||" \
-    "chat|path:/etc/pacman.d/hooks/vencord-hook.hook|vencord|opt||vencord-installer-bin vencord-hook|" \
-    "chat|path:/opt/teams-for-linux|teams for linux|opt||teams-for-linux-bin|" \
-    "chat|path:/opt/outlook-for-linux|outlook for linux|opt||outlook-for-linux-bin|" \
-    "chat|cmd:zoom|zoom|opt||zoom|" \
-    "dev|cmd:claude|claude code|opt||claude-code|" \
-    "dev|cmd:claude-desktop|claude desktop|opt||claude-desktop|" \
-    "dev|cmd:code|vscode|opt||visual-studio-code-bin|" \
-    "dev|cmd:gh|github cli|opt|github-cli||" \
-    "dev|cmd:clang|clang|opt|clang||" \
-    "dev|cmd:llvm-config|llvm|opt|llvm||" \
-    "dev|cmd:uv|uv|opt|uv||" \
-    "dev|cmd:qemu-system-x86_64|qemu|opt|qemu-system-x86||" \
-    "dev|cmd:typst|typst|opt|typst||" \
-    "dev|cmd:pandoc|pandoc|opt|pandoc-bin||" \
-    "dev|cmd:nvcc|cuda|opt|cuda|||nvidia" \
-    "dev|cmd:clion-eap|clion eap|opt||clion-eap clion-eap-lldb clion-eap-jre clion-eap-gdb clion-eap-cmake|" \
-    "dev|path:/usr/lib/jvm/zulu-8|zulu 8 jdk|opt||zulu-8-bin|" \
-    "toys|cmd:cbonsai|cbonsai|opt||cbonsai|" \
-    "toys|cmd:pipes-rs|pipes-rs|opt||pipes-rs|" \
-    "toys|cmd:cmatrix|cmatrix|opt|cmatrix||"
+    "installer|cmd:stow|stow|stow||" \
+    "installer|cmd:git|git|git||" \
+    "installer|cmd:fish|fish|fish||" \
+    "installer|cmd:wget|wget|wget||" \
+    "compositor|cmd:mango|mango||mangowm|https://github.com/DreamMaoMao/mango" \
+    "compositor|cmd:uwsm|uwsm|uwsm||" \
+    "compositor|path:/usr/lib/xdg-desktop-portal-wlr /usr/libexec/xdg-desktop-portal-wlr|xdg-desktop-portal-wlr|xdg-desktop-portal-wlr||" \
+    "compositor|path:/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 /usr/libexec/polkit-gnome-authentication-agent-1 /usr/local/libexec/polkit-gnome-authentication-agent-1|polkit agent|polkit-gnome||" \
+    "compositor|path:/usr/lib/xdg-desktop-portal-gtk /usr/libexec/xdg-desktop-portal-gtk|xdg-desktop-portal-gtk|xdg-desktop-portal-gtk||" \
+    "desktop|cmd:dunst|dunst|dunst||" \
+    "desktop|cmd:fuzzel|fuzzel|fuzzel||" \
+    "desktop|cmd:swayidle|swayidle|swayidle||" \
+    "desktop|cmd:swaylock|swaylock|swaylock||" \
+    "desktop|cmd:conky|conky|conky||" \
+    "desktop|cmd:wlsunset|wlsunset|wlsunset||" \
+    "desktop|cmd:swaybg|swaybg|swaybg||" \
+    "desktop|cmd:wlopm|wlopm|wlopm||" \
+    "terminal|cmd:kitty|kitty|kitty||" \
+    "terminal|cmd:micro|micro|micro||" \
+    "terminal|cmd:less|less|less||" \
+    "terminal|cmd:lsd|lsd|lsd||" \
+    "terminal|cmd:bat|bat|bat||" \
+    "terminal|cmd:fastfetch|fastfetch|fastfetch||" \
+    "terminal|cmd:rg|ripgrep|ripgrep||" \
+    "clipboard|cmd:wl-copy|wl-clipboard|wl-clipboard||" \
+    "clipboard|cmd:cliphist|cliphist|cliphist||" \
+    "clipboard|cmd:wl-clip-persist|wl-clip-persist||wl-clip-persist|" \
+    "clipboard|cmd:grim|grim|grim||" \
+    "clipboard|cmd:slurp|slurp|slurp||" \
+    "clipboard|cmd:satty|satty|satty||" \
+    "system|cmd:wpctl|wireplumber|wireplumber||" \
+    "system|cmd:notify-send|libnotify|libnotify||" \
+    "system|cmd:brightnessctl|brightnessctl|brightnessctl||" \
+    "system|cmd:playerctl|playerctl|playerctl||" \
+    "system|cmd:pavucontrol|pavucontrol|pavucontrol||" \
+    "system|cmd:jq|jq|jq||" \
+    "system|cmd:curl|curl|curl||" \
+    "system|cmd:pstree|psmisc|psmisc||" \
+    "system|cmd:gawk|gawk|gawk||" \
+    "system|cmd:python3|python|python||" \
+    "system|cmd:nmcli|networkmanager|networkmanager||" \
+    "system|cmd:sshd|openssh|openssh||" \
+    "system|cmd:smartctl|smartmontools|smartmontools||" \
+    "system|cmd:paccache|pacman-contrib|pacman-contrib||" \
+    "system|path:/usr/lib/systemd/system-generators/zram-generator|zram-generator|zram-generator||" \
+    "system|cmd:tailscale|tailscale|tailscale||" \
+    "theme|cmd:cargo|rust toolchain|rustup||https://rustup.rs" \
+    "theme|cmd:coat|coat|||cargo install --git https://github.com/jeebuscrossaint/coat" \
+    "theme|path:/usr/share/icons/WhiteSur-dark /usr/share/icons/WhiteSur|WhiteSur icon theme||whitesur-icon-theme|" \
+    "theme|path:/usr/share/themes/adw-gtk3-dark|adw-gtk3|adw-gtk-theme||" \
+    "fonts|font:Font Awesome|Font Awesome|otf-font-awesome||" \
+    "fonts|font:Noto Color Emoji|Noto Color Emoji|noto-fonts-emoji||" \
+    "fonts|font:Times New Roman|microsoft core fonts||ttf-ms-fonts|" \
+    "fonts|font:Ioskeley Mono|Ioskeley Mono||ttf-ioskeley-mono-unhinted|" \
+    "fonts|font:Maple Mono|Maple Mono||maple-mono-nf-cn|" \
+    "fonts|font:Intel One Mono|Intel One Mono||otf-intel-one-mono|" \
+    "fonts|font:Cozette|Cozette||cozette-otb|" \
+    "fonts|font:NeoSpleen|NeoSpleen||ttf-neospleen-nerd-font|" \
+    "fonts|font:unscii|unscii||otf-unscii-16-full|" \
+    "apps|cmd:btop|btop|btop||" \
+    "apps|cmd:mpv|mpv|mpv||" \
+    "apps|cmd:zathura|zathura|zathura||" \
+    "apps|cmd:chromium|chromium|chromium||" \
+    "apps|cmd:prismlauncher|prismlauncher|prismlauncher||" \
+    "apps|cmd:yazi|yazi|yazi||" \
+    "apps|cmd:blueman-manager|blueman|blueman||" \
+    "apps|cmd:bluetoothctl|bluez-utils|bluez-utils||" \
+    "apps|cmd:openlogi|openlogi||openlogi-bin|" \
+    "apps|cmd:tradingview|tradingview||tradingview|" \
+    "apps|cmd:yt-dlp|yt-dlp|yt-dlp||" \
+    "apps|path:/usr/lib/zathura/libpdf-poppler.so|zathura pdf backend|zathura-pdf-poppler||" \
+    "apps|cmd:firefox-developer-edition|firefox developer edition|firefox-developer-edition||" \
+    "apps|cmd:nvibrant|nvibrant||nvibrant-bin||nvidia" \
+    "apps|cmd:imv|imv|imv||" \
+    "apps|cmd:qalculate-gtk|qalculate|qalculate-gtk||" \
+    "apps|cmd:wf-recorder|wf-recorder|wf-recorder||" \
+    "apps|cmd:magick|imagemagick|imagemagick||" \
+    "apps|cmd:torbrowser-launcher|tor browser|torbrowser-launcher||" \
+    "apps|cmd:tor|tor|tor||" \
+    "apps|cmd:i2pd|i2pd|i2pd||" \
+    "cli|cmd:gdu|gdu|gdu||" \
+    "cli|cmd:glow|glow|glow||" \
+    "cli|cmd:tree|tree|tree||" \
+    "cli|cmd:unzip|unzip|unzip||" \
+    "chat|cmd:slack|slack||slack-desktop-wayland-jetm|" \
+    "chat|cmd:discord|discord|discord||" \
+    "chat|path:/etc/pacman.d/hooks/vencord-hook.hook|vencord||vencord-installer-bin vencord-hook|" \
+    "chat|path:/opt/teams-for-linux|teams for linux||teams-for-linux-bin|" \
+    "chat|path:/opt/outlook-for-linux|outlook for linux||outlook-for-linux-bin|" \
+    "chat|cmd:zoom|zoom||zoom|" \
+    "dev|cmd:claude|claude code||claude-code|" \
+    "dev|cmd:claude-desktop|claude desktop||claude-desktop|" \
+    "dev|cmd:code|vscode||visual-studio-code-bin|" \
+    "dev|cmd:gh|github cli|github-cli||" \
+    "dev|cmd:clang|clang|clang||" \
+    "dev|cmd:llvm-config|llvm|llvm||" \
+    "dev|cmd:uv|uv|uv||" \
+    "dev|cmd:qemu-system-x86_64|qemu|qemu-system-x86||" \
+    "dev|cmd:typst|typst|typst||" \
+    "dev|cmd:pandoc|pandoc|pandoc-bin||" \
+    "dev|cmd:nvcc|cuda|cuda|||nvidia" \
+    "dev|cmd:clion-eap|clion eap||clion-eap clion-eap-lldb clion-eap-jre clion-eap-gdb clion-eap-cmake|" \
+    "dev|path:/usr/lib/jvm/zulu-8|zulu 8 jdk||zulu-8-bin|" \
+    "toys|cmd:cbonsai|cbonsai||cbonsai|" \
+    "toys|cmd:pipes-rs|pipes-rs||pipes-rs|" \
+    "toys|cmd:cmatrix|cmatrix|cmatrix||"
 
 function aur_helper
     for h in paru yay
@@ -714,7 +704,7 @@ function ensure_nvidia
     fish -c "sudo pacman -S --needed $want"; or note "that failed — carry on by hand"
 end
 
-# Reports what is missing; returns 1 if anything req/core is.
+# Reports what is missing; returns 1 if anything is.
 function check_deps
     set -g font_families
     command -q fc-list; and set -g font_families (fc-list : family 2>/dev/null | string split ,)
@@ -723,17 +713,17 @@ function check_deps
 
     set -l groups
     set -l rendered
-    set -l miss_req; set -l miss_core; set -l miss_opt
+    set -l missing
     set -l want_pm; set -l want_aur; set -l hints; set -l orphans
     set -l skipped
     set -l total 0
 
     for rec in $dep_table
         set -l f (string split '|' -- $rec)
-        set -l group $f[1]; set -l label $f[3]; set -l tier $f[4]
+        set -l group $f[1]; set -l label $f[3]
 
         # Before the count, so the total reflects what this machine was asked.
-        if not host_has "$f[8]"
+        if not host_has "$f[7]"
             set -a skipped $label
             continue
         end
@@ -755,21 +745,18 @@ function check_deps
             continue
         end
 
-        switch $tier
-            case req; set -a miss_req $label; set rendered[$i] "$rendered[$i]$sep $c_err✗ $label$c_off"
-            case core; set -a miss_core $label; set rendered[$i] "$rendered[$i]$sep $c_err✗ $label$c_off"
-            case '*'; set -a miss_opt $label; set rendered[$i] "$rendered[$i]$sep $c_warn✗ $label$c_off"
-        end
+        set -a missing $label
+        set rendered[$i] "$rendered[$i]$sep $c_err✗ $label$c_off"
 
-        set -l pkg $f[5]
-        set -l apkg $f[6]
+        set -l pkg $f[4]
+        set -l apkg $f[5]
 
         if test -n "$pkg"
             set -a want_pm $pkg
         else if test -n "$apkg"
             set -a want_aur $apkg
-        else if test -n "$f[7]"
-            contains -- "$label|$f[7]" $hints; or set -a hints "$label|$f[7]"
+        else if test -n "$f[6]"
+            contains -- "$label|$f[6]" $hints; or set -a hints "$label|$f[6]"
         else
             set -a orphans $label
         end
@@ -784,13 +771,13 @@ function check_deps
         "$c_step" skipped "$c_off" "$c_dim" (string join ' · ' $skipped) "$c_off"
     echo
 
-    set -l gone (math (count $miss_req) + (count $miss_core) + (count $miss_opt))
+    set -l gone (count $missing)
     if test $gone -eq 0
         ok "everything is here"
         return 0
     end
 
-    note "$gone missing — "(count $miss_req)" required, "(count $miss_core)" core, "(count $miss_opt)" optional"
+    note "$gone missing"
     echo
 
     # The paste-me block, and the same thing as runnable commands.
@@ -823,8 +810,8 @@ function check_deps
         if set -q _flag_install_deps
             set go yes
         else if isatty stdin; and not set -q _flag_yes
-            read -P "  run the "(count $dep_cmds)" command(s) above now? [y/N] " -l answer
-            string match -qi 'y*' -- (string trim -- $answer); and set go yes
+            read -P "  run the "(count $dep_cmds)" command(s) above now? [Y/n] " -l answer
+            string match -qi 'n*' -- (string trim -- $answer); or set go yes
             echo
         end
         if test -n "$go"
@@ -845,7 +832,7 @@ function check_deps
         end
     end
 
-    test (count $miss_req) -eq 0 -a (count $miss_core) -eq 0
+    return 1
 end
 
 printf '\n%sdotfiles%s  %s → %s\n' "$c_step" "$c_off" (string replace $HOME '~' $repo) (string replace $HOME '~' $target)
@@ -865,7 +852,7 @@ if not set -q _flag_skip_checks; and not set -q _flag_uninstall
     ensure_chaotic_aur
     ask_nvidia
     check_deps
-    or note "linking anyway — the configs for the missing pieces are harmless on their own"
+    or die "packages still missing — install them, or re-run with --skip-checks"
     echo
     ensure_nvidia
     ensure_asus
