@@ -205,6 +205,7 @@ set -g dep_table \
     "theme|path:/usr/share/themes/adw-gtk3-dark|adw-gtk3|core|adw-gtk-theme||" \
     "fonts|font:Font Awesome|Font Awesome|core|otf-font-awesome||" \
     "fonts|font:Noto Color Emoji|Noto Color Emoji|core|noto-fonts-emoji||" \
+    "fonts|font:Times New Roman|microsoft core fonts|opt||ttf-ms-fonts|" \
     "apps|cmd:btop|btop|opt|btop||" \
     "apps|cmd:mpv|mpv|opt|mpv||" \
     "apps|cmd:zathura|zathura|opt|zathura||" \
