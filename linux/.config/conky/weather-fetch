@@ -1,5 +1,5 @@
 #!/bin/sh
-# Locate, then fetch the weather. Called by conky's weather block every 5 min.
+# Locate, then fetch the weather. Called by conky's weather block every minute.
 #
 # A script rather than an exec line because conky silently truncates an exec
 # command past roughly 200 characters and this is two chained requests; it lives
@@ -22,8 +22,9 @@
 # numbers in ~/.config/conky/weather.coords as "lat lon" on one line and this
 # stops asking the network entirely.
 #
-# Location is cached for an hour: an IP does not move on a 5-minute timer, and
-# ipapi.co's free tier is 1000 requests a day, which a 5-minute refresh would eat.
+# Location is cached for an hour: an IP does not move on a 1-minute timer, and
+# ipapi.co's free tier is 1000 requests a day -- 1440 unconditional lookups would
+# blow straight past it. The cache is what keeps this endpoint legal.
 CACHE="${XDG_CACHE_HOME:-$HOME/.cache}"
 LOC="$CACHE/conky-loc.json"
 WX="$CACHE/conky-wx.json"
@@ -105,5 +106,5 @@ jq -n \
 	>"$T/merged.json" 2>/dev/null || exit 0
 
 # Moved into place so conky never reads a half-written cache -- the render runs
-# on the same 5-minute tick as this fetch.
+# on the same 1-minute tick as this fetch.
 mv -f "$T/merged.json" "$WX"
