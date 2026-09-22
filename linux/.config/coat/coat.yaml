@@ -41,9 +41,9 @@ opacity:
 
 font:
   emoji: "Noto Color Emoji"
-  monospace: "JetBrainsMono Nerd Font Mono"
-  sansserif: "JetBrainsMono Nerd Font Mono"
-  serif: "JetBrainsMono Nerd Font Mono"
+  monospace: "Ioskeley Mono"
+  sansserif: "Ioskeley Mono"
+  serif: "Ioskeley Mono"
   sizes:
     terminal: 12
     desktop: 12

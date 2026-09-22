@@ -149,9 +149,8 @@ or die "$target is not writable"
 # breaking -- tree.awk without gawk's character-counting RLENGTH colours every
 # branch at the same depth instead of erroring.
 #
-# No font row: coat.yaml asks for JetBrainsMono Nerd Font Mono in all three slots
-# and install-nerdfonts.sh is still here, but installing it is now by hand. A
-# machine themed from a missing font renders tofu, so run that script first.
+# coat.yaml asks for Ioskeley Mono in all three slots, so that row is core. The
+# Nerd Fonts set still comes from install-nerdfonts.sh (see ensure_fonts).
 set -g dep_table \
     "installer|cmd:stow|stow|req|stow||" \
     "installer|cmd:git|git|core|git||" \
@@ -206,6 +205,12 @@ set -g dep_table \
     "fonts|font:Font Awesome|Font Awesome|core|otf-font-awesome||" \
     "fonts|font:Noto Color Emoji|Noto Color Emoji|core|noto-fonts-emoji||" \
     "fonts|font:Times New Roman|microsoft core fonts|opt||ttf-ms-fonts|" \
+    "fonts|font:Ioskeley Mono|Ioskeley Mono|core||ttf-ioskeley-mono-unhinted|" \
+    "fonts|font:Maple Mono|Maple Mono|opt||maple-mono-nf-cn|" \
+    "fonts|font:Intel One Mono|Intel One Mono|opt||otf-intel-one-mono|" \
+    "fonts|font:Cozette|Cozette|opt||cozette-otb|" \
+    "fonts|font:NeoSpleen|NeoSpleen|opt||ttf-neospleen-nerd-font|" \
+    "fonts|font:unscii|unscii|opt||otf-unscii-16-full|" \
     "apps|cmd:btop|btop|opt|btop||" \
     "apps|cmd:mpv|mpv|opt|mpv||" \
     "apps|cmd:zathura|zathura|opt|zathura||" \
