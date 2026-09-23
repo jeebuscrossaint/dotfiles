@@ -44,9 +44,9 @@ font:
   sansserif: "NeoSpleen Nerd Font"
   serif: "NeoSpleen Nerd Font"
   sizes:
-    terminal: 12
-    desktop: 12
-    popups: 12
+    terminal: 10
+    desktop: 10
+    popups: 10
 
 # Per-app overrides of the blocks above. Only the keys listed are replaced;
 # everything else falls through, so an override is a patch, not a second config.
