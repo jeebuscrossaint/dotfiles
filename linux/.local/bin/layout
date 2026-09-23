@@ -1,0 +1,61 @@
+#!/bin/sh
+# layout — step EVERY tag to the next layout in circle_layout, then say which.
+#
+# Usage:
+#   layout          advance (SUPER+space)
+#   layout show     just announce the current one
+#
+# mango's own switch_layout and setlayout only touch the CURRENT tag -- layouts
+# are per-tag state (pertag->ltidxs), and there is no global one. Visiting each
+# tag to set it would flash all nine past with their tag animations. Instead this
+# pushes a wildcard tag rule through `setoption`: setoption ends in reset_option,
+# which re-runs every tag rule on every tag in place, no view change. Tested: all
+# nine flip at once. It re-runs exec= lines too, but this config has only
+# exec-once.
+#
+# Each press APPENDS a rule (they never shrink, the last match wins) until the
+# next config reload, which also puts every tag back on the file's tagrules.
+#
+# The cycle is read from circle_layout in the config, so there is one list.
+#
+# Deps: mmsg (ships with mango), jq, notify-send.
+
+CONF="${XDG_CONFIG_HOME:-$HOME/.config}/mango/config.conf"
+ID_FILE="${XDG_RUNTIME_DIR:-/tmp}/layout-notification-id"
+
+# The active tag's layout NAME. mmsg reports only the symbol ("DW"), and the
+# symbol-to-name table comes from mango itself rather than being copied here.
+current() {
+	sym=$(mmsg get all-monitors | jq -r '.monitors[] | select(.active) | .layout_symbol')
+	mmsg get layouts | jq -r --arg s "$sym" '.layouts[] | select(.symbol == $s) | .name'
+}
+
+show() {
+	prev=$(cat "$ID_FILE" 2>/dev/null)
+	[ -n "$prev" ] || prev=0
+	id=$(notify-send -p -a layout -r "$prev" "Layout: $(echo "$1" | tr _ ' ')")
+	[ -n "$id" ] && printf '%s\n' "$id" > "$ID_FILE"
+}
+
+if [ "${1:-}" = show ]; then
+	show "$(current)"
+	exit 0
+fi
+
+cycle=$(sed -n 's/^circle_layout=//p' "$CONF" | tail -n 1 | tr ',' ' ')
+[ -n "$cycle" ] || cycle=dwindle
+
+cur=$(current)
+next=
+take=0
+for l in $cycle; do
+	[ -z "$next" ] && next=$l # wraps to the first when cur is last or unlisted
+	if [ "$take" = 1 ]; then
+		next=$l
+		break
+	fi
+	[ "$l" = "$cur" ] && take=1
+done
+
+mmsg dispatch "setoption,tagrule,id:*,layout_name:$next" >/dev/null
+show "$next"
