@@ -177,6 +177,7 @@ set -g dep_table \
     "system|cmd:brightnessctl|brightnessctl|brightnessctl||" \
     "system|cmd:playerctl|playerctl|playerctl||" \
     "system|cmd:pavucontrol|pavucontrol|pavucontrol||" \
+    "system|cmd:pwvucontrol|pwvucontrol||pwvucontrol|" \
     "system|cmd:jq|jq|jq||" \
     "system|cmd:curl|curl|curl||" \
     "system|cmd:pstree|psmisc|psmisc||" \
