@@ -20,7 +20,6 @@ enabled:
   - mango
   - dunst
   - fuzzel
-  - kitty
   - swaylock
   - conky
 
@@ -42,8 +41,8 @@ opacity:
 font:
   emoji: "Noto Color Emoji"
   monospace: "Ioskeley Mono"
-  sansserif: "Ioskeley Mono"
-  serif: "Ioskeley Mono"
+  sansserif: "NeoSpleen Nerd Font"
+  serif: "NeoSpleen Nerd Font"
   sizes:
     terminal: 12
     desktop: 12
