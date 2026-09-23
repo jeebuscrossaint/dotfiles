@@ -193,6 +193,7 @@ set -g dep_table \
     "theme|cmd:coat|coat|||cargo install --git https://github.com/jeebuscrossaint/coat" \
     "theme|path:/usr/share/icons/WhiteSur-dark /usr/share/icons/WhiteSur|WhiteSur icon theme||whitesur-icon-theme|" \
     "theme|path:/usr/share/themes/adw-gtk3-dark|adw-gtk3|adw-gtk-theme||" \
+    "theme|path:/usr/share/icons/WhiteSur-cursors|WhiteSur cursors||whitesur-cursor-theme-git|" \
     "fonts|font:Font Awesome|Font Awesome|otf-font-awesome||" \
     "fonts|font:Noto Color Emoji|Noto Color Emoji|noto-fonts-emoji||" \
     "fonts|font:Times New Roman|microsoft core fonts||ttf-ms-fonts|" \
