@@ -140,7 +140,7 @@ or die "$target is not writable"
 # the script on PATH, so the probe passes on a machine missing the real package
 # (that is what the nvidia-prime row did).
 #
-# The Nerd Fonts set comes from install-nerdfonts.sh (see ensure_fonts), not a row.
+# The Nerd Fonts set comes from the nerd-fonts release (see ensure_fonts), not a row.
 set -g dep_table \
     "installer|cmd:stow|stow|stow||" \
     "installer|cmd:git|git|git||" \
@@ -351,28 +351,40 @@ function host_has -a gate
     return $rc
 end
 
-# Fonts come from install-nerdfonts.sh, not a package. It installs EVERY family
-# in the latest nerd-fonts release, and that is the point: coat can theme to any
-# installed font, so the whole set is what makes that choice free later. The
-# probe is JetBrainsMono only because coat.yaml asks for it in all three slots
-# and a machine without it themes into tofu -- it is the sentinel for "the script
-# has run here", not the only font wanted. It still asks before starting, because
-# it is a long download over the network, not because the set is too large.
+# Fonts come from the nerd-fonts release, not a package. It installs EVERY family
+# in the latest release, and that is the point: coat can theme to any installed
+# font, so the whole set is what makes that choice free later. The probe is
+# JetBrainsMono only because coat.yaml asks for it in all three slots and a
+# machine without it themes into tofu -- it is the sentinel for "this has run
+# here", not the only font wanted. It still asks before starting, because it is a
+# long download over the network, not because the set is too large.
 function ensure_fonts
     command -q fc-list; or return 0
     fc-list : family 2>/dev/null | string match -qi '*JetBrainsMono Nerd Font*'
     and return 0
 
-    test -x $repo/install-nerdfonts.sh
-    or begin
-        note "install-nerdfonts.sh is missing — JetBrainsMono Nerd Font stays uninstalled"
-        return 1
-    end
-
     step "JetBrainsMono Nerd Font is missing — coat themes into tofu without it"
     dim "installs every nerd-fonts family — coat can then theme to any of them"
-    confirm "run install-nerdfonts.sh now?"; or return 0
-    $repo/install-nerdfonts.sh; or note "the font script failed — run it by hand"
+    confirm "download the nerd-fonts release now?"; or return 0
+
+    set -l release (curl -fsSL https://api.github.com/repos/ryanoasis/nerd-fonts/releases/latest)
+    or begin
+        note "could not reach the nerd-fonts release — fonts stay uninstalled"
+        return 1
+    end
+    set -l version (string match -rg '"tag_name": *"([^"]+)"' -- $release)
+    set -l fonts (string match -rag '"name": *"([^"]+\.tar\.xz)"' -- $release)
+    set -l dir ~/.local/share/fonts/NerdFonts
+    mkdir -p $dir
+
+    for i in (seq (count $fonts))
+        dim "[$i/"(count $fonts)"] $fonts[$i]"
+        curl -fsSL --connect-timeout 10 --max-time 120 \
+            https://github.com/ryanoasis/nerd-fonts/releases/download/$version/$fonts[$i] \
+            | xz -dc | tar xf - -C $dir
+        or note "$fonts[$i] skipped (download failed or timed out)"
+    end
+    fc-cache -f $dir
 end
 
 # y/n, with --yes and --install-deps answering for it.
