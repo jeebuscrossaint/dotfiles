@@ -10,7 +10,7 @@
 # to it anyway. Your own overrides go in a later-sorting drop-in (99-mine.conf).
 #
 # ~/.config/dunst must stay a REAL directory with only this file symlinked, or
-# stow folds it and coat writes the drop-in inside the repo.
+# coat writes the drop-in inside the repo. install.fish links per file, so it is.
 
 [global]
     ### Geometry ###

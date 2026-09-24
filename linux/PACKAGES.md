@@ -37,7 +37,7 @@ Remove one of these and something in this repo stops working.
 | Dev | `rustup`, `clang`, `llvm`, `cmake`, `xmake`, `npm`, `python-pip`, `uv`, `github-cli`, `claude-code` (AUR) |
 | Apps | `firefox`, `discord` + `vencord-hook` (AUR), `visual-studio-code-bin` (AUR), `prismlauncher`, `blueman`, `zoom` (AUR), `torbrowser-launcher`, `i2pd` |
 | CLI by hand | `gdu`, `glow` — reached for directly, not called by anything here |
-| Plumbing | `stow`, `socat`, `wget`, `bc`, `sudo`, `flatpak` |
+| Plumbing | `socat`, `wget`, `bc`, `sudo`, `flatpak` |
 
 Not a package: **coat** is the theming tool, built from `~/Projects/coat` with
 `cargo install --path .`. Every `coat-*.conf` and `coat-theme.*` in this repo is

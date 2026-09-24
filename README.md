@@ -6,16 +6,17 @@ arch linux
 
 ---
 
-**deps:** stow, [coat](https://github.com/jeebuscrossaint/coat)
+**deps:** git, fish, [coat](https://github.com/jeebuscrossaint/coat)
 
 ```sh
 git clone https://github.com/jeebuscrossaint/dotfiles ~/dotfiles
 ~/dotfiles/install.fish
 ```
 
-The installer installs the packages, stows `linux/`, then applies coat. It backs
-up (or, with `--adopt`, absorbs) anything already sitting where a link belongs,
-since stow otherwise refuses the whole package, and verifies the links
+The installer installs the packages, symlinks every tracked file in `linux/` into
+`~` (one link per file, so directories in `~` stay real), then applies coat. It
+backs up (or, with `--adopt`, absorbs) anything already sitting where a link
+belongs, removes links to files the repo no longer has, and verifies the links
 afterwards. `--dry-run`, `--uninstall` and `-h` do what they say.
 
 On a fresh machine it first checks everything the tracked configs actually call
@@ -25,11 +26,11 @@ to download the whole Nerd Fonts release. `./install.fish --check` is that repor
 on its own.
 
 ```sh
-stow -t ~ linux       # symlinks only, no packages, no theming
-stow -D -t ~ linux    # uninstall
+./install.fish --skip-checks --no-coat   # links only, no packages, no theming
+./install.fish --uninstall               # remove the links
 ```
 
-`linux/` is a single stow package: its tree mirrors `$HOME`, so
+`linux/` mirrors `$HOME`, so
 `linux/.config/kitty/kitty.conf` becomes `~/.config/kitty/kitty.conf`.
 
 ## Stack
@@ -78,7 +79,7 @@ Files coat *generates* (`coat-colors.conf`, `coat-colors.css`, `coat-theme.ini`,
 `dunstrc.d/50-coat.conf`, `swaylock/coat-theme.conf`) sit beside the hand-written
 config and are pulled in by an `include`, a drop-in directory, or the command
 line. **No coat module edits a tracked file**, and the config directories it
-writes into are real directories rather than folded stow symlinks, so a scheme
+writes into are real directories, so a scheme
 change never shows up as a diff.
 
 ## `.local/bin`

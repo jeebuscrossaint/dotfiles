@@ -118,7 +118,6 @@ satty
 slurp
 socat
 sof-firmware
-stow
 sudo
 suitesparse
 swappy

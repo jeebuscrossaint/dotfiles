@@ -1,9 +1,8 @@
 #!/usr/bin/env fish
 #
-# install.fish — link this repo's configs into $HOME with GNU Stow.
+# install.fish — link this repo's configs into $HOME, one symlink per file.
 #
-# Stow refuses to touch anything if a single target is already a real file, so
-# this plans first, resolves the conflicts, then re-plans afterwards to prove the
+# Plans first, resolves the conflicts, then re-plans afterwards to prove the
 # links actually landed.
 
 set -g repo (path dirname (path resolve (status filename)))
@@ -59,45 +58,80 @@ function note; printf '%s !%s %s\n' "$c_warn" "$c_off" "$argv"; end
 function dim;  printf '%s   %s%s\n' "$c_dim" "$argv" "$c_off"; end
 function die;  printf '%s ✗%s %s\n' "$c_err" "$c_off" "$argv" >&2; exit 1; end
 
-# Everything stow says, conflicts included; simulation noise dropped, stow's own
-# exit status preserved (a pipeline here would hand back string's status instead).
-function stow_run
-    set -l out (stow -v -d $repo -t $target $argv $pkg 2>&1)
-    set -l rc $status
-    for line in $out
-        string match -qv -- 'WARNING: in simulation mode*' $line; and echo $line
+# Every TRACKED file under the package, relative to it -- coat's output sits in
+# the tree as ignored files and must not be linked. The cursor theme's aliases
+# are tracked symlinks, and get linked like anything else.
+function repo_files
+    for f in (git -C $repo/$pkg -c core.quotePath=false ls-files)
+        # Repo docs that live in the package, not home configuration.
+        string match -q -r '^(PACKAGES\.md|packages/)' -- $f; and continue
+        test -e $repo/$pkg/$f; or test -L $repo/$pkg/$f; and echo $f
     end
-    return $rc
 end
 
-# Target paths, relative to $target, that stow is refusing to overwrite.
-function conflicts_in
-    for line in $argv
-        string match -q '*cannot stow*' -- $line
-        or string match -q '*existing target*' -- $line
-        or continue
-        for re in 'over existing target (\S+) since' \
-                  'existing target is not owned by stow: (\S+)' \
-                  'existing target is neither a link nor a directory: (\S+)'
-            set -l m (string match -r -- $re $line)
-            if test (count $m) -ge 2
-                echo $m[2]
-                break
-            end
+function ours -a rel
+    test -L $target/$rel
+    and test (path resolve $target/$rel) = (path resolve $repo/$pkg/$rel)
+end
+
+# Directory links into the repo -- what stow used to make ("folding"). Anything
+# an app writes in one lands inside the working tree, so they get split.
+function folds
+    for d in (find $repo/$pkg -mindepth 1 -type d -printf '%P\n')
+        test -L $target/$d
+        and string match -q "$repo/$pkg/*" (path resolve $target/$d)
+        and echo $d
+    end
+end
+
+# The files apps wrote in there are theirs, not the repo's: they move out with it.
+function unfold -a rel
+    set -l dir $target/$rel
+    set -l src $repo/$pkg/$rel
+    rm $dir; and mkdir $dir; or return 1
+    for f in (git -C $src ls-files -o)
+        mkdir -p (path dirname $dir/$f)
+        mv -- $src/$f $dir/$f
+    end
+end
+
+# Sets to_link (missing) and bad (a real file is in the way). Paths under a fold
+# count as missing: splitting the fold is what links them.
+function plan_links
+    set -g to_link
+    set -g bad
+    set -l fl (folds)
+    for rel in (repo_files)
+        # Before ours: seen through a fold, the cursor aliases (links themselves)
+        # look linked already, and splitting the fold would drop them.
+        set -l folded 0
+        for f in $fl
+            string match -q "$f/*" $rel; and set folded 1; and break
+        end
+        if test $folded = 1
+            set -a to_link $rel
+        else if ours $rel
+            continue
+        else if test -e $target/$rel; or test -L $target/$rel
+            set -a bad $rel
+        else
+            set -a to_link $rel
+        end
+    end
+end
+
+# Links left pointing at files the repo no longer has.
+function stale_links
+    for d in (find $repo/$pkg -mindepth 1 -type d -printf '%P\n')
+        test -d $target/$d; or continue
+        for l in (find $target/$d -maxdepth 1 -xtype l)
+            string match -q "$repo/$pkg/*" (realpath -m $l); and echo $l
         end
     end
 end
 
 function plural -a n one many
     test $n -eq 1; and echo "$n $one"; or echo "$n $many"
-end
-
-# Targets stow reported linking, relative to $target.
-function link_paths
-    for line in $argv
-        set -l m (string match -r '^LINK: (\S+)' -- $line)
-        test (count $m) -ge 2; and echo $m[2]
-    end
 end
 
 test -d $repo/$pkg
@@ -136,13 +170,12 @@ or die "$target is not writable"
 #
 # AUR names are the exact ones in use, forks included -- slack's wayland fork,
 # and the -bin builds of the Electron apps.
-# No cmd: row for anything this repo ships in ~/.local/bin — the stow run puts
+# No cmd: row for anything this repo ships in ~/.local/bin — the link step puts
 # the script on PATH, so the probe passes on a machine missing the real package
 # (that is what the nvidia-prime row did).
 #
 # The Nerd Fonts set comes from the nerd-fonts release (see ensure_fonts), not a row.
 set -g dep_table \
-    "installer|cmd:stow|stow|stow||" \
     "installer|cmd:git|git|git||" \
     "installer|cmd:fish|fish|fish||" \
     "installer|cmd:wget|wget|wget||" \
@@ -850,7 +883,6 @@ function check_deps
 end
 
 printf '\n%sdotfiles%s  %s → %s\n' "$c_step" "$c_off" (string replace $HOME '~' $repo) (string replace $HOME '~' $target)
-command -q stow; and dim (stow --version | string collect)
 echo
 
 if set -q _flag_check
@@ -880,27 +912,31 @@ if not set -q _flag_skip_checks; and not set -q _flag_uninstall
     ensure_autologin
 end
 
-command -q stow
-or die "GNU Stow is missing:  sudo pacman -S stow"
-
 # --- uninstall ----------------------------------------------------------------
 
 if set -q _flag_uninstall
     step "Removing links..."
-    set -l out (stow_run -D)
-    if test $status -ne 0
-        printf '%s\n' $out >&2
-        die "stow -D failed"
+    set -l n 0
+    for rel in (repo_files)
+        ours $rel; or continue
+        rm $target/$rel; and set n (math $n + 1)
     end
-    ok (plural (count (string match -r '^UNLINK' -- $out)) link links)" removed"
+    for f in (folds)
+        rm $target/$f; and set n (math $n + 1)
+    end
+    for l in (stale_links)
+        rm $l; and set n (math $n + 1)
+    end
+    ok (plural $n link links)" removed"
     exit 0
 end
 
 # --- plan ---------------------------------------------------------------------
 
 step "Planning..."
-set -l plan (stow_run -n --restow)
-set -l bad (conflicts_in $plan)
+plan_links
+set -l fl (folds)
+set -l stale (stale_links)
 
 if test (count $bad) -gt 0
     note (plural (count $bad) target targets)" already exist and are not ours:"
@@ -910,7 +946,9 @@ if test (count $bad) -gt 0
     echo
 
     set -l how
-    if set -q _flag_adopt
+    if set -q _flag_dry_run
+        set how resolve
+    else if set -q _flag_adopt
         set how adopt
     else if set -q _flag_backup
         set how backup
@@ -926,7 +964,9 @@ if test (count $bad) -gt 0
         die "no terminal to ask on — re-run with --backup or --adopt"
     end
 
-    if test $how = backup
+    if set -q _flag_dry_run
+        dim "would $how them"
+    else if test $how = backup
         set -l stash $target/.dotfiles-backup/(date +%Y%m%d-%H%M%S)
         step "Backing up to "(string replace $HOME '~' $stash)
         for f in $bad
@@ -934,28 +974,23 @@ if test (count $bad) -gt 0
             mv -- $target/$f $stash/$f; or die "could not move ~/$f"
             dim "~/$f"
         end
-        set plan (stow_run -n --restow)
     else
         step "Adopting..."
-        stow_run --adopt --restow >/dev/null
-        or die "stow --adopt failed"
+        for f in $bad
+            mv -f -- $target/$f $repo/$pkg/$f; or die "could not adopt ~/$f"
+        end
         note 'the repo now holds those files\' contents — run git diff in it'
-        set plan (stow_run -n --restow)
     end
-
-    set bad (conflicts_in $plan)
-    test (count $bad) -eq 0
-    or begin
-        printf '%s\n' $plan >&2
-        die "still conflicting — resolve the paths above by hand"
-    end
+    set -a to_link $bad
     echo
 end
 
 if set -q _flag_dry_run
-    ok (plural (count (link_paths $plan)) link links)" to create, nothing conflicting"
+    test (count $fl) -gt 0; and dim (plural (count $fl) "folded directory" "folded directories")" to split"
+    test (count $stale) -gt 0; and dim (plural (count $stale) "stale link" "stale links")" to remove"
+    ok (plural (count $to_link) link links)" to create"
     if set -q _flag_verbose
-        for l in (link_paths $plan); dim "~/$l"; end
+        for l in $to_link; dim "~/$l"; end
     end
     if set -q _flag_minecraft
         dim "would fetch "(count < $repo/minecraft/mods.txt)" mods into ~/.local/share/PrismLauncher/instances/1.8.9"
@@ -966,14 +1001,20 @@ end
 # --- link ---------------------------------------------------------------------
 
 step "Linking..."
-set -l out (stow_run --restow)
-set -l rc $status
-if test $rc -ne 0
-    printf '%s\n' $out >&2
-    die "stow exited $rc"
+for f in $fl
+    unfold $f; or die "could not split the folded ~/$f"
+    dim "split ~/$f into a real directory"
 end
+for l in $stale
+    rm $l
+end
+test (count $stale) -gt 0; and dim (plural (count $stale) "stale link" "stale links")" removed"
 
-set -l links (link_paths $out)
+set -l links $to_link
+for rel in $links
+    mkdir -p (path dirname $target/$rel)
+    ln -s $repo/$pkg/$rel $target/$rel; or die "could not link ~/$rel"
+end
 
 if set -q _flag_verbose
     for l in $links; dim "~/$l"; end
@@ -999,12 +1040,10 @@ echo
 
 # --- verify -------------------------------------------------------------------
 
-# A plain dry-run over a fully stowed package says nothing at all.  Anything
-# left here means the install silently did not take.
 step "Verifying..."
-set -l left (stow_run -n)
-if test (count $left) -gt 0
-    printf '%s\n' $left >&2
+plan_links
+if test (count $to_link) -gt 0; or test (count $bad) -gt 0
+    printf '%s\n' $to_link $bad >&2
     die "some targets did not get linked (above)"
 end
 ok "every target resolves into the repo"
@@ -1017,13 +1056,7 @@ echo
 if set -q _flag_minecraft
     set -l mods $target/.local/share/PrismLauncher/instances/1.8.9/minecraft/mods
 
-    # If ~/.local did not exist, stow folded it into a symlink at this repo, and
-    # writing "into $HOME" here would drop 40M of jars inside the working tree.
-    set -l real (path resolve $mods)
-
-    if string match -q "$repo/*" $real
-        note "~/.local is a stow fold into the repo — mkdir ~/.local/share first, then rerun"
-    else if not command -q wget
+    if not command -q wget
         note "wget not found — skipping mods"
     else if count $mods/*.jar >/dev/null
         dim "mods already installed, skipping"

@@ -1,8 +1,8 @@
 *coat*
 !/linux/.config/coat/
 !/linux/.config/coat/coat.yaml
-# ~/.config/coat is stow-symlinked, so anything coat GENERATES in there lands in
-# this tree. coat.yaml above is the hand-written one; the rest is output.
+# Left from when ~/.config/coat was a folded symlink into this tree. coat.yaml
+# above is the hand-written one; the rest is output.
 /linux/.config/coat/msteams.css
 linux/.config/coat/schemes/
 
@@ -25,14 +25,13 @@ linux/.config/wob/wob.ini
 
 # There is NO rule for the notification daemon or the lock screen, and that is
 # the point. coat writes dunstrc.d/50-coat.conf and swaylock/coat-theme.conf, and
-# because both config directories are real directories rather than folded stow
-# symlinks, neither file is inside this tree to begin with. Nothing to ignore.
+# because both config directories are real directories, neither file is inside this tree to begin with. Nothing to ignore.
 
 # py_compile droppings — the scripts in .local/bin are run directly, never imported.
 __pycache__/
 *.pyc
 
-# Browser profiles. ~/.config/chromium is stow-adjacent and lands in this tree,
+# Browser profiles. ~/.config/chromium must never land in this tree:
 # and it holds Cookies, Login Data and Web Data -- live session credentials.
 # This remote is public; none of it is config worth tracking.
 linux/.config/chromium/
