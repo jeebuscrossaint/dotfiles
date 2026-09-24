@@ -33,7 +33,7 @@ normalize:
 opacity:
   # Blur only shows through a translucent surface, so at 1.0 an opaque terminal
   # frosts nothing and the effects block appears to do less than it does.
-  terminal: 0.85   # kitty background_opacity -- glyphs stay opaque
+  terminal: 1.0    # opaque: mango drops blur on fullscreen, so 0.85 showed the windows behind it
   popups: 0.92     # fuzzel + dunst; higher, they sit over arbitrary windows
   applications: 1.0
   desktop: 1.0     # conky, which has only the wallpaper behind it anyway
