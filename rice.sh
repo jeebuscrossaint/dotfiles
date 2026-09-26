@@ -1,6 +1,6 @@
 #!/bin/sh
 # Fresh Arch box -> my desktop.
-#   curl -LO https://raw.githubusercontent.com/jeebuscrossaint/dotfiles/main/rice.sh && sh rice.sh
+#   curl -LO apatel.co/dotfiles/rice.sh && sh rice.sh
 #
 # Plain sh because a fresh install has no fish. Everything past cloning the repo
 # is install.fish's job; this only gets it running.
