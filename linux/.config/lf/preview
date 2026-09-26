@@ -1,0 +1,39 @@
+#!/bin/sh
+# lf previewer: $1 file, $2 width, $3 height, $4 x, $5 y.
+# Always exits non-zero so lf never caches: a cached preview skips the image redraw.
+
+image() {
+    kitten icat --stdin no --transfer-mode memory --place "${2}x${3}@${4}x${5}" "$1" </dev/null >/dev/tty
+}
+
+# Keyed on path, inode, size and mtime, so an edited file gets a fresh thumbnail.
+thumb() {
+    mkdir -p "${XDG_CACHE_HOME:-$HOME/.cache}/lf"
+    # ls -liLn and cksum, not GNU stat/md5sum, so this runs on OpenBSD too.
+    key=$({ readlink -f "$1"; ls -liLn -- "$1"; } | cksum)
+    echo "${XDG_CACHE_HOME:-$HOME/.cache}/lf/thumb.${key%% *}"
+}
+
+case $(file --mime-type -Lb "$1") in
+    image/avif|image/svg+xml|image/x-xcf)
+        t=$(thumb "$1").png
+        [ -f "$t" ] || magick "$1[0]" "$t"
+        image "$t" "$2" "$3" "$4" "$5" ;;
+    image/*) image "$1" "$2" "$3" "$4" "$5" ;;
+    application/pdf)
+        t=$(thumb "$1")
+        [ -f "$t.jpg" ] || pdftoppm -jpeg -f 1 -singlefile "$1" "$t"
+        image "$t.jpg" "$2" "$3" "$4" "$5" ;;
+    video/*)
+        t=$(thumb "$1").jpg
+        [ -f "$t" ] || ffmpeg -v quiet -ss 5 -i "$1" -frames:v 1 "$t" || ffmpeg -v quiet -i "$1" -frames:v 1 "$t"
+        image "$t" "$2" "$3" "$4" "$5" ;;
+    audio/*) ffprobe -hide_banner "$1" 2>&1 | sed -n '/^Input/,$p' ;;
+    application/zip|application/x-tar|application/x-7z-compressed|application/vnd.rar|application/gzip|application/x-bzip2|application/x-xz|application/zstd)
+        bsdtar -tf "$1" ;;
+    text/troff) man ./ "$1" | col -b ;;
+    text/*|*/xml|application/json|inode/x-empty)
+        bat --color=always --style=plain --paging=never --terminal-width="$2" "$1" ;;
+    *) file -Lb "$1" ;;
+esac
+exit 1

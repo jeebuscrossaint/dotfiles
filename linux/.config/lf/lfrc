@@ -1,0 +1,72 @@
+set shellopts '-eu'
+set ifs "\n"
+set scrolloff 10
+set period 1
+set hiddenfiles ".*:*.aux:*.log:*.bbl:*.bcf:*.blg:*.run.xml"
+set previewer ~/.config/lf/preview
+set cleaner ~/.config/lf/cleaner
+set icons true
+
+# lf's default open is xdg-open, which resolves images to chromium.
+cmd open ${{
+    case $(file --mime-type -Lb "$f") in
+        image/*) nohup imv $fx >/dev/null 2>&1 & ;;
+        application/pdf|application/postscript) for f in $fx; do nohup zathura "$f" >/dev/null 2>&1 & done ;;
+        text/*|application/json|inode/x-empty|application/x-subrip|application/pgp-encrypted) $EDITOR $fx ;;
+        audio/*|video/*) nohup mpv $fx >/dev/null 2>&1 & ;;
+        *) for f in $fx; do nohup xdg-open "$f" >/dev/null 2>&1 & done ;;
+    esac
+}}
+
+cmd mkdir $mkdir -p "$@"
+
+# bsdtar reads zip, 7z, rar and every tar flavour; the bare compressors are the
+# single-file formats it will not unpack.
+cmd extract ${{
+    clear; tput cup $(($(tput lines)/3)); tput bold
+    printf "%s\n\textract?[y/N]" "$fx"
+    read ans
+    [ "$ans" = y ] || exit 0
+    for f in $fx; do
+        case $f in
+            *.tar.*|*.tgz|*.tbz2|*.txz|*.tar|*.zip|*.7z|*.rar) bsdtar -xf "$f" ;;
+            *.gz) gunzip -k "$f" ;;
+            *.bz2) bunzip2 -k "$f" ;;
+            *.xz) unxz -k "$f" ;;
+            *.zst) unzstd "$f" ;;
+        esac
+    done
+}}
+
+cmd bulkrename ${{
+    old=$(mktemp); new=$(mktemp)
+    [ -n "$fs" ] && fs=$(for f in $fs; do basename "$f"; done) || fs=$(ls)
+    echo "$fs" > "$old"; echo "$fs" > "$new"
+    $EDITOR "$new"
+    [ "$(wc -l < "$old")" -eq "$(wc -l < "$new")" ] || { rm -f "$old" "$new"; exit 1; }
+    paste "$old" "$new" | while IFS="$(printf '\t')" read -r src dst; do
+        [ "$src" = "$dst" ] || [ -e "$dst" ] || mv -- "$src" "$dst"
+    done
+    rm -f "$old" "$new"
+    lf -remote "send $id unselect"
+}}
+
+# Carried over from yazi, where space was remapped and t toggled selection.
+map t toggle
+map <enter> open
+map D $gio trash $fx
+map E extract
+map B bulkrename
+map H cd ~
+map <c-n> push :mkdir<space>
+map <c-s> set hidden!
+map x $$f
+map X !$f
+map W $nohup kitty >/dev/null 2>&1 &
+map U $printf "%s" "$fx" | wl-copy
+
+# rename with the cursor at the end, the start, or just after the extension;
+# plain r (lf's default) leaves it before the extension.
+map A :rename; cmd-end
+map I :rename; cmd-home
+map a :rename; cmd-right

@@ -1,0 +1,3 @@
+#!/bin/sh
+# Wipes the kitty image the previewer placed, or it stays over the next preview.
+kitten icat --clear --stdin no --silent --transfer-mode memory </dev/null >/dev/tty

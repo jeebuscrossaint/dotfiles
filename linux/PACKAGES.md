@@ -28,7 +28,7 @@ Remove one of these and something in this repo stops working.
 | Idle & lock | `swaylock` (Super+L and from `swayidle`), `swayidle`. No blanking: that needs a wlr-output-power client and none is wanted. |
 | Terminal & shell | `kitty`, `fish`, `lsd`, `bat`, `less`, `tree` |
 | Editor | `micro` |
-| Files & monitoring | `yazi`, `btop`, `fastfetch`, `pfetch-rs` |
+| Files & monitoring | `lf`, `btop`, `fastfetch`, `pfetch-rs` |
 | Clipboard & screenshot | `wl-clipboard`, `cliphist`, `wl-clip-persist`, `grim`, `slurp`, `satty`, `swappy` |
 | Media & input | `mpv`, `imagemagick`, `brightnessctl`, `pavucontrol`, `libnotify`, `playerctl` |
 | GPU | `intel-media-driver`, `nvidia-prime`, `libva-nvidia-driver`, `vulkan-intel`, `cuda` |

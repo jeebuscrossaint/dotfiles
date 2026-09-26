@@ -241,7 +241,7 @@ set -g dep_table \
     "apps|cmd:zathura|zathura|zathura||" \
     "apps|cmd:chromium|chromium|chromium||" \
     "apps|cmd:prismlauncher|prismlauncher|prismlauncher||" \
-    "apps|cmd:yazi|yazi|yazi||" \
+    "apps|cmd:lf|lf|lf||" \
     "apps|cmd:blueman-manager|blueman|blueman||" \
     "apps|cmd:bluetoothctl|bluez-utils|bluez-utils||" \
     "apps|cmd:openlogi|openlogi||openlogi-bin|" \

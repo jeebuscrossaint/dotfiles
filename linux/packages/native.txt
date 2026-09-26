@@ -69,6 +69,7 @@ intel-ucode
 jq
 kitty
 less
+lf
 libindi
 libnotify
 libspectre
@@ -163,7 +164,6 @@ xcur2png
 xdg-desktop-portal-wlr
 xmake
 xorg-xwayland
-yazi
 yt-dlp
 zathura
 zathura-pdf-poppler

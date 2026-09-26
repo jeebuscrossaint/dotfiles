@@ -11,7 +11,6 @@ enabled:
   - discord
   - mpv
   - vscode
-  - yazi
   - fastfetch
   - lsd
   - imv
