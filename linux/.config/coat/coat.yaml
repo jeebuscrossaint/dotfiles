@@ -39,9 +39,9 @@ opacity:
 
 font:
   emoji: "Noto Color Emoji"
-  monospace: "Ioskeley Mono"
-  sansserif: "NeoSpleen Nerd Font"
-  serif: "NeoSpleen Nerd Font"
+  monospace: "Server Mono"
+  sansserif: "Server Mono"
+  serif: "Server Mono"
   sizes:
     terminal: 10
     desktop: 10

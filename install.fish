@@ -238,6 +238,13 @@ set -g dep_table \
     "fonts|font:Cozette|Cozette||cozette-otb|" \
     "fonts|font:NeoSpleen|NeoSpleen||ttf-neospleen-nerd-font|" \
     "fonts|font:unscii|unscii||otf-unscii-16-full|" \
+    "fonts|font:Server Mono|Server Mono||otf-server-mono|" \
+    "fonts|font:Google Sans Code|Google Sans Code NF||ttf-google-sans-code-nf|" \
+    "fonts|font:Fragment Mono|Fragment Mono||ttf-fragment-mono|" \
+    "fonts|font:437|Oldschool PC Font Pack||oldschool-pc-font-ttf|" \
+    "fonts|font:Geist Pixel|Geist Pixel||ttf-geist-pixel-font-git|" \
+    "fonts|font:scientifica|scientifica||otb-scientifica|" \
+    "fonts|font:Chomsky|Chomsky||otf-chomsky|" \
     "apps|cmd:btop|btop|btop||" \
     "apps|cmd:mpv|mpv|mpv||" \
     "apps|cmd:zathura|zathura|zathura||" \
