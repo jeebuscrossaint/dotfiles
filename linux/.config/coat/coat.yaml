@@ -39,9 +39,9 @@ opacity:
 
 font:
   emoji: "Noto Color Emoji"
-  monospace: "Server Mono"
-  sansserif: "Server Mono"
-  serif: "Server Mono"
+  monospace: "Fragment Mono"
+  sansserif: "Fragment Mono"
+  serif: "Fragment Mono"
   sizes:
     terminal: 10
     desktop: 10
