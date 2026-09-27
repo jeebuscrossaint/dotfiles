@@ -192,6 +192,8 @@ set -g dep_table \
     "desktop|cmd:wlsunset|wlsunset|wlsunset||" \
     "desktop|cmd:swaybg|swaybg|swaybg||" \
     "desktop|cmd:wlopm|wlopm|wlopm||" \
+    "desktop|path:/opt/activitywatch/aw-server-rust/aw-server-rust|activitywatch||activitywatch-bin|" \
+    "desktop|cmd:aw-awatcher|awatcher||aw-awatcher|" \
     "terminal|cmd:kitty|kitty|kitty||" \
     "terminal|cmd:micro|micro|micro||" \
     "terminal|cmd:less|less|less||" \
