@@ -31,9 +31,9 @@ SOURCE=@DEFAULT_AUDIO_SOURCE@
 # brightness keys silently doing nothing for a whole MUX mode. Resolved at
 # runtime below, by looking for the device rather than naming it.
 
-VOL_STEP=5
+VOL_STEP=1
 VOL_MAX=1.5 # wpctl ceiling (150%)
-BL_STEP=5   # percent of max_brightness per keypress
+BL_STEP=1   # percent of max_brightness per keypress
 BL_MIN=1    # never step the backlight to 0 — that is a black screen
 
 # The ASUS keyboard backlight. A 4-step LED (0..3), not a percentage device, so
