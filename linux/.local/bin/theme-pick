@@ -13,6 +13,12 @@
 # pass one argument.
 set -u
 
+# Same geometry as the SUPER+d launcher in mango's config.conf: fuzzel.ini holds
+# the 2560x1600 reference, scaled here by the actual screen.
+read -r v < /sys/class/graphics/fb0/virtual_size
+w=$(( ${v%%[!0-9]*} * 50 / 2560 ))
+lh=$(( ${v##*[!0-9]} * 26 / 1600 ))
+
 # Pair each scheme's name line (which carries the [Base24] marker) with the
 # `Slug:` line that follows it. Parsing only Slug: lines is what dropped the
 # marker in the first place. sed strips coat's ANSI bold.
@@ -22,7 +28,7 @@ pick=$(coat list --no-preview 2>/dev/null \
       /^[^ ]/ && !/^Found/ && !/^Author:/ { b24 = /\[Base24\]/ ? " [base24]" : "" }
       /Slug:/ { print $2 b24 }
     ' \
-  | fuzzel --dmenu --prompt "theme ")
+  | fuzzel --dmenu --prompt "theme " --width="$w" --line-height="$lh")
 [ -n "$pick" ] || exit 0
 
 slug=${pick% \[base24\]}
