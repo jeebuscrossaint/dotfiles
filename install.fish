@@ -146,8 +146,9 @@ or die "$target is not writable"
 # probe  cmd:BINARY · font:FAMILY · path:P1 P2 (any one existing is enough)
 # Every row is required: anything still missing after the install offer is fatal.
 # gate   hardware this row needs, empty for every machine. Dropped before the
-#        count, so --install-deps cannot offer them. `nvidia` (PCI 0x10de) only;
-#        it exists because a cuda row offered 5.2 GiB to a box with no card.
+#        count, so --install-deps cannot offer them. `nvidia` (PCI 0x10de) exists
+#        because a cuda row offered 5.2 GiB to a box with no card; `logitech`
+#        (asked, USB 046d as the default) keeps openlogi off machines without one.
 #
 # Rows above `chat` are derived from what the tracked configs and ~/.local/bin
 # scripts actually invoke — grep before adding one, and keep the paths in step
@@ -239,7 +240,6 @@ set -g dep_table \
     "fonts|font:NeoSpleen|NeoSpleen||ttf-neospleen-nerd-font|" \
     "fonts|font:unscii|unscii||otf-unscii-16-full|" \
     "fonts|font:Server Mono|Server Mono||otf-server-mono|" \
-    "fonts|font:Google Sans Code|Google Sans Code NF||ttf-google-sans-code-nf|" \
     "fonts|font:Fragment Mono|Fragment Mono||ttf-fragment-mono|" \
     "fonts|font:437|Oldschool PC Font Pack||oldschool-pc-font-ttf|" \
     "fonts|font:Geist Pixel|Geist Pixel||ttf-geist-pixel-font-git|" \
@@ -253,7 +253,7 @@ set -g dep_table \
     "apps|cmd:lf|lf|lf||" \
     "apps|cmd:blueman-manager|blueman|blueman||" \
     "apps|cmd:bluetoothctl|bluez-utils|bluez-utils||" \
-    "apps|cmd:openlogi|openlogi||openlogi-bin|" \
+    "apps|cmd:openlogi|openlogi||openlogi-bin||logitech" \
     "apps|cmd:tradingview|tradingview||tradingview|" \
     "apps|cmd:yt-dlp|yt-dlp|yt-dlp||" \
     "apps|path:/usr/lib/zathura/libpdf-poppler.so|zathura pdf backend|zathura-pdf-poppler||" \
@@ -273,7 +273,6 @@ set -g dep_table \
     "chat|cmd:slack|slack||slack-desktop-wayland-jetm|" \
     "chat|cmd:discord|discord|discord||" \
     "chat|path:/etc/pacman.d/hooks/vencord-hook.hook|vencord||vencord-installer-bin vencord-hook|" \
-    "chat|path:/opt/teams-for-linux|teams for linux||teams-for-linux-bin|" \
     "chat|path:/opt/outlook-for-linux|outlook for linux||outlook-for-linux-bin|" \
     "chat|cmd:zoom|zoom||zoom|" \
     "dev|cmd:claude|claude code||claude-code|" \
@@ -370,6 +369,30 @@ function ask_nvidia
     echo
 end
 
+# Whether openlogi is wanted. Always a question when interactive: USB vendor 046d
+# only picks the default, since a Logitech webcam is on that bus too and a
+# Bluetooth mouse is not. --check and the non-interactive flags take the bus answer.
+set -g has_logitech 0
+function ask_logitech
+    set -l seen 0
+    for v in /sys/bus/usb/devices/*/idVendor
+        test (cat $v 2>/dev/null) = 046d; and set seen 1; and break
+    end
+    set -g has_logitech $seen
+    set -q _flag_check; and return 0
+    set -q _flag_yes; and return 0
+    set -q _flag_install_deps; and return 0
+    isatty stdin; or return 0
+    if test $seen = 1
+        read -P "  Logitech device on USB — install openlogi for it? [Y/n] " -l a
+        string match -qi 'n*' -- (string trim -- $a); and set -g has_logitech 0
+    else
+        read -P "  do you have a Logitech mouse or keyboard (openlogi)? [y/N] " -l a
+        string match -qi 'y*' -- (string trim -- $a); and set -g has_logitech 1
+    end
+    echo
+end
+
 # Gate for a dep_table row: empty passes, answers cached (the bus cannot change
 # mid-run). An unknown name passes too -- a typo should surface as a package
 # still offered, not one that silently vanished.
@@ -384,6 +407,8 @@ function host_has -a gate
     switch $gate
         case nvidia
             test "$has_nvidia" = 1; and set rc 0
+        case logitech
+            test "$has_logitech" = 1; and set rc 0
         case '*'
             note "unknown hardware gate '$gate' in the dependency table — keeping the row"
             set rc 0
@@ -896,6 +921,7 @@ echo
 
 if set -q _flag_check
     ask_nvidia
+    ask_logitech
     check_deps
     exit $status
 end
@@ -906,6 +932,7 @@ if not set -q _flag_skip_checks; and not set -q _flag_uninstall
     ensure_pacman_conf
     ensure_chaotic_aur
     ask_nvidia
+    ask_logitech
     check_deps
     or die "packages still missing — install them, or re-run with --skip-checks"
     echo
