@@ -36,6 +36,20 @@ VOL_MAX=1.5 # wpctl ceiling (150%)
 BL_STEP=1   # percent of max_brightness per keypress
 BL_MIN=1    # never step the backlight to 0 — that is a black screen
 
+# Holding a brightness key does NOT go through mango's key repeat. The keys come
+# from the ACPI "Video Bus" input device, which has no EV_REP and reports every
+# firmware event as an instant press+release -- so mango sees the key already
+# up and never arms its repeat timer, and a held key steps at the firmware's own
+# (slow) typematic rate instead of repeat_rate. Faster than mashing, it is not.
+#
+# So brightness accelerates instead: a press within BL_ACCEL_GAP centiseconds of
+# the previous one is part of a hold (or a mash), and each one in the run steps
+# one BL_STEP more than the last, up to BL_ACCEL_MAX steps. A lone tap is still
+# a single BL_STEP, so fine adjustment is untouched.
+BL_ACCEL_GAP=40
+BL_ACCEL_MAX=8
+BL_RUN_FILE=${XDG_RUNTIME_DIR:-/tmp}/osd-brightness-run
+
 # The ASUS keyboard backlight. A 4-step LED (0..3), not a percentage device, so
 # it steps by 1 rather than by BL_STEP.
 KBD_LED=asus::kbd_backlight
@@ -222,6 +236,20 @@ brightness)
 	# against each other, so up-then-down does not return to where it started.
 	step=$((max * BL_STEP / 100))
 	[ "$step" -lt 1 ] && step=1
+
+	# Acceleration (see BL_ACCEL_GAP). /proc/uptime, not `date +%s%N`: a builtin
+	# read with no fork, and centiseconds is plenty. A direction change restarts
+	# the run, so overshooting and backing off is always a fine step.
+	read -r now _ </proc/uptime
+	now=${now%.*}${now#*.}
+	run=1
+	if read -r last_t last_dir last_run <"$BL_RUN_FILE" 2>/dev/null &&
+		[ "$last_dir" = "$2" ] && [ $((now - last_t)) -le "$BL_ACCEL_GAP" ]; then
+		run=$((last_run + 1))
+		[ "$run" -gt "$BL_ACCEL_MAX" ] && run=$BL_ACCEL_MAX
+	fi
+	printf '%s %s %s\n' "$now" "$2" "$run" >"$BL_RUN_FILE"
+	step=$((step * run))
 	floor=$((max * BL_MIN / 100))
 	[ "$floor" -lt 1 ] && floor=1
 
