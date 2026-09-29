@@ -274,7 +274,6 @@ set -g dep_table \
     "chat|cmd:slack|slack||slack-desktop-wayland-jetm|" \
     "chat|cmd:discord|discord|discord||" \
     "chat|path:/etc/pacman.d/hooks/vencord-hook.hook|vencord||vencord-installer-bin vencord-hook|" \
-    "chat|path:/opt/outlook-for-linux|outlook for linux||outlook-for-linux-bin|" \
     "chat|cmd:zoom|zoom||zoom|" \
     "dev|cmd:claude|claude code||claude-code|" \
     "dev|cmd:claude-desktop|claude desktop||claude-desktop|" \
