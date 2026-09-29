@@ -249,7 +249,7 @@ set -g dep_table \
     "apps|cmd:chromium|chromium|chromium||" \
     "apps|cmd:prismlauncher|prismlauncher|prismlauncher||" \
     "apps|cmd:lf|lf|lf||" \
-    "apps|cmd:blueman-manager|blueman|blueman||" \
+    "apps|cmd:overskride|overskride||overskride-bin|" \
     "apps|cmd:bluetoothctl|bluez-utils|bluez-utils||" \
     "apps|cmd:openlogi|openlogi||openlogi-bin||logitech" \
     "apps|cmd:tradingview|tradingview||tradingview|" \
@@ -271,7 +271,6 @@ set -g dep_table \
     "chat|cmd:slack|slack||slack-desktop-wayland-jetm|" \
     "chat|cmd:discord|discord|discord||" \
     "chat|path:/etc/pacman.d/hooks/vencord-hook.hook|vencord||vencord-installer-bin vencord-hook|" \
-    "chat|cmd:zoom|zoom||zoom|" \
     "dev|cmd:claude|claude code||claude-code|" \
     "dev|cmd:claude-desktop|claude desktop||claude-desktop|" \
     "dev|cmd:code|vscode||visual-studio-code-bin|" \
@@ -548,16 +547,23 @@ function ensure_chaotic_aur
     sudo pacman -Sy
 end
 
-# thermald and tuned are both hardware-conditional, for different reasons.
+# thermald and TLP are both hardware-conditional, for different reasons.
 #
 # thermald is Intel's thermal daemon (DPTF/RAPL). It is not a profile manager and
 # does not contend with asusd, so it goes on any Intel box including the ASUS one.
 #
-# tuned IS the profile manager, and it is installed only where nothing else owns
-# the platform profile. On the ASUS box asusd owns it and running both means two
-# daemons writing one firmware knob. Anywhere else -- the ThinkPad -- nothing owns
-# it at all and the profile sits wherever the firmware left it, which is the case
-# tuned exists for. Mirrors ensure_asus deliberately.
+# TLP IS the power manager, and it is installed only where nothing else owns the
+# platform profile. On the ASUS box asusd owns it and running both means two
+# daemons writing one firmware knob. Anywhere else -- the ThinkPad -- TLP is the
+# one tool that covers the lot: AC/battery switching, CPU EPP and boost, the
+# platform profile, Wi-Fi, USB and PCIe runtime power, and charge thresholds.
+# Its intrinsic defaults (performance on AC, balanced on battery, "smart"
+# switching that keeps a hand-picked profile) are right as shipped, so the
+# drop-in below carries only what TLP cannot default. tlp-pd adds the
+# power-profiles D-Bus API and `tlpctl`. Mirrors ensure_asus deliberately.
+#
+# tuned used to fill this slot. It is a server tool (fixed profiles, no AC/battery
+# switching, no charge thresholds), and the tlp package conflicts with it.
 function ensure_power_profile
     command -q systemctl; or return 0
 
@@ -574,22 +580,51 @@ function ensure_power_profile
     end
 
     if string match -qi '*asus*' -- (cat /sys/class/dmi/id/board_vendor 2>/dev/null)
-        dim "ASUS board — asusd owns the platform profile, so tuned stays off here"
+        dim "ASUS board — asusd owns the platform profile, so TLP stays off here"
         return 0
     end
 
-    if command -q tuned-adm
-        enable_service tuned
-        return 0
+    if not command -q tlp
+        step "no power manager on this machine"
+        dim "asusd covers this on the ASUS box; TLP is the equivalent here"
+        set -l old (pacman -Qq tuned tuned-ppd power-profiles-daemon 2>/dev/null)
+        test (count $old) -gt 0
+        and printf '   %ssudo pacman -Rns %s%s\n' "$c_ok" "$old" "$c_off"
+        printf '   %ssudo pacman -S --needed tlp tlp-pd%s\n' "$c_ok" "$c_off"
+        confirm "install TLP?"; or return 0
+        # Removed first: pacman --noconfirm answers a conflict prompt with no.
+        # Stopped before that: pacman leaves a removed package's daemon running,
+        # and a live tuned-ppd keeps the power-profiles bus name, so tlp-pd (a
+        # Type=dbus unit) sits in "activating" and `enable --now` never returns.
+        test (count $old) -gt 0
+        and begin
+            sudo systemctl disable --now $old 2>/dev/null
+            sudo pacman -Rns --noconfirm $old; or begin; note "could not remove $old"; return 1; end
+        end
+        sudo pacman -S --needed --noconfirm tlp tlp-pd
+        or begin; note "that failed — carry on by hand"; return 1; end
     end
 
-    step "nothing owns the platform profile on this machine"
-    dim "asusd covers this on the ASUS box; there is no equivalent here"
-    printf '   %ssudo pacman -S --needed tuned tuned-ppd%s\n' "$c_ok" "$c_off"
-    confirm "install them?"; or return 0
-    sudo pacman -S --needed --noconfirm tuned tuned-ppd
-    or begin; note "that failed — carry on by hand"; return 1; end
-    enable_service tuned
+    # Charge thresholds, where the firmware has them (ThinkPads do): stop at 80%
+    # and resume below 75%, since this machine lives on the charger. `tlp fullcharge`
+    # tops it up to 100% once, for a day away from the wall.
+    set -l conf /etc/tlp.d/10-dotfiles.conf
+    set -l want '# Written by the dotfiles installer (ensure_power_profile).
+START_CHARGE_THRESH_BAT0=75
+STOP_CHARGE_THRESH_BAT0=80'
+    set -l changed
+    if test -e /sys/class/power_supply/BAT0/charge_control_end_threshold
+        and test "$(cat $conf 2>/dev/null)" != "$want"
+        step "writing $conf (charge 75–80%)"
+        printf '%s\n' $want | sudo tee $conf >/dev/null
+        and set changed 1
+        or note "could not write $conf"
+    end
+
+    # Services before `tlp start`: it errors about any TLP unit not yet enabled.
+    enable_service tlp
+    enable_service tlp-pd
+    set -q changed[1]; and sudo tlp start >/dev/null
 end
 
 function ensure_asus
@@ -725,13 +760,13 @@ function ensure_services
     command -q tor; and enable_service tor
     command -q i2pd; and enable_service i2pd
 
-    # tuned is held back on the ASUS box ONLY, where asusd owns the ACPI platform
+    # TLP is held back on the ASUS box ONLY, where asusd owns the ACPI platform
     # profile. Everywhere else ensure_power_profile installs and enables it,
     # because nothing else owns the profile there -- so claiming it is off "on
     # purpose" on a ThinkPad would be reporting the opposite of what just happened.
     set -l optional
-    if command -q tuned; and string match -qi '*asus*' -- (cat /sys/class/dmi/id/board_vendor 2>/dev/null)
-        set -a optional "tuned (asusd owns the power profile)"
+    if command -q tlp; and string match -qi '*asus*' -- (cat /sys/class/dmi/id/board_vendor 2>/dev/null)
+        set -a optional "tlp (asusd owns the power profile)"
     end
     command -q docker; and set -a optional docker.service
     command -q ollama; and set -a optional ollama.service
