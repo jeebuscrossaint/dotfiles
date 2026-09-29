@@ -191,6 +191,7 @@ set -g dep_table \
     "desktop|cmd:swaylock|swaylock|swaylock||" \
     "desktop|cmd:conky|conky|conky||" \
     "desktop|cmd:wlsunset|wlsunset|wlsunset||" \
+    "desktop|cmd:wdisplays|wdisplays|wdisplays||" \
     "desktop|cmd:swaybg|swaybg|swaybg||" \
     "desktop|cmd:wlopm|wlopm|wlopm||" \
     "desktop|path:/opt/activitywatch/aw-server-rust/aw-server-rust|activitywatch||activitywatch-bin|" \
