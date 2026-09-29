@@ -15,7 +15,6 @@ enabled:
   - lsd
   - imv
   - satty
-  - prismlauncher
   - mango
   - dunst
   - fuzzel

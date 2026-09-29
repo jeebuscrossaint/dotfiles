@@ -24,7 +24,7 @@ if set -q _flag_help
   -v, --verbose    list every link, not a summary
   -t, --target DIR link into DIR instead of the home directory
       --no-coat    skip the coat theme step
-      --minecraft  also build the 1.8.9 PvP instance (~40M of mod downloads)
+      --minecraft  also install Prism Launcher + Java 8 and build the 1.8.9 PvP instance
       --uninstall  remove the links this script created
   -h, --help       this"
     exit 0
@@ -232,7 +232,7 @@ set -g dep_table \
     "fonts|font:Noto Color Emoji|Noto Color Emoji|noto-fonts-emoji||" \
     "fonts|font:Times New Roman|microsoft core fonts||ttf-ms-fonts|" \
     "fonts|font:Ioskeley Mono|Ioskeley Mono||ttf-ioskeley-mono-unhinted|" \
-    "fonts|font:Maple Mono|Maple Mono||maple-mono-nf-cn|" \
+    "fonts|font:Maple Mono|Maple Mono||maplemono-nf|" \
     "fonts|font:Intel One Mono|Intel One Mono||otf-intel-one-mono|" \
     "fonts|font:Cozette|Cozette||cozette-otb|" \
     "fonts|font:NeoSpleen|NeoSpleen||ttf-neospleen-nerd-font|" \
@@ -247,7 +247,7 @@ set -g dep_table \
     "apps|cmd:mpv|mpv|mpv||" \
     "apps|cmd:zathura|zathura|zathura||" \
     "apps|cmd:chromium|chromium|chromium||" \
-    "apps|cmd:prismlauncher|prismlauncher|prismlauncher||" \
+    "apps|cmd:prismlauncher|prismlauncher|prismlauncher|||minecraft" \
     "apps|cmd:lf|lf|lf||" \
     "apps|cmd:overskride|overskride||overskride-bin|" \
     "apps|cmd:bluetoothctl|bluez-utils|bluez-utils||" \
@@ -258,6 +258,7 @@ set -g dep_table \
     "apps|cmd:firefox-developer-edition|firefox developer edition|firefox-developer-edition||" \
     "apps|cmd:nvibrant|nvibrant||nvibrant-bin||nvidia" \
     "apps|cmd:imv|imv|imv||" \
+    "apps|cmd:guvcview|guvcview|guvcview||" \
     "apps|cmd:qalculate-gtk|qalculate|qalculate-gtk||" \
     "apps|cmd:wf-recorder|wf-recorder|wf-recorder||" \
     "apps|cmd:magick|imagemagick|imagemagick||" \
@@ -282,8 +283,7 @@ set -g dep_table \
     "dev|cmd:typst|typst|typst||" \
     "dev|cmd:pandoc|pandoc|pandoc-bin||" \
     "dev|cmd:nvcc|cuda|cuda|||nvidia" \
-    "dev|cmd:clion-eap|clion eap||clion-eap clion-eap-lldb clion-eap-jre clion-eap-gdb clion-eap-cmake|" \
-    "dev|path:/usr/lib/jvm/zulu-8|zulu 8 jdk||zulu-8-bin|" \
+    "dev|path:/usr/lib/jvm/zulu-8|zulu 8 jdk||zulu-8-bin||minecraft" \
     "toys|cmd:cbonsai|cbonsai||cbonsai|" \
     "toys|cmd:pipes-rs|pipes-rs||pipes-rs|" \
     "toys|cmd:cmatrix|cmatrix|cmatrix||"
@@ -405,6 +405,9 @@ function host_has -a gate
             test "$has_nvidia" = 1; and set rc 0
         case logitech
             test "$has_logitech" = 1; and set rc 0
+        case minecraft
+            # Not hardware: Prism and the Java 8 that 1.8.9 needs come with --minecraft.
+            set -q _flag_minecraft; and set rc 0
         case '*'
             note "unknown hardware gate '$gate' in the dependency table — keeping the row"
             set rc 0
@@ -881,7 +884,7 @@ function check_deps
         printf '   %s%-11s%s%s\n' "$c_step" $groups[$i] "$c_off" "$rendered[$i]"
     end
     test (count $skipped) -gt 0
-    and printf '   %s%-11s%s %s%s — hardware not present%s\n' \
+    and printf '   %s%-11s%s %s%s — hardware not present, or not asked for%s\n' \
         "$c_step" skipped "$c_off" "$c_dim" (string join ' · ' $skipped) "$c_off"
     echo
 
