@@ -267,6 +267,7 @@ set -g dep_table \
     "apps|cmd:i2pd|i2pd|i2pd||" \
     "cli|cmd:gdu|gdu|gdu||" \
     "cli|cmd:glow|glow|glow||" \
+    "cli|cmd:newsboat|newsboat|newsboat||" \
     "cli|cmd:tree|tree|tree||" \
     "cli|cmd:unzip|unzip|unzip||" \
     "chat|cmd:slack|slack||slack-desktop-wayland-jetm|" \

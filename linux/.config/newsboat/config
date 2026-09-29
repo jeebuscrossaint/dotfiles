@@ -1,0 +1,48 @@
+# newsboat — the RSS reader. Feeds are in `urls` beside this file.
+#
+# Replaces the rss_digest cron bot that posted new items to Discord every five
+# minutes: the same feeds, read here instead, fetched only while this is open.
+
+# --- fetching ---------------------------------------------------------------
+reload-threads 8
+# Fetch on launch and every 30 minutes while open.
+auto-reload yes
+reload-time 30
+# Keep the cache from growing forever: 200 items per feed is weeks of video.
+max-items 200
+cleanup-on-quit yes
+
+# --- lists ------------------------------------------------------------------
+# Only feeds with something unread; `a` toggles the rest back in.
+show-read-feeds no
+confirm-mark-feed-read no
+text-width 100
+
+# --- opening ----------------------------------------------------------------
+browser "xdg-open %u >/dev/null 2>&1 &"
+# ,v plays the article's link in mpv, which hands YouTube and Odysee to yt-dlp.
+macro v set browser "setsid -f mpv --really-quiet %u >/dev/null 2>&1" ; open-in-browser ; set browser "xdg-open %u >/dev/null 2>&1 &"
+
+# --- keys: vim-ish on top of the defaults -------------------------------------
+bind-key j down
+bind-key k up
+bind-key l open
+bind-key h quit
+bind-key g home
+bind-key G end
+bind-key d pagedown
+bind-key u pageup
+bind-key a toggle-show-read-feeds
+
+# --- colours ------------------------------------------------------------------
+# Named terminal colours only, so kitty's coat palette decides what they look
+# like and a theme change needs nothing here.
+color background          default   default
+color listnormal          default   default
+color listnormal_unread   default   default   bold
+color listfocus           black     blue
+color listfocus_unread    black     blue      bold
+color info                blue      default   bold
+color article             default   default
+highlight article "^(Feed|Title|Author|Link|Date):" blue default bold
+highlight article "https?://[^ ]+" cyan default
