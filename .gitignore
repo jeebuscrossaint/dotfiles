@@ -6,16 +6,6 @@
 /linux/.config/coat/msteams.css
 linux/.config/coat/schemes/
 
-# coat-webapps is SOURCE, not coat output -- coat never writes any of it, so the
-# blanket *coat* rule above is wrong for it. The directory has to be un-ignored
-# before its contents can be: git will not re-include a file underneath an
-# excluded directory, and `coat-webapps` matches *coat* itself.
-!/linux/.local/share/coat-webapps/
-!/linux/.local/share/coat-webapps/**
-# Build artifact: `build-xpi.py` regenerates it from extension/.
-linux/.local/share/coat-webapps/coat-webapps.xpi
-!/linux/.local/bin/coat-webapp-host
-
 # Files coat OWNS entirely (it rewrites them on every `coat set`), as opposed to
 # the fragments it writes alongside a config — those already match the *coat*
 # rule above. These tools have no include mechanism, so coat generates the
