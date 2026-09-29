@@ -32,6 +32,13 @@ if status is-interactive
     alias vi="micro"
     alias doas="sudo"
 
+    # bash's `!!`: expands to the previous command as you type it, so `sudo !!`
+    # works and shows what it will run before Enter.
+    function __last_history_item
+        echo $history[1]
+    end
+    abbr -a !! --position anywhere --function __last_history_item
+
     if test -x ~/.local/bin/refresh-paru-completions
         set -l pc ~/.cache/paru/packages.aur
         set -l age (path mtime -R $pc)
