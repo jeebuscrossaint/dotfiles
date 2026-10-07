@@ -1,12 +1,12 @@
-# Renders ~/todo.md for conky-todo.conf. ${execpi}, so the output is parsed:
+# Renders ~/todo.md under the weather in conky-left.conf. ${execpi}, so the output is parsed:
 # a literal $ in the file has to go out as $$.
 #
 # Long items WRAP with a hanging indent instead of being cut -- conky clips past
 # the window edge mid-character.
 BEGIN {
     if (width == 0) width = 48
-    box = "\357\202\226"    # nf-fa-square_o
-    tick = "\357\201\206"   # nf-fa-check_square_o
+    pad = "     "
+    label = pad
 }
 
 function emit(pre, text, hang, colour,    room, cut) {
@@ -30,16 +30,17 @@ function emit(pre, text, hang, colour,    room, cut) {
     s = substr($0, RLENGTH + 1)
 }
 
+# A heading becomes the dim label on the line after it, like the other panels.
 /^#+ / {
     sub(/^#+ +/, "", s)
-    rule = ""
-    for (i = length(s) + 1; i < width; i++) rule = rule "┈"
-    print "${color1}" s " ${color2}" rule "${color}"
+    label = length(s) < 5 ? "${color2}" s substr(pad, 1, 5 - length(s)) "${color}" : "${color2}" s "${color}\n" pad
     next
 }
 
-s ~ /^[-*] \[[xX]\] / { emit(ind "${color2}" tick " ", substr(s, 7), ind "  ", "${color2}"); next }
-s ~ /^[-*] \[ \] /    { emit(ind "${color2}" box " ${color}", substr(s, 7), ind "  ", ""); next }
-s ~ /^[-*] /          { emit(ind "${color2}· ${color}", substr(s, 3), ind "  ", ""); next }
-s == ""               { print ""; next }
-                      { emit(ind, s, ind, "") }
+function lead() { l = label; label = pad; return l }
+
+s ~ /^[-*] \[[xX]\] / { emit(lead() ind, substr(s, 7), pad ind, "${color2}"); next }
+s ~ /^[-*] \[ \] /    { emit(lead() ind, substr(s, 7), pad ind, ""); next }
+s ~ /^[-*] /          { emit(lead() ind, substr(s, 3), pad ind, ""); next }
+s == ""               { next }
+                      { emit(lead() ind, s, pad ind, "") }

@@ -14,10 +14,7 @@
 # the panel's height cannot buy both. Days are one `forecast_days` away in
 # weather-fetch if that ever changes.
 #
-# Icons are Nerd Font glyphs, each already checked against the font with
-# fc-query; a codepoint the font lacks renders as a tofu box with no warning.
-# Descriptions are written out at most 19 characters rather than sliced, which is
-# what sets the panel width -- slicing lands mid-word ("Violent rain show").
+# Descriptions are at most 19 characters, written out rather than sliced.
 def desc: {
   "0":"Clear",              "1":"Mainly clear",       "2":"Partly cloudy",
   "3":"Overcast",           "45":"Fog",               "48":"Rime fog",
@@ -31,7 +28,6 @@ def desc: {
   "85":"Light snow shower", "86":"Heavy snow shower",
   "95":"Thunderstorm",      "96":"Thunderstorm, hail","99":"Severe thunderstorm"
 }[tostring] // "wmo \(.)" | .[0:19];
-def wxicon: {"0":"","1":"","2":"","3":"","45":"","48":"","51":"","53":"","55":"","56":"","57":"","61":"","63":"","65":"","66":"","67":"","71":"","73":"","75":"","77":"","80":"","81":"","82":"","85":"","86":"","95":"","96":"","99":""}[tostring] // "";
 def n: tonumber? // 0;
 
 # Weight, not hue: an ordinary reading is text, a quiet one drops to the dim
@@ -48,7 +44,8 @@ def aqicol: if n >= 100 then "${color3}" elif n >= 50 then "${color}" else "${co
 def capecol: if n >= 2500 then "${color3}" elif n >= 1000 then "${color}" else "${color2}" end;
 def licol: if n <= -4 then "${color3}" elif n <= 0 then "${color}" else "${color2}" end;
 def C: "${color}";
-def A: "${color2}";
+def S: " ${color2}·${color} ";
+def L(name): "${color2}\(name)\(" " * (5 - (name | length)))${color}";
 
 def f2c: ((n - 32) * 5 / 9) | round;
 def d1: (n * 10 | round) / 10;
@@ -93,29 +90,26 @@ def moonillum: ((1 - (6.283185307179586 * moonp | cos)) / 2 * 100) | round;
 | (if (.loc.city // "") == "" then "\($w.latitude), \($w.longitude)"
    else "\(.loc.city), \(.loc.region_code // "")" end) as $place
 | (($h.time | map(.[0:13]) | index($c.time[0:13])) // 0) as $i0
-| "\(A)\(C) \($place)   \(A)\(C) \($c.time|hm)",
-  "\(A)\(C) \($c.temperature_2m|tcol)\($c.temperature_2m|round)°F\(C) / \($c.temperature_2m|f2c)°C · feels \($c.apparent_temperature|tcol)\($c.apparent_temperature|round)°F\(C)   \(A)\($c.weather_code|wxicon)\(C) \($c.weather_code|desc)",
-  "\(A)\(C) hi \($d.temperature_2m_max[0]|tcol)\($d.temperature_2m_max[0]|round)\(C) · lo \($d.temperature_2m_min[0]|round)°F · \($d.precipitation_probability_max[0]|pcol)\($d.precipitation_probability_max[0])% rain\(C)",
-  "\(A)\(C) \($c.relative_humidity_2m)% hum · dew \($c.dew_point_2m|round)°F · spread \($c.temperature_2m - $c.dew_point_2m|round)° · vpd \($c.vapour_pressure_deficit|d2)",
-  "\(A)\(C) \($c.wind_direction_10m|dir16) \($c.wind_speed_10m|round) g\($c.wind_gusts_10m|round) mph · 80m \($c.wind_speed_80m|round) · 180m \($c.wind_speed_180m|round)",
-  "\(A)\(C) \($c.pressure_msl|round) mb msl · \($c.surface_pressure|round) sfc · \($c.visibility|mi) mi",
-  "\(A)\(C) \($c.cloud_cover)% cloud \(A)·\(C) lo \($c.cloud_cover_low) · mid \($c.cloud_cover_mid) · hi \($c.cloud_cover_high)",
-  "\(A)\(C) uv \($c.uv_index|uvcol)\($c.uv_index|round)\(C) · rad \($c.shortwave_radiation|round) \(A)(\(C)\($c.direct_radiation|round) dir · \($c.diffuse_radiation|round) dif\(A))\(C)",
-  "\(A)\(C) cape \($c.cape|capecol)\($c.cape|round)\(C) · li \($c.lifted_index|licol)\($c.lifted_index|d1)\(C) · cin \($c.convective_inhibition|round) J/kg",
-  "\(A)\(C) frz \($c.freezing_level_height|round) ft · pbl \($c.boundary_layer_height|round) ft · et0 \($c.et0_fao_evapotranspiration|d2)\"",
-  "\(A)\(C) soil \($c.soil_temperature_0cm|round)°F/0cm · \($c.soil_temperature_6cm|round)°F/6cm · wet \($c.soil_moisture_0_to_1cm|d2)",
-  "\(A)\(C) precip \($c.precipitation|d2)\" now · \($d.precipitation_sum[0]|d2)\" today over \($d.precipitation_hours[0]|round)h",
+| "${color1}\($place) · \($c.time|hm)\(C)",
+  "\(L("now"))\($c.temperature_2m|tcol)\($c.temperature_2m|round)°F\(C) / \($c.temperature_2m|f2c)°C\(S)feels \($c.apparent_temperature|tcol)\($c.apparent_temperature|round)°F\(C)\(S)\($c.weather_code|desc)",
+  "\(L("day"))hi \($d.temperature_2m_max[0]|tcol)\($d.temperature_2m_max[0]|round)\(C)\(S)lo \($d.temperature_2m_min[0]|round)°F\(S)\($d.precipitation_probability_max[0]|pcol)\($d.precipitation_probability_max[0])% rain\(C)",
+  "\(L("hum"))\($c.relative_humidity_2m)%\(S)dew \($c.dew_point_2m|round)°F\(S)spread \($c.temperature_2m - $c.dew_point_2m|round)°\(S)vpd \($c.vapour_pressure_deficit|d2)",
+  "\(L("wind"))\($c.wind_direction_10m|dir16) \($c.wind_speed_10m|round) g\($c.wind_gusts_10m|round) mph\(S)80m \($c.wind_speed_80m|round)\(S)180m \($c.wind_speed_180m|round)",
+  "\(L("pres"))\($c.pressure_msl|round) mb msl\(S)\($c.surface_pressure|round) sfc\(S)vis \($c.visibility|mi) mi",
+  "\(L("sky"))\($c.cloud_cover)% cloud\(S)lo \($c.cloud_cover_low)\(S)mid \($c.cloud_cover_mid)\(S)hi \($c.cloud_cover_high)",
+  "\(L("uv"))\($c.uv_index|uvcol)\($c.uv_index|round)\(C)\(S)rad \($c.shortwave_radiation|round) (\($c.direct_radiation|round) dir · \($c.diffuse_radiation|round) dif)",
+  "\(L("stab"))cape \($c.cape|capecol)\($c.cape|round)\(C)\(S)li \($c.lifted_index|licol)\($c.lifted_index|d1)\(C)\(S)cin \($c.convective_inhibition|round) J/kg",
+  "\(L("alt"))frz \($c.freezing_level_height|round) ft\(S)pbl \($c.boundary_layer_height|round) ft",
+  "\(L("soil"))\($c.soil_temperature_0cm|round)°F/0cm\(S)\($c.soil_temperature_6cm|round)°F/6cm\(S)wet \($c.soil_moisture_0_to_1cm|d2)\(S)et0 \($c.et0_fao_evapotranspiration|d2)\"",
+  "\(L("rain"))\($c.precipitation|d2)\" now\(S)\($d.precipitation_sum[0]|d2)\" today over \($d.precipitation_hours[0]|round)h",
   (if ($q.us_aqi // null) == null then empty
-   else "\(A)\(C) aqi \($q.us_aqi|aqicol)\($q.us_aqi)\(C) · pm2.5 \($q.pm2_5|d1) · pm10 \($q.pm10|d1) · o3 \($q.ozone|round)" end),
-  "\(A)\(C) \($d.sunrise[0]|hm)\(C) → \($d.sunset[0]|hm) · \($d.daylight_duration[0]|dur)   \(A)\(C) \(moonname) \(moonillum)%",
-  # Alerts draw ONLY when something is active -- a permanent "none active" row is
-  # furniture on a panel that is mostly quiet. Capped at two because conky.conf
-  # pins the panel height and it has to be the worst case.
-  ($al[0:2][] | "\(A)${color3} \(.properties.event // "alert" | .[0:44])\(C)"),
-  "${color1}hourly ${color2}┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈\(C)",
-  # EVERY hour from now to midnight -- not every third, which was wttr's shape
-  # carried over by mistake; Open-Meteo publishes hourly. Capped at 20 rows
-  # because the panel height is pinned to the worst case, and the worst case is
-  # reading this at 4am. Past that hour the cap never binds.
-  (range(0; 20) | ($i0 + .) as $i | select($h.time[$i] != null)
-   | "  \(($h.time[$i]|h12) | (" " * (3 - length)) + .)  \($h.temperature_2m[$i]|tcol)\($h.temperature_2m[$i]|round)°F\(C)  \($h.precipitation_probability[$i]|pcol)\($h.precipitation_probability[$i])%\(C)  \(A)\($h.weather_code[$i]|wxicon)\(C) \($h.weather_code[$i]|desc)")
+   else "\(L("aqi"))\($q.us_aqi|aqicol)\($q.us_aqi)\(C)\(S)pm2.5 \($q.pm2_5|d1)\(S)pm10 \($q.pm10|d1)\(S)o3 \($q.ozone|round)" end),
+  "\(L("sun"))\($d.sunrise[0]|hm) → \($d.sunset[0]|hm)\(S)\($d.daylight_duration[0]|dur)",
+  "\(L("moon"))\(moonname) \(moonillum)%",
+  # Only while something is active; capped at two because the panel height
+  # is pinned to the worst case.
+  ($al[0:2][] | "\(L("alrt"))${color3}\(.properties.event // "alert" | .[0:44])\(C)"),
+  # Every hour to midnight, capped at 20 rows (the 4am worst case).
+  ([range(0; 20) | ($i0 + .) as $i | select($h.time[$i] != null) | $i] | to_entries[]
+   | .value as $i
+   | "\(if .key == 0 then L("hour") else "     " end)\(($h.time[$i]|h12) | (" " * (3 - length)) + .)  \($h.temperature_2m[$i]|tcol)\($h.temperature_2m[$i]|round)°\(C)  \($h.precipitation_probability[$i]|pcol)\($h.precipitation_probability[$i])%\(C)  \($h.weather_code[$i]|desc)")
