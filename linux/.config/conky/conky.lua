@@ -222,7 +222,8 @@ function conky_vol()
         if s:find("MUTED", 1, true) then return "0" end
         local v = tonumber(s:match("Volume:%s*([%d.]+)"))
         if not v then return "0" end
-        return tostring(math.floor(v * 100 + 0.5))
+        -- 1.5 is osd's VOL_MAX, the level both readouts call 100%.
+        return tostring(math.min(100, math.floor(v / 1.5 * 100 + 0.5)))
     end)
 end
 
