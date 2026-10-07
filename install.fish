@@ -270,7 +270,7 @@ set -g dep_table \
     "cli|cmd:newsboat|newsboat|newsboat||" \
     "cli|cmd:tree|tree|tree||" \
     "cli|cmd:unzip|unzip|unzip||" \
-    "chat|cmd:slack|slack||slack-desktop-wayland-jetm|" \
+    "chat|cmd:slack|slack||slack-desktop|" \
     "chat|cmd:discord|discord|discord||" \
     "chat|path:/etc/pacman.d/hooks/vencord-hook.hook|vencord||vencord-installer-bin vencord-hook|" \
     "dev|cmd:claude|claude code||claude-code|" \
@@ -811,13 +811,18 @@ function ensure_nvidia
     host_has nvidia; or return 0
     pacman -Qq nvidia-utils &>/dev/null; and return 0
 
-    set -l want nvidia-open-dkms nvidia-utils libva-nvidia-driver egl-wayland
+    # Prebuilt modules ship per kernel; only kernels without one fall back to dkms.
+    set -l want
+    pacman -Qq linux &>/dev/null; and set -a want nvidia-open
+    pacman -Qq linux-lts &>/dev/null; and set -a want nvidia-open-lts
+    test -z "$want"; and set want nvidia-open-dkms
+    set -a want nvidia-utils libva-nvidia-driver egl-wayland
     pacman-conf --repo-list 2>/dev/null | string match -q multilib
     and set -a want lib32-nvidia-utils
 
     step "NVIDIA card found, no driver installed"
     printf '   %ssudo pacman -S --needed %s%s\n' "$c_ok" "$want" "$c_off"
-    dim "nvidia-open is for Turing and newer; on anything older swap in nvidia-dkms"
+    dim "nvidia-open is for Turing and newer; older cards need a legacy driver from the AUR"
     confirm "install it now?"; or return 0
     fish -c "sudo pacman -S --needed $want"; or note "that failed — carry on by hand"
 end
