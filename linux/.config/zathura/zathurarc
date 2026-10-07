@@ -8,7 +8,3 @@ include coat-theme
 # Draw a placeholder while a page renders, using the theme's
 # render-loading-bg/fg (set in coat-theme).
 set render-loading true
-
-# When recolor (<C-r>) is on, leave embedded images/figures in their original
-# colours instead of inverting them along with the page.
-set recolor-reverse-video true
