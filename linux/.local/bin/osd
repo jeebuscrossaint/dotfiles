@@ -15,6 +15,7 @@
 #   osd kbd up|down|show            keyboard backlight
 #   osd capslock|numlock
 #   osd nightlight [start]          toggle; `start` is the login one, silent
+#   osd nightlight warmer|cooler    shift the night temperature, persisted
 #   osd touchpad                    toggle, through the compositor
 #   osd playpause|next|prev
 #
@@ -54,7 +55,6 @@ BL_RUN_FILE=${XDG_RUNTIME_DIR:-/tmp}/osd-brightness-run
 # it steps by 1 rather than by BL_STEP.
 KBD_LED=asus::kbd_backlight
 
-# Night light: 4000K is warm enough to matter after dark without going orange.
 # Desktop event sounds go through ~/.local/bin/sfx, which is a no-op if the theme
 # is missing or ~/.config/sfx-mute exists. Volume gets one because you are already
 # thinking about audio; brightness deliberately does not, since a click on every
@@ -64,7 +64,14 @@ KBD_LED=asus::kbd_backlight
 # until the next transition and fades over it. Orlando; change the two numbers
 # if the machine moves. 6500K is neutral daylight, so the day half of the cycle
 # is a no-op and only the night half shifts.
-NIGHT_TEMP=3500
+# The night temperature is whatever `osd nightlight warmer|cooler` last left in
+# NIGHT_FILE, so it survives a reboot; 3500K until it is first nudged.
+NIGHT_FILE=${XDG_STATE_HOME:-$HOME/.local/state}/nightlight-temp
+NIGHT_TEMP=$(cat "$NIGHT_FILE" 2>/dev/null)
+case $NIGHT_TEMP in '' | *[!0-9]*) NIGHT_TEMP=3500 ;; esac
+NIGHT_STEP=250
+NIGHT_MIN=1500
+NIGHT_MAX=6000
 NIGHT_DAY_TEMP=6500
 NIGHT_LAT=28.5
 NIGHT_LON=-81.4
@@ -336,6 +343,22 @@ kbd)
 # does nothing under mango. wlsunset speaks wlr-gamma-control, which mango has
 # (wlr_gamma_control_manager_v1_create in the binary).
 nightlight | night)
+	case ${2:-} in warmer | cooler)
+		if [ "$2" = warmer ]; then t=$((NIGHT_TEMP - NIGHT_STEP)); else t=$((NIGHT_TEMP + NIGHT_STEP)); fi
+		[ "$t" -lt "$NIGHT_MIN" ] && t=$NIGHT_MIN
+		[ "$t" -gt "$NIGHT_MAX" ] && t=$NIGHT_MAX
+		mkdir -p "${NIGHT_FILE%/*}"
+		echo "$t" > "$NIGHT_FILE"
+		# wlsunset cannot be retuned live; restart it (which also turns it on).
+		pkill -x wlsunset
+		while pgrep -x wlsunset >/dev/null 2>&1; do sleep 0.05; done
+		setsid wlsunset -l "$NIGHT_LAT" -L "$NIGHT_LON" \
+			-t "$t" -T "$NIGHT_DAY_TEMP" >/dev/null 2>&1 &
+		# Bar fills as it gets warmer.
+		show "󰖔  Night light ${t}K" $(((NIGHT_MAX - t) * 100 / (NIGHT_MAX - NIGHT_MIN)))
+		exit 0
+		;;
+	esac
 	if pgrep -x wlsunset >/dev/null 2>&1; then
 		[ "${2:-}" = start ] && exit 0
 		pkill -x wlsunset
