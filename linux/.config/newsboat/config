@@ -5,23 +5,30 @@
 
 # --- fetching ---------------------------------------------------------------
 reload-threads 8
-# Fetch on launch and every 30 minutes while open.
-auto-reload yes
-reload-time 30
+# No fetch on launch: reloading 600 feeds while browsing crashes it. `R` reloads.
+auto-reload no
 # Keep the cache from growing forever: 200 items per feed is weeks of video.
 max-items 200
 cleanup-on-quit yes
+# Some small sites (cheapskatesguide, confluence) drop requests that don't look
+# like a browser.
+user-agent "Mozilla/5.0 (X11; Linux x86_64; rv:130.0) Gecko/20100101 Firefox/130.0"
 
 # --- lists ------------------------------------------------------------------
+# Folders are tags: `t` opens the folder list, picking one shows its channels.
+feed-sort-order firsttag-asc
+feedlist-format "%4i %n %11u %t"
+selecttag-format "%4i  %-32T %n unread in %f channels"
 # Only feeds with something unread; `a` toggles the rest back in.
 show-read-feeds no
 confirm-mark-feed-read no
 text-width 100
 
 # --- opening ----------------------------------------------------------------
-browser "xdg-open %u >/dev/null 2>&1 &"
-# ,v plays the article's link in mpv, which hands YouTube and Odysee to yt-dlp.
-macro v set browser "setsid -f mpv --really-quiet %u >/dev/null 2>&1" ; open-in-browser ; set browser "xdg-open %u >/dev/null 2>&1 &"
+# Video links go to mpv (it hands them to yt-dlp); everything else to the browser.
+browser "case %u in *youtube.com/*|*youtu.be/*|*odysee.com/*|*videos.lukesmith.xyz/*) setsid -f mpv --really-quiet %u >/dev/null 2>&1 ;; *) xdg-open %u >/dev/null 2>&1 & ;; esac"
+# ,v forces mpv for any link.
+macro v set browser "setsid -f mpv --really-quiet %u >/dev/null 2>&1" ; open-in-browser ; set browser "case %u in *youtube.com/*|*youtu.be/*|*odysee.com/*|*videos.lukesmith.xyz/*) setsid -f mpv --really-quiet %u >/dev/null 2>&1 ;; *) xdg-open %u >/dev/null 2>&1 & ;; esac"
 
 # --- keys: vim-ish on top of the defaults -------------------------------------
 bind-key j down

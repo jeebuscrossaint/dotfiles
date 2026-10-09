@@ -1,0 +1,75 @@
+# Personal homepages with no RSS feed, so newsboat can't follow them.
+# One person each, long-running, plain; check them by hand now and then.
+
+# --- computing ---
+https://harmful.cat-v.org                the Encyclopedia of Things Considered Harmful (suckless/Plan 9 canon)
+https://cat-v.org                        Uriel's cat-v: Plan 9, "Unix is dead" essays, quotes; watch /update_log
+https://9front.org                       9front, the living Plan 9 fork, and its in-jokes
+http://www.catb.org/jargon/              the Jargon File, hacker culture's own dictionary
+https://bitsavers.org                    scanned manuals and software for old computers
+http://www.s100computers.com             John Monahan building new S-100 bus boards, 20 years running
+https://www.retrotechnology.com          Herb Johnson: S-100, CP/M and COSMAC 1802 restoration since the 90s
+https://www.mikekohn.net                 homebrew FPGA CPUs and odd-architecture assemblers
+https://phrack.org                       the hacker zine; new issues a few times a year
+https://tmpout.sh                        ELF and Linux malware zine
+https://pocorgtfo.hacke.rs               PoC||GTFO issue archive
+http://viznut.fi                         viznut, who coined "permacomputing"; demoscene and low-tech essays
+https://typewritten.org                  vintage UNIX workstation documentation archive
+https://toastytech.com                   Nathan's old-GUI gallery and retro software pages
+https://romanzolotarev.com               minimal OpenBSD-everything homepage
+https://wiki.chadnet.org                 Luke Smith's wiki
+https://landchad.net                     Luke Smith's self-hosting guides (rarely updated now)
+
+# --- workshop, radio, craft ---
+https://www.lathes.co.uk                 Tony Griffiths' history of every lathe, shaper and miller, since 1998
+https://www.gadgetbuilder.com            John Moran's mini-lathe and small-shop project pages since 2003
+https://www.sound-au.com                 Rod Elliott's hand-written audio electronics projects and theory
+https://www.inthewoodshop.com            Derek Cohen's hand-tool woodworking articles (check it's still updated)
+https://www.petergalbert.com             Peter Galbert, Windsor chairmaker
+https://wildwoodsurvival.com             old-web wilderness survival and primitive skills site
+https://underground-homes.com            Mike Oehler's $50 underground house, the original off-grid homepage
+https://www.rayjardine.com               Ray Jardine, the ultralight pioneer who dropped out to live by sail, trail and kayak
+
+# --- strange, lore, hidden history ---
+https://www.numbersoddities.nl           Ary Boender's monthly numbers-station log (PDFs)
+https://esotericarchives.com             Joseph Peterson's own grimoire transcriptions; watch /whatsnew.htm
+http://www.forgottenrelics.org           Graeme Bickerdike inside abandoned railway tunnels and viaducts
+http://www.disused-stations.org.uk       Nick Catford's catalogue of closed British stations
+https://www.derelictlondon.com           Paul Talling photographing London's decay since 2003
+https://www.priory-of-sion.com           Paul Smith dismantling the Priory of Sion myth, source by source
+https://ed-thelen.org                    Ed Thelen's Cold War Nike missile site archive
+https://www.priyom.org                   numbers-station tracking; the community is #priyom on Libera IRC
+https://www.enigma2000.org               ENIGMA 2000, the numbers-station monitoring group's newsletters
+https://www.ciphermachinesandcryptology.com  Dirk Rijmenants' cipher machines and one-time-pad pages
+https://www.cryptomuseum.com             two Dutch collectors' museum of crypto and spy-radio gear
+https://www.psywarrior.com               Herb Friedman's archive of psychological-warfare leaflets and ops
+https://www.secret-bases.co.uk           a one-man survey of Cold War bunkers and secret sites
+https://www.radomes.org                  history of Cold War air-defense radar stations
+https://www.londonslostrivers.com        Paul Talling's walks along London's buried rivers
+
+# --- the underground, documented ---
+https://ahmia.fi                         Tor onion search engine reachable from the normal web; filters abuse material
+https://vx-underground.org               the largest public malware source and paper archive
+https://www.maryferrell.org              JFK, CIA and Cold War document archive (millions of pages)
+https://www.governmentattic.org          FOIA'd government documents nobody else asked for
+https://www.lobster-magazine.co.uk       Lobster, UK parapolitics and intelligence zine since 1983
+https://www.deeppoliticsforum.com        long-running assassination and covert-history research forum
+https://theoldnet.com                    browse the 90s web through the Wayback Machine, as it was
+https://tcrf.net                         The Cutting Room Floor: unused and hidden content dug out of games
+http://www.ballisticsbytheinch.com       raw barrel-length ballistics data, shot and logged by hand
+https://sacred-texts.com                 the old-web archive of religious and esoteric texts
+https://hermetic.com                     the Hermetic Library
+
+# --- discovery tools for finding more of this ---
+https://search.marginalia.nu             search engine that favours small, text-heavy, non-commercial sites
+https://wiby.me                          search engine of hand-submitted old-style pages
+https://millionshort.com                 search with the top million sites removed
+https://kagi.com/smallweb                random posts from 40k human-curated personal blogs
+https://neocities.org/browse             hand-made sites, sortable by last updated
+
+# --- places to join ---
+https://tilde.town                       shared Linux box with IRC, by application
+https://sdf.org                          public-access UNIX since 1987
+telnet://vert.synchro.net                Vertrauen BBS
+https://www.eternal-september.org        free Usenet text server
+https://lainchan.org                     tech and cyberpunk textboards
