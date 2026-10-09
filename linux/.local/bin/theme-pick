@@ -4,13 +4,10 @@
 # fuzzel directly. This was the last caller of the `menu` wrapper, and that
 # wrapper was a branch between fuzzel and a shell that no longer exists.
 #
-# Entries are tagged `[base24]` because ~46 slugs exist in BOTH families and coat
-# lists them under the same name -- the picker showed two identical rows with no
-# way to tell them apart. The tag is not decoration: it becomes the --base16 or
-# --base24 flag on the `coat set` below, which is how the pick reaches the family
-# you actually clicked. This script used to sed prefer_base24 into coat.yaml
-# first instead -- editing a config file in a dotfiles repo, mid-keypress, to
-# pass one argument.
+# Only the family coat.yaml's prefer_base24 picks is listed, the same pool
+# `coat random` draws from. ~46 slugs exist in both families, so showing both
+# meant identical rows; the family goes to `coat set` as --base16/--base24 so the
+# pick lands in it whatever is applied right now.
 set -u
 
 # Same geometry as the SUPER+d launcher in mango's config.conf: fuzzel.ini holds
@@ -19,23 +16,20 @@ read -r v < /sys/class/graphics/fb0/virtual_size
 w=$(( ${v%%[!0-9]*} * 50 / 2560 ))
 lh=$(( ${v##*[!0-9]} * 26 / 1600 ))
 
+fam=base16
+grep -q '^prefer_base24: *true' "$HOME/.config/coat/coat.yaml" 2>/dev/null && fam=base24
+
 # Pair each scheme's name line (which carries the [Base24] marker) with the
-# `Slug:` line that follows it. Parsing only Slug: lines is what dropped the
-# marker in the first place. sed strips coat's ANSI bold.
-pick=$(coat list --no-preview 2>/dev/null \
+# `Slug:` line that follows it, keeping only the chosen family. sed strips
+# coat's ANSI bold.
+slug=$(coat list --no-preview 2>/dev/null \
   | sed 's/\x1b\[[0-9;]*m//g' \
-  | awk '
-      /^[^ ]/ && !/^Found/ && !/^Author:/ { b24 = /\[Base24\]/ ? " [base24]" : "" }
-      /Slug:/ { print $2 b24 }
+  | awk -v want="$fam" '
+      /^[^ ]/ && !/^Found/ && !/^Author:/ { f = /\[Base24\]/ ? "base24" : "base16" }
+      /Slug:/ && f == want { print $2 }
     ' \
   | fuzzel --dmenu --prompt "theme " --width="$w" --line-height="$lh")
-[ -n "$pick" ] || exit 0
-
-slug=${pick% \[base24\]}
-case "$pick" in
-*"[base24]") fam=base24 ;;
-*) fam=base16 ;;
-esac
+[ -n "$slug" ] || exit 0
 
 coat set "$slug" "--$fam" >/dev/null 2>&1
 command -v notify-send >/dev/null &&

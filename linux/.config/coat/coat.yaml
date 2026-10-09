@@ -22,7 +22,7 @@ enabled:
   - conky
 
 scheme: onedark
-prefer_base24: false
+prefer_base24: true
 
 # Evens out whatever scheme is loaded. `coat docs normalize` lists the knobs.
 normalize:
