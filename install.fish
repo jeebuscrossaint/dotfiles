@@ -1205,6 +1205,11 @@ end
 
 # --- theme --------------------------------------------------------------------
 
+# The portal answers color-scheme from gsettings, not the gtk settings.ini, so
+# without this rog-control-center (and Firefox) render light.
+command -q gsettings
+and gsettings set org.gnome.desktop.interface color-scheme prefer-dark
+
 if set -q _flag_no_coat
     dim "coat skipped"
 else if command -q coat
