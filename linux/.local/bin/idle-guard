@@ -4,7 +4,9 @@
 #   idle-guard lock    lock, but wait out any audio that is still playing
 #   idle-guard blank   power the outputs off, waiting out audio the same way
 #   idle-guard wake    power them back on
-#   idle-guard now     lock immediately -- Super+L, and before-sleep
+#   idle-guard now     lock immediately -- before-sleep
+#   idle-guard dark    lock immediately and keep the screen off while locked -- Super+L
+#   idle-guard off     power the outputs off, unguarded
 #   idle-guard cancel  abort every pending guard (the user came back)
 #
 # Everything that locks goes through here, which is the only reason swaylock can
@@ -92,6 +94,25 @@ now)
 	# No guard and no state file: the user asked for it, or the machine is going
 	# to sleep and there is nothing left to wait for.
 	do_lock
+	exit 0
+	;;
+dark)
+	# Blanking by hand would never come back: swayidle only fires a resume for
+	# a timeout it fired itself. So a private swayidle does the blanking, waking
+	# on input and going dark again after 2s idle, for as long as swaylock lives.
+	do_lock
+	lock=$!
+	(
+		swayidle timeout 2 'idle-guard off' resume 'idle-guard wake' &
+		idle=$!
+		while kill -0 "$lock" 2>/dev/null; do sleep 1; done
+		kill "$idle"
+		set_power on
+	) >/dev/null 2>&1 &
+	exit 0
+	;;
+off)
+	set_power off
 	exit 0
 	;;
 wake)
