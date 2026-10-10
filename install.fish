@@ -8,7 +8,7 @@
 set -g repo (path dirname (path resolve (status filename)))
 set -g pkg linux
 
-argparse -X 0 h/help n/dry-run v/verbose b/backup a/adopt y/yes no-coat minecraft uninstall c/check skip-checks install-deps t/target= -- $argv
+argparse -X 0 h/help n/dry-run v/verbose b/backup a/adopt y/yes no-coat uninstall c/check skip-checks install-deps t/target= -- $argv
 or exit 2
 
 if set -q _flag_help
@@ -24,7 +24,6 @@ if set -q _flag_help
   -v, --verbose    list every link, not a summary
   -t, --target DIR link into DIR instead of the home directory
       --no-coat    skip the coat theme step
-      --minecraft  also install Prism Launcher + Java 8 and build the 1.8.9 PvP instance
       --uninstall  remove the links this script created
   -h, --help       this"
     exit 0
@@ -40,7 +39,7 @@ set -q _flag_yes; and set -g _flag_backup 1
 # _flag_install_deps and _flag_yes, which meant --yes and --install-deps fell
 # through to prompting instead of answering. Booleans only; --target is already
 # resolved into $target above.
-for f in dry_run verbose backup adopt yes no_coat minecraft uninstall check skip_checks install_deps
+for f in dry_run verbose backup adopt yes no_coat uninstall check skip_checks install_deps
     set -q _flag_$f; and set -g _flag_$f 1
 end
 
@@ -390,6 +389,19 @@ function ask_logitech
     echo
 end
 
+# Opt-in extras, asked rather than flagged. Default no; the non-interactive flags
+# and a piped stdin take the default.
+set -g want_minecraft 0
+set -g want_steam 0
+function ask_extra -a name prompt
+    set -q _flag_yes; and return 0
+    set -q _flag_install_deps; and return 0
+    isatty stdin; or return 0
+    read -P "  $prompt [y/N] " -l a
+    string match -qi 'y*' -- (string trim -- $a); and set -g want_$name 1
+    echo
+end
+
 # Gate for a dep_table row: empty passes, answers cached (the bus cannot change
 # mid-run). An unknown name passes too -- a typo should surface as a package
 # still offered, not one that silently vanished.
@@ -407,8 +419,8 @@ function host_has -a gate
         case logitech
             test "$has_logitech" = 1; and set rc 0
         case minecraft
-            # Not hardware: Prism and the Java 8 that 1.8.9 needs come with --minecraft.
-            set -q _flag_minecraft; and set rc 0
+            # Not hardware: Prism and the Java 8 that 1.8.9 needs, if asked for.
+            test "$want_minecraft" = 1; and set rc 0
         case '*'
             note "unknown hardware gate '$gate' in the dependency table — keeping the row"
             set rc 0
@@ -827,6 +839,50 @@ function ensure_nvidia
     fish -c "sudo pacman -S --needed $want"; or note "that failed — carry on by hand"
 end
 
+# Steam per the ArchWiki: multilib, the 32-bit Vulkan driver for every GPU on the
+# bus (the 64-bit one too, for Proton), and an en_US.UTF-8 locale, without which
+# Steam refuses to start. Runs before check_deps so multilib is already on when
+# ensure_nvidia decides whether to add lib32-nvidia-utils.
+function ensure_steam
+    test "$want_steam" = 1; or return 0
+    command -q pacman; or return 0
+
+    if not pacman-conf --repo-list 2>/dev/null | string match -q multilib
+        step "enabling multilib in /etc/pacman.conf"
+        sudo sed -i '/^#\[multilib\]/,/^#Include/s/^#//' /etc/pacman.conf
+        and sudo pacman -Sy
+        or begin
+            note "could not enable multilib — skipping steam"
+            return 1
+        end
+    end
+
+    set -l want steam
+    for d in /sys/bus/pci/devices/*
+        string match -q '0x03*' -- (cat $d/class 2>/dev/null); or continue
+        switch (cat $d/vendor 2>/dev/null)
+            case 0x8086
+                set -a want vulkan-intel lib32-vulkan-intel
+            case 0x1002
+                set -a want vulkan-radeon lib32-vulkan-radeon
+        end
+    end
+    test "$has_nvidia" = 1; and pacman -Qq nvidia-utils &>/dev/null
+    and set -a want lib32-nvidia-utils
+    set want (pacman -T $want)
+
+    if test (count $want) -gt 0
+        step "steam: $want"
+        sudo pacman -S --needed --noconfirm $want; or note "steam install failed"
+    end
+
+    if not locale -a 2>/dev/null | string match -qi en_us.utf8
+        step "generating the en_US.UTF-8 locale steam needs"
+        sudo sed -i 's/^#\s*en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen
+        and sudo locale-gen
+    end
+end
+
 # Reports what is missing; returns 1 if anything is.
 function check_deps
     set -g font_families
@@ -968,6 +1024,11 @@ if set -q _flag_check
     exit $status
 end
 
+if not set -q _flag_uninstall
+    ask_extra minecraft "set up Minecraft (Prism Launcher, Java 8, the 1.8.9 PvP mods)?"
+    ask_extra steam "set up Steam (multilib, 32-bit Vulkan drivers)?"
+end
+
 if not set -q _flag_skip_checks; and not set -q _flag_uninstall
     # Both BEFORE check_deps: the repo has to exist before the installer offers
     # to install anything, or every chaotic-carried package is a paru source build.
@@ -975,6 +1036,7 @@ if not set -q _flag_skip_checks; and not set -q _flag_uninstall
     ensure_chaotic_aur
     ask_nvidia
     ask_logitech
+    ensure_steam
     check_deps
     or die "packages still missing — install them, or re-run with --skip-checks"
     echo
@@ -1070,7 +1132,7 @@ if set -q _flag_dry_run
     if set -q _flag_verbose
         for l in $to_link; dim "~/$l"; end
     end
-    if set -q _flag_minecraft
+    if test "$want_minecraft" = 1
         dim "would fetch "(count < $repo/minecraft/mods.txt)" mods into ~/.local/share/PrismLauncher/instances/1.8.9"
     end
     exit 0
@@ -1131,7 +1193,7 @@ echo
 
 # Opt-in: ~40M of jars off the network, which nobody wants as a side effect of
 # linking their dotfiles. Mods only — make the instance in Prism yourself.
-if set -q _flag_minecraft
+if test "$want_minecraft" = 1
     set -l mods $target/.local/share/PrismLauncher/instances/1.8.9/minecraft/mods
 
     if not command -q wget

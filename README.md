@@ -16,11 +16,7 @@ into `~`, applies coat. Rerun `~/dotfiles/install.fish` any time; `-h` for optio
 
 ## minecraft
 
-1.8.9 PvP in PrismLauncher, mods in `minecraft/mods.txt`.
-
-```sh
-./install.fish --minecraft
-```
+1.8.9 PvP in PrismLauncher, mods in `minecraft/mods.txt`. The installer asks.
 
 ## windows
 
