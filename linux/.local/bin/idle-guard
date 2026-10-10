@@ -5,8 +5,7 @@
 #   idle-guard blank   power the outputs off, waiting out audio the same way
 #   idle-guard wake    power them back on
 #   idle-guard now     lock immediately -- before-sleep
-#   idle-guard dark    lock immediately and keep the screen off while locked -- Super+L
-#   idle-guard off     power the outputs off, unguarded
+#   idle-guard dark    lock immediately on a pure black screen -- Super+L
 #   idle-guard cancel  abort every pending guard (the user came back)
 #
 # Everything that locks goes through here, which is the only reason swaylock can
@@ -60,7 +59,7 @@ do_lock() {
 	_ifs=$IFS
 	IFS='
 '
-	set -- $([ -f "$COAT_THEME" ] && grep -vE '^[[:space:]]*(#|$)' "$COAT_THEME" | sed 's/^/--/')
+	set -- $([ -f "$COAT_THEME" ] && grep -vE '^[[:space:]]*(#|$)' "$COAT_THEME" | sed 's/^/--/') "$@"
 	IFS=$_ifs
 
 	swaylock "$@" >/dev/null 2>&1 &
@@ -97,22 +96,13 @@ now)
 	exit 0
 	;;
 dark)
-	# Blanking by hand would never come back: swayidle only fires a resume for
-	# a timeout it fired itself. So a private swayidle does the blanking, waking
-	# on input and going dark again after 2s idle, for as long as swaylock lives.
-	do_lock
-	lock=$!
-	(
-		swayidle timeout 2 'idle-guard off' resume 'idle-guard wake' &
-		idle=$!
-		while kill -0 "$lock" 2>/dev/null; do sleep 1; done
-		kill "$idle"
-		set_power on
-	) >/dev/null 2>&1 &
-	exit 0
-	;;
-off)
-	set_power off
+	# Black, not powered off: on OLED that is the same thing, and a powered-off
+	# output drops the keys typed to wake it, so the password came out wrong.
+	# The ring is hidden until a key is pressed, which the config cannot be told
+	# per-invocation -- so this locks with a copy minus indicator-idle-visible.
+	conf="$RUN/swaylock-dark.conf"
+	grep -v '^indicator-idle-visible' "${XDG_CONFIG_HOME:-$HOME/.config}/swaylock/config" > "$conf"
+	do_lock -C "$conf" --color=000000
 	exit 0
 	;;
 wake)
