@@ -173,6 +173,8 @@ or die "$target is not writable"
 # (that is what the nvidia-prime row did).
 #
 # The Nerd Fonts set comes from the nerd-fonts release (see ensure_fonts), not a row.
+# Neither are coat and motd: they build from git after this check (ensure_coat,
+# ensure_motd), and a row for them would fail the check before they got the chance.
 set -g dep_table \
     "installer|cmd:git|git|git||" \
     "installer|cmd:fish|fish|fish||" \
@@ -223,7 +225,6 @@ set -g dep_table \
     "system|path:/usr/lib/systemd/system-generators/zram-generator|zram-generator|zram-generator||" \
     "system|cmd:tailscale|tailscale|tailscale||" \
     "theme|cmd:cargo|rust toolchain|rustup||https://rustup.rs" \
-    "theme|cmd:coat|coat|||cargo install --git https://github.com/jeebuscrossaint/coat" \
     "theme|path:/usr/share/icons/WhiteSur-dark /usr/share/icons/WhiteSur|WhiteSur icon theme||whitesur-icon-theme|" \
     "theme|path:/usr/share/themes/adw-gtk3-dark|adw-gtk3|adw-gtk-theme||" \
     "theme|path:/usr/share/icons/WhiteSur-cursors|WhiteSur cursors||whitesur-cursor-theme-git|" \
@@ -281,6 +282,8 @@ set -g dep_table \
     "dev|cmd:uv|uv|uv||" \
     "dev|cmd:qemu-system-x86_64|qemu|qemu-system-x86||" \
     "dev|cmd:typst|typst|typst||" \
+    "dev|cmd:xmake|xmake|xmake||" \
+    "dev|path:/usr/lib/libpci.so|libpci|pciutils||" \
     "dev|cmd:pandoc|pandoc|pandoc-bin||" \
     "dev|cmd:nvcc|cuda|cuda|||nvidia" \
     "dev|path:/usr/lib/jvm/zulu-8|zulu 8 jdk||zulu-8-bin||minecraft" \
@@ -815,6 +818,20 @@ function ensure_coat
     coat completions fish >/dev/null; or note "coat completions failed"
 end
 
+# motd is in no repository either. xmake builds it against libpci.
+function ensure_motd
+    command -q motd; and return 0
+    command -q xmake; or begin; note "no xmake — motd skipped"; return 1; end
+    step "Building motd..."
+    set -l dir (mktemp -d)
+    git clone -q --depth 1 https://github.com/jeebuscrossaint/motd $dir/motd
+    and fish -c "cd $dir/motd; and xmake f -y -m release; and xmake -y; and xmake install -y -o $dir/out"
+    and install -Dm755 $dir/out/bin/motd $target/.local/bin/motd
+    set -l rc $status
+    rm -rf $dir
+    test $rc -eq 0; or begin; note "motd build failed"; return 1; end
+end
+
 # The proprietary stack, only if there is actually a 10de device on the bus.
 # Packages only -- no modprobe drop-in, no udev rule, no MUX service. The tuned
 # power setup in misc/ is this machine's, not a default; install it by hand if
@@ -1046,6 +1063,7 @@ if not set -q _flag_skip_checks; and not set -q _flag_uninstall
     ensure_rust
     ensure_fonts
     ensure_coat
+    ensure_motd
     ensure_services
     ensure_systemd_extras
     ensure_resolved
