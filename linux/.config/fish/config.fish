@@ -47,6 +47,4 @@ if status is-interactive
             disown
         end
     end
-
-    command -q motd; and motd
 end
