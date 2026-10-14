@@ -762,9 +762,32 @@ function ensure_autologin
     or note "could not write $dir/autologin.conf"
 end
 
+# Appends kernel arguments wherever this box keeps a command line -- a UKI,
+# loader entries, rEFInd, GRUB -- often several. A line already holding `marker`
+# is left alone. The caller rebuilds the initramfs.
+function kernel_args -a name marker
+    set -l args $argv[3..]
+    # mkinitcpio appends /etc/cmdline.d to /etc/kernel/cmdline, so the drop-in
+    # adds to the UKI's command line without touching it.
+    if grep -qE '^[^#]*_uki=' /etc/mkinitcpio.d/*.preset 2>/dev/null
+        sudo mkdir -p /etc/cmdline.d
+        echo $args | sudo tee /etc/cmdline.d/$name.conf >/dev/null
+    end
+    set -l esp (sudo bootctl -p 2>/dev/null) (sudo bootctl -x 2>/dev/null)
+    test -n "$esp"
+    and for f in (sudo find $esp -path '*/loader/entries/*.conf' 2>/dev/null | sort -u)
+        sudo sed -i -E "/^options/ { /\b$marker\b/! s/\$/ $args/ }" $f
+    end
+    test -f /boot/refind_linux.conf
+    and sudo sed -i -E "/\b$marker\b|\bsingle\b/! s/\"\$/ $args\"/" /boot/refind_linux.conf
+    if test -f /etc/default/grub
+        sudo sed -i -E "/^GRUB_CMDLINE_LINUX_DEFAULT=.*\b$marker\b/! s/^(GRUB_CMDLINE_LINUX_DEFAULT=\")/\1$args /" /etc/default/grub
+        and sudo grub-mkconfig -o /boot/grub/grub.cfg
+    end
+end
+
 # The firmware logo (plymouth's bgrt theme) stays up from power-on to the tty1
-# autologin, instead of kernel and udev text. The arguments go wherever this box
-# keeps a command line -- a UKI, loader entries, rEFInd, GRUB -- often several.
+# autologin, instead of kernel and udev text.
 function ensure_plymouth
     command -q mkinitcpio; or return 0
     grep -qE '^HOOKS=.*\bplymouth\b' /etc/mkinitcpio.conf; and return 0
@@ -778,28 +801,33 @@ function ensure_plymouth
     and sudo sed -i -E '/^HOOKS=/ s/\b(udev|systemd)\b/\1 plymouth/' /etc/mkinitcpio.conf
     or begin; note "plymouth setup did not finish"; return 1; end
 
-    # mkinitcpio appends /etc/cmdline.d to /etc/kernel/cmdline, so the drop-in
-    # adds to the UKI's command line without touching it. The preset's --splash
-    # bitmap would flash the Arch logo between the firmware's and plymouth's.
+    kernel_args plymouth splash $args
+    # The preset's --splash bitmap would flash the Arch logo between the
+    # firmware's and plymouth's.
     if grep -qE '^[^#]*_uki=' /etc/mkinitcpio.d/*.preset 2>/dev/null
-        sudo mkdir -p /etc/cmdline.d
-        echo $args | sudo tee /etc/cmdline.d/plymouth.conf >/dev/null
         sudo sed -i -E 's/ ?--splash [^ "]+//' /etc/mkinitcpio.d/*.preset
-    end
-    set -l esp (sudo bootctl -p 2>/dev/null) (sudo bootctl -x 2>/dev/null)
-    test -n "$esp"
-    and for f in (sudo find $esp -path '*/loader/entries/*.conf' 2>/dev/null | sort -u)
-        sudo sed -i -E "/^options/ { /\bsplash\b/! s/\$/ $args/ }" $f
-    end
-    test -f /boot/refind_linux.conf
-    and sudo sed -i -E "/\bsplash\b|\bsingle\b/! s/\"\$/ $args\"/" /boot/refind_linux.conf
-    if test -f /etc/default/grub
-        sudo sed -i -E "/^GRUB_CMDLINE_LINUX_DEFAULT=.*\bsplash\b/! s/^(GRUB_CMDLINE_LINUX_DEFAULT=\")/\1$args /" /etc/default/grub
-        and sudo grub-mkconfig -o /boot/grub/grub.cfg
     end
 
     sudo mkinitcpio -P
     or note "plymouth is installed but the initramfs did not rebuild — sudo mkinitcpio -P"
+end
+
+# Some OLED panels (the Zephyrus G16's Samsung one) only take brightness over DP
+# AUX. Without this, i915 moves intel_backlight and the screen ignores it. The
+# kernel log names the fix when it applies, so that line is the trigger.
+function ensure_dpcd_backlight
+    command -q mkinitcpio; or return 0
+    test -f /etc/cmdline.d/dpcd-backlight.conf; and return 0
+    string match -q '*i915.enable_dpcd_backlight*' -- (cat /proc/cmdline); and return 0
+    journalctl -k -b 2>/dev/null | string match -q '*try booting with i915.enable_dpcd_backlight=3*'
+    or return 0
+
+    step "the panel ignores intel_backlight, so the brightness keys do nothing"
+    dim "the kernel log asks for i915.enable_dpcd_backlight=3 (brightness over DP AUX)"
+    confirm "add it to the kernel command line?"; or return 0
+    kernel_args dpcd-backlight i915.enable_dpcd_backlight i915.enable_dpcd_backlight=3
+    sudo mkinitcpio -P
+    or note "the initramfs did not rebuild — sudo mkinitcpio -P"
 end
 
 # Installed does not mean running. This is the runit service list from the old
@@ -1131,6 +1159,7 @@ if not set -q _flag_skip_checks; and not set -q _flag_uninstall
     ensure_resolved
     ensure_autologin
     ensure_plymouth
+    ensure_dpcd_backlight
 end
 
 # --- uninstall ----------------------------------------------------------------

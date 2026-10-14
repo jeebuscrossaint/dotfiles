@@ -27,10 +27,11 @@ SOURCE=@DEFAULT_AUDIO_SOURCE@
 # The panel's backlight device is NOT stable across boots. Which card drives eDP
 # is set by the BIOS MUX (asus-nb-wmi/gpu_mux_mode: 1=Hybrid, 0=Discrete), and
 # only the driver that owns the panel registers a backlight -- so it is
-# intel_backlight in Hybrid and nvidia_0 in Discrete, with the other name absent
-# entirely rather than present-but-dead. Hardcoding intel_backlight left the
-# brightness keys silently doing nothing for a whole MUX mode. Resolved at
-# runtime below, by looking for the device rather than naming it.
+# intel_backlight in Hybrid and nvidia_0 in Discrete. nvidia_0 also registers in
+# Hybrid, present but dead, so intel_backlight has to come first. Hardcoding
+# either name leaves the keys dead for a whole MUX mode. In Hybrid the OLED panel
+# also needs i915.enable_dpcd_backlight=3 (install.fish), or intel_backlight
+# moves and the screen ignores it.
 
 VOL_STEP=1   # percent of the displayed 0-100 scale
 VOL_MAX=1.5  # wpctl level shown as 100%: the scale is stretched, not capped
