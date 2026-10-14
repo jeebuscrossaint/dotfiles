@@ -494,8 +494,6 @@ function enable_service
     end
 end
 
-# asusd is the fan curves, keyboard LEDs and battery charge limit; supergfxd is
-# the GPU mode switch. AUR-only, and pointless on anything that is not an ASUS.
 # One pacman.conf key, set idempotently. An empty `value` means a bare flag line
 # like ILoveCandy, which has no `=` and is not in the shipped file at all -- so
 # the sed cannot just uncomment it, there is nothing there to uncomment.
@@ -606,20 +604,17 @@ function ensure_power_profile
     if not command -q tlp
         step "no power manager on this machine"
         dim "asusd covers this on the ASUS box; TLP is the equivalent here"
+        # The installer never removes anything, and TLP conflicts with these.
+        # Stop them before removing: a live tuned-ppd keeps the power-profiles
+        # bus name, and tlp-pd (Type=dbus) then never finishes starting.
         set -l old (pacman -Qq tuned tuned-ppd power-profiles-daemon 2>/dev/null)
-        test (count $old) -gt 0
-        and printf '   %ssudo pacman -Rns %s%s\n' "$c_ok" "$old" "$c_off"
+        if test (count $old) -gt 0
+            note "TLP conflicts with $old — remove it by hand, then rerun:"
+            printf '   %ssudo systemctl disable --now %s; sudo pacman -Rns %s%s\n' "$c_ok" "$old" "$old" "$c_off"
+            return 0
+        end
         printf '   %ssudo pacman -S --needed tlp tlp-pd%s\n' "$c_ok" "$c_off"
         confirm "install TLP?"; or return 0
-        # Removed first: pacman --noconfirm answers a conflict prompt with no.
-        # Stopped before that: pacman leaves a removed package's daemon running,
-        # and a live tuned-ppd keeps the power-profiles bus name, so tlp-pd (a
-        # Type=dbus unit) sits in "activating" and `enable --now` never returns.
-        test (count $old) -gt 0
-        and begin
-            sudo systemctl disable --now $old 2>/dev/null
-            sudo pacman -Rns --noconfirm $old; or begin; note "could not remove $old"; return 1; end
-        end
         sudo pacman -S --needed --noconfirm tlp tlp-pd
         or begin; note "that failed — carry on by hand"; return 1; end
     end
@@ -646,29 +641,55 @@ STOP_CHARGE_THRESH_BAT0=80'
     set -q changed[1]; and sudo tlp start >/dev/null
 end
 
+# asusd is the fan curves, keyboard LEDs, charge limit and the MUX. cardwire
+# gates the dGPU: `cardwire set integrated` hides it from every app so it sits
+# in D3cold, `cardwire set hybrid` gives it back, no reboot. It replaced
+# supergfxctl, which upstream has deprecated. Pointless on anything not an ASUS.
 function ensure_asus
     string match -qi '*asus*' -- (cat /sys/class/dmi/id/board_vendor 2>/dev/null)
     or return 0
 
     set -l want
     command -q asusctl; or set -a want asusctl
-    command -q supergfxctl; or set -a want supergfxctl
+    command -q cardwire; or set -a want cardwire-bin
     command -q rog-control-center; or set -a want rog-control-center
-    test (count $want) -gt 0
-    or begin; enable_service asusd; enable_service supergfxd; return 0; end
+    if test (count $want) -gt 0
+        step "ASUS board — the control stack is missing"
+        printf '   %sparu -S --needed %s%s\n' "$c_ok" "$want" "$c_off"
+        confirm "install it now?"; or return 0
 
-    step "ASUS board — the control stack is missing"
-    printf '   %sparu -S --needed %s%s\n' "$c_ok" "$want" "$c_off"
-    confirm "install it now?"; or return 0
-
-    set -l helper (aur_helper)
-    if test -z "$helper"
-        bootstrap_aur_helper; or return 1
-        set helper (aur_helper)
+        set -l helper (aur_helper)
+        if test -z "$helper"
+            bootstrap_aur_helper; or return 1
+            set helper (aur_helper)
+        end
+        fish -c "$helper -S --needed $want"; or begin; note "that failed — carry on by hand"; return 1; end
     end
-    fish -c "$helper -S --needed $want"; or begin; note "that failed — carry on by hand"; return 1; end
     enable_service asusd
-    enable_service supergfxd
+    command -q cardwire; or return 0
+    enable_service cardwired
+
+    # MUX 0 wires the panel to the dGPU, which makes it the default GPU and
+    # leaves cardwire nothing it is allowed to block.
+    # Written to the firmware directly: `asusctl armoury set` only queues it in
+    # asusd "for delayed apply", and pending_reboot stays 0.
+    set -l mux /sys/class/firmware-attributes/asus-armoury/attributes/gpu_mux_mode/current_value
+    if string match -q 0 -- (cat $mux 2>/dev/null)
+        step "the MUX is dGPU-only, so cardwire cannot turn the dGPU off"
+        if confirm "switch the MUX to hybrid (takes effect on the next reboot)?"
+            echo 1 | sudo tee $mux >/dev/null; or note "could not write $mux"
+        end
+    end
+
+    # Without the NVIDIA block, Vulkan probes still open /dev/nvidiactl and wake
+    # the card. Upstream calls it experimental only because nvidiactl is shared
+    # between NVIDIA cards; one iGPU plus one NVIDIA card is the safe case.
+    # The external-display switch is for the HDMI port, which is wired to the dGPU.
+    if host_has nvidia
+        cardwire config experimental-nvidia-block true >/dev/null
+        and cardwire config external-display-auto-switch true >/dev/null
+        or note "cardwire did not take its config — is cardwired running?"
+    end
 end
 
 # Things runit had no answer for, so they were never set up here before.
@@ -729,16 +750,56 @@ end
 function ensure_autologin
     command -q systemctl; or return 0
     set -l dir /etc/systemd/system/getty@tty1.service.d
-    test -f $dir/autologin.conf; and return 0
+    grep -q -- --skip-login $dir/autologin.conf 2>/dev/null; and return 0
 
-    step "tty1 does not log in by itself"
-    dim "agetty --autologin $USER on tty1; config.fish execs mango-run from there"
+    step "tty1 does not log in by itself, or prints a login banner first"
+    dim "agetty --autologin $USER on tty1, silently; config.fish execs mango-run from there"
     confirm "set that up?"; or return 0
     sudo mkdir -p $dir
-    printf '[Service]\nExecStart=\nExecStart=-/usr/bin/agetty --autologin %s --noclear %%I $TERM\n' $USER \
+    printf '[Service]\nExecStart=\nExecStart=-/usr/bin/agetty --skip-login --nonewline --noissue --autologin %s --noclear %%I $TERM\n' $USER \
         | sudo tee $dir/autologin.conf >/dev/null
     and sudo systemctl daemon-reload
     or note "could not write $dir/autologin.conf"
+end
+
+# The firmware logo (plymouth's bgrt theme) stays up from power-on to the tty1
+# autologin, instead of kernel and udev text. The arguments go wherever this box
+# keeps a command line -- a UKI, loader entries, rEFInd, GRUB -- often several.
+function ensure_plymouth
+    command -q mkinitcpio; or return 0
+    grep -qE '^HOOKS=.*\bplymouth\b' /etc/mkinitcpio.conf; and return 0
+
+    step "boot shows kernel text, not a splash"
+    dim "plymouth (bgrt: the firmware logo), quiet splash on every kernel command line"
+    confirm "set that up?"; or return 0
+
+    set -l args quiet splash loglevel=3 rd.udev.log_level=3 systemd.show_status=auto
+    sudo pacman -S --needed --noconfirm plymouth
+    and sudo sed -i -E '/^HOOKS=/ s/\b(udev|systemd)\b/\1 plymouth/' /etc/mkinitcpio.conf
+    or begin; note "plymouth setup did not finish"; return 1; end
+
+    # mkinitcpio appends /etc/cmdline.d to /etc/kernel/cmdline, so the drop-in
+    # adds to the UKI's command line without touching it. The preset's --splash
+    # bitmap would flash the Arch logo between the firmware's and plymouth's.
+    if grep -qE '^[^#]*_uki=' /etc/mkinitcpio.d/*.preset 2>/dev/null
+        sudo mkdir -p /etc/cmdline.d
+        echo $args | sudo tee /etc/cmdline.d/plymouth.conf >/dev/null
+        sudo sed -i -E 's/ ?--splash [^ "]+//' /etc/mkinitcpio.d/*.preset
+    end
+    set -l esp (sudo bootctl -p 2>/dev/null) (sudo bootctl -x 2>/dev/null)
+    test -n "$esp"
+    and for f in (sudo find $esp -path '*/loader/entries/*.conf' 2>/dev/null | sort -u)
+        sudo sed -i -E "/^options/ { /\bsplash\b/! s/\$/ $args/ }" $f
+    end
+    test -f /boot/refind_linux.conf
+    and sudo sed -i -E "/\bsplash\b|\bsingle\b/! s/\"\$/ $args\"/" /boot/refind_linux.conf
+    if test -f /etc/default/grub
+        sudo sed -i -E "/^GRUB_CMDLINE_LINUX_DEFAULT=.*\bsplash\b/! s/^(GRUB_CMDLINE_LINUX_DEFAULT=\")/\1$args /" /etc/default/grub
+        and sudo grub-mkconfig -o /boot/grub/grub.cfg
+    end
+
+    sudo mkinitcpio -P
+    or note "plymouth is installed but the initramfs did not rebuild — sudo mkinitcpio -P"
 end
 
 # Installed does not mean running. This is the runit service list from the old
@@ -1069,6 +1130,7 @@ if not set -q _flag_skip_checks; and not set -q _flag_uninstall
     ensure_systemd_extras
     ensure_resolved
     ensure_autologin
+    ensure_plymouth
 end
 
 # --- uninstall ----------------------------------------------------------------
