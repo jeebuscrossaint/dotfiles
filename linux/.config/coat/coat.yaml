@@ -38,9 +38,9 @@ opacity:
 
 font:
   emoji: "Noto Color Emoji"
-  monospace: "Fragment Mono"
-  sansserif: "Fragment Mono"
-  serif: "Fragment Mono"
+  monospace: "Iosevka Nerd Font Mono"
+  sansserif: "Iosevka Nerd Font Mono"
+  serif: "Iosevka Nerd Font Mono"
   sizes:
     terminal: 10
     desktop: 10
