@@ -20,6 +20,7 @@ enabled:
   - fuzzel
   - swaylock
   - conky
+  - qutebrowser
 
 scheme: onedark
 prefer_base24: true
@@ -42,9 +43,9 @@ font:
   sansserif: "Iosevka Nerd Font Mono"
   serif: "Iosevka Nerd Font Mono"
   sizes:
-    terminal: 10
-    desktop: 10
-    popups: 10
+    terminal: 14
+    desktop: 14
+    popups: 14
 
 # Per-app overrides of the blocks above. Only the keys listed are replaced;
 # everything else falls through, so an override is a patch, not a second config.
