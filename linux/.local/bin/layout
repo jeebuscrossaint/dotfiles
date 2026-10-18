@@ -5,16 +5,8 @@
 #   layout          advance (SUPER+space)
 #   layout show     just announce the current one
 #
-# mango's own switch_layout and setlayout only touch the CURRENT tag -- layouts
-# are per-tag state (pertag->ltidxs), and there is no global one. Visiting each
-# tag to set it would flash all nine past with their tag animations. Instead this
-# pushes a wildcard tag rule through `setoption`: setoption ends in reset_option,
-# which re-runs every tag rule on every tag in place, no view change. Tested: all
-# nine flip at once. It re-runs exec= lines too, but this config has only
-# exec-once.
-#
-# Each press APPENDS a rule (they never shrink, the last match wins) until the
-# next config reload, which also puts every tag back on the file's tagrules.
+# Layouts are per-tag state with no global one, so every tag is visited and set
+# with animations off. (0.18 stopped applying setoption tagrules live.)
 #
 # The cycle is read from circle_layout in the config, so there is one list.
 #
@@ -57,5 +49,16 @@ for l in $cycle; do
 	[ "$l" = "$cur" ] && take=1
 done
 
-mmsg dispatch "setoption,tagrule,id:*,layout_name:$next" >/dev/null
+orig=$(mmsg get all-monitors | jq -r '.monitors[] | select(.active) | .active_tags | join(" ")')
+mmsg dispatch "setoption,animations,0" >/dev/null
+for t in 1 2 3 4 5 6 7 8 9; do
+	mmsg dispatch "view,$t" >/dev/null
+	mmsg dispatch "setlayout,$next" >/dev/null
+done
+first=1
+for t in $orig; do
+	if [ "$first" = 1 ]; then mmsg dispatch "view,$t" >/dev/null; first=0
+	else mmsg dispatch "toggleview,$t" >/dev/null; fi
+done
+mmsg dispatch "setoption,animations,1" >/dev/null
 show "$next"
