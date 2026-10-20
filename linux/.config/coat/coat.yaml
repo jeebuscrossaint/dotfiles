@@ -23,7 +23,7 @@ enabled:
   - qutebrowser
 
 scheme: onedark
-prefer_base24: true
+prefer_base24: any
 
 # Evens out whatever scheme is loaded. `coat docs normalize` lists the knobs.
 normalize:
@@ -39,9 +39,9 @@ opacity:
 
 font:
   emoji: "Noto Color Emoji"
-  monospace: "Iosevka Nerd Font Mono"
-  sansserif: "Iosevka Nerd Font Mono"
-  serif: "Iosevka Nerd Font Mono"
+  monospace: "CodeNewRoman Nerd Font Mono"
+  sansserif: "CodeNewRoman Nerd Font Mono"
+  serif: "CodeNewRoman Nerd Font Mono"
   sizes:
     terminal: 14
     desktop: 14
