@@ -21,6 +21,13 @@ enabled:
   - swaylock
   - conky
   - qutebrowser
+  - colors
+
+# colors.json (the scheme as plain data) also goes to the homelab, where
+# term.lab picks it up. `coat docs colors`.
+colors:
+  send:
+    - amarnath@server:/opt/homelab/stacks/terminal/theme
 
 scheme: onedark
 prefer_base24: any
