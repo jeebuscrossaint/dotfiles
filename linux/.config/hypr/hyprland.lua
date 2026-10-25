@@ -964,11 +964,11 @@ for _, p in ipairs(hl.get_loaded_plugins()) do
 				adaptive_dim = 0.0,
 				adaptive_boost = 0.4,
 			},
-			layers = { enabled = true },
+			layers = { enabled = false }, -- on: closing fuzzel/dunst overshoots bright for ~250ms (v0.11.0)
 		})
 		-- Extends the built-in preset: only the keys set here change.
 		hg.preset("pomme", { blur_iterations = 4, blur_strength = 2.0 })
-		-- fuzzel and dunst: small floating panels, which is where Apple uses it most
+		-- fuzzel and dunst, used once layers are enabled again
 		hg.layer("launcher", { preset = "pomme" })
 		hg.layer("notifications", { preset = "pomme" })
 	elseif p.name == "scrolloverview" then
