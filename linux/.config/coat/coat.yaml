@@ -39,9 +39,9 @@ normalize:
 opacity:
   # Blur only shows through a translucent surface, so at 1.0 an opaque terminal
   # frosts nothing and the effects block appears to do less than it does.
-  terminal: 1.0
+  terminal: 0.85
   popups: 0.80     # fuzzel + dunst; enough transparency for compositor blur
-  applications: 1.0
+  applications: 0.85
   desktop: 1.0     # conky, which has only the wallpaper behind it anyway
 
 font:

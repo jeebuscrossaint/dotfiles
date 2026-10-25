@@ -199,8 +199,8 @@ hl.config({
 			input_methods_ignorealpha = 0.2,
 		},
 		motion_blur = {
-			enabled = false,
-			samples = 1,
+			enabled = true,
+			samples = 24, -- below ~16 the trail breaks into separate ghosts
 		},
 	},
 
@@ -645,7 +645,7 @@ hl.window_rule({
 })
 hl.window_rule({ name = "pinentry", match = { class = "^(pinentry-.*)$" }, float = true, stay_focused = true })
 hl.window_rule({ name = "pip", match = { title = "^Picture-in-Picture$" }, float = true, pin = true })
-hl.window_rule({ name = "translucent", match = { class = "^(kitty|discord|vesktop|com.microsoft.VSCode)$" }, opacity = "0.90 override 0.90 override" })
+hl.window_rule({ name = "translucent", match = { class = "^(com.microsoft.VSCode)$" }, opacity = "0.90 override 0.90 override" })
 -- Anything fullscreen (video, games) holds off hypridle's lock and blank.
 hl.window_rule({ name = "fullscreen-awake", match = { class = ".*" }, idle_inhibit = "fullscreen" })
 hl.window_rule({ name = "webcam-opaque", match = { class = "^(guvcview)$" }, opacity = "1.0 override 1.0 override" })
