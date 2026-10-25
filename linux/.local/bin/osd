@@ -60,22 +60,17 @@ KBD_LED=asus::kbd_backlight
 # is missing or ~/.config/sfx-mute exists. Volume gets one because you are already
 # thinking about audio; brightness deliberately does not, since a click on every
 # step of a held key is maddening.
-# Night light. wlsunset does the sunrise/sunset arithmetic itself from a
-# latitude and longitude, so there is no timer and no cron here -- it sleeps
-# until the next transition and fades over it. Orlando; change the two numbers
-# if the machine moves. 6500K is neutral daylight, so the day half of the cycle
-# is a no-op and only the night half shifts.
-# The night temperature is whatever `osd nightlight warmer|cooler` last left in
-# NIGHT_FILE, so it survives a reboot; 3500K until it is first nudged.
+# Hyprsunset applies one temperature globally; it does not calculate sunrise
+# and sunset. The night-light commands therefore control it directly, while
+# the temperature remains persistent across logins.
+# 6500K is neutral daylight. Use warmer/cooler to adjust the saved temperature.
 NIGHT_FILE=${XDG_STATE_HOME:-$HOME/.local/state}/nightlight-temp
 NIGHT_TEMP=$(cat "$NIGHT_FILE" 2>/dev/null)
 case $NIGHT_TEMP in '' | *[!0-9]*) NIGHT_TEMP=3500 ;; esac
 NIGHT_STEP=250
 NIGHT_MIN=1500
 NIGHT_MAX=6000
-NIGHT_DAY_TEMP=6500
-NIGHT_LAT=28.5
-NIGHT_LON=-81.4
+NIGHT_ON_FILE=${XDG_RUNTIME_DIR:-/tmp}/hyprsunset-nightlight
 
 # Whether the touchpad is currently off. Neither compositor can be asked (see
 # the touchpad section), so the state is tracked here.
@@ -332,17 +327,6 @@ kbd)
 	;;
 
 # ----------------------------------------------------------------- nightlight
-# `osd nightlight` toggles, `osd nightlight start` only starts -- that is the one
-# mango runs at login, and it draws nothing, because a popup on every boot is not
-# news.
-#
-# Running or not IS the state: wlsunset has no query and no toggle signal, so the
-# toggle kills it and starts it again. It restores the gamma on the way out, so
-# "off" is genuinely off rather than a daytime temperature left behind.
-#
-# Was hyprsunset, which went with Hyprland -- it drives Hyprland's own IPC and
-# does nothing under mango. wlsunset speaks wlr-gamma-control, which mango has
-# (wlr_gamma_control_manager_v1_create in the binary).
 nightlight | night)
 	case ${2:-} in warmer | cooler)
 		if [ "$2" = warmer ]; then t=$((NIGHT_TEMP - NIGHT_STEP)); else t=$((NIGHT_TEMP + NIGHT_STEP)); fi
@@ -350,28 +334,26 @@ nightlight | night)
 		[ "$t" -gt "$NIGHT_MAX" ] && t=$NIGHT_MAX
 		mkdir -p "${NIGHT_FILE%/*}"
 		echo "$t" > "$NIGHT_FILE"
-		# wlsunset cannot be retuned live; restart it (which also turns it on).
-		pkill -x wlsunset
-		while pgrep -x wlsunset >/dev/null 2>&1; do sleep 0.05; done
-		setsid wlsunset -l "$NIGHT_LAT" -L "$NIGHT_LON" \
-			-t "$t" -T "$NIGHT_DAY_TEMP" >/dev/null 2>&1 &
+		hyprctl hyprsunset temperature "$t" >/dev/null 2>&1 || exit 1
+		: > "$NIGHT_ON_FILE"
 		# Bar fills as it gets warmer.
 		show "󰖔  Night light ${t}K" $(((NIGHT_MAX - t) * 100 / (NIGHT_MAX - NIGHT_MIN)))
 		exit 0
 		;;
 	esac
-	if pgrep -x wlsunset >/dev/null 2>&1; then
-		[ "${2:-}" = start ] && exit 0
-		pkill -x wlsunset
+	if [ -f "$NIGHT_ON_FILE" ]; then
+		hyprctl hyprsunset identity >/dev/null 2>&1 || exit 1
+		rm -f "$NIGHT_ON_FILE"
 		show "󰖨  Night light off"
-	elif command -v wlsunset >/dev/null 2>&1; then
-		setsid wlsunset -l "$NIGHT_LAT" -L "$NIGHT_LON" \
-			-t "$NIGHT_TEMP" -T "$NIGHT_DAY_TEMP" >/dev/null 2>&1 &
+	else
+		hyprctl hyprsunset temperature "$NIGHT_TEMP" >/dev/null 2>&1 || {
+			[ "${2:-}" = start ] && exit 0
+			show "󰖨  hyprsunset is not running"
+			exit 1
+		}
+		: > "$NIGHT_ON_FILE"
 		[ "${2:-}" = start ] && exit 0
 		show "󰖔  Night light ${NIGHT_TEMP}K after sunset"
-	else
-		[ "${2:-}" = start ] && exit 0
-		show "󰖨  wlsunset not installed"
 	fi
 	;;
 
@@ -383,12 +365,19 @@ touchpad)
 	# would lie.
 	if [ -f "$TP_FLAG" ]; then want=on; else want=off; fi
 
-	if [ -z "${MANGO_INSTANCE_SIGNATURE:-}" ]; then
+	if [ -n "${HYPRLAND_INSTANCE_SIGNATURE:-}" ]; then
+		# hl.device addresses one device by name, so set every touchpad.
+		if [ "$want" = on ]; then en=true; else en=false; fi
+		hyprctl devices -j | jq -r '.mice[].name | select(test("touchpad"))' | while read -r n; do
+			hyprctl eval "hl.device({ name = \"$n\", enabled = $en })" >/dev/null
+		done
+	elif [ -n "${MANGO_INSTANCE_SIGNATURE:-}" ]; then
+		# mango's own toggle -- one dispatch, no device name to resolve.
+		mmsg dispatch toggle_trackpad_enable >/dev/null 2>&1 || exit 1
+	else
 		# No compositor to ask (a TTY, or a session that does not do this).
 		exit 0
 	fi
-	# mango's own toggle -- one dispatch, no device name to resolve.
-	mmsg dispatch toggle_trackpad_enable >/dev/null 2>&1 || exit 1
 
 	if [ "$want" = on ]; then
 		rm -f "$TP_FLAG"
