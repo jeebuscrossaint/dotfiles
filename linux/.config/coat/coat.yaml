@@ -15,10 +15,9 @@ enabled:
   - lsd
   - imv
   - satty
-  - mango
+  - hyprland
   - dunst
   - fuzzel
-  - swaylock
   - conky
   - qutebrowser
   - colors
@@ -39,20 +38,20 @@ normalize:
 opacity:
   # Blur only shows through a translucent surface, so at 1.0 an opaque terminal
   # frosts nothing and the effects block appears to do less than it does.
-  terminal: 1.0    # opaque: mango drops blur on fullscreen, so 0.85 showed the windows behind it
-  popups: 0.92     # fuzzel + dunst; higher, they sit over arbitrary windows
+  terminal: 1.0
+  popups: 0.80     # fuzzel + dunst; enough transparency for compositor blur
   applications: 1.0
   desktop: 1.0     # conky, which has only the wallpaper behind it anyway
 
 font:
   emoji: "Noto Color Emoji"
-  monospace: "CodeNewRoman Nerd Font Mono"
-  sansserif: "CodeNewRoman Nerd Font Mono"
-  serif: "CodeNewRoman Nerd Font Mono"
+  monospace: "ShureTechMono Nerd Font Mono"
+  sansserif: "ShureTechMono Nerd Font Mono"
+  serif: "ShureTechMono Nerd Font Mono"
   sizes:
-    terminal: 14
-    desktop: 14
-    popups: 14
+    terminal: 13
+    desktop: 13
+    popups: 13
 
 # Per-app overrides of the blocks above. Only the keys listed are replaced;
 # everything else falls through, so an override is a patch, not a second config.

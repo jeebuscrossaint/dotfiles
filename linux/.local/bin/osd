@@ -38,9 +38,9 @@ VOL_MAX=1.5  # wpctl level shown as 100%: the scale is stretched, not capped
 BL_STEP=1   # percent of max_brightness per keypress
 BL_MIN=1    # never step the backlight to 0 — that is a black screen
 
-# Holding a brightness key does NOT go through mango's key repeat. The keys come
+# Holding a brightness key does NOT go through the compositor's key repeat. The keys come
 # from the ACPI "Video Bus" input device, which has no EV_REP and reports every
-# firmware event as an instant press+release -- so mango sees the key already
+# firmware event as an instant press+release -- so the compositor sees the key already
 # up and never arms its repeat timer, and a held key steps at the firmware's own
 # (slow) typematic rate instead of repeat_rate. Faster than mashing, it is not.
 #
@@ -60,17 +60,16 @@ KBD_LED=asus::kbd_backlight
 # is missing or ~/.config/sfx-mute exists. Volume gets one because you are already
 # thinking about audio; brightness deliberately does not, since a click on every
 # step of a held key is maddening.
-# Hyprsunset applies one temperature globally; it does not calculate sunrise
-# and sunset. The night-light commands therefore control it directly, while
-# the temperature remains persistent across logins.
-# 6500K is neutral daylight. Use warmer/cooler to adjust the saved temperature.
+# Night light is hyprsunset, which switches on and off by the profiles in
+# hyprsunset.conf and is only toggled or nudged from here. The nudged temperature
+# is kept in NIGHT_FILE; 3500K until it is first nudged.
 NIGHT_FILE=${XDG_STATE_HOME:-$HOME/.local/state}/nightlight-temp
 NIGHT_TEMP=$(cat "$NIGHT_FILE" 2>/dev/null)
 case $NIGHT_TEMP in '' | *[!0-9]*) NIGHT_TEMP=3500 ;; esac
 NIGHT_STEP=250
 NIGHT_MIN=1500
 NIGHT_MAX=6000
-NIGHT_ON_FILE=${XDG_RUNTIME_DIR:-/tmp}/hyprsunset-nightlight
+NIGHT_DAY_TEMP=6500
 
 # Whether the touchpad is currently off. Neither compositor can be asked (see
 # the touchpad section), so the state is tracked here.
@@ -328,39 +327,35 @@ kbd)
 
 # ----------------------------------------------------------------- nightlight
 nightlight | night)
-	case ${2:-} in warmer | cooler)
+	case ${2:-} in
+	start) exit 0 ;; # hyprsunset starts itself from hyprland.lua
+	warmer | cooler)
 		if [ "$2" = warmer ]; then t=$((NIGHT_TEMP - NIGHT_STEP)); else t=$((NIGHT_TEMP + NIGHT_STEP)); fi
 		[ "$t" -lt "$NIGHT_MIN" ] && t=$NIGHT_MIN
 		[ "$t" -gt "$NIGHT_MAX" ] && t=$NIGHT_MAX
 		mkdir -p "${NIGHT_FILE%/*}"
 		echo "$t" > "$NIGHT_FILE"
 		hyprctl hyprsunset temperature "$t" >/dev/null 2>&1 || exit 1
-		: > "$NIGHT_ON_FILE"
 		# Bar fills as it gets warmer.
 		show "󰖔  Night light ${t}K" $(((NIGHT_MAX - t) * 100 / (NIGHT_MAX - NIGHT_MIN)))
 		exit 0
 		;;
 	esac
-	if [ -f "$NIGHT_ON_FILE" ]; then
-		hyprctl hyprsunset identity >/dev/null 2>&1 || exit 1
-		rm -f "$NIGHT_ON_FILE"
+	# hyprsunset is queryable, so the temperature it reports IS the state.
+	cur=$(hyprctl hyprsunset temperature 2>/dev/null)
+	case $cur in '' | *[!0-9]*) show "󰖨  hyprsunset is not running"; exit 1 ;; esac
+	if [ "$cur" -lt "$NIGHT_DAY_TEMP" ]; then
+		hyprctl hyprsunset identity >/dev/null 2>&1
 		show "󰖨  Night light off"
 	else
-		hyprctl hyprsunset temperature "$NIGHT_TEMP" >/dev/null 2>&1 || {
-			[ "${2:-}" = start ] && exit 0
-			show "󰖨  hyprsunset is not running"
-			exit 1
-		}
-		: > "$NIGHT_ON_FILE"
-		[ "${2:-}" = start ] && exit 0
-		show "󰖔  Night light ${NIGHT_TEMP}K after sunset"
+		hyprctl hyprsunset temperature "$NIGHT_TEMP" >/dev/null 2>&1
+		show "󰖔  Night light ${NIGHT_TEMP}K"
 	fi
 	;;
 
 # -------------------------------------------------------------------- touchpad
 touchpad)
-	# mango does not report the result -- all-devices has no enabled flag -- hence
-	# the flag file. Which is why the trackpad bind routes through here: a native
+	# hyprctl devices has no enabled flag for a touchpad, hence the flag file. Which is why the trackpad bind routes through here: a native
 	# bind would flip the device behind the flag's back and every popup after
 	# would lie.
 	if [ -f "$TP_FLAG" ]; then want=on; else want=off; fi
@@ -371,9 +366,6 @@ touchpad)
 		hyprctl devices -j | jq -r '.mice[].name | select(test("touchpad"))' | while read -r n; do
 			hyprctl eval "hl.device({ name = \"$n\", enabled = $en })" >/dev/null
 		done
-	elif [ -n "${MANGO_INSTANCE_SIGNATURE:-}" ]; then
-		# mango's own toggle -- one dispatch, no device name to resolve.
-		mmsg dispatch toggle_trackpad_enable >/dev/null 2>&1 || exit 1
 	else
 		# No compositor to ask (a TTY, or a session that does not do this).
 		exit 0
@@ -392,10 +384,8 @@ touchpad)
 # Display only -- the key toggles itself, this reports it. The kernel LED is the
 # source of truth; three keyboards expose these here, and any one lit means on.
 #
-# Binding these on PRESS is safe: the compositor declining to forward a key only
-# skips wlr_seat_keyboard_notify_key, and xkb has already processed the keycode
-# and pushed the LED upstream of that (mango 0.16.1 keypress(), src/input/
-# keyboard.h). Caps lock keeps capitalising. LOCK_SETTLE covers the read.
+# Bound non-consuming, so the key still reaches xkb and Caps lock keeps
+# capitalising. LOCK_SETTLE covers the read.
 capslock | numlock)
 	sleep "$LOCK_SETTLE"
 	on=0

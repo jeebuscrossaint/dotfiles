@@ -1,6 +1,6 @@
 # dotfiles
 
-mango · conky · kitty · fish · micro · fuzzel · dunst · swaylock · [coat](https://github.com/jeebuscrossaint/coat)
+Hyprland · conky · kitty · fish · micro · fuzzel · dunst · hyprlock · hypridle · hyprsunset · [coat](https://github.com/jeebuscrossaint/coat)
 
 arch linux
 

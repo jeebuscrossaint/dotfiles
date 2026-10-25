@@ -54,18 +54,9 @@ function conky_gw()
     return ("%d.%d.%d.%d"):format(b[4], b[3], b[2], b[1])
 end
 
--- mmsg readouts, in Lua instead of ${execi ... | jq}.
---
--- The tag list and the focused appid were two ${execi 2} pipelines, and each one
--- was sh -> mmsg -> jq. jq is a ~20ms process start to pull three fields out of
--- one line, paid twice every two seconds, forever: measured with `strace -f -e
--- trace=execve`, those two lines were 1.0 jq/s and 1.7 sh/s, and stripping every
--- ${execi} from the panel took it from 11.2% of a core to 2.9%. Parsing here
--- drops the jq and one shell per call; io.popen still goes through sh, so mmsg
--- itself is the floor.
---
--- Cached on wall-clock seconds rather than run per tick, because update_interval
--- is 0.5 and this only needs to be as fresh as the old execi 2 was.
+-- hyprctl readouts, in Lua instead of ${execi ... | jq}: a jq per call was a
+-- ~20ms process start twice every two seconds. Cached on wall-clock seconds,
+-- because update_interval is 0.5 and these only need to be ~2 s fresh.
 local cache = {}
 
 local function cached(key, seconds, fn)
@@ -86,38 +77,32 @@ local function slurp(cmd)
     return s
 end
 
--- conky_tags() -> "[1] 2 3" — active in brackets, urgent with a bang, and tags
--- with no clients omitted. Matches what the jq program emitted.
---
--- The object pattern is field-ORDER dependent, which is safe here only because
--- mango emits these keys in a fixed order from a struct. `"tags":%[(.-)%]` takes
--- the FIRST monitor's array and nothing else -- the jq was .all_tags[0].tags[],
--- and a tag object contains no bracket, so the non-greedy match ends in the right
--- place.
+-- conky_tags() -> "[1] 2 5": workspaces that exist (have windows or are
+-- focused), the active one in brackets. Special workspaces (negative ids) are
+-- left out.
 function conky_tags()
     return cached("tags", 2, function()
-        local s = slurp("mmsg get all-tags")
-        if not s then return "" end
-        local body = s:match('"tags":%[(.-)%]')
-        if not body then return "" end
-        local out = {}
-        for idx, act, urg, _, cnt in body:gmatch(
-            '"index":(%d+),"is_active":(%a+),"is_urgent":(%a+),"layout":"(%a*)","client_count":(%d+)') do
-            if act == "true" or tonumber(cnt) > 0 then
-                if urg == "true" then out[#out + 1] = "!" .. idx
-                elseif act == "true" then out[#out + 1] = "[" .. idx .. "]"
-                else out[#out + 1] = idx end
-            end
+        local all = slurp("hyprctl workspaces -j")
+        local active = tonumber((slurp("hyprctl activeworkspace -j") or ""):match('"id":%s*(%-?%d+)'))
+        if not all then return "" end
+        local ids = {}
+        for m in all:gmatch('{%s*"id":%s*(%-?%d+)') do
+            local id = tonumber(m)
+            if id > 0 then ids[#ids + 1] = id end
         end
-        return table.concat(out, " ")
+        table.sort(ids)
+        for i, id in ipairs(ids) do
+            ids[i] = id == active and ("[" .. id .. "]") or tostring(id)
+        end
+        return table.concat(ids, " ")
     end)
 end
 
--- conky_appid() -> the focused window's appid, "-" when nothing is focused.
+-- conky_appid() -> the focused window's class, "-" when nothing is focused.
 function conky_appid()
     return cached("appid", 2, function()
-        local s = slurp("mmsg get focusing-client")
-        return (s and s:match('"appid":"(.-)"')) or "-"
+        local s = slurp("hyprctl activewindow -j")
+        return (s and s:match('"class":%s*"(.-)"')) or "-"
     end)
 end
 
@@ -125,7 +110,7 @@ end
 --
 -- NOT ${pa_sink_volume}, which conky does have (this build lists PulseAudio),
 -- because conky opens that connection ONCE at parse time and there is no retry:
--- the panel is started by mango's exec-once supervisor, which wins the race
+-- the panel is started by Hyprland's autostart loop, which wins the race
 -- against pipewire-pulse on a cold boot, and a conky that loses it renders the
 -- variable as the literal text "${pa_sink_volume}" for the rest of the session
 -- -- then libpulse takes the process down from under it:
@@ -157,7 +142,7 @@ end
 -- charge_full, a cat over cycle_count, a cat over scaling_governor. At their
 -- intervals that is a shell plus a child roughly every second and a half,
 -- forever, to read numbers Lua reads with no process at all. Same move that took
--- the panel from 11.2% of a core to 2.9% when the mmsg pipelines went -- see
+-- the panel from 11.2% of a core to 2.9% when the compositor pipelines went -- see
 -- conky_tags -- and the same cache, so the read rate matches the old interval
 -- rather than the tick rate.
 --

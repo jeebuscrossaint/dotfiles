@@ -1,4 +1,4 @@
-# ~/.config/dunst/dunstrc — the notification daemon for the mango session.
+# ~/.config/dunst/dunstrc — the notification daemon for the Hyprland session.
 #
 # dunst because it is the only notification daemon in BOTH Arch and OpenBSD
 # (x11/dunst, layer-shell there too), and because coat can theme it without
@@ -22,7 +22,7 @@
     offset = (0, 12)
 
     # Between notifications, not around them. dunst only honours this on a
-    # compositor that can do it, which mango can; where it cannot, it silently
+    # compositor that can do it, which Hyprland can; where it cannot, it silently
     # falls back to separator_height.
     gap_size = 8
 
@@ -35,8 +35,8 @@
     horizontal_padding = 14
 
     frame_width = 1
-    # Matches mango's border_radius -- blur_layer=1 frosts this now, so a square
-    # corner is a square corner cut out of the blur.
+    # Blurred (and glassed) by Hyprland, so a square corner is a square corner
+    # cut out of the glass.
     corner_radius = 12
 
     ### Display ###
@@ -46,9 +46,8 @@
     # decision, not an accident.
     layer = overlay
 
-    # pickcolor sends a pango <span background="#rrggbb"> to show the colour it
-    # picked, which is the only way to put the colour itself on screen. `strip`
-    # or `no` here turns that into either plain text or visible markup.
+    # Notification bodies use pango markup (bold, colour spans). `strip` or `no`
+    # here turns that into either plain text or visible markup.
     markup = full
     format = "<b>%s</b>\n%b"
 

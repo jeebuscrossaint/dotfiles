@@ -2,7 +2,12 @@ set -g fish_greeting
 
 if status is-login; and test (tty) = /dev/tty1
     if command -q uwsm; and uwsm check may-start >/dev/null 2>&1
-        exec mango-run
+        # A rejected config prints its errors and leaves you on the tty to fix it,
+        # instead of an autologin crash loop.
+        if Hyprland --verify-config >/dev/null 2>&1
+            exec uwsm start hyprland.desktop
+        end
+        Hyprland --verify-config
     end
 end
 

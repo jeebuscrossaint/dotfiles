@@ -14,8 +14,8 @@ linux/.config/coat/schemes/
 linux/.config/wob/wob.ini
 
 # There is NO rule for the notification daemon or the lock screen, and that is
-# the point. coat writes dunstrc.d/50-coat.conf and swaylock/coat-theme.conf, and
-# because both config directories are real directories, neither file is inside this tree to begin with. Nothing to ignore.
+# the point. coat writes dunstrc.d/50-coat.conf, and because
+# ~/.config/dunst is a real directory, that file is not inside this tree to begin with. Nothing to ignore.
 
 # py_compile droppings — the scripts in .local/bin are run directly, never imported.
 __pycache__/

@@ -10,18 +10,37 @@ if not ok then
 	-- No coat fragment yet (fresh box, or `coat set` never ran): neutral fallback.
 	c = {
 		base00 = "rgba(1d1f21ff)", base03 = "rgba(707880ff)", base05 = "rgba(c5c8c6ff)",
-		base08 = "rgba(cc6666ff)", base09 = "rgba(de935fff)", base0C = "rgba(8abeb7ff)",
+		base08 = "rgba(cc6666ff)", base09 = "rgba(de935fff)", base0A = "rgba(f0c674ff)", base0C = "rgba(8abeb7ff)",
 		base0D = "rgba(81a2beff)", base0E = "rgba(b294bbff)", shadow = "rgba(00000099)",
 	}
 end
 
 local home = os.getenv("HOME")
+
+-- hyprlock.conf sources these. coat runs `hyprctl reload` after every theme
+-- change, so rewriting them here keeps the lock screen on the current scheme.
+local lock = io.open(home .. "/.config/hypr/hyprlock-colors.conf", "w")
+if lock then
+	lock:write("$font = ", c.font_sans or "Sans", "\n")
+	for k, v in pairs(c) do
+		local hex = k:match("^base0%x$") and v:match("rgba%((%x%x%x%x%x%x)")
+		if hex then
+			lock:write("$", k, " = ", hex, "\n")
+		end
+	end
+	lock:close()
+end
 local terminal = "kitty"
 local mod = "SUPER"
 
 -- fuzzel sized from the real screen: fuzzel.ini's 2560x1600 numbers, scaled.
-local fuzzel = "read v < /sys/class/graphics/fb0/virtual_size; fuzzel"
-	.. " --width=$(( ${v%%[!0-9]*} * 50 / 2560 )) --line-height=$(( ${v##*[!0-9]} * 26 / 1600 ))"
+-- A plain command, so it works on the right of a pipe.
+local fb = io.open("/sys/class/graphics/fb0/virtual_size")
+local sw, sh = (fb and fb:read("l") or "2560,1600"):match("(%d+),(%d+)")
+if fb then
+	fb:close()
+end
+local fuzzel = ("fuzzel --width=%d --line-height=%d"):format(sw * 50 // 2560, sh * 26 // 1600)
 
 ------------------------------------------------------------------- monitors
 local edp = {
@@ -75,19 +94,18 @@ end
 hl.on("hyprland.start", function()
 	for _, cmd in ipairs({
 		"dbus-update-activation-environment --all",
-		"start-polkit",
+		"/usr/lib/hyprpolkitagent/hyprpolkitagent",
 		"audio-ensure",
 		"dunst",
 		"udiskie",
 		"nvibrant 0 0 0 0",
 --		"swaybg -m fill -i " .. home .. "/walls/mountain/a_mountain_with_snow_on_top_02.jpg",
 		"hyprsunset",
-		"hyprlock-coat",
 		"battery-watch",
 		"rog-control-center --background --autostart",
 		conky_loop("", "conky.log"),
 		conky_loop("-c " .. home .. "/.config/conky/conky-left.conf", "conky-left.log"),
-		-- Lock at 5 min, blank at 5:30 (OLED), waiting out active audio.
+		-- Lock at 5 min, blank at 5:30 (OLED). hypridle.conf.
 		"hypridle",
 		"wl-paste --type text --watch cliphist store",
 		"wl-paste --type image --watch cliphist store",
@@ -109,7 +127,7 @@ hl.config({
 		float_gaps = 0,
 		gaps_workspaces = 0,
 		col = {
-			active_border = { colors = { c.base0D, c.base0C }, angle = 45 },
+			active_border = { colors = { c.base0D }, angle = 0 },
 			inactive_border = c.base03,
 			nogroup_border = c.base03,
 			nogroup_border_active = c.base0E,
@@ -136,12 +154,12 @@ hl.config({
 		rounding = 10,
 		rounding_power = 2.0, -- 2 circle, 4 squircle
 		active_opacity = 1.0,
-			inactive_opacity = 0.95,
+		inactive_opacity = 0.90,
 		fullscreen_opacity = 1.0,
 		shadow = {
 			enabled = true,
 			range = 40,
-			render_power = 2, -- broad, soft falloff to match Mango's blur=40
+			render_power = 2, -- broad, soft falloff
 			sharp = false,
 			color = c.shadow,
 			color_inactive = c.shadow,
@@ -159,21 +177,21 @@ hl.config({
 		dim_inactive = false,
 		dim_strength = 0.0,
 		dim_special = 0.0,
-		dim_around = 0.0,
+		dim_around = 0.4, -- strength for layer/window rules with dim_around (fuzzel)
 		screen_shader = "",
 		border_part_of_window = false,
 		blur = {
 			enabled = true,
-						size = 5,
-						passes = 2,
-						ignore_opacity = false,
+			size = 5,
+			passes = 4,
+			ignore_opacity = true,
 			new_optimizations = true,
-						xray = false,
-						noise = 0.0117,
-						contrast = 1.0,
-						brightness = 1.0,
-						vibrancy = 0.0,
-						vibrancy_darkness = 0.0,
+			xray = false,
+			noise = 0.0117,
+			contrast = 1.0,
+			brightness = 1.0,
+			vibrancy = 0.0,
+			vibrancy_darkness = 0.0,
 			special = false,
 			popups = true,
 			popups_ignorealpha = 0.2,
@@ -182,7 +200,7 @@ hl.config({
 		},
 		motion_blur = {
 			enabled = false,
-			samples = 7,
+			samples = 1,
 		},
 	},
 
@@ -224,11 +242,11 @@ hl.config({
 		follow_mouse_shrink = 0,
 		touchpad = {
 			disable_while_typing = true,
-			natural_scroll = false,
+			natural_scroll = true, -- macOS-style on the touchpad, mouse wheel stays normal
 			scroll_factor = 1.0,
 			middle_button_emulation = false,
 			tap_button_map = "",
-			clickfinger_behavior = false,
+			clickfinger_behavior = true, -- two-finger click = right click, three = middle
 			tap_to_click = true,
 			drag_lock = 0,
 			tap_and_drag = true,
@@ -418,7 +436,7 @@ hl.config({
 		cm_enabled = true,
 		send_content_type = true,
 		cm_auto_hdr = 1, -- fullscreen HDR content flips the output to HDR on its own
-		new_render_scheduling = false,
+		new_render_scheduling = true, -- triple-buffers when a frame runs late; 240 Hz leaves ~4 ms
 		non_shader_cm = 2,
 		cm_sdr_eotf = "default",
 		commit_timing_enabled = true,
@@ -439,7 +457,7 @@ hl.config({
 		inactive_timeout = 3,
 		no_warps = false,
 		persistent_warps = false,
-		warp_on_change_workspace = 1,
+		warp_on_change_workspace = 0, -- 0 off, 1 warp to the last focused window, 2 always
 		warp_on_toggle_special = 0,
 		default_monitor = "",
 		zoom_factor = 1.0,
@@ -447,7 +465,7 @@ hl.config({
 		zoom_disable_aa = false,
 		zoom_detached_camera = true,
 		enable_hyprcursor = true,
-		hide_on_key_press = false,
+		hide_on_key_press = true,
 		hide_on_touch = true,
 		hide_on_tablet = false,
 		use_cpu_buffer = 2,
@@ -505,6 +523,35 @@ hl.config({
 		precise_mouse_move = false,
 	},
 
+	master = {
+		allow_small_split = false,
+		special_scale_factor = 1.0,
+		mfact = 0.55,
+		new_status = "slave", -- master, slave, inherit
+		new_on_top = false,
+		new_on_active = "none", -- before, after, none
+		orientation = "left", -- left, right, top, bottom, center
+		slave_count_for_center_master = 2,
+		center_master_fallback = "left",
+		center_ignores_reserved = false,
+		smart_resizing = true,
+		drop_at_cursor = true,
+		always_keep_position = false,
+		focus_master_on_close = false,
+	},
+
+	scrolling = {
+		fullscreen_on_one_column = true,
+		column_width = 0.5,
+		focus_fit_method = 1, -- 0 center, 1 fit
+		follow_focus = true,
+		follow_min_visible = 0.4,
+		explicit_column_widths = "0.333, 0.5, 0.667, 1.0",
+		direction = "right",
+		wrap_focus = true,
+		wrap_swapcol = true,
+	},
+
 	experimental = {
 		wp_cm_1_2 = false,
 	},
@@ -527,42 +574,40 @@ hl.curve("easeInOutCubic", { type = "bezier", points = { { 0.65, 0.05 }, { 0.36,
 hl.curve("linear", { type = "bezier", points = { { 0, 0 }, { 1, 1 } } })
 hl.curve("almostLinear", { type = "bezier", points = { { 0.5, 0.5 }, { 0.75, 1 } } })
 hl.curve("quick", { type = "bezier", points = { { 0.15, 0 }, { 0.1, 1 } } })
-
--- Removed the 'easy' spring curve entirely and mapped everything to smooth bezier curves.
 for _, a in ipairs({
-	{ "global", 4.0, "easeOutQuint" },
-	{ "windows", 4.0, "easeOutQuint" },
-	{ "windowsIn", 4.0, "easeOutQuint", "popin 95%" },
-	{ "windowsOut", 4.0, "linear", "popin 95%" },
-	{ "windowsMove", 4.0, "easeOutCubic" },
-	{ "layers", 4.0, "easeOutQuint" },
-	{ "layersIn", 4.0, "easeOutQuint", "fade" },
-	{ "layersOut", 4.0, "linear", "fade" },
-	{ "fade", 4.0, "quick" },
-	{ "fadeIn", 4.0, "almostLinear" },
-	{ "fadeOut", 4.0, "almostLinear" },
-	{ "fadeSwitch", 4.0, "almostLinear" },
-	{ "fadeShadow", 4.0, "almostLinear" },
-	{ "fadeGlow", 4.0, "almostLinear" },
-	{ "fadeDim", 4.0, "almostLinear" },
-	{ "fadeLayers", 4.0, "almostLinear" },
-	{ "fadeLayersIn", 4.0, "almostLinear" },
-	{ "fadeLayersOut", 4.0, "almostLinear" },
-	{ "fadePopups", 4.0, "almostLinear" },
-	{ "fadePopupsIn", 4.0, "almostLinear" },
-	{ "fadePopupsOut", 4.0, "almostLinear" },
-	{ "fadeDpms", 4.0, "quick" },
-	{ "border", 4.0, "easeOutQuint" },
-	{ "workspaces", 4.0, "easeOutCubic", "slide" },
-	{ "workspacesIn", 4.0, "easeOutCubic", "slide" },
-	{ "workspacesOut", 4.0, "easeOutCubic", "slide" },
-	{ "specialWorkspace", 4.0, "easeInOutCubic", "slidefadevert 20%" },
-	{ "specialWorkspaceIn", 4.0, "easeInOutCubic", "slidefadevert 20%" },
-	{ "specialWorkspaceOut", 4.0, "easeInOutCubic", "slidefadevert 20%" },
-	{ "zoomFactor", 4.0, "quick" },
-	{ "monitorAdded", 4.0, "easeOutQuint" },
+	{ "global", "easeOutQuint" },
+	{ "windows", "easeOutQuint" },
+	{ "windowsIn", "easeOutQuint", "slidefade 75%" },
+	{ "windowsOut", "linear", "slidefade 80%" },
+	{ "windowsMove", "easeOutCubic" },
+	{ "layers", "easeOutQuint" },
+	{ "layersIn", "easeOutQuint", "fade" },
+	{ "layersOut", "linear", "fade" },
+	{ "fade", "quick" },
+	{ "fadeIn", "almostLinear" },
+	{ "fadeOut", "almostLinear" },
+	{ "fadeSwitch", "almostLinear" },
+	{ "fadeShadow", "almostLinear" },
+	{ "fadeGlow", "almostLinear" },
+	{ "fadeDim", "almostLinear" },
+	{ "fadeLayers", "almostLinear" },
+	{ "fadeLayersIn", "almostLinear" },
+	{ "fadeLayersOut", "almostLinear" },
+	{ "fadePopups", "almostLinear" },
+	{ "fadePopupsIn", "almostLinear" },
+	{ "fadePopupsOut", "almostLinear" },
+	{ "fadeDpms", "quick" },
+	{ "border", "easeOutQuint" },
+	{ "workspaces", "easeOutCubic", "slide" },
+	{ "workspacesIn", "easeOutCubic", "slide" },
+	{ "workspacesOut", "easeOutCubic", "slide" },
+	{ "specialWorkspace", "easeInOutCubic", "slidefadevert 20%" },
+	{ "specialWorkspaceIn", "easeInOutCubic", "slidefadevert 20%" },
+	{ "specialWorkspaceOut", "easeInOutCubic", "slidefadevert 20%" },
+	{ "zoomFactor", "quick" },
+	{ "monitorAdded", "easeOutQuint" },
 }) do
-	hl.animation({ leaf = a[1], enabled = true, speed = 2.0, bezier = a[3], style = a[4] })
+	hl.animation({ leaf = a[1], enabled = true, speed = 2.6, bezier = a[2], style = a[3] })
 end
 
 hl.animation({ leaf = "borderangle", enabled = false })
@@ -574,23 +619,17 @@ hl.device({ name = "asup1207:00-093a:3012-touchpad", accel_profile = "adaptive" 
 
 hl.gesture({ fingers = 3, direction = "horizontal", action = "workspace" })
 hl.gesture({ fingers = 3, direction = "down", action = "special", workspace_name = "scratch" })
-hl.gesture({
-	fingers = 3,
-	direction = "up",
-	action = function()
-		if hl.plugin.overview then
-				hl.plugin.overview.toggle()
-		end
-	end,
-})
+-- 3-finger up is the overview's own gesture, set where the plugin is configured.
 
 ---------------------------------------------------------------------- rules
--- Smart gaps: reevaluate gaps and decoration on window open/close events.
+-- Smart gaps: a lone
+-- tiled window (w[tv1]) or a maximized one (f[1], Super+F) fills the monitor
+-- with no gaps, border or rounding. Floating windows keep theirs.
 local zero_gaps = { top = 0, right = 0, bottom = 0, left = 0 }
-hl.workspace_rule({ workspace = "n[s:window] w[tv1]", gaps_out = zero_gaps, gaps_in = zero_gaps, decorate = false })
-hl.workspace_rule({ workspace = "n[s:window] f[1]", gaps_out = zero_gaps, gaps_in = zero_gaps, decorate = false })
-hl.window_rule({ name = "single-tiled", match = { float = false, workspace = "n[s:window] w[tv1]" }, border_size = 0, rounding = 0 })
-hl.window_rule({ name = "single-floating", match = { float = true, workspace = "n[s:window] f[1]" }, border_size = 0, rounding = 0 })
+for _, ws in ipairs({ "w[tv1]", "f[1]" }) do
+	hl.workspace_rule({ workspace = ws, gaps_out = zero_gaps, gaps_in = zero_gaps })
+	hl.window_rule({ name = "smart-" .. ws, match = { float = false, workspace = ws }, border_size = 0, rounding = 0 })
+end
 
 hl.window_rule({ name = "suppress-maximize", match = { class = ".*" }, suppress_event = "maximize" })
 hl.window_rule({
@@ -606,12 +645,13 @@ hl.window_rule({
 })
 hl.window_rule({ name = "pinentry", match = { class = "^(pinentry-.*)$" }, float = true, stay_focused = true })
 hl.window_rule({ name = "pip", match = { title = "^Picture-in-Picture$" }, float = true, pin = true })
--- Keep application surfaces opaque when focused, with subtle inactive dimming.
-hl.window_rule({ name = "translucent", match = { class = "^(kitty|discord|vesktop|com.microsoft.VSCode)$" }, opacity = "1.0 override 0.95 override" })
+hl.window_rule({ name = "translucent", match = { class = "^(kitty|discord|vesktop|com.microsoft.VSCode)$" }, opacity = "0.90 override 0.90 override" })
+-- Anything fullscreen (video, games) holds off hypridle's lock and blank.
+hl.window_rule({ name = "fullscreen-awake", match = { class = ".*" }, idle_inhibit = "fullscreen" })
 hl.window_rule({ name = "webcam-opaque", match = { class = "^(guvcview)$" }, opacity = "1.0 override 1.0 override" })
 
 -- Namespaces: fuzzel = launcher, dunst = notifications, slurp = selection.
-hl.layer_rule({ name = "blur-launcher", match = { namespace = "^(fuzzel|launcher)$" }, blur = true, ignore_alpha = 0.2, animation = "popin 90%" })
+hl.layer_rule({ name = "blur-launcher", match = { namespace = "^(fuzzel|launcher)$" }, blur = true, ignore_alpha = 0.2, dim_around = true, animation = "popin 90%" })
 hl.layer_rule({ name = "blur-notifications", match = { namespace = "^(notifications|dunst)$" }, blur = true, ignore_alpha = 0.2, animation = "slide" })
 -- Keeps frost and the close animation out of screenshots.
 hl.layer_rule({ name = "selection", match = { namespace = "^selection$" }, no_anim = true })
@@ -621,10 +661,35 @@ local function notify(id, text)
 	hl.exec_cmd("notify-send -a hyprland -h string:x-dunst-stack-tag:" .. id .. " -t 1500 '" .. text .. "'")
 end
 
--- One key that means "wider/narrower" in the Dwindle layout.
+-- One key that means "wider/narrower" in whichever layout the workspace runs.
+local grow_msg = { dwindle = "splitratio ", master = "mfact ", scrolling = "colresize " }
 local function grow(delta)
-	local d = (delta > 0 and "+" or "") .. delta
-	hl.dispatch(hl.dsp.layout("splitratio " .. d))
+	local ws = hl.get_active_workspace()
+	local msg = grow_msg[ws and ws.tiled_layout or "dwindle"] or grow_msg.dwindle
+	hl.dispatch(hl.dsp.layout(msg .. (delta > 0 and "+" or "") .. delta))
+end
+
+-- Per-workspace layout. Each switch is a runtime
+-- workspace rule, so a config reload puts every workspace back on dwindle.
+local layouts = { "dwindle", "scrolling", "master" }
+local layout_rules = {}
+local function cycle_layout()
+	local ws = hl.get_active_workspace()
+	if not ws then
+		return
+	end
+	local i = 1
+	for n, l in ipairs(layouts) do
+		if l == ws.tiled_layout then
+			i = n
+		end
+	end
+	local next_layout = layouts[i % #layouts + 1]
+	if layout_rules[ws.id] then
+		layout_rules[ws.id]:set_enabled(false)
+	end
+	layout_rules[ws.id] = hl.workspace_rule({ workspace = tostring(ws.id), layout = next_layout })
+	notify("layout", next_layout)
 end
 
 local gaps = { inner = 5, outer = 10, on = true }
@@ -657,18 +722,23 @@ hl.bind(mod .. " + SHIFT + B", hl.dsp.exec_cmd("firefox-developer-edition"))
 hl.bind(mod .. " + D", hl.dsp.exec_cmd(fuzzel))
 hl.bind(mod .. " + V", hl.dsp.exec_cmd("cliphist list | " .. fuzzel .. " --dmenu --prompt 'clip ' | cliphist decode | wl-copy"))
 hl.bind(mod .. " + S", hl.dsp.exec_cmd(window_picker))
-hl.bind(mod .. " + SHIFT + S", hl.dsp.exec_cmd("screenshot"))
-hl.bind(mod .. " + SHIFT + E", hl.dsp.exec_cmd("screenshot-edit"))
-hl.bind(mod .. " + SHIFT + P", hl.dsp.exec_cmd("pickcolor"))
+local shots = "mkdir -p ~/Pictures/Screenshots; "
+hl.bind(mod .. " + SHIFT + S", hl.dsp.exec_cmd(shots
+	.. [[f=~/Pictures/Screenshots/$(date +%Y%m%d_%H%M%S).png; grim -g "$(slurp)" "$f" && wl-copy < "$f"]]))
+-- satty expands ~ and the date format in --output-filename itself.
+hl.bind(mod .. " + SHIFT + E", hl.dsp.exec_cmd(shots
+	.. [[grim -g "$(slurp)" - | satty --filename - --output-filename '~/Pictures/Screenshots/%Y%m%d_%H%M%S.png' --copy-command wl-copy --early-exit]]))
+hl.bind(mod .. " + SHIFT + P", hl.dsp.exec_cmd("hyprpicker -a -n -r"))
 
 -- theme
-hl.bind(mod .. " + T", hl.dsp.exec_cmd("theme-pick"))
-hl.bind(mod .. " + SHIFT + T", hl.dsp.exec_cmd("theme-random"))
-hl.bind(mod .. " + ALT + T", hl.dsp.exec_cmd("coat match && hyprlock-coat"))
+hl.bind(mod .. " + T", hl.dsp.exec_cmd([[s=$(coat list --no-preview | awk '/Slug:/{print $2}' | sort -u | ]]
+	.. fuzzel .. [[ --dmenu --prompt 'theme ') && coat set "$s" >/dev/null 2>&1 && notify-send -t 2000 '󰏘  Theme' "switched to $s"]]))
+hl.bind(mod .. " + SHIFT + T", hl.dsp.exec_cmd([[coat random -y >/dev/null 2>&1; notify-send -t 2000 '󰏘  Theme' "switched to $(awk '$1=="scheme:"{print $2}' ~/.local/state/coat/state.yaml)"]]))
+hl.bind(mod .. " + ALT + T", hl.dsp.exec_cmd("coat match"))
 
 -- session
-hl.bind(mod .. " + L", hl.dsp.exec_cmd("hyprlock"))
-hl.bind(mod .. " + Escape", hl.dsp.exec_cmd("hyprlock"))
+hl.bind(mod .. " + L", hl.dsp.exec_cmd("pidof hyprlock || hyprlock"))
+hl.bind(mod .. " + Escape", hl.dsp.exec_cmd("pidof hyprlock || hyprlock"))
 hl.bind(mod .. " + P", hl.dsp.exec_cmd(
 	"if [ -e " .. home .. "/.cache/conky.off ]; then rm -f " .. home .. "/.cache/conky.off;"
 		.. " else touch " .. home .. "/.cache/conky.off; pkill -x conky; fi"))
@@ -710,7 +780,9 @@ hl.bind(mod .. " + SHIFT + Tab", hl.dsp.group.prev())
 
 -- overview (if hyprpm has it loaded)
 hl.bind(mod .. " + O", function()
-	if hl.plugin.overview then
+	if hl.plugin.scrolloverview then
+		hl.plugin.scrolloverview.overview("toggle all")
+	elseif hl.plugin.overview then
 		hl.plugin.overview.toggle()
 	end
 end)
@@ -749,6 +821,21 @@ end
 
 -- layout
 hl.bind(mod .. " + backslash", hl.dsp.layout("togglesplit"))
+hl.bind(mod .. " + Space", cycle_layout)
+
+-- Resize mode: arrows or hjkl resize the focused window until Escape/Return.
+hl.bind(mod .. " + R", function()
+	hl.dispatch(hl.dsp.submap("resize"))
+	notify("submap", "resize: arrows/hjkl, Esc to finish")
+end)
+hl.define_submap("resize", function()
+	for _, d in ipairs({ { "right", "L", 40, 0 }, { "left", "H", -40, 0 }, { "down", "J", 0, 40 }, { "up", "K", 0, -40 } }) do
+		hl.bind(d[1], hl.dsp.window.resize({ x = d[3], y = d[4], relative = true }), { repeating = true })
+		hl.bind(d[2], hl.dsp.window.resize({ x = d[3], y = d[4], relative = true }), { repeating = true })
+	end
+	hl.bind("Escape", hl.dsp.submap("reset"))
+	hl.bind("Return", hl.dsp.submap("reset"))
+end)
 hl.bind(mod .. " + ALT + period", function() grow(0.05) end, { repeating = true })
 hl.bind(mod .. " + ALT + comma", function() grow(-0.05) end, { repeating = true })
 hl.bind(mod .. " + ALT + L", function() set_gaps(1, 2) end, { repeating = true })
@@ -811,13 +898,111 @@ end
 
 local overview_panel = coat_alpha(c.base00, "d9")
 local overview_panel_border = coat_alpha(c.base03, "aa")
-local overview_active = coat_alpha(c.base02, "e6")
-local overview_inactive = coat_alpha(c.base01, "b3")
+local overview_active = coat_alpha(c.base03, "e6")
+local overview_inactive = coat_alpha(c.base00, "b3")
 local overview_active_border = coat_alpha(c.base0D, "ff")
 local overview_inactive_border = coat_alpha(c.base03, "88")
 
 for _, p in ipairs(hl.get_loaded_plugins()) do
-	if p.name == "Hyprspace" then
+	if p.name == "hyprglass" then
+		-- Liquid glass on translucent windows and layers; replaces Hyprland's blur
+		-- on what it covers. Tint is the scheme's background at low alpha.
+		local hg = hl.plugin.hyprglass
+		hg.config({
+			enabled = true,
+			manage_window_blur = true, -- sets noblur on glassed windows so cached blur can't hide the glass
+			skip_opaque_windows = true,
+			blur_fold = true,
+			default_theme = "dark", -- dark, light
+			default_preset = "pomme", -- Apple Liquid Glass look-alike; also default, high_contrast, subtle, clear, glass
+			blur_strength = 2.0, -- x12 px
+			blur_iterations = 3, -- 1-5
+			noise_strength = 0.0,
+			refraction_strength = 0.6,
+			refraction_flow = 0.0,
+			refraction_spread = 1.0,
+			chromatic_aberration = 0.5,
+			fresnel_strength = 0.6,
+			fresnel_tint = 0.0,
+			fresnel_color = 0xffffff00,
+			specular_strength = 0.8,
+			specular_angle = 0.0,
+			bevel_strength = 0.0,
+			bevel_size = 6.0,
+			bevel_color = 0xffffff00,
+			bevel_tint = 0.0,
+			bevel_angle = 315.0,
+			bevel_shadow = 0.0,
+			glass_opacity = 1.0,
+			edge_thickness = 0.06,
+			edge_thickness_px = 0.0,
+			edge_height = 0.0,
+			fresnel_reflection = 0.0,
+			tint_color = tonumber((c.base00:match("rgba%((%x%x%x%x%x%x)") or "8899aa") .. "22", 16),
+			lens_distortion = 0.5,
+			self_sample = 0.0,
+			xray = 0,
+			focus_light = 0.0,
+			focus_light_color = 0xffffff00,
+			frost = 0.0,
+			frost_blur = 3.0,
+			dark = {
+				brightness = 0.82,
+				contrast = 0.90,
+				saturation = 0.80,
+				vibrancy = 0.15,
+				vibrancy_darkness = 0.0,
+				adaptive_dim = 0.4,
+				adaptive_boost = 0.0,
+			},
+			light = {
+				brightness = 1.12,
+				contrast = 0.92,
+				saturation = 0.85,
+				vibrancy = 0.12,
+				vibrancy_darkness = 0.0,
+				adaptive_dim = 0.0,
+				adaptive_boost = 0.4,
+			},
+			layers = { enabled = true },
+		})
+		-- Extends the built-in preset: only the keys set here change.
+		hg.preset("pomme", { blur_iterations = 4, blur_strength = 2.0 })
+		-- fuzzel and dunst: small floating panels, which is where Apple uses it most
+		hg.layer("launcher", { preset = "pomme" })
+		hg.layer("notifications", { preset = "pomme" })
+	elseif p.name == "scrolloverview" then
+		-- niri-style: the desktop zooms out to a strip of workspaces.
+		hl.config({
+			plugin = {
+				scrolloverview = {
+					gesture_distance = 300,
+					scale = 0.5,
+					workspace_gap = 50,
+					layout = "vertical", -- vertical, horizontal, auto (per monitor orientation)
+					cross_monitor_drag = false,
+					wallpaper = 0, -- 0 global, 1 per workspace, 2 both
+					blur = true,
+					shadow = {
+						enabled = true,
+						range = 50,
+						render_power = 3,
+						-- color unset: decoration.shadow.color
+					},
+					input = {
+						scroll_event_delay = 200,
+						touchpad_scroll_factor = 1.0,
+						left_handed = 2, -- 2 follows input.left_handed
+						scrolling_mode = 0,
+						drag_mode = 0,
+						drag_threshold = 10,
+					},
+				},
+			},
+		})
+		hl.plugin.scrolloverview.gesture({ fingers = 3, direction = "up" })
+	elseif p.name == "Hyprspace" then
+		hl.gesture({ fingers = 3, direction = "up", action = function() hl.plugin.overview.toggle() end })
 		hl.config({
 			plugin = {
 				overview = {
@@ -836,63 +1021,63 @@ for _, p in ipairs(hl.get_loaded_plugins()) do
 					overrideGaps = 1,
 					gapsIn = 15,
 					gapsOut = 25,
-					onBottom = false,
+					onBottom = true,
 					autoDrag = true,
 				},
 			},
 		})
-		elseif p.name == "hyprbars" then
-			hl.config({
-				plugin = {
-					hyprbars = {
-						enabled = false,
-					},
+	elseif p.name == "hyprbars" then
+		hl.config({
+			plugin = {
+				hyprbars = {
+					enabled = false,
 				},
-			})
-		elseif p.name == "hyprfocus" then
-			hl.config({
-				plugin = {
-					hyprfocus = {
-						enable = true,
-						animate_floating = true,
-						keyboard_focus_animation = "flash",
-						mouse_focus_animation = "none",
-						fade_opacity = 0.8,
-					},
+			},
+		})
+	elseif p.name == "hyprfocus" then
+		hl.config({
+			plugin = {
+				hyprfocus = {
+					enable = true,
+					animate_floating = true,
+					keyboard_focus_animation = "flash",
+					mouse_focus_animation = "flash",
+					fade_opacity = 0.8,
 				},
-			})
-		elseif p.name == "dynamic-cursors" then
-			hl.config({
-				plugin = {
-					dynamic_cursors = {
+			},
+		})
+	elseif p.name == "dynamic-cursors" then
+		hl.config({
+			plugin = {
+				dynamic_cursors = {
+					enabled = false, -- software cursor: costs frames at 240 Hz
+					mode = "tilt",
+					threshold = 2,
+					tilt = {
+						limit = 4500,
+						activation = "negative_quadratic",
+						window = 100,
+						full = 35,
+					},
+					shake = {
 						enabled = true,
-						mode = "tilt",
-						threshold = 2,
-						tilt = {
-							limit = 4500,
-							activation = "negative_quadratic",
-							window = 100,
-							full = 35,
-						},
-						shake = {
-							enabled = true,
-							threshold = 6.0,
-							base = 4.0,
-							speed = 4.0,
-							influence = 0.0,
-							limit = 0.0,
-							timeout = 2000,
-							effects = false,
-							ipc = false,
-						},
-						hyprcursor = {
-							enabled = true,
-							nearest = 1,
-							resolution = -1,
-							fallback = "clientside",
-						},
+						threshold = 6.0,
+						base = 4.0,
+						speed = 4.0,
+						influence = 0.0,
+						limit = 0.0,
+						timeout = 2000,
+						effects = false,
+						ipc = false,
+					},
+					hyprcursor = {
+						enabled = true,
+						nearest = 1,
+						resolution = -1,
+						fallback = "clientside",
 					},
 				},
-			})
+			},
+		})
 	end
-	end
+end

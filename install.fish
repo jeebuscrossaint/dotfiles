@@ -149,7 +149,7 @@ or die "$target is not writable"
 #
 # Rows above `chat` are derived from what the tracked configs and ~/.local/bin
 # scripts actually invoke — grep before adding one, and keep the paths in step
-# with the probes in start-polkit and mango's config.conf.
+# with the paths hyprland.lua execs.
 #
 # The cli, chat, dev and apps groups are the other kind of row: nothing in this
 # repo calls them, they are just what this person installs on every machine.
@@ -179,20 +179,22 @@ set -g dep_table \
     "installer|cmd:git|git|git||" \
     "installer|cmd:fish|fish|fish||" \
     "installer|cmd:wget|wget|wget||" \
-    "compositor|cmd:mango|mango||mangowm|https://github.com/DreamMaoMao/mango" \
+    "compositor|cmd:Hyprland|hyprland|hyprland||" \
+    "compositor|path:/usr/lib/xdg-desktop-portal-hyprland /usr/libexec/xdg-desktop-portal-hyprland|xdg-desktop-portal-hyprland|xdg-desktop-portal-hyprland||" \
+    "compositor|cmd:meson|meson (hyprpm builds plugins with it)|meson||" \
     "compositor|cmd:uwsm|uwsm|uwsm||" \
-    "compositor|path:/usr/lib/xdg-desktop-portal-wlr /usr/libexec/xdg-desktop-portal-wlr|xdg-desktop-portal-wlr|xdg-desktop-portal-wlr||" \
-    "compositor|path:/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 /usr/libexec/polkit-gnome-authentication-agent-1 /usr/local/libexec/polkit-gnome-authentication-agent-1|polkit agent|polkit-gnome||" \
+    "compositor|path:/usr/lib/hyprpolkitagent/hyprpolkitagent|hyprpolkitagent|hyprpolkitagent||" \
+    "compositor|path:/usr/lib/qt6/qml/org/hyprland/style|hyprland-qt-support (hypr* Qt app style)|hyprland-qt-support||" \
     "compositor|path:/usr/lib/xdg-desktop-portal-gtk /usr/libexec/xdg-desktop-portal-gtk|xdg-desktop-portal-gtk|xdg-desktop-portal-gtk||" \
     "desktop|cmd:dunst|dunst|dunst||" \
     "desktop|cmd:fuzzel|fuzzel|fuzzel||" \
-    "desktop|cmd:swayidle|swayidle|swayidle||" \
-    "desktop|cmd:swaylock|swaylock|swaylock||" \
+    "desktop|cmd:hypridle|hypridle|hypridle||" \
+    "desktop|cmd:hyprlock|hyprlock|hyprlock||" \
     "desktop|cmd:conky|conky|conky||" \
-    "desktop|cmd:wlsunset|wlsunset|wlsunset||" \
+    "desktop|cmd:hyprsunset|hyprsunset|hyprsunset||" \
+    "desktop|cmd:hyprpicker|hyprpicker|hyprpicker||" \
     "desktop|cmd:wdisplays|wdisplays|wdisplays||" \
     "desktop|cmd:swaybg|swaybg|swaybg||" \
-    "desktop|cmd:wlopm|wlopm|wlopm||" \
     "desktop|path:/opt/activitywatch/aw-server-rust/aw-server-rust|activitywatch||activitywatch-bin|" \
     "desktop|cmd:aw-awatcher|awatcher||aw-awatcher|" \
     "terminal|cmd:kitty|kitty|kitty||" \
@@ -531,7 +533,7 @@ function ensure_pacman_conf
 end
 
 # chaotic-aur: prebuilt binaries for AUR packages, so paru is left building only
-# the handful nobody else ships -- mangowm and the -eap/-bin oddities.
+# the handful nobody else ships -- the -eap/-bin oddities.
 #
 # It is a THIRD-PARTY repo: their build machines, their key, trusted by root on
 # this box from here on. That is a real trade and it is stated rather than
@@ -753,7 +755,7 @@ function ensure_autologin
     grep -q -- --skip-login $dir/autologin.conf 2>/dev/null; and return 0
 
     step "tty1 does not log in by itself, or prints a login banner first"
-    dim "agetty --autologin $USER on tty1, silently; config.fish execs mango-run from there"
+    dim "agetty --autologin $USER on tty1, silently; config.fish starts Hyprland from there"
     confirm "set that up?"; or return 0
     sudo mkdir -p $dir
     printf '[Service]\nExecStart=\nExecStart=-/usr/bin/agetty --skip-login --nonewline --noissue --autologin %s --noclear %%I $TERM\n' $USER \
@@ -927,6 +929,36 @@ end
 # Packages only -- no modprobe drop-in, no udev rule, no MUX service. The tuned
 # power setup in misc/ is this machine's, not a default; install it by hand if
 # and when it is wanted.
+# The plugins hyprland.lua configures. hyprpm builds them against the installed
+# Hyprland and asks for sudo by itself -- never run it under sudo, which builds
+# into root's cache instead.
+function ensure_hyprland_plugins
+    command -q hyprpm; or return 0
+    set -l plugins scrolloverview hyprglass hyprfocus macos-zoom
+    set -l have (hyprpm list 2>/dev/null | string replace -ra '\e\[[0-9;]*m' '' | string match -rg 'Plugin (\S+)')
+    set -l missing
+    for p in $plugins
+        contains -- $p $have; or set -a missing $p
+    end
+    test (count $missing) -eq 0; and return 0
+
+    step "Hyprland plugins not installed: $missing"
+    dim "hyprpm builds them against this Hyprland; it asks for sudo itself"
+    confirm "build them now?"; or return 0
+    hyprpm update
+    or begin
+        note "hyprpm update failed — no headers, so no plugins"
+        return 1
+    end
+    # An already-added repo errors and is skipped, which is the right outcome.
+    for repo in yayuuu/hyprland-scroll-overview hyprnux/hyprglass hyprwm/hyprland-plugins aastrand/hyprland-macos-zoom
+        hyprpm add https://github.com/$repo
+    end
+    for p in $missing
+        hyprpm enable $p; or note "hyprpm enable $p failed"
+    end
+end
+
 function ensure_nvidia
     host_has nvidia; or return 0
     pacman -Qq nvidia-utils &>/dev/null; and return 0
@@ -1154,6 +1186,7 @@ if not set -q _flag_skip_checks; and not set -q _flag_uninstall
     ensure_rust
     ensure_fonts
     ensure_coat
+    ensure_hyprland_plugins
     ensure_services
     ensure_systemd_extras
     ensure_resolved
