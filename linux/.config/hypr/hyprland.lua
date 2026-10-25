@@ -85,11 +85,13 @@ hl.env("HYPRCURSOR_SIZE", "24")
 
 ------------------------------------------------------------------ autostart
 -- conky exits when its output disappears (lid close), so it is supervised.
+-- Both panels share one loop: if either dies the other is killed too, so they
+-- always come back up together instead of drifting apart.
 -- ~/.cache/conky.off (Super+P) parks the loop instead of restarting it.
-local function conky_loop(args, log)
-	return "while :; do if [ -e " .. home .. "/.cache/conky.off ]; then sleep 0.2; else conky "
-		.. args .. " >> " .. home .. "/.cache/" .. log .. " 2>&1; sleep 3; fi; done"
-end
+local conky_loop = "c=" .. home .. "/.cache; while :; do if [ -e $c/conky.off ]; then sleep 0.2; else"
+	.. " conky >> $c/conky.log 2>&1 & r=$!;"
+	.. " conky -c " .. home .. "/.config/conky/conky-left.conf >> $c/conky-left.log 2>&1 & l=$!;"
+	.. " wait -n; kill $r $l 2>/dev/null; wait; sleep 3; fi; done"
 
 hl.on("hyprland.start", function()
 	for _, cmd in ipairs({
@@ -103,8 +105,7 @@ hl.on("hyprland.start", function()
 		"hyprsunset",
 		"battery-watch",
 		"rog-control-center --background --autostart",
-		conky_loop("", "conky.log"),
-		conky_loop("-c " .. home .. "/.config/conky/conky-left.conf", "conky-left.log"),
+		conky_loop,
 		-- Lock at 5 min, blank at 5:30 (OLED). hypridle.conf.
 		"hypridle",
 		"wl-paste --type text --watch cliphist store",
