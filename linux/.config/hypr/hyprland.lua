@@ -200,7 +200,7 @@ hl.config({
 		},
 		motion_blur = {
 			enabled = true,
-			samples = 24, -- below ~16 the trail breaks into separate ghosts
+			samples = 64, -- the max; more copies per frame, smoother trail
 		},
 	},
 
@@ -576,10 +576,10 @@ hl.curve("almostLinear", { type = "bezier", points = { { 0.5, 0.5 }, { 0.75, 1 }
 hl.curve("quick", { type = "bezier", points = { { 0.15, 0 }, { 0.1, 1 } } })
 for _, a in ipairs({
 	{ "global", "easeOutQuint" },
-	{ "windows", "easeOutQuint" },
-	{ "windowsIn", "easeOutQuint", "slidefade 75%" },
-	{ "windowsOut", "linear", "slidefade 80%" },
-	{ "windowsMove", "easeOutCubic" },
+	{ "windows", "easeOutQuint", nil, 1.8 }, -- window leaves run faster: longer per-frame moves, longer motion-blur trails
+	{ "windowsIn", "easeOutQuint", "slidefade 75%", 1.8 },
+	{ "windowsOut", "linear", "slidefade 80%", 1.8 },
+	{ "windowsMove", "easeOutCubic", nil, 1.8 },
 	{ "layers", "easeOutQuint" },
 	{ "layersIn", "easeOutQuint", "fade" },
 	{ "layersOut", "linear", "fade" },
@@ -607,7 +607,7 @@ for _, a in ipairs({
 	{ "zoomFactor", "quick" },
 	{ "monitorAdded", "easeOutQuint" },
 }) do
-	hl.animation({ leaf = a[1], enabled = true, speed = 2.6, bezier = a[2], style = a[3] })
+	hl.animation({ leaf = a[1], enabled = true, speed = a[4] or 2.6, bezier = a[2], style = a[3] })
 end
 
 hl.animation({ leaf = "borderangle", enabled = false })
