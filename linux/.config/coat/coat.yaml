@@ -21,6 +21,7 @@ enabled:
   - conky
   - qutebrowser
   - colors
+  - qt
 
 # colors.json (the scheme as plain data) also goes to the homelab, where
 # term.lab picks it up. `coat docs colors`.
