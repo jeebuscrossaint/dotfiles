@@ -341,11 +341,13 @@ nightlight | night)
 		exit 0
 		;;
 	esac
-	# hyprsunset is queryable, so the temperature it reports IS the state.
+	# hyprsunset is queryable, so the temperature it reports IS the state. Off has
+	# to be the day temperature, not `identity`: identity leaves the reported
+	# temperature untouched, so every later press would read "on" and turn it off.
 	cur=$(hyprctl hyprsunset temperature 2>/dev/null)
 	case $cur in '' | *[!0-9]*) show "󰖨  hyprsunset is not running"; exit 1 ;; esac
 	if [ "$cur" -lt "$NIGHT_DAY_TEMP" ]; then
-		hyprctl hyprsunset identity >/dev/null 2>&1
+		hyprctl hyprsunset temperature "$NIGHT_DAY_TEMP" >/dev/null 2>&1
 		show "󰖨  Night light off"
 	else
 		hyprctl hyprsunset temperature "$NIGHT_TEMP" >/dev/null 2>&1
