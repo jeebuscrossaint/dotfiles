@@ -77,3 +77,12 @@
 # both are things you want still on screen when you come back to the machine.
 [urgency_critical]
     timeout = 0
+
+# Discord titles a server message "user (#channel, Server)" and a DM just "user"
+# (a group DM is "user (Group)", no #), so the # is what tells them apart.
+# Dropped outright rather than skip_display: history would fill with them.
+[discord-servers]
+    appname = "*[Dd]iscord*"
+    summary = "*(#*"
+    skip_display = true
+    history_ignore = true
