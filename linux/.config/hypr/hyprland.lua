@@ -91,7 +91,7 @@ hl.env("HYPRCURSOR_SIZE", "24")
 local conky_loop = "c=" .. home .. "/.cache; while :; do if [ -e $c/conky.off ]; then sleep 0.2; else"
 	.. " conky >> $c/conky.log 2>&1 & r=$!;"
 	.. " conky -c " .. home .. "/.config/conky/conky-left.conf >> $c/conky-left.log 2>&1 & l=$!;"
-	.. " wait -n; kill $r $l 2>/dev/null; wait; sleep 3; fi; done"
+	.. " wait -n $r $l; kill $r $l 2>/dev/null; wait; sleep 3; fi; done"
 
 hl.on("hyprland.start", function()
 	for _, cmd in ipairs({
@@ -123,8 +123,8 @@ end)
 hl.config({
 	general = {
 		border_size = 2,
-		gaps_in = 15,
-		gaps_out = 25,
+		gaps_in = 10,
+		gaps_out = 20,
 		float_gaps = 0,
 		gaps_workspaces = 0,
 		col = {
