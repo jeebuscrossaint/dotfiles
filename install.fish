@@ -622,17 +622,17 @@ function ensure_power_profile
         or begin; note "that failed — carry on by hand"; return 1; end
     end
 
-    # Charge thresholds, where the firmware has them (ThinkPads do): stop at 80%
-    # and resume below 75%, since this machine lives on the charger. `tlp fullcharge`
-    # tops it up to 100% once, for a day away from the wall.
+    # Charge thresholds, where the firmware has them (ThinkPads do): back to the
+    # factory default of charging to 100%. Written out rather than left unset, because
+    # the firmware keeps whatever limit was set last, even across reboots.
     set -l conf /etc/tlp.d/10-dotfiles.conf
     set -l want '# Written by the dotfiles installer (ensure_power_profile).
-START_CHARGE_THRESH_BAT0=75
-STOP_CHARGE_THRESH_BAT0=80'
+START_CHARGE_THRESH_BAT0=0
+STOP_CHARGE_THRESH_BAT0=100'
     set -l changed
     if test -e /sys/class/power_supply/BAT0/charge_control_end_threshold
         and test "$(cat $conf 2>/dev/null)" != "$want"
-        step "writing $conf (charge 75–80%)"
+        step "writing $conf (charge to 100%)"
         printf '%s\n' $want | sudo tee $conf >/dev/null
         and set changed 1
         or note "could not write $conf"
