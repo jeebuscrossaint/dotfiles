@@ -935,7 +935,7 @@ end
 # into root's cache instead.
 function ensure_hyprland_plugins
     command -q hyprpm; or return 0
-    set -l plugins scrolloverview hyprglass hyprfocus macos-zoom
+    set -l plugins scrolloverview
     set -l have (hyprpm list 2>/dev/null | string replace -ra '\e\[[0-9;]*m' '' | string match -rg 'Plugin (\S+)')
     set -l missing
     for p in $plugins
@@ -952,7 +952,7 @@ function ensure_hyprland_plugins
         return 1
     end
     # An already-added repo errors and is skipped, which is the right outcome.
-    for repo in yayuuu/hyprland-scroll-overview hyprnux/hyprglass hyprwm/hyprland-plugins aastrand/hyprland-macos-zoom
+    for repo in yayuuu/hyprland-scroll-overview
         hyprpm add https://github.com/$repo
     end
     for p in $missing

@@ -123,7 +123,7 @@ end)
 hl.config({
 	general = {
 		border_size = 2,
-		gaps_in = 10,
+		gaps_in = 15,
 		gaps_out = 20,
 		float_gaps = 0,
 		gaps_workspaces = 0,
@@ -162,8 +162,8 @@ hl.config({
 			range = 40,
 			render_power = 2, -- broad, soft falloff
 			sharp = false,
-			color = c.shadow,
-			color_inactive = c.shadow,
+			color = "rgba(0a0b1080)", -- fixed near-black, not from the coat scheme
+			color_inactive = "rgba(0a0b1080)",
 			offset = { 0, 12 },
 			scale = 1.0,
 		},
@@ -182,16 +182,18 @@ hl.config({
 		screen_shader = "",
 		border_part_of_window = false,
 		blur = {
+			-- Windows, layers and the scrolloverview while hyprglass is off. 4 passes at
+			-- full size reach about as far as 3 do in the overview's half-scale view.
 			enabled = true,
-			size = 5,
+			size = 6,
 			passes = 4,
 			ignore_opacity = true,
 			new_optimizations = true,
 			xray = false,
-			noise = 0.0117,
-			contrast = 1.0,
-			brightness = 1.0,
-			vibrancy = 0.0,
+			noise = 0.0, -- Liquid Glass is grain-free
+			contrast = 0.9,
+			brightness = 0.8,
+			vibrancy = 0.1,
 			vibrancy_darkness = 0.0,
 			special = false,
 			popups = true,
@@ -377,7 +379,7 @@ hl.config({
 		enable_swallow = true,
 		swallow_regex = "^(kitty)$",
 		swallow_exception_regex = "^(wev)$",
-		focus_on_activate = true,
+		focus_on_activate = false, -- apps asking for attention get marked urgent, never jump focus
 		mouse_move_focuses_monitor = true,
 		allow_session_lock_restore = true,
 		session_lock_xray = false,
@@ -646,10 +648,13 @@ hl.window_rule({
 })
 hl.window_rule({ name = "pinentry", match = { class = "^(pinentry-.*)$" }, float = true, stay_focused = true })
 hl.window_rule({ name = "pip", match = { title = "^Picture-in-Picture$" }, float = true, pin = true })
-hl.window_rule({ name = "translucent", match = { class = "^(com.microsoft.VSCode)$" }, opacity = "0.90 override 0.90 override" })
+hl.window_rule({ name = "translucent", match = { class = "^(com.microsoft.VSCode|[Ss]lack|teams-for-linux|outlook-for-linux)$" }, opacity = "0.90 override 0.90 override 1.0 override" })
 -- Anything fullscreen (video, games) holds off hypridle's lock and blank.
 hl.window_rule({ name = "fullscreen-awake", match = { class = ".*" }, idle_inhibit = "fullscreen" })
+hl.window_rule({ name = "discord-call-opaque", match = { class = "^(discord)$", initial_title = "^(Discord Popout)$" }, opacity = "1.0 override 1.0 override 1.0 override" })
 hl.window_rule({ name = "webcam-opaque", match = { class = "^(guvcview)$" }, opacity = "1.0 override 1.0 override" })
+-- kitty draws its own background_opacity; ignoring buffer alpha is the only way to block the wallpaper.
+hl.window_rule({ name = "fullscreen-opaque", match = { fullscreen_state_internal = 2 }, force_rgbx = true })
 
 -- Namespaces: fuzzel = launcher, dunst = notifications, slurp = selection.
 hl.layer_rule({ name = "blur-launcher", match = { namespace = "^(fuzzel|launcher)$" }, blur = true, ignore_alpha = 0.2, dim_around = true, animation = "popin 90%" })
@@ -762,6 +767,7 @@ hl.bind(mod .. " + SHIFT + F", hl.dsp.window.fullscreen({ mode = "fullscreen" })
 -- Fullscreen as far as the app knows, still tiled as far as the layout knows.
 hl.bind(mod .. " + A", hl.dsp.window.fullscreen_state({ internal = 0, client = 2, action = "toggle" }))
 hl.bind(mod .. " + SHIFT + Space", hl.dsp.window.float({ action = "toggle" }))
+hl.bind(mod .. " + SHIFT + V", hl.dsp.window.float({ action = "toggle" }))
 hl.bind(mod .. " + Y", hl.dsp.window.pin())
 hl.bind(mod .. " + U", hl.dsp.window.pseudo())
 hl.bind(mod .. " + SHIFT + O", hl.dsp.window.center())
@@ -779,14 +785,68 @@ hl.bind(mod .. " + ALT + G", hl.dsp.group.lock({ action = "toggle" }))
 hl.bind(mod .. " + Tab", hl.dsp.group.next())
 hl.bind(mod .. " + SHIFT + Tab", hl.dsp.group.prev())
 
--- overview (if hyprpm has it loaded)
+-- overview (if hyprpm has it loaded). Cmd+Tab style: hold Super, O opens it,
+-- more O presses cycle windows, letting go of Super closes on the picked one.
+local overview_held = false
+-- cycle_next stays inside one workspace; this walks every workspace in order.
+local function focus_next_anywhere()
+	local function xy(w)
+		local at = w.at or {}
+		return at.x or at[1] or 0, at.y or at[2] or 0
+	end
+	local wins = {}
+	for _, w in ipairs(hl.get_windows({ mapped = true })) do
+		if not w.hidden and w.workspace and not w.workspace.special then
+			wins[#wins + 1] = w
+		end
+	end
+	if #wins == 0 then
+		return
+	end
+	table.sort(wins, function(a, b)
+		if a.workspace.id ~= b.workspace.id then
+			return a.workspace.id < b.workspace.id
+		end
+		local ax, ay = xy(a)
+		local bx, by = xy(b)
+		if ax ~= bx then
+			return ax < bx
+		end
+		return ay < by
+	end)
+	local nxt = wins[1]
+	for i, w in ipairs(wins) do
+		if w.active then
+			nxt = wins[i % #wins + 1]
+			break
+		end
+	end
+	hl.dispatch(hl.dsp.focus({ window = "address:" .. nxt.address }))
+end
 hl.bind(mod .. " + O", function()
-	if hl.plugin.scrolloverview then
+	if overview_held then
+		focus_next_anywhere()
+	elseif hl.plugin.scrolloverview then
 		hl.plugin.scrolloverview.overview("toggle all")
+		overview_held = true
 	elseif hl.plugin.overview then
 		hl.plugin.overview.toggle()
+		overview_held = true
 	end
 end)
+for _, key in ipairs({ "SUPER_L", "SUPER_R" }) do
+	hl.bind(mod .. " + " .. key, function()
+		if not overview_held then
+			return
+		end
+		overview_held = false
+		if hl.plugin.scrolloverview then
+			hl.plugin.scrolloverview.overview("toggle all")
+		elseif hl.plugin.overview then
+			hl.plugin.overview.toggle()
+		end
+	end, { release = true, transparent = true })
+end
 hl.bind(mod .. " + Z", function()
 	if hl.plugin.macos_zoom then
 		hl.plugin.macos_zoom.adjust("toggle")
@@ -910,14 +970,14 @@ for _, p in ipairs(hl.get_loaded_plugins()) do
 		-- on what it covers. Tint is the scheme's background at low alpha.
 		local hg = hl.plugin.hyprglass
 		hg.config({
-			enabled = true,
+			enabled = false, -- off for now: windows take decoration.blur
 			manage_window_blur = true, -- sets noblur on glassed windows so cached blur can't hide the glass
 			skip_opaque_windows = true,
 			blur_fold = true,
 			default_theme = "dark", -- dark, light
 			default_preset = "pomme", -- Apple Liquid Glass look-alike; also default, high_contrast, subtle, clear, glass
-			blur_strength = 2.0, -- x12 px
-			blur_iterations = 3, -- 1-5
+			blur_strength = 4.0, -- x12 px
+			blur_iterations = 5, -- 1-5
 			noise_strength = 0.0,
 			refraction_strength = 0.6,
 			refraction_flow = 0.0,
@@ -939,7 +999,7 @@ for _, p in ipairs(hl.get_loaded_plugins()) do
 			edge_thickness_px = 0.0,
 			edge_height = 0.0,
 			fresnel_reflection = 0.0,
-			tint_color = tonumber((c.base00:match("rgba%((%x%x%x%x%x%x)") or "8899aa") .. "22", 16),
+			tint_color = 0x8899aa55,
 			lens_distortion = 0.5,
 			self_sample = 0.0,
 			xray = 0,
@@ -968,7 +1028,52 @@ for _, p in ipairs(hl.get_loaded_plugins()) do
 			layers = { enabled = false }, -- on: closing fuzzel/dunst overshoots bright for ~250ms (v0.11.0)
 		})
 		-- Extends the built-in preset: only the keys set here change.
-		hg.preset("pomme", { blur_iterations = 4, blur_strength = 2.0 })
+		hg.preset("pomme", {
+			-- Near-neutral tint, a ~24px rim lens that pulls in what's past the edge, flat middle.
+			-- Wide, even smear like the scrolloverview's (decoration.blur seen at scale 0.5).
+			blur_strength = 12.0,
+			blur_iterations = 5,
+			noise_strength = 0.0,
+			tint_color = tonumber((c.base00:match("rgba%((%x%x%x%x%x%x)") or "8899aa") .. "14", 16),
+			edge_thickness_px = 24,
+			edge_height = 32,
+			fresnel_reflection = 0.5,
+			refraction_strength = 0.9,
+			refraction_flow = 0.3,
+			refraction_spread = 0.1,
+			lens_distortion = 0.05,
+			chromatic_aberration = 0.03,
+			fresnel_strength = 0.3,
+			fresnel_tint = 0.6,
+			-- 1px lit rim, brightest top left and bottom right, takes the backdrop's colour
+			specular_strength = 0.9,
+			specular_angle = 315.0,
+			bevel_strength = 0.6,
+			bevel_size = 1.0,
+			bevel_angle = 315.0,
+			bevel_shadow = 0.0,
+			bevel_tint = 0.4,
+			frost = 0.0,
+			frost_blur = 2.0,
+			dark = {
+				brightness = 0.78, -- Tahoe's dark Dock sits ~25% under the light one
+				contrast = 0.6, -- evens out the backdrop like the overview's smear
+				saturation = 1.0,
+				vibrancy = 0.1,
+				vibrancy_darkness = 0.0,
+				adaptive_dim = 0.35,
+				adaptive_boost = 0.0,
+			},
+			light = {
+				brightness = 1.03,
+				contrast = 0.92,
+				saturation = 0.95,
+				vibrancy = 0.08,
+				vibrancy_darkness = 0.0,
+				adaptive_dim = 0.0,
+				adaptive_boost = 0.15,
+			},
+		})
 		-- fuzzel and dunst, used once layers are enabled again
 		hg.layer("launcher", { preset = "pomme" })
 		hg.layer("notifications", { preset = "pomme" })
