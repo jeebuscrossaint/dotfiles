@@ -38,7 +38,7 @@ normalize:
 opacity:
   # Blur only shows through a translucent surface, so at 1.0 an opaque terminal
   # frosts nothing and the effects block appears to do less than it does.
-  terminal: 0.85
+  terminal: 0.10   # the blur does the dimming (decoration.blur brightness 0.8), not this grey
   popups: 0.80     # fuzzel + dunst; enough transparency for compositor blur
   applications: 0.85
   desktop: 1.0     # conky, which has only the wallpaper behind it anyway
@@ -62,3 +62,8 @@ overrides:
       sizes:
         desktop: 11   # system readout, top-right
         terminal: 11  # weather + todo, top-left
+  # Text stays opaque in Discord (only the root tint takes alpha), so it can go
+  # thinner than other apps without losing readability.
+  vesktop:
+    opacity:
+      applications: 0.10
