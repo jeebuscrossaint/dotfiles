@@ -185,14 +185,14 @@ hl.config({
 			-- Windows, layers and the scrolloverview while hyprglass is off. 4 passes at
 			-- full size reach about as far as 3 do in the overview's half-scale view.
 			enabled = true,
-			size = 6,
+			size = 12,
 			passes = 4,
 			ignore_opacity = true,
 			new_optimizations = true,
 			xray = false,
 			noise = 0.0, -- Liquid Glass is grain-free
 			contrast = 0.9,
-			brightness = 0.8,
+			brightness = 1.15,
 			vibrancy = 0.1,
 			vibrancy_darkness = 0.0,
 			special = false,
@@ -847,11 +847,7 @@ for _, key in ipairs({ "SUPER_L", "SUPER_R" }) do
 		end
 	end, { release = true, transparent = true })
 end
-hl.bind(mod .. " + Z", function()
-	if hl.plugin.macos_zoom then
-		hl.plugin.macos_zoom.adjust("toggle")
-	end
-end)
+hl.bind(mod .. " + Z", hl.dsp.exec_cmd("pidof woomer || woomer"))
 
 -- focus
 for _, d in ipairs({ { "left", "H" }, { "right", "L" }, { "up", "K" }, { "down", "J" } }) do
