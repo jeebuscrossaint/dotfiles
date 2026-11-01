@@ -54,7 +54,7 @@ function conky_gw()
     return ("%d.%d.%d.%d"):format(b[4], b[3], b[2], b[1])
 end
 
--- hyprctl readouts, in Lua instead of ${execi ... | jq}: a jq per call was a
+-- Command readouts, in Lua instead of ${execi ... | jq}: a jq per call was a
 -- ~20ms process start twice every two seconds. Cached on wall-clock seconds,
 -- because update_interval is 0.5 and these only need to be ~2 s fresh.
 local cache = {}
@@ -77,40 +77,11 @@ local function slurp(cmd)
     return s
 end
 
--- conky_tags() -> "[1] 2 5": workspaces that exist (have windows or are
--- focused), the active one in brackets. Special workspaces (negative ids) are
--- left out.
-function conky_tags()
-    return cached("tags", 2, function()
-        local all = slurp("hyprctl workspaces -j")
-        local active = tonumber((slurp("hyprctl activeworkspace -j") or ""):match('"id":%s*(%-?%d+)'))
-        if not all then return "" end
-        local ids = {}
-        for m in all:gmatch('{%s*"id":%s*(%-?%d+)') do
-            local id = tonumber(m)
-            if id > 0 then ids[#ids + 1] = id end
-        end
-        table.sort(ids)
-        for i, id in ipairs(ids) do
-            ids[i] = id == active and ("[" .. id .. "]") or tostring(id)
-        end
-        return table.concat(ids, " ")
-    end)
-end
-
--- conky_appid() -> the focused window's class, "-" when nothing is focused.
-function conky_appid()
-    return cached("appid", 2, function()
-        local s = slurp("hyprctl activewindow -j")
-        return (s and s:match('"class":%s*"(.-)"')) or "-"
-    end)
-end
-
 -- conky_vol() -> the default sink's volume as an integer percent.
 --
 -- NOT ${pa_sink_volume}, which conky does have (this build lists PulseAudio),
 -- because conky opens that connection ONCE at parse time and there is no retry:
--- the panel is started by Hyprland's autostart loop, which wins the race
+-- the panel is started by the session's autostart loop, which wins the race
 -- against pipewire-pulse on a cold boot, and a conky that loses it renders the
 -- variable as the literal text "${pa_sink_volume}" for the rest of the session
 -- -- then libpulse takes the process down from under it:

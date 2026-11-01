@@ -11,11 +11,15 @@ udiskie >/dev/null 2>&1 &
 battery-watch >/dev/null 2>&1 &
 rog-control-center --background --autostart >/dev/null 2>&1 &
 
-# Same supervised pair as hyprland.lua; ~/.cache/conky.off (Super+P) parks it.
+# conky exits when its output goes away (lid close), so it is supervised; both panels
+# restart together. ~/.cache/conky.off (Super+P) parks the loop.
 sh -c 'c=$HOME/.cache; while :; do if [ -e $c/conky.off ]; then sleep 0.2; else conky >> $c/conky.log 2>&1 & r=$!; conky -c $HOME/.config/conky/conky-left.conf >> $c/conky-left.log 2>&1 & l=$!; wait -n $r $l; kill $r $l 2>/dev/null; wait; sleep 3; fi; done' &
 
-# Lock at 5 min, blank at 5:30 (OLED). hyprctl dpms is Hyprland-only, hence wlopm.
-hypridle -c $HOME/.config/labwc/hypridle.conf >/dev/null 2>&1 &
+# Lock at 5 min, blank at 5:30 (OLED). ~/.config/hypr/hypridle.conf.
+hypridle >/dev/null 2>&1 &
+
+# Night light 19:00-07:00 (wlsunset); Super+Alt+N toggles.
+osd nightlight start
 
 wl-paste --type text --watch cliphist store >/dev/null 2>&1 &
 wl-paste --type image --watch cliphist store >/dev/null 2>&1 &

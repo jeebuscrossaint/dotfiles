@@ -1,4 +1,4 @@
-# ~/.config/dunst/dunstrc — the notification daemon for the Hyprland session.
+# ~/.config/dunst/dunstrc — the notification daemon for the labwc session.
 #
 # dunst because it is the only notification daemon in BOTH Arch and OpenBSD
 # (x11/dunst, layer-shell there too), and because coat can theme it without
@@ -22,8 +22,8 @@
     offset = (0, 12)
 
     # Between notifications, not around them. dunst only honours this on a
-    # compositor that can do it, which Hyprland can; where it cannot, it silently
-    # falls back to separator_height.
+    # compositor that can do it; where it cannot, it silently falls back to
+    # separator_height.
     gap_size = 8
 
     # A pair, not a single number: (min, max). The floor stops a two-word popup
@@ -35,8 +35,7 @@
     horizontal_padding = 14
 
     frame_width = 1
-    # Blurred (and glassed) by Hyprland, so a square corner is a square corner
-    # cut out of the glass.
+    # Matches the 10-12px window corners.
     corner_radius = 12
 
     ### Display ###

@@ -16,7 +16,6 @@
 #   osd capslock|numlock
 #   osd nightlight [start]          toggle; `start` is the login one, silent
 #   osd nightlight warmer|cooler    shift the night temperature, persisted
-#   osd touchpad                    toggle, through the compositor
 #   osd playpause|next|prev
 #
 # Nothing stacks: see OSD_ID below.
@@ -60,9 +59,10 @@ KBD_LED=asus::kbd_backlight
 # is missing or ~/.config/sfx-mute exists. Volume gets one because you are already
 # thinking about audio; brightness deliberately does not, since a click on every
 # step of a held key is maddening.
-# Night light is hyprsunset, which switches on and off by the profiles in
-# hyprsunset.conf and is only toggled or nudged from here. The nudged temperature
-# is kept in NIGHT_FILE; 3500K until it is first nudged.
+# Night light is wlsunset, which only exists while running: the gamma ramp goes
+# back to normal when it exits, so on/off is whether the process is alive.
+# `start` runs it on the NIGHT_ON..NIGHT_OFF schedule; a toggle forces it warm
+# now. The nudged temperature is kept in NIGHT_FILE; 3500K until first nudged.
 NIGHT_FILE=${XDG_STATE_HOME:-$HOME/.local/state}/nightlight-temp
 NIGHT_TEMP=$(cat "$NIGHT_FILE" 2>/dev/null)
 case $NIGHT_TEMP in '' | *[!0-9]*) NIGHT_TEMP=3500 ;; esac
@@ -70,10 +70,8 @@ NIGHT_STEP=250
 NIGHT_MIN=1500
 NIGHT_MAX=6000
 NIGHT_DAY_TEMP=6500
-
-# Whether the touchpad is currently off. Neither compositor can be asked (see
-# the touchpad section), so the state is tracked here.
-TP_FLAG=${XDG_RUNTIME_DIR:-/tmp}/touchpad-off
+NIGHT_ON=19:00
+NIGHT_OFF=07:00
 
 # Let a lock-key LED catch up with the keypress: the flip is already in flight
 # when this runs but lands in the kernel a few ms later, so reading immediately
@@ -82,7 +80,7 @@ LOCK_SETTLE=0.15
 
 usage() {
 	echo "usage: osd {volume up|down|mute | mic mute | brightness up|down |" >&2
-	echo "           kbd up|down|show | capslock | numlock | touchpad |" >&2
+	echo "           kbd up|down|show | capslock | numlock | nightlight |" >&2
 	echo "           playpause | next | prev}" >&2
 	exit 2
 }
@@ -327,58 +325,37 @@ kbd)
 
 # ----------------------------------------------------------------- nightlight
 nightlight | night)
+	# wlsunset wants -T above -t, and a sunset a minute ago with sunrise a minute
+	# before that is "night for the next 24h": the forced-on mode.
+	forced() {
+		pkill -x wlsunset
+		setsid -f wlsunset -t "$1" -T "$NIGHT_DAY_TEMP" -d 1 \
+			-s "$(date -d '-1 min' +%H:%M)" -S "$(date -d '-2 min' +%H:%M)" >/dev/null 2>&1
+	}
 	case ${2:-} in
-	start) exit 0 ;; # hyprsunset starts itself from hyprland.lua
+	start)
+		pgrep -x wlsunset >/dev/null && exit 0
+		setsid -f wlsunset -t "$NIGHT_TEMP" -T "$NIGHT_DAY_TEMP" -s "$NIGHT_ON" -S "$NIGHT_OFF" >/dev/null 2>&1
+		exit 0
+		;;
 	warmer | cooler)
 		if [ "$2" = warmer ]; then t=$((NIGHT_TEMP - NIGHT_STEP)); else t=$((NIGHT_TEMP + NIGHT_STEP)); fi
 		[ "$t" -lt "$NIGHT_MIN" ] && t=$NIGHT_MIN
 		[ "$t" -gt "$NIGHT_MAX" ] && t=$NIGHT_MAX
 		mkdir -p "${NIGHT_FILE%/*}"
 		echo "$t" > "$NIGHT_FILE"
-		hyprctl hyprsunset temperature "$t" >/dev/null 2>&1 || exit 1
+		forced "$t"
 		# Bar fills as it gets warmer.
 		show "󰖔  Night light ${t}K" $(((NIGHT_MAX - t) * 100 / (NIGHT_MAX - NIGHT_MIN)))
 		exit 0
 		;;
 	esac
-	# hyprsunset is queryable, so the temperature it reports IS the state. Off has
-	# to be the day temperature, not `identity`: identity leaves the reported
-	# temperature untouched, so every later press would read "on" and turn it off.
-	cur=$(hyprctl hyprsunset temperature 2>/dev/null)
-	case $cur in '' | *[!0-9]*) show "󰖨  hyprsunset is not running"; exit 1 ;; esac
-	if [ "$cur" -lt "$NIGHT_DAY_TEMP" ]; then
-		hyprctl hyprsunset temperature "$NIGHT_DAY_TEMP" >/dev/null 2>&1
+	if pgrep -x wlsunset >/dev/null; then
+		pkill -x wlsunset
 		show "󰖨  Night light off"
 	else
-		hyprctl hyprsunset temperature "$NIGHT_TEMP" >/dev/null 2>&1
+		forced "$NIGHT_TEMP"
 		show "󰖔  Night light ${NIGHT_TEMP}K"
-	fi
-	;;
-
-# -------------------------------------------------------------------- touchpad
-touchpad)
-	# hyprctl devices has no enabled flag for a touchpad, hence the flag file. Which is why the trackpad bind routes through here: a native
-	# bind would flip the device behind the flag's back and every popup after
-	# would lie.
-	if [ -f "$TP_FLAG" ]; then want=on; else want=off; fi
-
-	if [ -n "${HYPRLAND_INSTANCE_SIGNATURE:-}" ]; then
-		# hl.device addresses one device by name, so set every touchpad.
-		if [ "$want" = on ]; then en=true; else en=false; fi
-		hyprctl devices -j | jq -r '.mice[].name | select(test("touchpad"))' | while read -r n; do
-			hyprctl eval "hl.device({ name = \"$n\", enabled = $en })" >/dev/null
-		done
-	else
-		# No compositor to ask (a TTY, or a session that does not do this).
-		exit 0
-	fi
-
-	if [ "$want" = on ]; then
-		rm -f "$TP_FLAG"
-		show '󰟸  touchpad on'
-	else
-		: >"$TP_FLAG"
-		show '󰤳  touchpad off'
 	fi
 	;;
 

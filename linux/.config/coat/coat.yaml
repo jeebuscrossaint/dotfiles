@@ -15,7 +15,7 @@ enabled:
   - lsd
   - imv
   - satty
-  - hyprland
+  - hyprlock
   - labwc
   - dunst
   - fuzzel

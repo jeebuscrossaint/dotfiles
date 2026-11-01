@@ -22,7 +22,7 @@
   </core>
 
   <placement>
-    <policy>center</policy>  <!-- center|automatic|cursor|cascade -->
+    <policy>cascade</policy>  <!-- center|automatic|cursor|cascade -->
     <cascadeOffset x="40" y="30" />
   </placement>
 
@@ -138,25 +138,10 @@
     <keybind key="W-s"><action name="ShowMenu" menu="client-list-combined-menu" /></keybind>
     <keybind key="W-S-p"><action name="Execute" command="hyprpicker -a -n -r" /></keybind>
 
-    <!-- screenshots: macOS Cmd-Shift-3/4/5, plus the Hyprland binds -->
-    <keybind key="W-S-3">
-      <action name="Execute">
-        <command>sh -c 'mkdir -p ~/Pictures/Screenshots; f=~/Pictures/Screenshots/$(date +%Y%m%d_%H%M%S).png; grim "$f" &amp;&amp; wl-copy &lt; "$f"'</command>
-      </action>
-    </keybind>
-    <keybind key="W-S-4">
-      <action name="Execute">
-        <command>sh -c 'mkdir -p ~/Pictures/Screenshots; f=~/Pictures/Screenshots/$(date +%Y%m%d_%H%M%S).png; grim -g "$(slurp)" "$f" &amp;&amp; wl-copy &lt; "$f"'</command>
-      </action>
-    </keybind>
+    <!-- screenshots -->
     <keybind key="W-S-s">
       <action name="Execute">
         <command>sh -c 'mkdir -p ~/Pictures/Screenshots; f=~/Pictures/Screenshots/$(date +%Y%m%d_%H%M%S).png; grim -g "$(slurp)" "$f" &amp;&amp; wl-copy &lt; "$f"'</command>
-      </action>
-    </keybind>
-    <keybind key="W-S-5">
-      <action name="Execute">
-        <command>sh -c 'mkdir -p ~/Pictures/Screenshots; grim -g "$(slurp)" - | satty --filename - --output-filename "~/Pictures/Screenshots/%Y%m%d_%H%M%S.png" --copy-command wl-copy --early-exit'</command>
       </action>
     </keybind>
     <keybind key="W-S-e">
@@ -190,6 +175,9 @@
     <keybind key="W-S-c"><action name="Reconfigure" /></keybind>
     <keybind key="W-S-q"><action name="Exit" /></keybind>
     <keybind key="W-z"><action name="Execute" command="sh -c 'pidof woomer || woomer'" /></keybind>
+    <keybind key="W-A-n"><action name="Execute" command="osd nightlight" /></keybind>
+    <keybind key="W-A-bracketleft"><action name="Execute" command="osd nightlight warmer" /></keybind>
+    <keybind key="W-A-bracketright"><action name="Execute" command="osd nightlight cooler" /></keybind>
     <keybind key="XF86Launch1"><action name="Execute" command="rog-control-center" /></keybind>
 
     <!-- windows -->
@@ -213,7 +201,7 @@
     <keybind key="W-S-d"><action name="ToggleDecorations" /></keybind>
     <keybind key="W-grave"><action name="ToggleOmnipresent" /></keybind>
     <keybind key="A-space"><action name="ShowMenu" menu="client-menu" atCursor="no" /></keybind>
-    <keybind key="W-k"><action name="ToggleKeybinds" /></keybind>
+    <keybind key="W-k"><action name="PreviousWindow" /></keybind>
     <keybind key="W-S-z"><action name="ToggleMagnify" /></keybind>
     <keybind key="W-equal"><action name="ZoomIn" /></keybind>
     <keybind key="W-S-equal"><action name="ZoomOut" /></keybind>
@@ -251,9 +239,7 @@
     <keybind key="W-KP_1"><action name="SnapToRegion" region="bottom-left" /></keybind>
     <keybind key="W-KP_2"><action name="SnapToRegion" region="bottom" /></keybind>
     <keybind key="W-KP_3"><action name="SnapToRegion" region="bottom-right" /></keybind>
-    <keybind key="W-S-r">
-      <action name="Resize" />
-    </keybind>
+    <keybind key="W-r"><action name="Resize" /></keybind>
 
     <!-- desktops: W-N go, W-S-N send, W-C-N send and follow -->
     <keybind key="W-1"><action name="GoToDesktop" to="1" /></keybind>
@@ -268,6 +254,9 @@
     <keybind key="W-0"><action name="GoToDesktop" to="10" /></keybind>
     <keybind key="W-S-1"><action name="SendToDesktop" to="1" follow="no" /></keybind>
     <keybind key="W-S-2"><action name="SendToDesktop" to="2" follow="no" /></keybind>
+    <keybind key="W-S-3"><action name="SendToDesktop" to="3" follow="no" /></keybind>
+    <keybind key="W-S-4"><action name="SendToDesktop" to="4" follow="no" /></keybind>
+    <keybind key="W-S-5"><action name="SendToDesktop" to="5" follow="no" /></keybind>
     <keybind key="W-S-6"><action name="SendToDesktop" to="6" follow="no" /></keybind>
     <keybind key="W-S-7"><action name="SendToDesktop" to="7" follow="no" /></keybind>
     <keybind key="W-S-8"><action name="SendToDesktop" to="8" follow="no" /></keybind>

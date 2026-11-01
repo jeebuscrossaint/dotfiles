@@ -149,7 +149,7 @@ or die "$target is not writable"
 #
 # Rows above `chat` are derived from what the tracked configs and ~/.local/bin
 # scripts actually invoke — grep before adding one, and keep the paths in step
-# with the paths hyprland.lua execs.
+# with the paths the labwc config execs.
 #
 # The cli, chat, dev and apps groups are the other kind of row: nothing in this
 # repo calls them, they are just what this person installs on every machine.
@@ -179,10 +179,7 @@ set -g dep_table \
     "installer|cmd:git|git|git||" \
     "installer|cmd:fish|fish|fish||" \
     "installer|cmd:wget|wget|wget||" \
-    "compositor|cmd:Hyprland|hyprland|hyprland||" \
-    "compositor|path:/usr/lib/xdg-desktop-portal-hyprland /usr/libexec/xdg-desktop-portal-hyprland|xdg-desktop-portal-hyprland|xdg-desktop-portal-hyprland||" \
-    "compositor|cmd:meson|meson (hyprpm builds plugins with it)|meson||" \
-    "compositor|cmd:uwsm|uwsm|uwsm||" \
+    "compositor|path:/usr/lib/xdg-desktop-portal-wlr /usr/libexec/xdg-desktop-portal-wlr|xdg-desktop-portal-wlr|xdg-desktop-portal-wlr||" \
     "compositor|cmd:labwc|labwc|labwc||" \
     "compositor|cmd:wlopm|wlopm (labwc screen blanking)|wlopm||" \
     "compositor|path:/usr/lib/hyprpolkitagent/hyprpolkitagent|hyprpolkitagent|hyprpolkitagent||" \
@@ -193,8 +190,8 @@ set -g dep_table \
     "desktop|cmd:hypridle|hypridle|hypridle||" \
     "desktop|cmd:hyprlock|hyprlock|hyprlock||" \
     "desktop|cmd:conky|conky|conky||" \
-    "desktop|cmd:hyprsunset|hyprsunset|hyprsunset||" \
     "desktop|cmd:hyprpicker|hyprpicker|hyprpicker||" \
+    "desktop|cmd:wlsunset|wlsunset (night light)|wlsunset||" \
     "desktop|cmd:wdisplays|wdisplays|wdisplays||" \
     "desktop|cmd:swaybg|swaybg|swaybg||" \
     "desktop|path:/opt/activitywatch/aw-server-rust/aw-server-rust|activitywatch||activitywatch-bin|" \
@@ -701,8 +698,7 @@ function ensure_systemd_extras
     command -q systemctl; or return 0
 
     # Kills the cgroup under memory pressure instead of whichever process the
-    # kernel picks. uwsm puts every app in its own scope, so the runaway tab
-    # goes and the compositor holding the session stays.
+    # kernel picks.
     enable_service systemd-oomd.service
     command -q paccache; and enable_service paccache.timer
 
@@ -750,7 +746,7 @@ function ensure_resolved
 end
 
 # The session starts from a tty1 login, so tty1 logs in by itself. config.fish
-# does the rest -- see the `uwsm check may-start` block at the top of it.
+# does the rest -- see the labwc block at the bottom of it.
 function ensure_autologin
     command -q systemctl; or return 0
     set -l dir /etc/systemd/system/getty@tty1.service.d
@@ -931,36 +927,6 @@ end
 # Packages only -- no modprobe drop-in, no udev rule, no MUX service. The tuned
 # power setup in misc/ is this machine's, not a default; install it by hand if
 # and when it is wanted.
-# The plugins hyprland.lua configures. hyprpm builds them against the installed
-# Hyprland and asks for sudo by itself -- never run it under sudo, which builds
-# into root's cache instead.
-function ensure_hyprland_plugins
-    command -q hyprpm; or return 0
-    set -l plugins scrolloverview
-    set -l have (hyprpm list 2>/dev/null | string replace -ra '\e\[[0-9;]*m' '' | string match -rg 'Plugin (\S+)')
-    set -l missing
-    for p in $plugins
-        contains -- $p $have; or set -a missing $p
-    end
-    test (count $missing) -eq 0; and return 0
-
-    step "Hyprland plugins not installed: $missing"
-    dim "hyprpm builds them against this Hyprland; it asks for sudo itself"
-    confirm "build them now?"; or return 0
-    hyprpm update
-    or begin
-        note "hyprpm update failed — no headers, so no plugins"
-        return 1
-    end
-    # An already-added repo errors and is skipped, which is the right outcome.
-    for repo in yayuuu/hyprland-scroll-overview
-        hyprpm add https://github.com/$repo
-    end
-    for p in $missing
-        hyprpm enable $p; or note "hyprpm enable $p failed"
-    end
-end
-
 function ensure_nvidia
     host_has nvidia; or return 0
     pacman -Qq nvidia-utils &>/dev/null; and return 0
@@ -1188,7 +1154,6 @@ if not set -q _flag_skip_checks; and not set -q _flag_uninstall
     ensure_rust
     ensure_fonts
     ensure_coat
-    ensure_hyprland_plugins
     ensure_services
     ensure_systemd_extras
     ensure_resolved
