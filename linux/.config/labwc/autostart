@@ -1,0 +1,25 @@
+# Run by sh once labwc is up; not re-run on Reconfigure.
+
+dbus-update-activation-environment --all
+
+swaybg -c '#000000' >/dev/null 2>&1 &
+
+/usr/lib/hyprpolkitagent/hyprpolkitagent >/dev/null 2>&1 &
+audio-ensure >/dev/null 2>&1 &
+dunst >/dev/null 2>&1 &
+udiskie >/dev/null 2>&1 &
+battery-watch >/dev/null 2>&1 &
+rog-control-center --background --autostart >/dev/null 2>&1 &
+
+# Same supervised pair as hyprland.lua; ~/.cache/conky.off (Super+P) parks it.
+sh -c 'c=$HOME/.cache; while :; do if [ -e $c/conky.off ]; then sleep 0.2; else conky >> $c/conky.log 2>&1 & r=$!; conky -c $HOME/.config/conky/conky-left.conf >> $c/conky-left.log 2>&1 & l=$!; wait -n $r $l; kill $r $l 2>/dev/null; wait; sleep 3; fi; done' &
+
+# Lock at 5 min, blank at 5:30 (OLED). hyprctl dpms is Hyprland-only, hence wlopm.
+hypridle -c $HOME/.config/labwc/hypridle.conf >/dev/null 2>&1 &
+
+wl-paste --type text --watch cliphist store >/dev/null 2>&1 &
+wl-paste --type image --watch cliphist store >/dev/null 2>&1 &
+wl-clip-persist --clipboard regular >/dev/null 2>&1 &
+
+/opt/activitywatch/aw-server-rust/aw-server-rust >/dev/null 2>&1 &
+aw-awatcher >/dev/null 2>&1 &

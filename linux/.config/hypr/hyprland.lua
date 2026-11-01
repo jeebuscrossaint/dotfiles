@@ -73,6 +73,12 @@ hl.monitor({ output = "", mode = "preferred", position = "auto", scale = "auto" 
 
 ------------------------------------------------------------------------ env
 hl.env("PATH", home .. "/.local/bin:" .. home .. "/.cargo/bin:" .. os.getenv("PATH"))
+-- HDMI hangs off the dGPU and Intel-primary can't hand it frames (PRIME export fails),
+-- so presenting needs NVIDIA primary. Super+F9 flips the flag and restarts the session.
+local dgpu_flag = home .. "/.cache/hypr-dgpu"
+if io.open(dgpu_flag) then
+	hl.env("AQ_DRM_DEVICES", "/dev/dri/card0:/dev/dri/card1")
+end
 hl.env("QT_QPA_PLATFORM", "wayland;xcb")
 hl.env("MOZ_ENABLE_WAYLAND", "1")
 hl.env("_JAVA_AWT_WM_NONREPARENTING", "1")
@@ -123,7 +129,7 @@ end)
 hl.config({
 	general = {
 		border_size = 2,
-		gaps_in = 15,
+		gaps_in = 20,
 		gaps_out = 20,
 		float_gaps = 0,
 		gaps_workspaces = 0,
@@ -155,16 +161,16 @@ hl.config({
 		rounding = 10,
 		rounding_power = 2.0, -- 2 circle, 4 squircle
 		active_opacity = 1.0,
-		inactive_opacity = 0.90,
+		inactive_opacity = 0.9,
 		fullscreen_opacity = 1.0,
 		shadow = {
-			enabled = true,
-			range = 40,
+			enabled = false,
+			range = 10,
 			render_power = 2, -- broad, soft falloff
 			sharp = false,
-			color = "rgba(0a0b1080)", -- fixed near-black, not from the coat scheme
-			color_inactive = "rgba(0a0b1080)",
-			offset = { 0, 12 },
+			color = "rgba(3F3F3FF0)", -- fixed near-black, not from the coat scheme
+			color_inactive = "rgba(3F3F3FF0)",
+			offset = { 0, 0 },
 			scale = 1.0,
 		},
 		glow = {
@@ -181,29 +187,27 @@ hl.config({
 		dim_around = 0.4, -- strength for layer/window rules with dim_around (fuzzel)
 		screen_shader = "",
 		border_part_of_window = false,
-		blur = {
-			-- Windows, layers and the scrolloverview while hyprglass is off. 4 passes at
-			-- full size reach about as far as 3 do in the overview's half-scale view.
-			enabled = true,
-			size = 12,
-			passes = 4,
-			ignore_opacity = true,
-			new_optimizations = true,
-			xray = false,
-			noise = 0.0, -- Liquid Glass is grain-free
-			contrast = 0.9,
-			brightness = 1.15,
-			vibrancy = 0.1,
-			vibrancy_darkness = 0.0,
-			special = false,
-			popups = true,
-			popups_ignorealpha = 0.2,
-			input_methods = false,
-			input_methods_ignorealpha = 0.2,
-		},
+blur = {
+            enabled = true,
+            size = 8,                 -- Drop from 14 to 10 or 12 to retain more structural shapes
+            passes = 2,                -- Keep at 2 (3+ passes starts homogenizing colors too fast)
+            ignore_opacity = true,
+            new_optimizations = true,
+            xray = false,
+            noise = 0.05,              -- Add a tiny touch of grain (0.01) to break up any digital banding
+            contrast = 1.15,           -- Bump contrast above 1.0 to rescue darks from turning gray
+            brightness = 1.05,         -- A tiny lift keeps the blur from feeling dim
+            vibrancy = 0.2,            -- Increase vibrancy (from 0.1) to pump color back into the blur
+            vibrancy_darkness = 0.0,
+            special = false,
+            popups = true,
+            popups_ignorealpha = 0.2,
+            input_methods = false,
+            input_methods_ignorealpha = 0.2,
+        },
 		motion_blur = {
-			enabled = true,
-			samples = 64, -- the max; more copies per frame, smoother trail
+			enabled = false,
+			samples = 64, -- 64 drops frames on the iGPU when two windows swap
 		},
 	},
 
@@ -229,7 +233,7 @@ hl.config({
 		rotation = 0,
 		left_handed = false,
 		scroll_points = "",
-		scroll_method = "",
+		scroll_method = "2fg",
 		scroll_button = 0,
 		scroll_button_lock = false,
 		scroll_factor = 1.0,
@@ -248,7 +252,7 @@ hl.config({
 			natural_scroll = true, -- macOS-style on the touchpad, mouse wheel stays normal
 			scroll_factor = 1.0,
 			middle_button_emulation = false,
-			tap_button_map = "",
+			tap_button_map = "lrm",
 			clickfinger_behavior = true, -- two-finger click = right click, three = middle
 			tap_to_click = true,
 			drag_lock = 0,
@@ -372,9 +376,8 @@ hl.config({
 		key_press_enables_dpms = true,
 		name_vk_after_proc = true,
 		always_follow_on_dnd = true,
-		layers_hog_keyboard_focus = true,
 		animate_manual_resizes = false,
-		animate_mouse_windowdragging = false,
+		animate_mouse_windowdragging = true,
 		disable_autoreload = false,
 		enable_swallow = true,
 		swallow_regex = "^(kitty)$",
@@ -401,6 +404,11 @@ hl.config({
 		screencopy_force_8b = true,
 		disable_scale_notification = false,
 		size_limits_tiled = false,
+	},
+
+	layers = {
+		layers_hog_keyboard_focus = true,
+		allow_new_top_layers_over_existing_fullscreen = true,
 	},
 
 	binds = {
@@ -501,7 +509,6 @@ hl.config({
 		full_cm_proto = false,
 		ds_handle_same_buffer = true,
 		ds_handle_same_buffer_fifo = true,
-		fifo_pending_workaround = false,
 		render_solitary_wo_damage = false,
 		vfr = true,
 		-- invalidate_fp16 = 1,
@@ -518,7 +525,6 @@ hl.config({
 		smart_split = false,
 		smart_resizing = true,
 		permanent_direction_override = false,
-		special_scale_factor = 0.9,
 		split_width_multiplier = 1.0,
 		use_active_for_splits = true,
 		default_split_ratio = 1.0,
@@ -528,7 +534,6 @@ hl.config({
 
 	master = {
 		allow_small_split = false,
-		special_scale_factor = 1.0,
 		mfact = 0.55,
 		new_status = "slave", -- master, slave, inherit
 		new_on_top = false,
@@ -581,7 +586,7 @@ for _, a in ipairs({
 	{ "global", "easeOutQuint" },
 	{ "windows", "easeOutQuint", nil, 1.8 }, -- window leaves run faster: longer per-frame moves, longer motion-blur trails
 	{ "windowsIn", "easeOutQuint", "slidefade 75%", 1.8 },
-	{ "windowsOut", "linear", "slidefade 80%", 1.8 },
+	{ "windowsOut", "easeOutQuint", "slidefade 90%", 1.8 },
 	{ "windowsMove", "easeOutCubic", nil, 1.8 },
 	{ "layers", "easeOutQuint" },
 	{ "layersIn", "easeOutQuint", "fade" },
@@ -634,6 +639,10 @@ for _, ws in ipairs({ "w[tv1]", "f[1]" }) do
 	hl.window_rule({ name = "smart-" .. ws, match = { float = false, workspace = ws }, border_size = 0, rounding = 0 })
 end
 
+-- Special workspaces inset 5% per side, what dwindle's special_scale_factor = 0.9 did.
+local sx, sy = sw * 5 // 100, sh * 5 // 100
+hl.workspace_rule({ workspace = "s[true]", gaps_out = { top = sy, right = sx, bottom = sy, left = sx } })
+
 hl.window_rule({ name = "suppress-maximize", match = { class = ".*" }, suppress_event = "maximize" })
 hl.window_rule({
 	name = "fix-xwayland-drags",
@@ -648,11 +657,11 @@ hl.window_rule({
 })
 hl.window_rule({ name = "pinentry", match = { class = "^(pinentry-.*)$" }, float = true, stay_focused = true })
 hl.window_rule({ name = "pip", match = { title = "^Picture-in-Picture$" }, float = true, pin = true })
-hl.window_rule({ name = "translucent", match = { class = "^(com.microsoft.VSCode|[Ss]lack|teams-for-linux|outlook-for-linux)$" }, opacity = "0.90 override 0.90 override 1.0 override" })
 -- Anything fullscreen (video, games) holds off hypridle's lock and blank.
-hl.window_rule({ name = "fullscreen-awake", match = { class = ".*" }, idle_inhibit = "fullscreen" })
-hl.window_rule({ name = "discord-call-opaque", match = { class = "^(discord)$", initial_title = "^(Discord Popout)$" }, opacity = "1.0 override 1.0 override 1.0 override" })
+-- hl.window_rule({ name = "fullscreen-awake", match = { class = ".*" }, idle_inhibit = "fullscreen" })
+-- hl.window_rule({ name = "discord-call-opaque", match = { class = "^(discord)$", initial_title = "^(Discord Popout)$" }, opacity = "1.0 override 1.0 override 1.0 override" })
 hl.window_rule({ name = "webcam-opaque", match = { class = "^(guvcview)$" }, opacity = "1.0 override 1.0 override" })
+hl.window_rule({ name = "zathura-opaque", match = { class = "^(org.pwmt.zathura|zathura)$" }, opacity = "1.0 override 1.0 override" })
 -- kitty draws its own background_opacity; ignoring buffer alpha is the only way to block the wallpaper.
 hl.window_rule({ name = "fullscreen-opaque", match = { fullscreen_state_internal = 2 }, force_rgbx = true })
 
@@ -724,7 +733,7 @@ local window_picker = "hyprctl clients -j | jq -r '.[] | select(.workspace.id > 
 -- apps
 hl.bind(mod .. " + Q", hl.dsp.exec_cmd(terminal))
 hl.bind(mod .. " + Return", hl.dsp.exec_cmd(terminal))
-hl.bind(mod .. " + SHIFT + B", hl.dsp.exec_cmd("firefox-developer-edition"))
+hl.bind(mod .. " + SHIFT + B", hl.dsp.exec_cmd("helium-browser"))
 hl.bind(mod .. " + D", hl.dsp.exec_cmd(fuzzel))
 hl.bind(mod .. " + V", hl.dsp.exec_cmd("cliphist list | " .. fuzzel .. " --dmenu --prompt 'clip ' | cliphist decode | wl-copy"))
 hl.bind(mod .. " + S", hl.dsp.exec_cmd(window_picker))
@@ -751,6 +760,9 @@ hl.bind(mod .. " + P", hl.dsp.exec_cmd(
 hl.bind(mod .. " + SHIFT + C", hl.dsp.exec_cmd("hyprctl reload"))
 hl.bind(mod .. " + SHIFT + Q", hl.dsp.exec_cmd("command -v hyprshutdown >/dev/null && hyprshutdown || hyprctl dispatch 'hl.dsp.exit()'"))
 hl.bind(mod .. " + F5", toggle_hdr)
+hl.bind(mod .. " + F9", hl.dsp.exec_cmd(
+	"if [ -e " .. dgpu_flag .. " ]; then rm -f " .. dgpu_flag .. "; else touch " .. dgpu_flag .. "; fi;"
+		.. " hyprctl dispatch 'hl.dsp.exit()'"))
 
 -- toggles (osd tracks state itself, so the trackpad must stay an osd bind)
 hl.bind(mod .. " + ALT + N", hl.dsp.exec_cmd("osd nightlight"))
@@ -829,9 +841,6 @@ hl.bind(mod .. " + O", function()
 	elseif hl.plugin.scrolloverview then
 		hl.plugin.scrolloverview.overview("toggle all")
 		overview_held = true
-	elseif hl.plugin.overview then
-		hl.plugin.overview.toggle()
-		overview_held = true
 	end
 end)
 for _, key in ipairs({ "SUPER_L", "SUPER_R" }) do
@@ -842,8 +851,6 @@ for _, key in ipairs({ "SUPER_L", "SUPER_R" }) do
 		overview_held = false
 		if hl.plugin.scrolloverview then
 			hl.plugin.scrolloverview.overview("toggle all")
-		elseif hl.plugin.overview then
-			hl.plugin.overview.toggle()
 		end
 	end, { release = true, transparent = true })
 end
@@ -949,24 +956,13 @@ end
 
 -------------------------------------------------------------------- plugins
 
-local function coat_alpha(color, alpha)
-	return color:gsub("rgba%((%x%x%x%x%x%x)%x%x%)", "rgba(%1" .. alpha .. ")")
-end
-
-local overview_panel = coat_alpha(c.base00, "d9")
-local overview_panel_border = coat_alpha(c.base03, "aa")
-local overview_active = coat_alpha(c.base03, "e6")
-local overview_inactive = coat_alpha(c.base00, "b3")
-local overview_active_border = coat_alpha(c.base0D, "ff")
-local overview_inactive_border = coat_alpha(c.base03, "88")
-
 for _, p in ipairs(hl.get_loaded_plugins()) do
 	if p.name == "hyprglass" then
 		-- Liquid glass on translucent windows and layers; replaces Hyprland's blur
 		-- on what it covers. Tint is the scheme's background at low alpha.
 		local hg = hl.plugin.hyprglass
 		hg.config({
-			enabled = false, -- off for now: windows take decoration.blur
+			enabled = true, -- off for now: windows take decoration.blur
 			manage_window_blur = true, -- sets noblur on glassed windows so cached blur can't hide the glass
 			skip_opaque_windows = true,
 			blur_fold = true,
@@ -1103,83 +1099,5 @@ for _, p in ipairs(hl.get_loaded_plugins()) do
 			},
 		})
 		hl.plugin.scrolloverview.gesture({ fingers = 3, direction = "up" })
-	elseif p.name == "Hyprspace" then
-		hl.gesture({ fingers = 3, direction = "up", action = function() hl.plugin.overview.toggle() end })
-		hl.config({
-			plugin = {
-				overview = {
-					panelColor = overview_panel,
-					panelBorderColor = overview_panel_border,
-					workspaceActiveBackground = overview_active,
-					workspaceInactiveBackground = overview_inactive,
-					workspaceActiveBorder = overview_active_border,
-					workspaceInactiveBorder = overview_inactive_border,
-					disableBlur = false,
-					panelBorderWidth = 1,
-					workspaceBorderSize = 1,
-					workspaceMargin = 12,
-					centerAligned = 1,
-					hideRealLayers = 1,
-					overrideGaps = 1,
-					gapsIn = 15,
-					gapsOut = 25,
-					onBottom = true,
-					autoDrag = true,
-				},
-			},
-		})
-	elseif p.name == "hyprbars" then
-		hl.config({
-			plugin = {
-				hyprbars = {
-					enabled = false,
-				},
-			},
-		})
-	elseif p.name == "hyprfocus" then
-		hl.config({
-			plugin = {
-				hyprfocus = {
-					enable = true,
-					animate_floating = true,
-					keyboard_focus_animation = "flash",
-					mouse_focus_animation = "flash",
-					fade_opacity = 0.8,
-				},
-			},
-		})
-	elseif p.name == "dynamic-cursors" then
-		hl.config({
-			plugin = {
-				dynamic_cursors = {
-					enabled = false, -- software cursor: costs frames at 240 Hz
-					mode = "tilt",
-					threshold = 2,
-					tilt = {
-						limit = 4500,
-						activation = "negative_quadratic",
-						window = 100,
-						full = 35,
-					},
-					shake = {
-						enabled = true,
-						threshold = 6.0,
-						base = 4.0,
-						speed = 4.0,
-						influence = 0.0,
-						limit = 0.0,
-						timeout = 2000,
-						effects = false,
-						ipc = false,
-					},
-					hyprcursor = {
-						enabled = true,
-						nearest = 1,
-						resolution = -1,
-						fallback = "clientside",
-					},
-				},
-			},
-		})
 	end
 end

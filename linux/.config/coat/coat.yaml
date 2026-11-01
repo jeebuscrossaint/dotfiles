@@ -16,11 +16,13 @@ enabled:
   - imv
   - satty
   - hyprland
+  - labwc
   - dunst
   - fuzzel
   - conky
   - qutebrowser
   - colors
+  - tty
 
 # colors.json (the scheme as plain data) also goes to the homelab, where
 # term.lab picks it up. `coat docs colors`.
@@ -38,16 +40,16 @@ normalize:
 opacity:
   # Blur only shows through a translucent surface, so at 1.0 an opaque terminal
   # frosts nothing and the effects block appears to do less than it does.
-  terminal: 0.45   # base00 tints the blur without hiding it
+  terminal: 0.75   # base00 tints the blur without hiding it
   popups: 0.80     # fuzzel + dunst; enough transparency for compositor blur
-  applications: 0.85
+  applications: 1.0
   desktop: 1.0     # conky, which has only the wallpaper behind it anyway
 
 font:
   emoji: "Noto Color Emoji"
-  monospace: "ShureTechMono Nerd Font Mono"
-  sansserif: "ShureTechMono Nerd Font Mono"
-  serif: "ShureTechMono Nerd Font Mono"
+  monospace: "NeoSpleen Nerd Font"
+  sansserif: "NeoSpleen Nerd Font"
+  serif: "NeoSpleen Nerd Font"
   sizes:
     terminal: 13
     desktop: 13
@@ -66,4 +68,5 @@ overrides:
   # thinner than other apps without losing readability.
   vesktop:
     opacity:
-      applications: 0.45
+      applications: 0.75
+

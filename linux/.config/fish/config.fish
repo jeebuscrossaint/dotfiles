@@ -1,16 +1,5 @@
 set -g fish_greeting
 
-if status is-login; and test (tty) = /dev/tty1
-    if command -q uwsm; and uwsm check may-start >/dev/null 2>&1
-        # A rejected config prints its errors and leaves you on the tty to fix it,
-        # instead of an autologin crash loop.
-        if Hyprland --verify-config >/dev/null 2>&1
-            exec uwsm start hyprland.desktop
-        end
-        Hyprland --verify-config
-    end
-end
-
 set -x EDITOR micro
 set -x TERMINAL kitty
 set -x LANG en_US.UTF-8
@@ -36,7 +25,6 @@ if status is-interactive
     alias ls="lsd"
     alias vi="micro"
     alias doas="sudo"
-
     # bash's `!!`: expands to the previous command as you type it, so `sudo !!`
     # works and shows what it will run before Enter.
     function __last_history_item
@@ -44,12 +32,14 @@ if status is-interactive
     end
     abbr -a !! --position anywhere --function __last_history_item
 
-    if test -x ~/.local/bin/refresh-paru-completions
-        set -l pc ~/.cache/paru/packages.aur
-        set -l age (path mtime -R $pc)
-        if test -z "$age"; or test $age -gt 604800
-            ~/.local/bin/refresh-paru-completions >/dev/null 2>&1 &
-            disown
-        end
+    # coat's fonts sit in a second rc.xml that labwc only merges with -m.
+    function labwc --wraps labwc
+        XDG_CONFIG_DIRS=$HOME/.local/share/coat/labwc:/etc/xdg command labwc -m $argv
     end
+end
+
+# tty1 autologin starts labwc. Not exec'd: quitting labwc drops back to this
+# prompt instead of autologin relaunching it.
+if status is-login; and test (tty) = /dev/tty1; and not set -q WAYLAND_DISPLAY
+    labwc
 end

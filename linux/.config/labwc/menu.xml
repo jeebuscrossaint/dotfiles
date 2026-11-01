@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openbox_menu>
+
+<!-- titlebar right-click / Alt-Space, in macOS's Window-menu words -->
+<menu id="client-menu">
+  <item label="Minimize"><action name="Iconify" /></item>
+  <item label="Zoom"><action name="ToggleMaximize" /></item>
+  <item label="Enter Full Screen"><action name="ToggleFullscreen" /></item>
+  <separator />
+  <item label="Move to Left of Screen"><action name="SnapToEdge" direction="left" /></item>
+  <item label="Move to Right of Screen"><action name="SnapToEdge" direction="right" /></item>
+  <item label="Center"><action name="AutoPlace" policy="center" /></item>
+  <separator />
+  <item label="Keep on Top"><action name="ToggleAlwaysOnTop" /></item>
+  <item label="Show on All Desktops"><action name="ToggleOmnipresent" /></item>
+  <item label="Hide Title Bar"><action name="ToggleDecorations" /></item>
+  <menu id="client-send-to-menu" />
+  <separator />
+  <item label="Close"><action name="Close" /></item>
+</menu>
+
+<!-- desktop right-click -->
+<menu id="root-menu">
+  <item label="Terminal"><action name="Execute" command="kitty" /></item>
+  <item label="Browser"><action name="Execute" command="helium-browser" /></item>
+  <item label="Launcher"><action name="Execute" command="fuzzel" /></item>
+  <separator />
+  <menu id="client-list-combined-menu" />
+  <item label="Show Desktop"><action name="ToggleShowDesktop" /></item>
+  <separator />
+  <item label="Change Theme…">
+    <action name="Execute">
+      <command>sh -c 's=$(coat list --no-preview | awk "/Slug:/{print \$2}" | sort -u | fuzzel --dmenu --prompt "theme ") &amp;&amp; coat set "$s" >/dev/null 2>&amp;1'</command>
+    </action>
+  </item>
+  <item label="Displays…"><action name="Execute" command="wdisplays" /></item>
+  <item label="Reload Config"><action name="Reconfigure" /></item>
+  <separator />
+  <item label="Lock Screen"><action name="Execute" command="sh -c 'pidof hyprlock || hyprlock'" /></item>
+  <item label="Log Out…">
+    <action name="If">
+      <prompt message="Log out of labwc?" />
+      <then><action name="Exit" /></then>
+    </action>
+  </item>
+</menu>
+
+</openbox_menu>

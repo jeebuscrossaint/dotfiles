@@ -183,6 +183,8 @@ set -g dep_table \
     "compositor|path:/usr/lib/xdg-desktop-portal-hyprland /usr/libexec/xdg-desktop-portal-hyprland|xdg-desktop-portal-hyprland|xdg-desktop-portal-hyprland||" \
     "compositor|cmd:meson|meson (hyprpm builds plugins with it)|meson||" \
     "compositor|cmd:uwsm|uwsm|uwsm||" \
+    "compositor|cmd:labwc|labwc|labwc||" \
+    "compositor|cmd:wlopm|wlopm (labwc screen blanking)|wlopm||" \
     "compositor|path:/usr/lib/hyprpolkitagent/hyprpolkitagent|hyprpolkitagent|hyprpolkitagent||" \
     "compositor|path:/usr/lib/qt6/qml/org/hyprland/style|hyprland-qt-support (hypr* Qt app style)|hyprland-qt-support||" \
     "compositor|path:/usr/lib/xdg-desktop-portal-gtk /usr/libexec/xdg-desktop-portal-gtk|xdg-desktop-portal-gtk|xdg-desktop-portal-gtk||" \
@@ -260,7 +262,7 @@ set -g dep_table \
     "apps|cmd:tradingview|tradingview||tradingview|" \
     "apps|cmd:yt-dlp|yt-dlp|yt-dlp||" \
     "apps|path:/usr/lib/zathura/libpdf-poppler.so|zathura pdf backend|zathura-pdf-poppler||" \
-    "apps|cmd:firefox-developer-edition|firefox developer edition|firefox-developer-edition||" \
+    "apps|cmd:helium-browser|helium||helium-browser-bin|" \
     "apps|cmd:nvibrant|nvibrant||nvibrant-bin||nvidia" \
     "apps|cmd:imv|imv|imv||" \
     "apps|cmd:guvcview|guvcview|guvcview||" \
@@ -277,7 +279,6 @@ set -g dep_table \
     "cli|cmd:unzip|unzip|unzip||" \
     "chat|cmd:slack|slack||slack-desktop|" \
     "chat|cmd:discord|discord|discord||" \
-    "chat|path:/etc/pacman.d/hooks/vencord-hook.hook|vencord||vencord-installer-bin vencord-hook|" \
     "dev|cmd:claude|claude code||claude-code|" \
     "dev|cmd:claude-desktop|claude desktop||claude-desktop|" \
     "dev|cmd:code|vscode||visual-studio-code-bin|" \
@@ -756,7 +757,7 @@ function ensure_autologin
     grep -q -- --skip-login $dir/autologin.conf 2>/dev/null; and return 0
 
     step "tty1 does not log in by itself, or prints a login banner first"
-    dim "agetty --autologin $USER on tty1, silently; config.fish starts Hyprland from there"
+    dim "agetty --autologin $USER on tty1, silently; config.fish starts labwc from there"
     confirm "set that up?"; or return 0
     sudo mkdir -p $dir
     printf '[Service]\nExecStart=\nExecStart=-/usr/bin/agetty --skip-login --nonewline --noissue --autologin %s --noclear %%I $TERM\n' $USER \
