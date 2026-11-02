@@ -17,6 +17,7 @@ enabled:
   - satty
   - hyprlock
   - labwc
+  - niri
   - dunst
   - fuzzel
   - conky
@@ -47,9 +48,9 @@ opacity:
 
 font:
   emoji: "Noto Color Emoji"
-  monospace: "NeoSpleen Nerd Font"
-  sansserif: "NeoSpleen Nerd Font"
-  serif: "NeoSpleen Nerd Font"
+  monospace: "SFMono Nerd Font Mono"
+  sansserif: "SFMono Nerd Font Mono"
+  serif: "SFMono Nerd Font Mono"
   sizes:
     terminal: 13
     desktop: 13

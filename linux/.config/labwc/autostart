@@ -2,7 +2,7 @@
 
 dbus-update-activation-environment --all
 
-swaybg -c '#000000' >/dev/null 2>&1 &
+# swaybg -c '#000000' >/dev/null 2>&1 &
 
 /usr/lib/hyprpolkitagent/hyprpolkitagent >/dev/null 2>&1 &
 audio-ensure >/dev/null 2>&1 &

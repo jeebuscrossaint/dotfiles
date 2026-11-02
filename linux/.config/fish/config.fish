@@ -36,10 +36,10 @@ if status is-interactive
     function labwc --wraps labwc
         XDG_CONFIG_DIRS=$HOME/.local/share/coat/labwc:/etc/xdg command labwc -m $argv
     end
-end
 
-# tty1 autologin starts labwc. Not exec'd: quitting labwc drops back to this
-# prompt instead of autologin relaunching it.
-if status is-login; and test (tty) = /dev/tty1; and not set -q WAYLAND_DISPLAY
-    labwc
+    # --session sets XDG_CURRENT_DESKTOP=niri and hands it to dbus/systemd; without
+    # it the portal finds no backend and apps lose dark mode.
+    function niri --wraps niri
+        command niri --session $argv
+    end
 end

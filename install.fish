@@ -181,6 +181,9 @@ set -g dep_table \
     "installer|cmd:wget|wget|wget||" \
     "compositor|path:/usr/lib/xdg-desktop-portal-wlr /usr/libexec/xdg-desktop-portal-wlr|xdg-desktop-portal-wlr|xdg-desktop-portal-wlr||" \
     "compositor|cmd:labwc|labwc|labwc||" \
+    "compositor|cmd:niri|niri|niri||" \
+    "compositor|cmd:xwayland-satellite|xwayland-satellite (niri X11 apps)|xwayland-satellite||" \
+    "compositor|path:/usr/lib/xdg-desktop-portal-gnome /usr/libexec/xdg-desktop-portal-gnome|xdg-desktop-portal-gnome (niri screencast)|xdg-desktop-portal-gnome||" \
     "compositor|cmd:wlopm|wlopm (labwc screen blanking)|wlopm||" \
     "compositor|path:/usr/lib/hyprpolkitagent/hyprpolkitagent|hyprpolkitagent|hyprpolkitagent||" \
     "compositor|path:/usr/lib/qt6/qml/org/hyprland/style|hyprland-qt-support (hypr* Qt app style)|hyprland-qt-support||" \

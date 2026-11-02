@@ -1,0 +1,615 @@
+include optional=true "~/.config/niri/coat.kdl"
+
+// niri 26.04. Every key is listed; commented ones sit at their default.
+// Colours come from coat (`coat docs niri`); setting one here overrides coat.
+// Live-reloads on save. `niri validate` checks it. Start from tty with niri-session.
+
+input {
+    keyboard {
+        xkb {
+            layout "us"
+            // variant ""
+            // options ""          // e.g. "compose:ralt,ctrl:nocaps"
+            // model ""
+            // rules ""
+            // file "~/.config/keymap.xkb"
+        }
+        repeat-delay 200
+        repeat-rate 50
+        // track-layout "global"   // global|window
+        // numlock
+    }
+
+    touchpad {
+        // off
+        tap
+        dwt
+        // dwtp
+        // drag true
+        // drag-lock
+        natural-scroll
+        // accel-speed 0.0
+        // accel-profile "adaptive"   // adaptive|flat
+        // scroll-factor 1.0
+        // scroll-method "two-finger" // no-scroll|two-finger|edge|on-button-down
+        // scroll-button 273
+        // scroll-button-lock
+        // tap-button-map "left-right-middle"  // left-right-middle|left-middle-right
+        click-method "clickfinger"            // button-areas|clickfinger
+        // left-handed
+        // disabled-on-external-mouse
+        // middle-emulation
+    }
+
+    mouse {
+        // off
+        // natural-scroll
+        // accel-speed 0.0
+        accel-profile "flat"
+        // scroll-factor 1.0
+        // scroll-method "no-scroll"
+        // scroll-button 273
+        // scroll-button-lock
+        // left-handed
+        // middle-emulation
+    }
+
+    trackpoint {
+        // off
+        // natural-scroll
+        // accel-speed 0.0
+        // accel-profile "flat"
+        // scroll-method "on-button-down"
+        // scroll-button 273
+        // scroll-button-lock
+        // left-handed
+        // middle-emulation
+    }
+
+    trackball {
+        // off
+        // natural-scroll
+        // accel-speed 0.0
+        // accel-profile "flat"
+        // scroll-method "on-button-down"
+        // scroll-button 273
+        // scroll-button-lock
+        // left-handed
+        // middle-emulation
+    }
+
+    tablet {
+        // off
+        // map-to-output "eDP-1"
+        // map-to-focused-output
+        // left-handed
+        // calibration-matrix 1.0 0.0 0.0 0.0 1.0 0.0
+    }
+
+    touch {
+        // off
+        // map-to-output "eDP-1"
+        // calibration-matrix 1.0 0.0 0.0 0.0 1.0 0.0
+    }
+
+    // disable-power-key-handling
+    // warp-mouse-to-focus           // mode="center-xy"|"center-xy-always"
+    // focus-follows-mouse max-scroll-amount="0%"
+    // workspace-auto-back-and-forth
+    // mod-key "Super"
+    // mod-key-nested "Alt"
+}
+
+// `niri msg outputs` lists names and modes. No refresh = the highest one.
+output "eDP-1" {
+    // off
+    mode "2560x1600"
+    // mode custom=true "2560x1600@120"
+    // modeline 173.00 1920 2048 2248 2576 1080 1083 1088 1120 "-hsync" "+vsync"
+    scale 1
+    transform "normal"   // normal|90|180|270|flipped|flipped-90|flipped-180|flipped-270
+    position x=0 y=0
+    // variable-refresh-rate on-demand=true
+    focus-at-startup
+    // backdrop-color "#000000"
+    // hot-corners { off; }
+    // layout { }
+}
+
+output "HDMI-A-1" {
+    mode "3840x2160@30"
+    scale 1
+    position x=2560 y=0
+}
+
+layout {
+    gaps 10
+    center-focused-column "never"   // never|always|on-overflow
+    always-center-single-column
+    // empty-workspace-above-first
+    default-column-display "normal" // normal|tabbed
+    // background-color  set by coat
+
+    preset-column-widths {
+        proportion 0.33333
+        proportion 0.5
+        proportion 0.66667
+        proportion 1.0
+    }
+
+    default-column-width { proportion 0.5; }
+
+    preset-window-heights {
+        proportion 0.33333
+        proportion 0.5
+        proportion 0.66667
+    }
+
+    focus-ring {
+        // off
+        width 2
+        // active-color, inactive-color, urgent-color  set by coat
+        // active-gradient from="#80c8ff" to="#bbddff" angle=45 relative-to="workspace-view" in="oklch shorter hue"
+        // inactive-gradient from="#505050" to="#808080" angle=45
+        // urgent-gradient from="#800" to="#a33" angle=45
+    }
+
+    border {
+        off
+        width 2
+        // active-color, inactive-color, urgent-color  set by coat
+        // active-gradient from="#ffbb66" to="#ffc880" angle=45
+        // inactive-gradient from="#505050" to="#808080" angle=45
+        // urgent-gradient from="#800" to="#a33" angle=45
+    }
+
+    shadow {
+        on
+        softness 30
+        spread 5
+        offset x=0 y=5
+        draw-behind-window false
+        // color, inactive-color  set by coat
+    }
+
+    tab-indicator {
+        // off
+        hide-when-single-tab
+        place-within-column
+        gap 5
+        width 4
+        length total-proportion=1.0
+        position "left"   // left|right|top|bottom
+        gaps-between-tabs 2
+        corner-radius 4
+        // active-color, inactive-color, urgent-color  set by coat
+    }
+
+    insert-hint {
+        // off
+        // color  set by coat
+        // gradient from="#ffbb6680" to="#ffc88080" angle=45
+    }
+
+    struts {
+        // left 0
+        // right 0
+        // top 0
+        // bottom 0
+    }
+}
+
+// Named workspaces always exist, even empty, in config order.
+// workspace "chat" {
+//     open-on-output "eDP-1"
+//     layout { }
+// }
+
+// spawn-sh-at-startup "swaybg -c '#000000'"
+spawn-at-startup "/usr/lib/hyprpolkitagent/hyprpolkitagent"
+spawn-at-startup "audio-ensure"
+spawn-at-startup "dunst"
+spawn-at-startup "udiskie"
+spawn-at-startup "battery-watch"
+spawn-at-startup "rog-control-center" "--background" "--autostart"
+// conky exits when its output goes away (lid close), so it is supervised; both panels
+// restart together. ~/.cache/conky.off (Super+P) parks the loop.
+spawn-sh-at-startup "c=$HOME/.cache; while :; do if [ -e $c/conky.off ]; then sleep 0.2; else conky >> $c/conky.log 2>&1 & r=$!; conky -c $HOME/.config/conky/conky-left.conf >> $c/conky-left.log 2>&1 & l=$!; wait -n $r $l; kill $r $l 2>/dev/null; wait; sleep 3; fi; done"
+spawn-at-startup "hypridle"
+spawn-sh-at-startup "osd nightlight start"
+spawn-sh-at-startup "wl-paste --type text --watch cliphist store"
+spawn-sh-at-startup "wl-paste --type image --watch cliphist store"
+spawn-at-startup "wl-clip-persist" "--clipboard" "regular"
+spawn-at-startup "/opt/activitywatch/aw-server-rust/aw-server-rust"
+spawn-at-startup "aw-awatcher"
+
+prefer-no-csd
+
+screenshot-path "~/Pictures/Screenshots/%Y%m%d_%H%M%S.png"
+
+environment {
+    QT_QPA_PLATFORM "wayland;xcb"
+    MOZ_ENABLE_WAYLAND "1"
+    ELECTRON_OZONE_PLATFORM_HINT "auto"
+    _JAVA_AWT_WM_NONREPARENTING "1"
+}
+
+cursor {
+    xcursor-theme "WhiteSur-cursors"
+    xcursor-size 24
+    hide-when-typing
+    // hide-after-inactive-ms 1000
+}
+
+overview {
+    zoom 0.5
+    // backdrop-color  set by coat
+    workspace-shadow {
+        // off
+        softness 40
+        spread 10
+        offset x=0 y=10
+        // color  set by coat
+    }
+}
+
+xwayland-satellite {
+    // off
+    path "xwayland-satellite"
+}
+
+clipboard {
+    // disable-primary
+}
+
+hotkey-overlay {
+    skip-at-startup
+    // hide-not-bound
+}
+
+config-notification {
+    // disable-failed
+}
+
+blur {
+    // off
+    passes 3
+    offset 3.0
+    noise 0.05
+    saturation 1.2
+}
+
+gestures {
+    dnd-edge-view-scroll {
+        trigger-width 30
+        delay-ms 100
+        max-speed 1500
+    }
+    dnd-edge-workspace-switch {
+        trigger-height 50
+        delay-ms 100
+        max-speed 1500
+    }
+    hot-corners {
+        // off
+        top-left
+        // top-right
+        // bottom-left
+        // bottom-right
+    }
+}
+
+recent-windows {
+    // off
+    debounce-ms 750
+    open-delay-ms 150
+    highlight {
+        // active-color, urgent-color  set by coat
+        padding 30
+        corner-radius 10
+    }
+    previews {
+        max-height 480
+        max-scale 0.5
+    }
+    binds {
+        Alt+Tab         { next-window; }
+        Alt+Shift+Tab   { previous-window; }
+    }
+}
+
+// spring damping-ratio stiffness epsilon, or duration-ms + curve
+// (linear|ease-out-quad|ease-out-cubic|ease-out-expo|cubic-bezier x1 y1 x2 y2).
+animations {
+    // off
+    // slowdown 1.0
+    workspace-switch {
+        spring damping-ratio=1.0 stiffness=1000 epsilon=0.0001
+    }
+    window-open {
+        duration-ms 150
+        curve "ease-out-expo"
+        // custom-shader r"..."
+    }
+    window-close {
+        duration-ms 150
+        curve "ease-out-quad"
+        // custom-shader r"..."
+    }
+    horizontal-view-movement {
+        spring damping-ratio=1.0 stiffness=800 epsilon=0.0001
+    }
+    window-movement {
+        spring damping-ratio=1.0 stiffness=800 epsilon=0.0001
+    }
+    window-resize {
+        spring damping-ratio=1.0 stiffness=800 epsilon=0.0001
+        // custom-shader r"..."
+    }
+    config-notification-open-close {
+        spring damping-ratio=0.6 stiffness=1000 epsilon=0.001
+    }
+    exit-confirmation-open-close {
+        spring damping-ratio=0.6 stiffness=500 epsilon=0.01
+    }
+    screenshot-ui-open {
+        duration-ms 200
+        curve "ease-out-quad"
+    }
+    overview-open-close {
+        spring damping-ratio=1.0 stiffness=800 epsilon=0.0001
+    }
+    recent-windows-close {
+        spring damping-ratio=1.0 stiffness=800 epsilon=0.001
+    }
+}
+
+// Rounded corners everywhere; border drawn around, not behind, so it never
+// tints a translucent window.
+window-rule {
+    geometry-corner-radius 10
+    clip-to-geometry true
+    draw-border-with-background false
+}
+
+// The wallpaper is flat black, so xray (blur the wallpaper only) would show
+// nothing. Non-xray blurs the windows below; it drops out during open/close.
+window-rule {
+    match app-id="^kitty$"
+    background-effect {
+        blur true
+        xray false
+    }
+}
+
+window-rule {
+    match app-id="^org\\.pulseaudio\\.pavucontrol$"
+    match app-id="^rog-control-center$"
+    match app-id="^blueman-manager$"
+    match title="^Picture-in-Picture$"
+    open-floating true
+}
+
+// All window-rule keys; match/exclude take app-id, title (regex), is-active,
+// is-focused, is-active-in-column, is-floating, is-window-cast-target,
+// is-urgent, at-startup.
+// window-rule {
+//     match app-id="" title=""
+//     exclude app-id=""
+//     default-column-width { proportion 0.5; }
+//     default-window-height { fixed 500; }
+//     open-on-output "eDP-1"
+//     open-on-workspace "chat"
+//     open-maximized true
+//     open-maximized-to-edges true
+//     open-fullscreen true
+//     open-floating true
+//     open-focused false
+//     opacity 1.0
+//     block-out-from "screencast"   // screencast|screen-capture
+//     variable-refresh-rate true
+//     default-column-display "tabbed"
+//     default-floating-position x=0 y=0 relative-to="top-left"
+//     scroll-factor 1.0
+//     focus-ring { }
+//     border { }
+//     shadow { }
+//     tab-indicator { }
+//     tiled-state true
+//     baba-is-float true
+//     background-effect { xray true; blur true; noise 0.0; saturation 1.0; }
+//     popups { opacity 1.0; geometry-corner-radius 0; background-effect { }; }
+//     min-width 0
+//     max-width 0
+//     min-height 0
+//     max-height 0
+// }
+
+layer-rule {
+    match namespace="^launcher$"
+    match namespace="^notifications$"
+    geometry-corner-radius 10
+    background-effect {
+        blur true
+        xray false
+    }
+}
+
+// All layer-rule keys; match/exclude take namespace (regex), at-startup, layer.
+// layer-rule {
+//     match namespace="" layer="top"   // background|bottom|top|overlay
+//     opacity 1.0
+//     block-out-from "screencast"
+//     shadow { }
+//     geometry-corner-radius 0
+//     place-within-backdrop true
+//     baba-is-float true
+//     background-effect { }
+//     popups { }
+// }
+
+switch-events {
+    // lid-close { spawn "loginctl" "lock-session"; }
+    // lid-open { }
+    // tablet-mode-on { }
+    // tablet-mode-off { }
+}
+
+debug {
+    // preview-render "screencast"   // screencast|screen-capture
+    // enable-overlay-planes
+    // disable-cursor-plane
+    // disable-direct-scanout
+    // restrict-primary-scanout-to-matching-format
+    // force-disable-connectors-on-resume
+    // render-drm-device "/dev/dri/renderD128"
+    // ignore-drm-device "/dev/dri/renderD129"
+    // force-pipewire-invalid-modifier
+    // dbus-interfaces-in-non-session-instances
+    // wait-for-frame-completion-before-queueing
+    // emulate-zero-presentation-time
+    // disable-resize-throttling
+    // disable-transactions
+    // keep-laptop-panel-on-when-lid-is-closed
+    // disable-monitor-names
+    // strict-new-window-focus-policy
+    // honor-xdg-activation-with-invalid-serial
+    // skip-cursor-only-updates-during-vrr
+    // deactivate-unfocused-windows
+    // keep-max-bpc-unchanged
+}
+
+// Bind props: repeat=false, cooldown-ms=N, allow-when-locked=true,
+// allow-inhibiting=false, hotkey-overlay-title="..." (null hides it).
+binds {
+    // Same layout as the old hyprland.lua, mapped onto niri's columns.
+    Mod+Shift+Slash hotkey-overlay-title="Show binds" { show-hotkey-overlay; }
+
+    // apps
+    Mod+Q hotkey-overlay-title="Terminal" { spawn "kitty"; }
+    Mod+Return hotkey-overlay-title="Terminal" { spawn "kitty"; }
+    Mod+D hotkey-overlay-title="Launcher" { spawn "fuzzel"; }
+    Mod+Space hotkey-overlay-title="Launcher" { spawn "fuzzel"; }
+    Mod+V hotkey-overlay-title="Clipboard" { spawn-sh "cliphist list | fuzzel --dmenu --prompt 'clip ' | cliphist decode | wl-copy"; }
+    Mod+S hotkey-overlay-title="Window picker" { spawn-sh "niri msg -j windows | jq -r '.[] | \"\\(.app_id) — \\(.title)\\t\\(.id)\"' | fuzzel --dmenu --prompt 'window ' --with-nth=1 --accept-nth=2 | xargs -r niri msg action focus-window --id"; }
+    Mod+Shift+S hotkey-overlay-title="Screenshot region" { screenshot; }
+    Print hotkey-overlay-title="Screenshot region" { screenshot; }
+    Ctrl+Print hotkey-overlay-title="Screenshot screen" { screenshot-screen; }
+    Alt+Print hotkey-overlay-title="Screenshot window" { screenshot-window; }
+    Mod+Shift+E hotkey-overlay-title="Annotate region" { spawn-sh "mkdir -p ~/Pictures/Screenshots; grim -g \"$(slurp)\" - | satty --filename - --output-filename \"$HOME/Pictures/Screenshots/%Y%m%d_%H%M%S.png\" --copy-command wl-copy --early-exit"; }
+    Mod+Shift+P hotkey-overlay-title="Colour picker" { spawn "hyprpicker" "-a" "-n" "-r"; }
+    Mod+Z hotkey-overlay-title="Zoom (woomer)" { spawn-sh "pidof woomer || woomer"; }
+    XF86Launch1 hotkey-overlay-title="ROG Control Center" { spawn "rog-control-center"; }
+
+    // coat
+    Mod+T hotkey-overlay-title="Pick theme" { spawn-sh "s=$(coat list --no-preview | awk '/Slug:/{print $2}' | sort -u | fuzzel --dmenu --prompt 'theme ') && coat set \"$s\" >/dev/null 2>&1 && notify-send -t 2000 '󰏘  Theme' \"switched to $s\""; }
+    Mod+Shift+T hotkey-overlay-title="Random theme" { spawn-sh "coat random -y >/dev/null 2>&1; notify-send -t 2000 '󰏘  Theme' \"switched to $(awk '$1==\"scheme:\"{print $2}' ~/.local/state/coat/state.yaml)\""; }
+    Mod+Alt+T hotkey-overlay-title="Match theme to wallpaper" { spawn "coat" "match"; }
+
+    // session
+    Mod+L hotkey-overlay-title="Lock" { spawn-sh "pidof hyprlock || hyprlock"; }
+    Mod+Escape hotkey-overlay-title="Lock" { spawn-sh "pidof hyprlock || hyprlock"; }
+    Mod+P hotkey-overlay-title="Toggle conky" { spawn-sh "if [ -e ~/.cache/conky.off ]; then rm -f ~/.cache/conky.off; else touch ~/.cache/conky.off; pkill -x conky; fi"; }
+    Mod+Shift+Q hotkey-overlay-title="Quit niri" { quit; }
+    Mod+Alt+N hotkey-overlay-title="Night light" { spawn "osd" "nightlight"; }
+    Mod+Alt+BracketLeft hotkey-overlay-title="Night light warmer" { spawn "osd" "nightlight" "warmer"; }
+    Mod+Alt+BracketRight hotkey-overlay-title="Night light cooler" { spawn "osd" "nightlight" "cooler"; }
+
+    // windows
+    Mod+C repeat=false hotkey-overlay-title="Close window" { close-window; }
+    Mod+Shift+X repeat=false hotkey-overlay-title="Force kill window" { spawn-sh "kill -9 $(niri msg -j focused-window | jq .pid)"; }
+    Mod+F hotkey-overlay-title="Maximize" { maximize-column; }
+    Mod+Shift+F hotkey-overlay-title="Fullscreen" { fullscreen-window; }
+    Mod+A hotkey-overlay-title="Fullscreen inside the tile" { toggle-windowed-fullscreen; }
+    Mod+Shift+Space hotkey-overlay-title="Float / tile" { toggle-window-floating; }
+    Mod+Shift+V hotkey-overlay-title="Float / tile" { toggle-window-floating; }
+    Mod+Shift+O hotkey-overlay-title="Center column" { center-column; }
+    Mod+O repeat=false hotkey-overlay-title="Overview" { toggle-overview; }
+
+    // groups = tabbed columns
+    Mod+G hotkey-overlay-title="Tab the column" { toggle-column-tabbed-display; }
+    Mod+Shift+G hotkey-overlay-title="Pull window out of the column" { expel-window-from-column; }
+    Mod+Tab hotkey-overlay-title="Next window in the column" { focus-window-down-or-top; }
+    Mod+Shift+Tab hotkey-overlay-title="Previous window in the column" { focus-window-up-or-bottom; }
+
+    // arrows: focus, Shift moves, Ctrl nudges a floating window, Ctrl+Shift resizes
+    Mod+Left hotkey-overlay-title="Focus left" { focus-column-left; }
+    Mod+Right hotkey-overlay-title="Focus right" { focus-column-right; }
+    Mod+Up hotkey-overlay-title="Focus up" { focus-window-or-workspace-up; }
+    Mod+Down hotkey-overlay-title="Focus down" { focus-window-or-workspace-down; }
+    Mod+Shift+Left hotkey-overlay-title="Move left" { move-column-left; }
+    Mod+Shift+Right hotkey-overlay-title="Move right" { move-column-right; }
+    Mod+Shift+Up hotkey-overlay-title="Move up" { move-window-up-or-to-workspace-up; }
+    Mod+Shift+Down hotkey-overlay-title="Move down" { move-window-down-or-to-workspace-down; }
+    Mod+Ctrl+Left hotkey-overlay-title="Nudge floating left" { spawn "niri" "msg" "action" "move-floating-window" "-x" "-50"; }
+    Mod+Ctrl+Right hotkey-overlay-title="Nudge floating right" { spawn "niri" "msg" "action" "move-floating-window" "-x" "+50"; }
+    Mod+Ctrl+Up hotkey-overlay-title="Nudge floating up" { spawn "niri" "msg" "action" "move-floating-window" "-y" "-50"; }
+    Mod+Ctrl+Down hotkey-overlay-title="Nudge floating down" { spawn "niri" "msg" "action" "move-floating-window" "-y" "+50"; }
+    Mod+Ctrl+Shift+Left hotkey-overlay-title="Narrower" { set-column-width "-50"; }
+    Mod+Ctrl+Shift+Right hotkey-overlay-title="Wider" { set-column-width "+50"; }
+    Mod+Ctrl+Shift+Up hotkey-overlay-title="Shorter" { set-window-height "-50"; }
+    Mod+Ctrl+Shift+Down hotkey-overlay-title="Taller" { set-window-height "+50"; }
+    Mod+R hotkey-overlay-title="Cycle width preset" { switch-preset-column-width; }
+    Mod+Alt+Period hotkey-overlay-title="Grow 5%" { set-column-width "+5%"; }
+    Mod+Alt+Comma hotkey-overlay-title="Shrink 5%" { set-column-width "-5%"; }
+
+    // monitors
+    Mod+Comma hotkey-overlay-title="Focus monitor left" { focus-monitor-left; }
+    Mod+Period hotkey-overlay-title="Focus monitor right" { focus-monitor-right; }
+    Mod+Shift+Comma hotkey-overlay-title="Move to monitor left" { move-column-to-monitor-left; }
+    Mod+Shift+Period hotkey-overlay-title="Move to monitor right" { move-column-to-monitor-right; }
+
+    // workspaces: Super+N go, Shift+N send (stay), Ctrl+N send and follow
+    Mod+1 hotkey-overlay-title="Workspace 1" { focus-workspace 1; }
+    Mod+2 hotkey-overlay-title="Workspace 2" { focus-workspace 2; }
+    Mod+3 hotkey-overlay-title="Workspace 3" { focus-workspace 3; }
+    Mod+4 hotkey-overlay-title="Workspace 4" { focus-workspace 4; }
+    Mod+5 hotkey-overlay-title="Workspace 5" { focus-workspace 5; }
+    Mod+6 hotkey-overlay-title="Workspace 6" { focus-workspace 6; }
+    Mod+7 hotkey-overlay-title="Workspace 7" { focus-workspace 7; }
+    Mod+8 hotkey-overlay-title="Workspace 8" { focus-workspace 8; }
+    Mod+9 hotkey-overlay-title="Workspace 9" { focus-workspace 9; }
+    Mod+0 hotkey-overlay-title="Workspace 10" { focus-workspace 10; }
+    Mod+Shift+1 hotkey-overlay-title="Send to workspace 1" { move-column-to-workspace 1 focus=false; }
+    Mod+Shift+2 hotkey-overlay-title="Send to workspace 2" { move-column-to-workspace 2 focus=false; }
+    Mod+Shift+3 hotkey-overlay-title="Send to workspace 3" { move-column-to-workspace 3 focus=false; }
+    Mod+Shift+4 hotkey-overlay-title="Send to workspace 4" { move-column-to-workspace 4 focus=false; }
+    Mod+Shift+5 hotkey-overlay-title="Send to workspace 5" { move-column-to-workspace 5 focus=false; }
+    Mod+Shift+6 hotkey-overlay-title="Send to workspace 6" { move-column-to-workspace 6 focus=false; }
+    Mod+Shift+7 hotkey-overlay-title="Send to workspace 7" { move-column-to-workspace 7 focus=false; }
+    Mod+Shift+8 hotkey-overlay-title="Send to workspace 8" { move-column-to-workspace 8 focus=false; }
+    Mod+Shift+9 hotkey-overlay-title="Send to workspace 9" { move-column-to-workspace 9 focus=false; }
+    Mod+Shift+0 hotkey-overlay-title="Send to workspace 10" { move-column-to-workspace 10 focus=false; }
+    Mod+Ctrl+1 hotkey-overlay-title="Go with window to workspace 1" { move-column-to-workspace 1; }
+    Mod+Ctrl+2 hotkey-overlay-title="Go with window to workspace 2" { move-column-to-workspace 2; }
+    Mod+Ctrl+3 hotkey-overlay-title="Go with window to workspace 3" { move-column-to-workspace 3; }
+    Mod+Ctrl+4 hotkey-overlay-title="Go with window to workspace 4" { move-column-to-workspace 4; }
+    Mod+Ctrl+5 hotkey-overlay-title="Go with window to workspace 5" { move-column-to-workspace 5; }
+    Mod+Ctrl+6 hotkey-overlay-title="Go with window to workspace 6" { move-column-to-workspace 6; }
+    Mod+Ctrl+7 hotkey-overlay-title="Go with window to workspace 7" { move-column-to-workspace 7; }
+    Mod+Ctrl+8 hotkey-overlay-title="Go with window to workspace 8" { move-column-to-workspace 8; }
+    Mod+Ctrl+9 hotkey-overlay-title="Go with window to workspace 9" { move-column-to-workspace 9; }
+    Mod+Ctrl+0 hotkey-overlay-title="Go with window to workspace 10" { move-column-to-workspace 10; }
+    Mod+Alt+Left hotkey-overlay-title="Previous workspace" { focus-workspace-up; }
+    Mod+Alt+Right hotkey-overlay-title="Next workspace" { focus-workspace-down; }
+    Mod+Alt+Shift+Left hotkey-overlay-title="Move to previous workspace" { move-column-to-workspace-up; }
+    Mod+Alt+Shift+Right hotkey-overlay-title="Move to next workspace" { move-column-to-workspace-down; }
+    Mod+WheelScrollUp cooldown-ms=150 hotkey-overlay-title="Previous workspace" { focus-workspace-up; }
+    Mod+WheelScrollDown cooldown-ms=150 hotkey-overlay-title="Next workspace" { focus-workspace-down; }
+    Mod+MouseMiddle hotkey-overlay-title="Float / tile" { toggle-window-floating; }
+
+    // media; osd draws the change as a notification
+    XF86AudioRaiseVolume allow-when-locked=true hotkey-overlay-title="Volume up" { spawn "osd" "volume" "up"; }
+    XF86AudioLowerVolume allow-when-locked=true hotkey-overlay-title="Volume down" { spawn "osd" "volume" "down"; }
+    XF86AudioMute allow-when-locked=true hotkey-overlay-title="Mute" { spawn "osd" "volume" "mute"; }
+    XF86AudioMicMute allow-when-locked=true hotkey-overlay-title="Mic mute" { spawn "osd" "mic" "mute"; }
+    XF86AudioPlay allow-when-locked=true hotkey-overlay-title="Play/pause" { spawn "osd" "playpause"; }
+    XF86AudioPause allow-when-locked=true hotkey-overlay-title="Play/pause" { spawn "osd" "playpause"; }
+    XF86Launch3 allow-when-locked=true hotkey-overlay-title="Play/pause" { spawn "osd" "playpause"; }
+    XF86AudioNext allow-when-locked=true hotkey-overlay-title="Next track" { spawn "osd" "next"; }
+    XF86AudioPrev allow-when-locked=true hotkey-overlay-title="Previous track" { spawn "osd" "prev"; }
+    XF86MonBrightnessUp allow-when-locked=true hotkey-overlay-title="Brightness up" { spawn "osd" "brightness" "up"; }
+    XF86MonBrightnessDown allow-when-locked=true hotkey-overlay-title="Brightness down" { spawn "osd" "brightness" "down"; }
+    XF86KbdBrightnessUp allow-when-locked=true hotkey-overlay-title="Keyboard light up" { spawn "osd" "kbd" "up"; }
+    XF86KbdBrightnessDown allow-when-locked=true hotkey-overlay-title="Keyboard light down" { spawn "osd" "kbd" "down"; }
+}
