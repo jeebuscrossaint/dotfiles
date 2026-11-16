@@ -1,6 +1,6 @@
 # dotfiles
 
-Hyprland · conky · kitty · fish · micro · fuzzel · dunst · hyprlock · hypridle · hyprsunset · [coat](https://github.com/jeebuscrossaint/coat)
+mango · conky · kitty · fish · micro · fuzzel · dunst · hyprlock · hypridle · wlsunset · [coat](https://github.com/jeebuscrossaint/coat)
 
 arch linux
 
@@ -12,7 +12,7 @@ curl -LO apatel.co/dotfiles/rice.sh && sh rice.sh
 
 Updates the system, installs git and fish, clones this repo to `~/dotfiles`,
 makes fish the login shell, then runs `install.fish`: packages, links `linux/`
-into `~`, applies coat. Rerun `~/dotfiles/install.fish` any time; `-h` for options.
+into `~`, applies coat. Log in on tty1 and type `mango`. Rerun `~/dotfiles/install.fish` any time; `-h` for options.
 
 ## minecraft
 

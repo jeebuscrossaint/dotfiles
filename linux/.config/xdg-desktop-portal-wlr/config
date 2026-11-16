@@ -1,0 +1,6 @@
+# Screenshare picker under mango.
+# dmenu mode lists every "Monitor: ..." and "Window: ..." line; the default
+# finds slurp first and can only pick a whole monitor.
+[screencast]
+chooser_type=dmenu
+chooser_cmd=fuzzel --dmenu --prompt 'share '

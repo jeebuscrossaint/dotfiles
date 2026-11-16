@@ -149,7 +149,7 @@ or die "$target is not writable"
 #
 # Rows above `chat` are derived from what the tracked configs and ~/.local/bin
 # scripts actually invoke — grep before adding one, and keep the paths in step
-# with the paths the labwc config execs.
+# with the paths ~/.config/mango/config.conf execs.
 #
 # The cli, chat, dev and apps groups are the other kind of row: nothing in this
 # repo calls them, they are just what this person installs on every machine.
@@ -180,11 +180,8 @@ set -g dep_table \
     "installer|cmd:fish|fish|fish||" \
     "installer|cmd:wget|wget|wget||" \
     "compositor|path:/usr/lib/xdg-desktop-portal-wlr /usr/libexec/xdg-desktop-portal-wlr|xdg-desktop-portal-wlr|xdg-desktop-portal-wlr||" \
-    "compositor|cmd:labwc|labwc|labwc||" \
-    "compositor|cmd:niri|niri|niri||" \
-    "compositor|cmd:xwayland-satellite|xwayland-satellite (niri X11 apps)|xwayland-satellite||" \
-    "compositor|path:/usr/lib/xdg-desktop-portal-gnome /usr/libexec/xdg-desktop-portal-gnome|xdg-desktop-portal-gnome (niri screencast)|xdg-desktop-portal-gnome||" \
-    "compositor|cmd:wlopm|wlopm (labwc screen blanking)|wlopm||" \
+    "compositor|cmd:mango|mangowm|mangowm||" \
+    "compositor|cmd:Xwayland|xorg-xwayland|xorg-xwayland||" \
     "compositor|path:/usr/lib/hyprpolkitagent/hyprpolkitagent|hyprpolkitagent|hyprpolkitagent||" \
     "compositor|path:/usr/lib/qt6/qml/org/hyprland/style|hyprland-qt-support (hypr* Qt app style)|hyprland-qt-support||" \
     "compositor|path:/usr/lib/xdg-desktop-portal-gtk /usr/libexec/xdg-desktop-portal-gtk|xdg-desktop-portal-gtk|xdg-desktop-portal-gtk||" \
@@ -196,6 +193,7 @@ set -g dep_table \
     "desktop|cmd:hyprpicker|hyprpicker|hyprpicker||" \
     "desktop|cmd:wlsunset|wlsunset (night light)|wlsunset||" \
     "desktop|cmd:wdisplays|wdisplays|wdisplays||" \
+    "desktop|cmd:wlopm|wlopm (screen blanking)|wlopm||" \
     "desktop|cmd:swaybg|swaybg|swaybg||" \
     "desktop|path:/opt/activitywatch/aw-server-rust/aw-server-rust|activitywatch||activitywatch-bin|" \
     "desktop|cmd:aw-awatcher|awatcher||aw-awatcher|" \
@@ -235,21 +233,10 @@ set -g dep_table \
     "theme|path:/usr/share/themes/adw-gtk3-dark|adw-gtk3|adw-gtk-theme||" \
     "theme|cmd:qt6ct|qt6ct|qt6ct||" \
     "theme|path:/usr/share/icons/WhiteSur-cursors|WhiteSur cursors||whitesur-cursor-theme-git|" \
-    "fonts|font:Font Awesome|Font Awesome|otf-font-awesome||" \
     "fonts|font:Noto Color Emoji|Noto Color Emoji|noto-fonts-emoji||" \
     "fonts|font:Times New Roman|microsoft core fonts||ttf-ms-fonts|" \
     "fonts|font:Ioskeley Mono|Ioskeley Mono||ttf-ioskeley-mono-unhinted|" \
-    "fonts|font:Maple Mono|Maple Mono||maplemono-nf|" \
-    "fonts|font:Intel One Mono|Intel One Mono||otf-intel-one-mono|" \
-    "fonts|font:Cozette|Cozette||cozette-otb|" \
     "fonts|font:NeoSpleen|NeoSpleen||ttf-neospleen-nerd-font|" \
-    "fonts|font:unscii|unscii||otf-unscii-16-full|" \
-    "fonts|font:Server Mono|Server Mono||otf-server-mono|" \
-    "fonts|font:Fragment Mono|Fragment Mono||ttf-fragment-mono|" \
-    "fonts|font:437|Oldschool PC Font Pack||oldschool-pc-font-ttf|" \
-    "fonts|font:Geist Pixel|Geist Pixel||ttf-geist-pixel-font-git|" \
-    "fonts|font:scientifica|scientifica||otb-scientifica|" \
-    "fonts|font:Chomsky|Chomsky||otf-chomsky|" \
     "apps|cmd:btop|btop|btop||" \
     "apps|cmd:mpv|mpv|mpv||" \
     "apps|cmd:zathura|zathura|zathura||" \
@@ -266,12 +253,9 @@ set -g dep_table \
     "apps|cmd:nvibrant|nvibrant||nvibrant-bin||nvidia" \
     "apps|cmd:imv|imv|imv||" \
     "apps|cmd:guvcview|guvcview|guvcview||" \
-    "apps|cmd:qalculate-gtk|qalculate|qalculate-gtk||" \
     "apps|cmd:wf-recorder|wf-recorder|wf-recorder||" \
     "apps|cmd:magick|imagemagick|imagemagick||" \
     "apps|cmd:torbrowser-launcher|tor browser|torbrowser-launcher||" \
-    "apps|cmd:tor|tor|tor||" \
-    "apps|cmd:i2pd|i2pd|i2pd||" \
     "cli|cmd:gdu|gdu|gdu||" \
     "cli|cmd:glow|glow|glow||" \
     "cli|cmd:newsboat|newsboat|newsboat||" \
@@ -290,7 +274,7 @@ set -g dep_table \
     "dev|cmd:typst|typst|typst||" \
     "dev|cmd:pandoc|pandoc|pandoc-bin||" \
     "dev|cmd:nvcc|cuda|cuda|||nvidia" \
-    "dev|path:/usr/lib/jvm/zulu-8|zulu 8 jdk||zulu-8-bin||minecraft" \
+    "dev|path:/usr/lib/jvm/java-8-openjdk|Java 8 runtime (1.8.9)|jre8-openjdk|||minecraft" \
     "toys|cmd:cbonsai|cbonsai||cbonsai|" \
     "toys|cmd:pipes-rs|pipes-rs||pipes-rs|" \
     "toys|cmd:cmatrix|cmatrix|cmatrix||"
@@ -748,15 +732,15 @@ function ensure_resolved
     or note "resolved setup did not finish — check /etc/resolv.conf by hand"
 end
 
-# The session starts from a tty1 login, so tty1 logs in by itself. config.fish
-# does the rest -- see the labwc block at the bottom of it.
+# The session starts from a tty1 login, so tty1 logs in by itself; typing
+# `mango` there starts it (see the mango function in config.fish).
 function ensure_autologin
     command -q systemctl; or return 0
     set -l dir /etc/systemd/system/getty@tty1.service.d
     grep -q -- --skip-login $dir/autologin.conf 2>/dev/null; and return 0
 
     step "tty1 does not log in by itself, or prints a login banner first"
-    dim "agetty --autologin $USER on tty1, silently; config.fish starts labwc from there"
+    dim "agetty --autologin $USER on tty1, silently; type `mango` from there"
     confirm "set that up?"; or return 0
     sudo mkdir -p $dir
     printf '[Service]\nExecStart=\nExecStart=-/usr/bin/agetty --skip-login --nonewline --noissue --autologin %s --noclear %%I $TERM\n' $USER \
@@ -858,18 +842,6 @@ function ensure_services
 
     command -q smartctl; and enable_service smartd
     command -q sshd; and enable_service sshd
-
-    # Tor and I2P, both wanted running rather than merely installed. tor is the
-    # system daemon -- a SOCKS5 proxy on 127.0.0.1:9050 -- and is NOT what Tor
-    # Browser uses: the browser ships and starts its own, so torbrowser-launcher
-    # works with or without this. Enabling it is for everything else that can be
-    # pointed at a SOCKS port.
-    #
-    # i2pd is the C++ I2P router (the `i2p` package is the Java one and is
-    # AUR-only); its web console is on 127.0.0.1:7070. Both bind loopback by
-    # default and neither is reachable from the network as shipped.
-    command -q tor; and enable_service tor
-    command -q i2pd; and enable_service i2pd
 
     # TLP is held back on the ASUS box ONLY, where asusd owns the ACPI platform
     # profile. Everywhere else ensure_power_profile installs and enables it,
@@ -1373,7 +1345,7 @@ if test "$want_minecraft" = 1
 
             ok (count $mods/*.jar)" mods installed"
             # 1.8.9 will not start on a modern JRE.
-            command -q java; or note "no java found — 1.8.9 needs Java 8 (zulu-8-bin)"
+            command -q java; or note "no java found — 1.8.9 needs Java 8 (jre8-openjdk)"
         end
     end
 end

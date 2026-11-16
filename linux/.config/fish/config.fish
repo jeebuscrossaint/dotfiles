@@ -32,14 +32,15 @@ if status is-interactive
     end
     abbr -a !! --position anywhere --function __last_history_item
 
-    # coat's fonts sit in a second rc.xml that labwc only merges with -m.
-    function labwc --wraps labwc
-        XDG_CONFIG_DIRS=$HOME/.local/share/coat/labwc:/etc/xdg command labwc -m $argv
-    end
-
-    # --session sets XDG_CURRENT_DESKTOP=niri and hands it to dbus/systemd; without
-    # it the portal finds no backend and apps lose dark mode.
-    function niri --wraps niri
-        command niri --session $argv
+    # mango does not raise its fd limit, so at the inherited 1024 it stays
+    # responsive but stops accepting new clients. `-p` rejects a broken config
+    # here instead of on a black screen.
+    function mango --wraps mango
+        ulimit -S -n (ulimit -H -n)
+        command mango -p >/dev/null; or begin
+            command mango -p
+            return 1
+        end
+        command mango $argv
     end
 end

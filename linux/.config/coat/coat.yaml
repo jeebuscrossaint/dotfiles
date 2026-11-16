@@ -16,12 +16,10 @@ enabled:
   - imv
   - satty
   - hyprlock
-  - labwc
-  - niri
+  - mango
   - dunst
   - fuzzel
   - conky
-  - qutebrowser
   - colors
   - tty
 
@@ -41,20 +39,20 @@ normalize:
 opacity:
   # Blur only shows through a translucent surface, so at 1.0 an opaque terminal
   # frosts nothing and the effects block appears to do less than it does.
-  terminal: 0.75   # base00 tints the blur without hiding it
-  popups: 0.80     # fuzzel + dunst; enough transparency for compositor blur
+  terminal: 1.0    # was 0.75; opaque for now
+  popups: 1.0     # fuzzel + dunst; enough transparency for compositor blur
   applications: 1.0
   desktop: 1.0     # conky, which has only the wallpaper behind it anyway
 
 font:
   emoji: "Noto Color Emoji"
-  monospace: "SFMono Nerd Font Mono"
-  sansserif: "SFMono Nerd Font Mono"
-  serif: "SFMono Nerd Font Mono"
+  monospace: "SpaceMono Nerd Font Mono"
+  sansserif: "SpaceMono Nerd Font Mono"
+  serif: "SpaceMono Nerd Font Mono"
   sizes:
-    terminal: 13
-    desktop: 13
-    popups: 13
+    terminal: 11
+    desktop: 11
+    popups: 11
 
 # Per-app overrides of the blocks above. Only the keys listed are replaced;
 # everything else falls through, so an override is a patch, not a second config.
@@ -68,6 +66,10 @@ overrides:
   # Text stays opaque in Discord (only the root tint takes alpha), so it can go
   # thinner than other apps without losing readability.
   vesktop:
+    # Empty = leave Discord on its own built-in fonts.
+    font:
+      monospace: ""
+      sansserif: ""
     opacity:
-      applications: 0.75
+      applications: 1.0   # was 0.75; opaque for now
 

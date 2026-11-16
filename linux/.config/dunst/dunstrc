@@ -1,4 +1,4 @@
-# ~/.config/dunst/dunstrc — the notification daemon for the labwc session.
+# ~/.config/dunst/dunstrc — the notification daemon for the mango session.
 #
 # dunst because it is the only notification daemon in BOTH Arch and OpenBSD
 # (x11/dunst, layer-shell there too), and because coat can theme it without
