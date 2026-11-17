@@ -1,15 +1,6 @@
 -- ~/.config/conky/conky.lua — ${lua ...} helpers for conky.conf.
 
--- A corner block walking round the compass, one step per update. Braille is the
--- usual spinner and this font has NONE of it -- 0 of 256 codepoints -- so the
--- quadrant blocks do the job instead. Checked with fc-query, not assumed.
-local frames = { "\u{2598}", "\u{259D}", "\u{2597}", "\u{2596}" }
 local tick = 0
-
-function conky_spin()
-    tick = tick + 1
-    return frames[(tick % #frames) + 1]
-end
 
 -- Alternates between two colours per update, for a value that wants attention.
 --
@@ -19,6 +10,7 @@ end
 -- variable inside ${color}'s argument, so the colour parser is handed the
 -- literal text and logs "can't parse color '${lua pulse ...}'" every tick.
 function conky_pulse(a, b)
+    tick = tick + 1
     return "${color " .. ((tick % 2 == 0) and a or b) .. "}"
 end
 
