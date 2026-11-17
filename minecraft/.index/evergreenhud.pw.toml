@@ -1,0 +1,21 @@
+filename = 'EvergreenHUD-1.8.9-forge-2.1.7.jar'
+name = 'EvergreenHUD (FPS / CPS / Keystrokes HUD)'
+side = 'client'
+x-prismlauncher-loaders = [ 'forge' ]
+x-prismlauncher-mc-versions = [ '1.8.9' ]
+x-prismlauncher-release-type = 'release'
+x-prismlauncher-version-number = 'v2.1.7'
+
+[download]
+hash = 'a253753b275961e037bf61ad3ce02172d5845b53a3528133500b786686302e882e4efd9849bda17092e75d17e0e7d1c4b648edafcae3f08bfadc082ff8d2f737'
+hash-format = 'sha512'
+mode = 'url'
+url = 'https://cdn.modrinth.com/data/1yIQcc2b/versions/YAwKwEPz/EvergreenHUD-1.8.9-forge-2.1.7.jar'
+
+[update.modrinth]
+mod-id = '1yIQcc2b'
+version = 'YAwKwEPz'
+
+[[x-prismlauncher-dependencies]]
+addonId = 'AibBIVmj'
+type = 'EMBEDDED'
