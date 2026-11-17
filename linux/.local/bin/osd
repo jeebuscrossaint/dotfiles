@@ -16,6 +16,7 @@
 #   osd capslock|numlock
 #   osd nightlight [start]          toggle; `start` is the login one, silent
 #   osd nightlight warmer|cooler    shift the night temperature, persisted
+#   osd touchpad                    toggle, through the compositor
 #   osd playpause|next|prev
 #
 # Nothing stacks: see OSD_ID below.
@@ -64,6 +65,9 @@ KBD_LED=asus::kbd_backlight
 # `start` runs it on the NIGHT_ON..NIGHT_OFF schedule; a toggle forces it warm
 # now. The nudged temperature is kept in NIGHT_FILE; 3500K until first nudged.
 NIGHT_FILE=${XDG_STATE_HOME:-$HOME/.local/state}/nightlight-temp
+
+# mango cannot report whether the touchpad is enabled, so the state is tracked here.
+TP_FLAG=${XDG_RUNTIME_DIR:-/tmp}/touchpad-off
 NIGHT_TEMP=$(cat "$NIGHT_FILE" 2>/dev/null)
 case $NIGHT_TEMP in '' | *[!0-9]*) NIGHT_TEMP=3500 ;; esac
 NIGHT_STEP=250
@@ -80,7 +84,7 @@ LOCK_SETTLE=0.15
 
 usage() {
 	echo "usage: osd {volume up|down|mute | mic mute | brightness up|down |" >&2
-	echo "           kbd up|down|show | capslock | numlock | nightlight |" >&2
+	echo "           kbd up|down|show | capslock | numlock | nightlight | touchpad |" >&2
 	echo "           playpause | next | prev}" >&2
 	exit 2
 }
@@ -356,6 +360,22 @@ nightlight | night)
 	else
 		forced "$NIGHT_TEMP"
 		show "󰖔  Night light ${NIGHT_TEMP}K"
+	fi
+	;;
+
+# -------------------------------------------------------------------- touchpad
+touchpad)
+	# all-devices has no enabled flag, hence the flag file. A native bind would
+	# flip the device behind the flag's back and every popup after would lie.
+	if [ -f "$TP_FLAG" ]; then want=on; else want=off; fi
+	[ -n "${MANGO_INSTANCE_SIGNATURE:-}" ] || exit 0
+	mmsg dispatch toggle_trackpad_enable >/dev/null 2>&1 || exit 1
+	if [ "$want" = on ]; then
+		rm -f "$TP_FLAG"
+		show '󰟸  touchpad on'
+	else
+		: >"$TP_FLAG"
+		show '󰤳  touchpad off'
 	fi
 	;;
 
